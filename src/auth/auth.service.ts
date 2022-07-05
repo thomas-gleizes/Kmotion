@@ -46,7 +46,10 @@ export class AuthService {
       where: { email: data.email },
     });
 
-    if (!user && !(await this.passwordCompare(data.password, user.password)))
+    if (
+      !user ||
+      (user && !(await this.passwordCompare(data.password, user.password)))
+    )
       throw new UnauthorizedException('invalid credentials');
 
     delete user.password;
