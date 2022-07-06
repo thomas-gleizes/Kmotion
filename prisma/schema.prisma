@@ -22,3 +22,17 @@ model User {
 
   @@map("users")
 }
+
+model Music {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  artist      String   @db.VarChar(255)
+  album       String   @db.VarChar(255)
+  youtubeId   String   @db.VarChar(255) @unique @map("youtube_id")
+  releaseDate DateTime @db.DateTime @map("release_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  @@map("musics")
+}
+

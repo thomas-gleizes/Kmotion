@@ -1,5 +1,4 @@
 import { access, appendFile, writeFile } from 'node:fs/promises';
-
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
@@ -8,7 +7,9 @@ export class LoggingInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<void>,
   ): Observable<any> | Promise<Observable<any>> {
-    this.logRequest(context.switchToHttp().getRequest());
+    this.logRequest(context.switchToHttp().getRequest()).catch((err) =>
+      console.error('Logging error: ', err.stack),
+    );
 
     return next.handle();
   }
