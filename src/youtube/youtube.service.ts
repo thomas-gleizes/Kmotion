@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import ytdl from 'ytdl-core';
-import ffmpeg from 'fluent-ffmpeg';
+import * as ytdl from 'ytdl-core';
+import * as ffmpeg from 'fluent-ffmpeg';
 
 @Injectable()
 export class YoutubeService {
@@ -12,15 +12,24 @@ export class YoutubeService {
   private _info: ytdl.videoInfo;
   private _musicPath: string;
 
-  constructor(youtube_id: string) {
-    this._youtubeId = youtube_id;
-    this._url = YoutubeService.YOUTUBE_BASE_URL + youtube_id;
-    this._musicPath = YoutubeService.MUSIC_PATH + '/' + youtube_id + '.mp3';
+  constructor() {
+    this._youtubeId = null;
+    this._url = null;
     this._info = null;
+    this._musicPath = null;
+  }
+
+  public setYoutubeId(youtubeId: string) {
+    this._youtubeId = youtubeId;
+    this._url = YoutubeService.YOUTUBE_BASE_URL + youtubeId;
+    this._musicPath = `${YoutubeService.MUSIC_PATH}/${youtubeId}.mp3`;
   }
 
   async fetchInfo() {
-    this._info = await ytdl.getInfo(this._youtubeId);
+    console.log('This._youtubeId', this._youtubeId);
+
+    if (!this._youtubeId) throw new Error('youtubeId is not set');
+    this._info = await ytdl.getInfo(this._url);
   }
 
   async download() {
@@ -36,7 +45,15 @@ export class YoutubeService {
         .withAudioCodec('libmp3lame')
         .toFormat('mp3')
         .saveToFile(this._musicPath)
-        .on('progress', ({ timemark }) => console.log('progress : ', timemark))
+        .on('progress', ({ timemark }) => {
+          const [hours, minutes, seconds] = timemark.split(':').map(Number);
+          const currentTime = hours * 3600 + minutes * 60 + seconds;
+          console.log(
+            `Progress: ${Math.round(
+              (currentTime / +this._info.videoDetails.lengthSeconds) * 100,
+            )}%`,
+          );
+        })
         .on('error', reject)
         .on('end', resolve),
     );

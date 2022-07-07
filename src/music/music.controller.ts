@@ -15,8 +15,10 @@ export class MusicController {
     throw new NotImplementedException();
   }
 
-  @Get(':youtube-id/download')
-  async downloadMusic(@Param('youtube-id') youtubeId: string) {
+  @Get(':youtube/download')
+  async downloadMusic(@Param('youtube') youtubeId: string) {
+    console.log('Id', youtubeId);
+
     await this.musicService.saveMusic(youtubeId);
 
     return { success: true };
