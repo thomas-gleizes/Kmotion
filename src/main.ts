@@ -10,6 +10,7 @@ import { LoggingInterceptor } from './logging/logging.interceptor';
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.setGlobalPrefix('api');
+  app.enableCors({ origin: '*' });
 
   await app.listen(process.env.PORT);
 })();

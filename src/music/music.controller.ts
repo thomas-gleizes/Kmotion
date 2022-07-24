@@ -23,4 +23,12 @@ export class MusicController {
 
     return { success: true };
   }
+
+  @Get(':youtube/info')
+  async getInfo(@Param('youtube') youtubeId: string) {
+    return {
+      success: true,
+      videoDetails: await this.musicService.showVideosDetails(youtubeId),
+    };
+  }
 }

@@ -22,6 +22,9 @@ module.exports = {
       zIndex: {
         ...generateKeys(11, "", 10, true),
       },
+      fonts: {
+        spotify: "circular, sans-serif",
+      },
     },
   },
   variants: {
