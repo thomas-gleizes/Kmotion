@@ -9,7 +9,6 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { LoggingModule } from './logging/logging.module';
 import { MusicModule } from './music/music.module';
-import { YoutubeModule } from './youtube/youtube.module';
 import { PlaylistModule } from './playlist/playlist.module';
 
 @Module({
@@ -23,7 +22,6 @@ import { PlaylistModule } from './playlist/playlist.module';
     AuthModule,
     UserModule,
     MusicModule,
-    YoutubeModule,
     PlaylistModule,
   ],
   controllers: [],
