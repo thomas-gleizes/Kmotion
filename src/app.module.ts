@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { LoggingModule } from './logging/logging.module';
 import { MusicModule } from './music/music.module';
 import { YoutubeModule } from './youtube/youtube.module';
+import { PlaylistModule } from './playlist/playlist.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { YoutubeModule } from './youtube/youtube.module';
     UserModule,
     MusicModule,
     YoutubeModule,
+    PlaylistModule,
   ],
   controllers: [],
   providers: [AppGateway],

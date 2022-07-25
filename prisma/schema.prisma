@@ -20,7 +20,10 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
+  playlistEntries PlaylistEntry[]
+
   @@map("users")
+  Playlist Playlist[]
 }
 
 model Music {
@@ -28,11 +31,43 @@ model Music {
   title       String   @db.VarChar(255)
   artist      String   @db.VarChar(255)
   album       String   @db.VarChar(255)
-  youtubeId   String   @db.VarChar(255) @unique @map("youtube_id")
-  releaseDate DateTime @db.DateTime @map("release_date")
+  youtubeId   String   @unique @map("youtube_id") @db.VarChar(255)
+  loaded      Boolean  @default(false)
+  releaseDate DateTime @map("release_date") @db.DateTime
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @map("updated_at")
+
+  playlistEntries PlaylistEntry[]
 
   @@map("musics")
 }
 
+model Playlist {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  description String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  authorId    Int      @map("author_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  author User @relation(fields: [authorId], references: [id])
+
+  @@map("playlists")
+  PlaylistEntry PlaylistEntry[]
+}
+
+model PlaylistEntry {
+  playlistId Int @map("playlist_id")
+  musicId    Int @map("music_id")
+  position   Int
+
+  playlist Playlist @relation(fields: [playlistId], references: [id])
+  music    Music    @relation(fields: [musicId], references: [id])
+
+  @@id([playlistId, musicId])
+  @@unique([playlistId, position])
+  @@map("playlist_entries")
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
+}

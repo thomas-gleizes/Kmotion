@@ -9,17 +9,3 @@ export class SignInDto {
   @IsNotEmpty()
   password: string;
 }
-
-export class SignUpDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @IsString()
-  @IsNotEmpty()
-  password: string;
-
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-}
