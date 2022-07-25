@@ -1,17 +1,13 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import routes from "resources/routes";
+import AllContextProvider from "components/app/AllContextProvider";
+import Router from "components/app/Router";
 
 const App: Component = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        {Object.entries(routes).map(([name, route], index) => (
-          <Route key={`${name}-${index}`} path={route.path} element={<route.component />} />
-        ))}
-      </Routes>
-    </BrowserRouter>
+    <AllContextProvider>
+      <Router />
+    </AllContextProvider>
   );
 };
 

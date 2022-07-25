@@ -1,10 +1,14 @@
-import Home from "pages/Home";
-import About from "pages/About";
 import NotFound from "pages/NotFound";
+import HomePage from "pages/public/Home.page";
+import SignInPage from "pages/public/auth/SignIn.page";
+import PlaylistPage from "pages/protected/PlaylistPage";
 
-const routes: Routes = {
-  home: { path: "/", component: Home },
-  about: { path: "/about", component: About },
+export const publicRoutes: Routes = {
+  home: { path: "/home", component: HomePage },
+  signIn: { path: "/sign-in", component: SignInPage },
+  notFound: { path: "*", component: NotFound },
 };
 
-export default routes;
+export const protectedRoutes: Routes = {
+  main: { path: "/", component: PlaylistPage },
+};
