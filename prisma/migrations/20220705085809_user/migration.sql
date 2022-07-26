@@ -7,6 +7,7 @@ CREATE TABLE `users`
     `password`   VARCHAR(255) NOT NULL,
     `slug`       VARCHAR(255) NOT NULL,
     `is_admin`   BOOLEAN      NOT NULL DEFAULT false,
+    `validate`   BOOLEAN      NOT NULL DEFAULT false,
     `created_at` DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
 

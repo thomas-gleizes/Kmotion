@@ -11,7 +11,7 @@ import {
 import { UserService } from './user.service';
 import { GetUser } from '../auth/decorator';
 import { UpdateUserDto } from './user.dto';
-import { AuthGuard } from '../auth/guard';
+import { AdminGuard, AuthGuard } from '../auth/guard';
 
 @Controller('users')
 export class UserController {
@@ -32,6 +32,14 @@ export class UserController {
   @Patch('/')
   async update(@GetUser('id') userId: number, @Body() dto: UpdateUserDto) {
     const user = await this.userService.update(userId, dto);
+
+    return { success: true, user };
+  }
+
+  @UseGuards(AdminGuard)
+  @Patch('/:id/activate')
+  async activate(@Param('id', ParseIntPipe) userId: number) {
+    const user = await this.userService.activate(userId);
 
     return { success: true, user };
   }
