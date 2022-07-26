@@ -7,10 +7,10 @@ import {
   Param,
   Delete,
   UseGuards,
+  NotImplementedException,
 } from '@nestjs/common';
 import { PlaylistService } from './playlist.service';
-import { CreatePlaylistDto } from './dto/create-playlist.dto';
-import { UpdatePlaylistDto } from './dto/update-playlist.dto';
+import { CreatePlaylistDto, UpdatePlaylistDto } from './dto';
 import { AuthGuard } from '../auth/guard';
 import { GetUser } from '../auth/decorator';
 
@@ -20,23 +20,28 @@ export class PlaylistController {
   constructor(private readonly playlistService: PlaylistService) {}
 
   @Post()
-  create(
+  async create(
     @Body() createPlaylistDto: CreatePlaylistDto,
     @GetUser('id') userId: number,
   ) {
-    console.log('id');
+    const playlist = await this.playlistService.create(
+      createPlaylistDto,
+      userId,
+    );
 
-    return this.playlistService.create(createPlaylistDto, userId);
+    return { success: true, playlist };
   }
 
   @Get()
-  findAll() {
-    return this.playlistService.findAll();
+  async findAll(@GetUser('id') userId: number) {
+    const playlist = await this.playlistService.findAllByUser(userId);
+
+    return { success: true, playlist };
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.playlistService.findOne(+id);
+    throw new NotImplementedException();
   }
 
   @Patch(':id')
@@ -44,11 +49,11 @@ export class PlaylistController {
     @Param('id') id: string,
     @Body() updatePlaylistDto: UpdatePlaylistDto,
   ) {
-    return this.playlistService.update(+id, updatePlaylistDto);
+    throw new NotImplementedException();
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.playlistService.remove(+id);
+    throw new NotImplementedException();
   }
 }
