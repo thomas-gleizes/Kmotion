@@ -1,14 +1,13 @@
-import {
-  Controller,
-  Get,
-  Param,
-  NotImplementedException,
-} from '@nestjs/common';
+import { Controller, Get, NotImplementedException, Param, UseGuards } from '@nestjs/common';
 import { MusicService } from './music.service';
+import { AuthGuard } from '../auth/guard';
+import { GetUser } from '../auth/decorator';
 
+@UseGuards(AuthGuard)
 @Controller('musics')
 export class MusicController {
-  constructor(private readonly musicService: MusicService) {}
+  constructor(private readonly musicService: MusicService) {
+  }
 
   @Get(':id')
   async getMusic(@Param('id') id: string) {
@@ -16,10 +15,11 @@ export class MusicController {
   }
 
   @Get(':youtube/download')
-  async downloadMusic(@Param('youtube') youtubeId: string) {
-    console.log('Id', youtubeId);
-
-    await this.musicService.saveMusic(youtubeId);
+  async addMusic(
+    @Param('youtube') youtubeId: string,
+    @GetUser('id') userId: number
+  ) {
+    await this.musicService.saveMusic(youtubeId, userId);
 
     return { success: true };
   }
@@ -28,7 +28,7 @@ export class MusicController {
   async getInfo(@Param('youtube') youtubeId: string) {
     return {
       success: true,
-      videoDetails: await this.musicService.showVideosDetails(youtubeId),
+      videoDetails: await this.musicService.showVideosDetails(youtubeId)
     };
   }
 }

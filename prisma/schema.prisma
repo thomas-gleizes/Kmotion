@@ -21,24 +21,27 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
-  playlistEntries PlaylistEntry[]
+  playlists Playlist[]
 
   @@map("users")
-  Playlist Playlist[]
+  Music Music[]
 }
 
 model Music {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(255)
-  artist      String   @db.VarChar(255)
-  album       String   @db.VarChar(255)
-  youtubeId   String   @unique @map("youtube_id") @db.VarChar(255)
-  loaded      Boolean  @default(false)
-  releaseDate DateTime @map("release_date") @db.DateTime
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @map("updated_at")
+  id           Int      @id @default(autoincrement())
+  title        String   @db.VarChar(255)
+  artist       String   @db.VarChar(128)
+  album        String   @db.VarChar(128)
+  youtubeId    String   @unique @map("youtube_id") @db.VarChar(24)
+  loaded       Boolean  @default(false)
+  releaseDate  DateTime @map("release_date") @db.DateTime
+  details      String   @db.Text
+  downloaderId Int      @map("downloader_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @map("updated_at")
 
   playlistEntries PlaylistEntry[]
+  downloader      User            @relation(fields: [downloaderId], references: [id])
 
   @@map("musics")
 }
@@ -52,10 +55,10 @@ model Playlist {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @map("updated_at")
 
-  author User @relation(fields: [authorId], references: [id])
+  author  User            @relation(fields: [authorId], references: [id])
+  entries PlaylistEntry[]
 
   @@map("playlists")
-  PlaylistEntry PlaylistEntry[]
 }
 
 model PlaylistEntry {
@@ -69,6 +72,4 @@ model PlaylistEntry {
   @@id([playlistId, musicId])
   @@unique([playlistId, position])
   @@map("playlist_entries")
-  User   User? @relation(fields: [userId], references: [id])
-  userId Int?
 }

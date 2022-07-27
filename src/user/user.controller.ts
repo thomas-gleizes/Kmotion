@@ -17,6 +17,7 @@ import { AdminGuard, AuthGuard } from '../auth/guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(AuthGuard)
   @Get('/:id')
   async find(@Param('id', ParseIntPipe) bookmarkId: number) {
     const user = await this.userService.findById(bookmarkId);
