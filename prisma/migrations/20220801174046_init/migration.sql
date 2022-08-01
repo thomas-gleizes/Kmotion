@@ -22,7 +22,7 @@ CREATE TABLE `musics` (
     `artist` VARCHAR(128) NOT NULL,
     `album` VARCHAR(128) NOT NULL,
     `youtube_id` VARCHAR(24) NOT NULL,
-    `loaded` BOOLEAN NOT NULL DEFAULT false,
+    `ready` BOOLEAN NOT NULL DEFAULT false,
     `release_date` DATETIME NOT NULL,
     `details` TEXT NOT NULL,
     `downloader_id` INTEGER NOT NULL,

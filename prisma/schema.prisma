@@ -30,10 +30,10 @@ model User {
 model Music {
   id           Int      @id @default(autoincrement())
   title        String   @db.VarChar(255)
-  artist       String   @db.VarChar(128)
-  album        String   @db.VarChar(128)
+  artist       String?   @db.VarChar(128)
+  album        String?   @db.VarChar(128)
   youtubeId    String   @unique @map("youtube_id") @db.VarChar(24)
-  loaded       Boolean  @default(false)
+  ready        Boolean  @default(false)
   releaseDate  DateTime @map("release_date") @db.DateTime
   details      String   @db.Text
   downloaderId Int      @map("downloader_id")
