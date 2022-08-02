@@ -1,8 +1,10 @@
-import { Controller, Get, Header, Param, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Header, Param, StreamableFile, UseGuards } from '@nestjs/common';
+
 import { MusicService } from './music.service';
 import { GetUser } from '../auth/decorator';
+import { AuthGuard } from '../auth/guard';
 
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller('musics')
 export class MusicController {
   constructor(private readonly musicService: MusicService) {}

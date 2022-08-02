@@ -1,4 +1,10 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreatePlaylistDto } from './create-playlist.dto';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class UpdatePlaylistDto extends PartialType(CreatePlaylistDto) {}
+export class UpdatePlaylistDto {
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsString()
+  description: string;
+}

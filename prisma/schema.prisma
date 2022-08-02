@@ -52,6 +52,7 @@ model Playlist {
   description String   @db.VarChar(255)
   slug        String   @unique @db.VarChar(255)
   authorId    Int      @map("author_id")
+  visibility  Visibility  @default(private)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @map("updated_at")
 
@@ -65,6 +66,8 @@ model PlaylistEntry {
   playlistId Int @map("playlist_id")
   musicId    Int @map("music_id")
   position   Int
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @default(now()) @map("updated_at")
 
   playlist Playlist @relation(fields: [playlistId], references: [id])
   music    Music    @relation(fields: [musicId], references: [id])
@@ -72,4 +75,9 @@ model PlaylistEntry {
   @@id([playlistId, musicId])
   @@unique([playlistId, position])
   @@map("playlist_entries")
+}
+
+enum Visibility {
+ private
+  public
 }

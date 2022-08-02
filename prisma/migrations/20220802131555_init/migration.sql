@@ -8,7 +8,7 @@ CREATE TABLE `users` (
     `is_admin` BOOLEAN NOT NULL DEFAULT false,
     `activate` BOOLEAN NOT NULL DEFAULT false,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `users_email_key`(`email`),
     UNIQUE INDEX `users_slug_key`(`slug`),
@@ -27,7 +27,7 @@ CREATE TABLE `musics` (
     `path` VARCHAR(255) NULL,
     `downloader_id` INTEGER NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `musics_youtube_id_key`(`youtube_id`),
     PRIMARY KEY (`id`)
@@ -40,8 +40,9 @@ CREATE TABLE `playlists` (
     `description` VARCHAR(255) NOT NULL,
     `slug` VARCHAR(255) NOT NULL,
     `author_id` INTEGER NOT NULL,
+    `visibility` ENUM('private', 'public') NOT NULL DEFAULT 'private',
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `playlists_slug_key`(`slug`),
     PRIMARY KEY (`id`)
@@ -52,6 +53,8 @@ CREATE TABLE `playlist_entries` (
     `playlist_id` INTEGER NOT NULL,
     `music_id` INTEGER NOT NULL,
     `position` INTEGER NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `playlist_entries_playlist_id_position_key`(`playlist_id`, `position`),
     PRIMARY KEY (`playlist_id`, `music_id`)

@@ -6,6 +6,5 @@ export class CreatePlaylistDto {
   title: string;
 
   @IsString()
-  @IsNotEmpty()
   description: string;
 }
