@@ -22,20 +22,20 @@ model User {
   updatedAt DateTime @default(now()) @map("updated_at")
 
   playlists Playlist[]
+  Music     Music[]
 
   @@map("users")
-  Music Music[]
 }
 
 model Music {
   id           Int      @id @default(autoincrement())
   title        String   @db.VarChar(255)
-  artist       String?   @db.VarChar(128)
-  album        String?   @db.VarChar(128)
+  artist       String?  @db.VarChar(128)
   youtubeId    String   @unique @map("youtube_id") @db.VarChar(24)
   ready        Boolean  @default(false)
-  releaseDate  DateTime @map("release_date") @db.DateTime
+  releaseDate  DateTime @map("release_date") @db.Date
   details      String   @db.Text
+  path         String?  @db.VarChar(255)
   downloaderId Int      @map("downloader_id")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @default(now()) @map("updated_at")

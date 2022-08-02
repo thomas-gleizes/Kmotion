@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
@@ -16,14 +12,11 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,
-    private jwt: JwtService,
+    private jwt: JwtService
   ) {}
 
   private signToken(user: any): string {
-    return this.jwt.sign(
-      { user },
-      { secret: this.config.get('SECRET_JWT'), expiresIn: '7d' },
-    );
+    return this.jwt.sign({ user }, { secret: this.config.get('SECRET_JWT'), expiresIn: '7d' });
   }
 
   private async passwordHash(password: string): Promise<string> {
@@ -31,14 +24,8 @@ export class AuthService {
     return await bcrypt.hash(password + this.config.get('SECRET_SEED'), salt);
   }
 
-  private async passwordCompare(
-    password: string,
-    hash: string,
-  ): Promise<boolean> {
-    return await bcrypt.compare(
-      password + this.config.get('SECRET_SEED'),
-      hash,
-    );
+  private async passwordCompare(password: string, hash: string): Promise<boolean> {
+    return await bcrypt.compare(password + this.config.get('SECRET_SEED'), hash);
   }
 
   async signIn(data: SignInDto): Promise<any> {
@@ -46,15 +33,12 @@ export class AuthService {
       where: { email: data.email },
     });
 
-    if (
-      !user ||
-      (user && !(await this.passwordCompare(data.password, user.password)))
-    )
+    if (!user || (user && !(await this.passwordCompare(data.password, user.password))))
       throw new UnauthorizedException('invalid credentials');
 
     if (!user.activate)
       throw new UnauthorizedException(
-        'Your account must be validate by an admin. Please Wait',
+        'Your account must be validate by an admin. Please Wait'
       );
 
     delete user.password;
@@ -78,8 +62,7 @@ export class AuthService {
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError)
-        if (error.code === 'P2002')
-          throw new ForbiddenException('credentials already taken');
+        if (error.code === 'P2002') throw new ForbiddenException('credentials already taken');
 
       throw error;
     }

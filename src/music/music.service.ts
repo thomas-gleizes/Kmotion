@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import YoutubeService from '../youtube/youtube.service';
+import { createReadStream } from 'fs';
 
 @Injectable()
-export class MusicService {
+export class MusicService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   async saveMusic(id: string, userId: number) {
@@ -20,22 +22,37 @@ export class MusicService {
       }
 
       await youtube.download();
+      return this.prisma.music.update({
+        where: { youtubeId: id },
+        data: { ready: true },
+      });
     } else {
       const details = await youtube.getVideoDetails();
 
-      music = await this.prisma.music.create({
+      const promise = this.prisma.music.create({
         data: {
           youtubeId: id,
-          title: details.media.song,
-          artist: details.media.artist,
-          album: details.author.name || '',
+          title: details.media.song || youtube.title,
+          artist: details.media.artist || details.author.name,
           releaseDate: new Date(details.publishDate),
-          downloaderId: userId,
-          details: '',
+          details: JSON.stringify(details),
+          downloader: {
+            connect: {
+              id: userId,
+            },
+          },
         },
       });
 
-      return music;
+      const [music] = await Promise.all([promise, youtube.download()]);
+
+      return this.prisma.music.update({
+        where: { id: music.id },
+        data: {
+          ready: true,
+          path: `resources/musics/${music.youtubeId}/${music.title}.mp3`,
+        },
+      });
     }
   }
 
@@ -43,5 +60,30 @@ export class MusicService {
     const youtube = new YoutubeService(id);
 
     return youtube.getVideoDetails();
+  }
+
+  async read(id: string) {
+    const music = await this.prisma.music.findUnique({ where: { youtubeId: id } });
+
+    return createReadStream(`${process.cwd()}/${music.path}`);
+  }
+
+  onModuleInit(): any {
+    this.prisma.$use(async (params, next) => {
+      const results = await next(params);
+
+      if (results && params.model === 'Music') {
+        if (Array.isArray(results))
+          return results.map((result) => ({
+            ...result,
+            details: result.details ? JSON.parse(result?.details) : null,
+          }));
+        else
+          return {
+            ...results,
+            details: results.details ? JSON.parse(results?.details) : null,
+          };
+      } else return results;
+    });
   }
 }
