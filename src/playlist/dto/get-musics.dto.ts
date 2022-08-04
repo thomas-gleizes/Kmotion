@@ -8,12 +8,12 @@ export class GetMusicsDto {
   @Max(50)
   @IsPositive()
   @IsOptional()
-  limit: number;
+  limit: number = 20;
 
   @IsInt()
   @Type(() => Number)
   @IsNotEmpty()
   @IsOptional()
   @Min(0)
-  offset: number;
+  offset: number = 0;
 }

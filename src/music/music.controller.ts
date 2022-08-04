@@ -2,9 +2,7 @@ import { Controller, Get, Header, Param, StreamableFile, UseGuards } from '@nest
 
 import { MusicService } from './music.service';
 import { GetUser } from '../auth/decorator';
-import { AuthGuard } from '../auth/guard';
 
-@UseGuards(AuthGuard)
 @Controller('musics')
 export class MusicController {
   constructor(private readonly musicService: MusicService) {}

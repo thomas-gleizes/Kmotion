@@ -13,7 +13,7 @@ import { CreatePlaylistDto, UpdatePlaylistDto } from './dto';
 export class PlaylistService {
   constructor(private prisma: PrismaService) {}
 
-  async findById(id: number) {
+  async showById(id: number) {
     const playlist = await this.prisma.playlist.findUnique({ where: { id } });
 
     if (!playlist) throw new NotFoundException('playlist not found');
@@ -21,7 +21,7 @@ export class PlaylistService {
     return playlist;
   }
 
-  async findBySlug(slug: string) {
+  async showBySlug(slug: string) {
     const playlist = await this.prisma.playlist.findUnique({ where: { slug } });
 
     if (!playlist) throw new NotFoundException('playlist not found');
@@ -61,7 +61,7 @@ export class PlaylistService {
     return true;
   }
 
-  async remove(id: number, authorId: number) {
+  async delete(id: number, authorId: number) {
     const meta = await this.prisma.playlist.deleteMany({
       where: { AND: [{ id }, { authorId }] },
     });
@@ -71,14 +71,7 @@ export class PlaylistService {
     return true;
   }
 
-  async showEntry(
-    playlistId: number,
-    authorId: number,
-    limit: number = 20,
-    offset: number = 0
-  ) {
-    if (limit > 3) limit = 3;
-
+  async showEntry(playlistId: number, authorId: number, limit: number, offset: number) {
     return await this.prisma.playlistEntry.findMany({
       where: {
         playlistId,
@@ -88,24 +81,25 @@ export class PlaylistService {
       },
       take: limit,
       skip: offset,
+      orderBy: { position: 'asc' },
     });
   }
 
-  async addEntry(playlistId: number, musicId: number, authorId: number) {
-    try {
-      const playlist = await this.prisma.playlist.findUnique({
-        where: { id: +playlistId },
-        include: { entries: true },
-      });
+  async createEntry(playlistId: number, musicId: number, authorId: number) {
+    const playlist = await this.prisma.playlist.findUnique({
+      where: { id: +playlistId },
+      include: { entries: true },
+    });
 
-      if (!playlist) throw new NotFoundException('playlist not found');
-      else if (playlist.authorId !== authorId)
-        throw new ForbiddenException('You cannot add music to this playlist');
+    if (!playlist) throw new NotFoundException('playlist not found');
+    else if (playlist.authorId !== authorId)
+      throw new ForbiddenException('You cannot add music to this playlist');
 
-      const music = await this.prisma.music.findUnique({ where: { id: musicId } });
+    const music = await this.prisma.music.findUnique({ where: { id: musicId } });
 
-      if (!music) throw new NotFoundException('music not found');
-      else {
+    if (!music) throw new NotFoundException('music not found');
+    else {
+      try {
         return await this.prisma.playlistEntry.create({
           data: {
             playlistId: +playlistId,
@@ -113,22 +107,23 @@ export class PlaylistService {
             position: playlist.entries.length,
           },
         });
+      } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError)
+          if (error.code === 'P2002')
+            throw new ForbiddenException('music already in playlist');
+        throw error;
       }
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError)
-        if (error.code === 'P2002') throw new ForbiddenException('music already in playlist');
-      throw error;
     }
   }
 
   async deleteEntry(playlistId: number, musicId: number, authorId: number) {
+    const playlist = await this.showById(playlistId);
+
+    if (!playlist) throw new NotFoundException('playlist not found');
+    else if (playlist.authorId !== authorId)
+      throw new ForbiddenException('You cannot remove music from this playlist');
+
     try {
-      const playlist = await this.findById(playlistId);
-
-      if (!playlist) throw new NotFoundException('playlist not found');
-      else if (playlist.authorId !== authorId)
-        throw new ForbiddenException('You cannot remove music from this playlist');
-
       return await this.prisma.playlistEntry.delete({
         where: {
           playlistId_musicId: { playlistId, musicId },

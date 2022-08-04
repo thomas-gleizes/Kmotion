@@ -23,14 +23,14 @@ export class PlaylistController {
 
   @Get(':id')
   async find(@Param('id', ParseIntPipe) id: number) {
-    const playlist = await this.playlistService.findById(id);
+    const playlist = await this.playlistService.showById(id);
 
     return { success: true, playlist };
   }
 
   @Get('/slug/:slug')
   async findBySlug(@Param(':slug') slug: string) {
-    const playlist = await this.playlistService.findBySlug(slug);
+    const playlist = await this.playlistService.showBySlug(slug);
 
     return { success: true, playlist };
   }
@@ -50,7 +50,7 @@ export class PlaylistController {
     @Body() updatePlaylistDto: UpdatePlaylistDto
   ) {
     await this.playlistService.update(id, userId, updatePlaylistDto);
-    const playlist = await this.playlistService.findById(id);
+    const playlist = await this.playlistService.showById(id);
 
     return { success: true, playlist };
   }
@@ -58,7 +58,7 @@ export class PlaylistController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', ParseIntPipe) id: number, @GetUser('id') userId: number) {
-    const playlist = await this.playlistService.remove(id, userId);
+    const playlist = await this.playlistService.delete(id, userId);
 
     if (!playlist) throw new NotFoundException('Playlist not found');
   }
@@ -86,7 +86,7 @@ export class PlaylistController {
     @Body('musicId', ParseIntPipe) musicId: number,
     @GetUser('id') userId: number
   ) {
-    const entry = await this.playlistService.addEntry(id, musicId, userId);
+    const entry = await this.playlistService.createEntry(id, musicId, userId);
 
     return { success: true, entry };
   }
