@@ -4,7 +4,7 @@ import { Button, Checkbox, FormLabel, Input, InputGroup, InputRightElement } fro
 
 import apiService from "services/api.service";
 import { useAuthContext } from "context/auth.context";
-import { useToggle } from "hooks";
+import { useToggle } from "hooks/index";
 
 interface Payload {
   email: string;
@@ -34,10 +34,12 @@ const SignInPage: Page = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex justify-center my-10 content-center">
-      <div className="w-400 h-fit bg-gray-50 shadow border rounded p-5">
+    <div className="w-screen h-screen flex justify-center mt-44 content-center">
+      <div className="w-600 h-fit bg-gray-50 shadow border rounded p-5">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-blue-700">K'motion - Connexion</h1>
+          <h1 className="font-extrabold text-transparent text-4xl bg-clip-text bg-gradient-to-br from-violet-700 via-pink-600 to-rose-700">
+            K'motion - Sign In
+          </h1>
         </div>
 
         <Formik initialValues={values} onSubmit={handleSubmit}>
@@ -76,10 +78,13 @@ const SignInPage: Page = () => {
                 <div>
                   <Checkbox defaultChecked>Remembe me</Checkbox>
                 </div>
-
-                <Button type="submit" colorScheme="blue" isLoading={isSubmitting} disabled={isSubmitting}>
+                <button
+                  className="w-full bg-gradient-to-br from-violet-700 via-pink-700 to-rose-500 text-white shadow-lg font-bold text-2xl py-2 rounded-lg hover:scale-105 hover:shadow-xl transition transform duration-100"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
                   Connexion
-                </Button>
+                </button>
               </div>
             </Form>
           )}

@@ -10,7 +10,7 @@ const PrivateLayout: Component = () => {
   return (
     <div>
       <header>
-        <div className="w-screen h-16 flex items-center px-10 justify-between ag-floating-bottom bg-gradient-to-r from-purple-500 to-pink-500">
+        <div className="w-screen h-16 flex items-center px-10 justify-between ag-floating-bottom bg-gradient-to-r from-violet-700 via-pink-600 to-rose-700">
           <div className="">
             <Link to={privateRoutes.home.path}>
               <h1 className="text-4xl text-white font-bold">K'Motion</h1>

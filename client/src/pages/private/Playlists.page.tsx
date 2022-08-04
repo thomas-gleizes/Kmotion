@@ -1,6 +1,6 @@
 import { useAsync } from "react-use";
 
-const PlaylistPage: Page = () => {
+const PlaylistsPage: Page = () => {
   useAsync(async () => {
     // fetch playlists
   }, []);
@@ -12,4 +12,4 @@ const PlaylistPage: Page = () => {
   );
 };
 
-export default PlaylistPage;
+export default PlaylistsPage;

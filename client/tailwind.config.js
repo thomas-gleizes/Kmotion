@@ -19,6 +19,16 @@ module.exports = {
         unset: "unset",
         full: "100%",
       },
+      width: {
+        ...generateKeys(50, "px", 50),
+        unset: "unset",
+        full: "100%",
+      },
+      maxWidth: {
+        ...generateKeys(50, "px", 50),
+        unset: "unset",
+        full: "100%",
+      },
       zIndex: {
         ...generateKeys(11, "", 10, true),
       },

@@ -1,8 +1,9 @@
 import NotFound from "pages/NotFound";
-import LandingPage from "pages/public/Landing.page";
-import SignInPage from "pages/public/auth/SignIn.page";
-import PlaylistPage from "pages/private/PlaylistPage";
-import SignUpPage from "pages/public/auth/SignUp.page";
+import LandingPage from "pages/Landing.page";
+
+import SignInPage from "pages/public/SignIn.page";
+import PlaylistsPage from "pages/private/Playlists.page";
+import SignUpPage from "pages/public/SignUp.page";
 
 export const publicRoutes: Routes = {
   home: { path: "/home", component: LandingPage },
@@ -13,6 +14,6 @@ export const publicRoutes: Routes = {
 
 export const privateRoutes: Routes = {
   home: { path: "/", component: LandingPage },
-  playlist: { path: "/playlists", component: PlaylistPage },
+  playlist: { path: "/playlists", component: PlaylistsPage },
   notFound: { path: "*", component: NotFound },
 };

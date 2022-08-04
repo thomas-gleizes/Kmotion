@@ -52,9 +52,9 @@ const SignUpPage: Page = () => {
 
   return (
     <div className="flex items-center justify-center mt-44">
-      <div className="min-w-500 h-fit bg-gray-50 shadow border rounded p-5">
+      <div className="max-w-600 w-10/12 h-fit bg-gray-50 shadow border rounded p-5">
         <div className="mb-8">
-          <h1 className="font-extrabold text-transparent text-4xl bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700">
+          <h1 className="font-extrabold text-transparent text-4xl bg-clip-text bg-gradient-to-br from-violet-700 via-pink-600 to-rose-700">
             K'motion - Sign Up
           </h1>
         </div>
@@ -99,15 +99,13 @@ const SignUpPage: Page = () => {
                 </FormControl>
               </div>
               <div className="mt-8">
-                <Button
-                  className="w-full"
+                <button
+                  className="w-full bg-gradient-to-br from-violet-700 via-pink-700 to-rose-500 text-white shadow-lg font-bold text-2xl py-2 rounded-lg hover:scale-105 hover:shadow-xl transition transform duration-100"
                   type="submit"
-                  colorScheme="blue"
-                  isLoading={isSubmitting}
                   disabled={isSubmitting}
                 >
                   Connexion
-                </Button>
+                </button>
               </div>
             </Form>
           )}
