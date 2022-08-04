@@ -1,9 +1,10 @@
 import { Formik, Form } from "formik";
 import { Navigate } from "react-router-dom";
-import { Button, Checkbox, FormLabel, Input } from "@chakra-ui/react";
+import { Button, Checkbox, FormLabel, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
 
 import apiService from "services/api.service";
 import { useAuthContext } from "context/auth.context";
+import { useToggle } from "hooks";
 
 interface Payload {
   email: string;
@@ -13,6 +14,8 @@ interface Payload {
 
 const SignInPage: Page = () => {
   const context = useAuthContext();
+
+  const [showPassword, togglePassword] = useToggle(false);
 
   if (context.isAuthenticated) return <Navigate to="/" />;
 
@@ -57,13 +60,18 @@ const SignInPage: Page = () => {
                   <FormLabel>
                     Password <em>*</em>
                   </FormLabel>
-                  <Input
-                    type="password"
-                    name="password"
-                    value={values.password}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
+                  <InputGroup size="md">
+                    <Input
+                      pr="4.5rem"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter password"
+                    />
+                    <InputRightElement width="4.5rem">
+                      <Button h="1.75rem" size="sm" onClick={togglePassword}>
+                        {showPassword ? "Hide" : "Show"}
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
                 </div>
                 <div>
                   <Checkbox defaultChecked>Remembe me</Checkbox>

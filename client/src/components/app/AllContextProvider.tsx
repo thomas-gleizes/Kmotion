@@ -1,4 +1,5 @@
 import { ChakraProvider } from "@chakra-ui/react";
+
 import AuthContextProvider from "context/auth.context";
 
 const AllContextProvider: ContextProvider = ({ children }) => {

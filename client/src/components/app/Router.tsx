@@ -1,11 +1,14 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import { publicRoutes, protectedRoutes } from "resources/routes";
 
-import PublicLayout from "components/layouts/public.layout";
-import ProtectedLayout from "components/layouts/protected.layout";
+import { publicRoutes, privateRoutes } from "resources/routes";
+import { useAuthContext } from "context/auth.context";
+import PublicLayout from "components/layouts/pages/PublicLayout";
+import PrivateLayout from "components/layouts/pages/PrivateLayout";
 
 const Router: Component = () => {
+  const ctx = useAuthContext();
+
   return (
     <Routes>
       <Route element={<PublicLayout />}>
@@ -13,11 +16,13 @@ const Router: Component = () => {
           <Route key={index} path={route.path} element={<route.component />} />
         ))}
       </Route>
-      <Route element={<ProtectedLayout />}>
-        {Object.values(protectedRoutes).map((route, index) => (
-          <Route key={index} path={route.path} element={<route.component />} />
-        ))}
-      </Route>
+      {ctx.isAuthenticated && (
+        <Route element={<PrivateLayout />}>
+          {Object.values(privateRoutes).map((route, index) => (
+            <Route key={index} path={route.path} element={<route.component />} />
+          ))}
+        </Route>
+      )}
     </Routes>
   );
 };
