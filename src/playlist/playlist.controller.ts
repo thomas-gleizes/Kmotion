@@ -10,27 +10,19 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PlaylistService } from './playlist.service';
-import { CreatePlaylistDto, UpdatePlaylistDto } from './dto';
-import { AuthGuard } from '../auth/guard';
+import { CreatePlaylistDto, GetMusicsDto, UpdatePlaylistDto } from './dto';
 import { GetUser } from '../auth/decorator';
 
-@Controller('playlist')
+@Controller('playlists')
 export class PlaylistController {
   constructor(private readonly playlistService: PlaylistService) {}
 
-  @Post()
-  @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createPlaylistDto: CreatePlaylistDto, @GetUser('id') userId: number) {
-    const playlist = await this.playlistService.create(createPlaylistDto, userId);
-
-    return { success: true, playlist };
-  }
-
   @Get(':id')
-  async find(@Param('id') id: number) {
+  async find(@Param('id', ParseIntPipe) id: number) {
     const playlist = await this.playlistService.findById(id);
 
     return { success: true, playlist };
@@ -43,10 +35,17 @@ export class PlaylistController {
     return { success: true, playlist };
   }
 
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() createPlaylistDto: CreatePlaylistDto, @GetUser('id') userId: number) {
+    const playlist = await this.playlistService.create(createPlaylistDto, userId);
+
+    return { success: true, playlist };
+  }
+
   @Patch(':id')
-  @UseGuards(AuthGuard)
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @GetUser('id') userId: number,
     @Body() updatePlaylistDto: UpdatePlaylistDto
   ) {
@@ -57,23 +56,50 @@ export class PlaylistController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: number, @GetUser('id') userId: number) {
+  async remove(@Param('id', ParseIntPipe) id: number, @GetUser('id') userId: number) {
     const playlist = await this.playlistService.remove(id, userId);
 
     if (!playlist) throw new NotFoundException('Playlist not found');
   }
 
-  @Patch(':id/musics')
-  @UseGuards(AuthGuard)
-  async addMusics(
-    @Param('id') id: string,
+  @Get(':id/musics')
+  async getMusics(
+    @Param('id', ParseIntPipe) id: number,
     @GetUser('id') userId: number,
-    @Body('musicId') musicId: string
+    @Query() queryParams: GetMusicsDto
   ) {
-    const entry = await this.playlistService.addEntry(+id, userId, +musicId);
+    const musics = await this.playlistService.showEntry(
+      id,
+      userId,
+      queryParams.limit,
+      queryParams.offset
+    );
+
+    return { success: true, musics };
+  }
+
+  @Post(':id/musics')
+  @HttpCode(HttpStatus.CREATED)
+  async addMusics(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('musicId', ParseIntPipe) musicId: number,
+    @GetUser('id') userId: number
+  ) {
+    const entry = await this.playlistService.addEntry(id, musicId, userId);
 
     return { success: true, entry };
+  }
+
+  @Delete(':id/musics/:musicId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeMusic(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('musicId', ParseIntPipe) musicId: number,
+    @GetUser('id') userId: number
+  ) {
+    const meta = await this.playlistService.deleteEntry(id, musicId, userId);
+
+    return { success: true, meta };
   }
 }

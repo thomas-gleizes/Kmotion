@@ -10,13 +10,15 @@ import { UserModule } from './user/user.module';
 import { LoggingModule } from './logging/logging.module';
 import { MusicModule } from './music/music.module';
 import { PlaylistModule } from './playlist/playlist.module';
+import { APP_GUARD, Reflector } from '@nestjs/core';
+import { AuthGuard } from './auth/guard';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'dist', 'client'),
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'dist', 'client'),
+    // }),
     PrismaModule,
     LoggingModule,
     AuthModule,
@@ -25,6 +27,9 @@ import { PlaylistModule } from './playlist/playlist.module';
     PlaylistModule,
   ],
   controllers: [],
-  providers: [AppGateway],
+  providers: [
+    AppGateway,
+    { provide: APP_GUARD, useFactory: (ref) => new AuthGuard(ref), inject: [Reflector] },
+  ],
 })
 export class AppModule {}

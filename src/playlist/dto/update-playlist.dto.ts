@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdatePlaylistDto {
   @IsString()
@@ -7,4 +7,9 @@ export class UpdatePlaylistDto {
 
   @IsString()
   description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  visibility: 'public' | 'private';
 }

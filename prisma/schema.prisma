@@ -11,15 +11,15 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  slug      String   @unique @db.VarChar(255)
-  isAdmin   Boolean  @default(false) @map("is_admin")
-  activate  Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+  email      String   @unique @db.VarChar(255)
+  password   String   @db.VarChar(255)
+  slug       String   @unique @db.VarChar(255)
+  isAdmin    Boolean  @default(false) @map("is_admin")
+  isActivate Boolean  @default(false) @map("is_activate")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @map("updated_at")
 
   playlists Playlist[]
   Music     Music[]
@@ -47,14 +47,14 @@ model Music {
 }
 
 model Playlist {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(255)
-  description String   @db.VarChar(255)
-  slug        String   @unique @db.VarChar(255)
-  authorId    Int      @map("author_id")
-  visibility  Visibility  @default(private)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @map("updated_at")
+  id          Int        @id @default(autoincrement())
+  title       String     @db.VarChar(255)
+  description String     @db.VarChar(255)
+  slug        String     @unique @db.VarChar(255)
+  authorId    Int        @map("author_id")
+  visibility  Visibility @default(private)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @default(now()) @map("updated_at")
 
   author  User            @relation(fields: [authorId], references: [id])
   entries PlaylistEntry[]
@@ -63,11 +63,11 @@ model Playlist {
 }
 
 model PlaylistEntry {
-  playlistId Int @map("playlist_id")
-  musicId    Int @map("music_id")
+  playlistId Int      @map("playlist_id")
+  musicId    Int      @map("music_id")
   position   Int
-    createdAt   DateTime @default(now()) @map("created_at")
-    updatedAt   DateTime @default(now()) @map("updated_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @map("updated_at")
 
   playlist Playlist @relation(fields: [playlistId], references: [id])
   music    Music    @relation(fields: [musicId], references: [id])
@@ -78,6 +78,6 @@ model PlaylistEntry {
 }
 
 enum Visibility {
- private
+  private
   public
 }

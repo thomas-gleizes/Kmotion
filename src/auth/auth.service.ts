@@ -36,7 +36,7 @@ export class AuthService {
     if (!user || (user && !(await this.passwordCompare(data.password, user.password))))
       throw new UnauthorizedException('invalid credentials');
 
-    if (!user.activate)
+    if (!user.isActivate)
       throw new UnauthorizedException(
         'Your account must be validate by an admin. Please Wait'
       );
