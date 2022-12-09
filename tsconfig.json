@@ -7,18 +7,28 @@
     "emitDecoratorMetadata": true,
     "baseUrl": "src",
     "paths": {
-      "exceptions/*": ["exceptions/*"],
-      "plugins/*": ["plugins/*"],
-      "routes/*": ["routes/*"],
-      "schemas/*": ["schemas/*"],
-      "utils/*": ["utils/*"]
+      "exceptions/*": [
+        "exceptions/*"
+      ],
+      "middlewares/*": [
+        "middlewares/*"
+      ],
+      "plugins/*": [
+        "plugins/*"
+      ],
+      "routes/*": [
+        "routes/*"
+      ],
+      "schemas/*": [
+        "schemas/*"
+      ],
+      "utils/*": [
+        "utils/*"
+      ]
     }
   },
   "include": [
     "src",
     "types"
-  ],
-  "exclude": [
-    "node_modules"
   ]
 }

@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator"
-import { validationMetadatasToSchemas } from "class-validator-jsonschema"
+import { IsEmail, IsNotEmpty, IsString } from "class-validator"
 
 export class LoginSchema {
   @IsString()
@@ -11,6 +10,16 @@ export class LoginSchema {
   password!: string
 }
 
-const schemas = validationMetadatasToSchemas()
+export class RegisterSchema {
+  @IsEmail()
+  @IsNotEmpty()
+  email!: string
 
-console.log("Schemas", schemas)
+  @IsString()
+  @IsNotEmpty()
+  password!: string
+
+  @IsString()
+  @IsNotEmpty()
+  name!: string
+}
