@@ -22,6 +22,9 @@
       "schemas/*": [
         "schemas/*"
       ],
+      "services/*": [
+        "services/*"
+      ],
       "utils/*": [
         "utils/*"
       ]

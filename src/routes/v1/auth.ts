@@ -8,7 +8,7 @@ import { generateJwt } from "utils/jwt"
 import { LoginSchema, RegisterSchema } from "schemas/auth"
 
 export default function authRoutes(instance: FastifyInstance, opts: any, done: Function) {
-  instance.post("/login", async (request: FastifyRequest<{ Body: LoginSchema }>, reply) => {
+  instance.post<{ Body: LoginSchema }>("/login", async (request, reply) => {
     const user = await prisma.user.findUnique({
       where: {
         email: request.body.email
@@ -27,7 +27,7 @@ export default function authRoutes(instance: FastifyInstance, opts: any, done: F
     reply.send({ success: true, user, token: generateJwt({ user }) })
   })
 
-  instance.post("/register", async (request: FastifyRequest<{ Body: RegisterSchema }>, reply) => {
+  instance.post<{ Body: RegisterSchema }>("/register", async (request, reply) => {
     try {
       await prisma.user.create({
         data: {
