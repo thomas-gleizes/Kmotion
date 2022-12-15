@@ -2,7 +2,7 @@ import fs from "node:fs/promises"
 
 const TRACE_PATH = `${process.cwd()}/trace.log`
 export default function trace(...args: any[]): Promise<void> {
-  const content = `${new Date().toLocaleString('fr-FR')}: ${args.join(" ")}`
+  const content = `${new Date().toLocaleString("fr-FR")}: ${args.join(" ")}`
 
   console.log(content)
 

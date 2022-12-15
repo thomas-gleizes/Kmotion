@@ -7,6 +7,10 @@ export default function logger(
   reply: FastifyReply,
   next: HookHandlerDoneFunction
 ) {
-  void trace(`(${request.ip}) ${request.method} ${request.url}`)
+  let log = `(${request.ip}) ${request.method} ${request.url}`
+
+  if (request.jwt) log += ` [${request.jwt.user.id}]`
+
+  void trace(log)
   next()
 }

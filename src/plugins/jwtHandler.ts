@@ -3,9 +3,9 @@ import { verifyJwt } from "utils/jwt"
 
 export default function jwtHandler(request: FastifyRequest, reply: FastifyReply, next: Function) {
   if (request.headers.authorization) {
-    const token = verifyJwt(request.headers.authorization.replace("Bearer ", ""))
-
-    request.jwt = token
+    try {
+      request.jwt = verifyJwt(request.headers.authorization.replace("Bearer ", ""))
+    } catch (err) {}
   }
 
   next()
@@ -13,6 +13,6 @@ export default function jwtHandler(request: FastifyRequest, reply: FastifyReply,
 
 declare module "fastify" {
   export interface FastifyRequest {
-    jwt?: any
+    jwt: any
   }
 }

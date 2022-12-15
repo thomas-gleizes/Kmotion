@@ -11,15 +11,16 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(255)
-  email      String   @unique @db.VarChar(255)
-  password   String   @db.VarChar(255)
-  slug       String   @unique @db.VarChar(255)
-  isAdmin    Boolean  @default(false) @map("is_admin")
-  isActivate Boolean  @default(false) @map("is_activate")
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @default(now()) @map("updated_at")
+  id         Int        @id @default(autoincrement())
+  name       String     @db.VarChar(255)
+  email      String     @unique @db.VarChar(255)
+  password   String     @db.VarChar(255)
+  slug       String     @unique @db.VarChar(255)
+  isAdmin    Boolean    @default(false) @map("is_admin")
+  isActivate Boolean    @default(false) @map("is_activate")
+  visibility Visibility @default(private)
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @default(now()) @map("updated_at")
 
   playlists Playlist[]
   Music     Music[]
@@ -32,10 +33,6 @@ model Music {
   title        String   @db.VarChar(255)
   artist       String?  @db.VarChar(128)
   youtubeId    String   @unique @map("youtube_id") @db.VarChar(24)
-  ready        Boolean  @default(false)
-  releaseDate  DateTime @map("release_date") @db.Date
-  details      String   @db.Text
-  path         String?  @db.VarChar(255)
   downloaderId Int      @map("downloader_id")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @default(now()) @map("updated_at")

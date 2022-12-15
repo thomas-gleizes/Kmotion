@@ -7,6 +7,7 @@ CREATE TABLE `users` (
     `slug` VARCHAR(255) NOT NULL,
     `is_admin` BOOLEAN NOT NULL DEFAULT false,
     `is_activate` BOOLEAN NOT NULL DEFAULT false,
+    `visibility` ENUM('private', 'public') NOT NULL DEFAULT 'private',
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -21,10 +22,6 @@ CREATE TABLE `musics` (
     `title` VARCHAR(255) NOT NULL,
     `artist` VARCHAR(128) NULL,
     `youtube_id` VARCHAR(24) NOT NULL,
-    `ready` BOOLEAN NOT NULL DEFAULT false,
-    `release_date` DATE NOT NULL,
-    `details` TEXT NOT NULL,
-    `path` VARCHAR(255) NULL,
     `downloader_id` INTEGER NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

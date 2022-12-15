@@ -2,3 +2,4 @@
 .idea/
 /trace.log
 /.env
+node_modules

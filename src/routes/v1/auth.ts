@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest } from "fastify"
+import { FastifyInstance } from "fastify"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index.js"
 
 import { UnauthorizedException } from "exceptions/http/UnauthorizedException"
