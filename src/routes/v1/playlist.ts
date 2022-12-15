@@ -64,5 +64,31 @@ export default function playlistRoutes(instance: FastifyInstance, options: any, 
     }
   })
 
+  instance.post<{ Params: { id: string; musicId: string } }>(
+    "/:id/music/:musicId",
+    async (request, reply) => {
+      const [music, playlist] = await Promise.all([
+        prisma.music.findUnique({ where: { id: +request.params.musicId } }),
+        prisma.playlist.findUnique({ where: { id: +request.params.id } })
+      ])
+
+      if (!music) throw new NotFoundException("Music not found")
+      if (!playlist) throw new NotFoundException("Playlist not found")
+
+      if (!(playlist.authorId === request.user.id) && !request.user.isAdmin)
+        throw new NotFoundException("Playlist not found")
+
+      const entry = await prisma.playlistEntry.create({
+        data: {
+          playlistId: playlist.id,
+          musicId: music.id,
+          position: 0
+        }
+      })
+
+      reply.send({ success: true, entry })
+    }
+  )
+
   done()
 }
