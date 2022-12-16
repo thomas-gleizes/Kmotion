@@ -12,5 +12,6 @@ await build({
   watch: dev === "--dev",
   logLevel: "debug",
   bundle: true,
-  plugins: [nodeExternalsPlugin()]
+  plugins: [nodeExternalsPlugin()],
+  tsconfig: "tsconfig.node.json"
 })

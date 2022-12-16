@@ -6,6 +6,8 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "baseUrl": "src",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "paths": {
       "exceptions/*": [
         "exceptions/*"
