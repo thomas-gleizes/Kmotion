@@ -27,10 +27,46 @@ export default class YtConverter {
   }
 
   public async musics(): Promise<any> {
-    return fetch(this._url + "/musics", { method: "GET", headers: this.getHeaders() }).then(
-      (response) => response.json()
-    )
+    return fetch(`${this._url}/musics`, { method: "GET", headers: this.getHeaders() })
+      .then((response) => response.json())
+      .then((data) => data.musics)
   }
 
-  public async info(url: string): Promise<any> {}
+  public info(youtubeId: string): Promise<any> {
+    return fetch(`${this._url}/info/${youtubeId}`, { method: "GET", headers: this.getHeaders() })
+      .then((response) => response.json())
+      .then((data) => data.details)
+  }
+
+  public download(youtubeId: string): Promise<any> {
+    return fetch(`${this._url}/download/${youtubeId}`, {
+      method: "GET",
+      headers: this.getHeaders()
+    })
+  }
+
+  public stream(youtubeId: string): Promise<Buffer> {
+    return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.mp3`, {
+      method: "GET",
+      headers: this.getHeaders()
+    })
+      .then((response) => response.arrayBuffer())
+      .then((buffer) => Buffer.from(buffer))
+  }
+
+  public cover(youtubeId: string): Promise<Buffer> {
+    return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.jpg`, {
+      method: "GET",
+      headers: this.getHeaders()
+    })
+      .then((response) => response.arrayBuffer())
+      .then((buffer) => Buffer.from(buffer))
+  }
+
+  public delete(youtubeId: string): Promise<any> {
+    return fetch(`${this._url}/delete/${youtubeId}`, {
+      method: "DELETE",
+      headers: this.getHeaders()
+    }).then((response) => response.json())
+  }
 }
