@@ -1,0 +1,25 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="icon" type="image/svg+xml" href="public/favicon.svg">
+  <script type="module">
+    const publicUrl = `${new URL(import.meta.url).origin}/public`
+
+    const script = document.createElement("script")
+    script.src = `${publicUrl}/static/main.js`
+    script.defer = true
+    document.head.appendChild(script)
+
+    const link = document.createElement("link")
+    link.type = "text/css"
+    link.rel = "stylesheet"
+    link.href = `${publicUrl}/static/index.css`
+    document.head.appendChild(link)
+  </script>
+</head>
+<body>
+<div id="root">$ROOT$</div>
+<script id="app-data" type="application/json">$PROPS$</script>
+</body>
+</html>

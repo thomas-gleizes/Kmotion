@@ -8,6 +8,7 @@
     "baseUrl": "src",
     "module": "ESNext",
     "moduleResolution": "Node",
+    "jsx": "react-jsx",
     "paths": {
       "exceptions/*": [
         "exceptions/*"
@@ -29,6 +30,9 @@
       ],
       "utils/*": [
         "utils/*"
+      ],
+      "client/*": [
+        "client/*"
       ]
     }
   },
