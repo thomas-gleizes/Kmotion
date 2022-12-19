@@ -1,10 +1,14 @@
 import React from "react"
+import { Routes, Route } from "react-router-dom"
+import routes from "client/routes"
 
 const App = () => {
   return (
-    <div>
-      <h1>hello world</h1>
-    </div>
+    <Routes>
+      {routes.map((route) => (
+        <Route key={route.path} path={route.path} element={<route.page />} />
+      ))}
+    </Routes>
   )
 }
 
