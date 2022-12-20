@@ -4,17 +4,17 @@
   <title>kmotion</title>
   <link rel="icon" type="image/svg+xml" href="public/favicon.png">
   <script type="module">
-    const publicUrl = `${new URL(import.meta.url).origin}/public`
+    const publicUrl = `${new URL(import.meta.url).origin}/static`
 
     const script = document.createElement("script")
-    script.src = `${publicUrl}/static/main.js`
+    script.src = `${publicUrl}/main.js`
     script.defer = true
     document.head.appendChild(script)
 
     const link = document.createElement("link")
     link.type = "text/css"
     link.rel = "stylesheet"
-    link.href = `${publicUrl}/static/index.css`
+    link.href = `${publicUrl}/styles.css`
     document.head.appendChild(link)
   </script>
 </head>

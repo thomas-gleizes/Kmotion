@@ -2,12 +2,12 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import fastify from "fastify"
-import fastifyStatic from "@fastify/static"
 import dotenv from "dotenv"
 
 import routes from "routes"
 import trace from "utils/trace"
-import render from "./plugins/render"
+import render from "plugins/render"
+import fastifyStatic from "@fastify/static"
 
 dotenv.config()
 
@@ -16,7 +16,16 @@ const ROOT_DIR = dirname(dirname(fileURLToPath(import.meta.url)))
 
 const app = fastify()
 
-app.register(fastifyStatic, { root: join(ROOT_DIR, "public"), prefix: "/public" })
+app.register(fastifyStatic, {
+  root: join(ROOT_DIR, "dist/static"),
+  prefix: "/static",
+  decorateReply: false
+})
+app.register(fastifyStatic, {
+  root: join(ROOT_DIR, "public"),
+  prefix: "/public",
+  decorateReply: false
+})
 
 app.register(routes, { prefix: "/api" })
 app.register(render)
