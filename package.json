@@ -10,6 +10,8 @@
     "dev": "concurrently \"npm run build:dev\" \"npm run start:dev\""
   },
   "dependencies": {
+    "@fastify/cookie": "^8.3.0",
+    "@fastify/session": "^10.1.0",
     "@fastify/static": "^6.6.0",
     "@prisma/client": "^4.7.1",
     "bcrypt": "^5.1.0",

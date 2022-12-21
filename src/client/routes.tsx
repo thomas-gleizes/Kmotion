@@ -1,15 +1,16 @@
 import React from "react"
 
-import HomePage from "client/pages/HomePage"
+import Login from "client/pages/Login"
+import NotFound from "client/pages/NotFound"
 
 interface Route {
   path: string
-  page: React.FC
+  page: Component
 }
 
 const routes: Array<Route> = [
-  { path: "/", page: HomePage },
-  { path: "/home", page: HomePage }
+  { path: "/", page: Login },
+  { path: "/*", page: NotFound }
 ]
 
 export default routes

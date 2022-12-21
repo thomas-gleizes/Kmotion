@@ -2,6 +2,8 @@ lockfileVersion: 5.4
 
 specifiers:
   '@faker-js/faker': ^7.6.0
+  '@fastify/cookie': ^8.3.0
+  '@fastify/session': ^10.1.0
   '@fastify/static': ^6.6.0
   '@prisma/client': ^4.7.1
   '@types/bcrypt': ^5.0.0
@@ -31,6 +33,8 @@ specifiers:
   typescript: ^4.9.3
 
 dependencies:
+  '@fastify/cookie': 8.3.0
+  '@fastify/session': 10.1.0
   '@fastify/static': 6.6.0
   '@prisma/client': 4.7.1_prisma@4.7.1
   bcrypt: 5.1.0
@@ -89,33 +93,47 @@ packages:
 
   /@fastify/accept-negotiator/1.1.0:
     resolution: {integrity: sha512-OIHZrb2ImZ7XG85HXOONLcJWGosv7sIvM2ifAPQVhg9Lv7qdmMBNVaai4QTdyuaqbKM5eO6sLSQOYI7wEQeCJQ==}
-    engines: {node: '>=14'}
+    engines: { node: '>=14' }
     dev: false
 
   /@fastify/ajv-compiler/3.4.0:
-    resolution: {integrity: sha512-69JnK7Cot+ktn7LD5TikP3b7psBPX55tYpQa8WSumt8r117PCa2zwHnImfBtRWYExreJlI48hr0WZaVrTBGj7w==}
+    resolution: { integrity: sha512-69JnK7Cot+ktn7LD5TikP3b7psBPX55tYpQa8WSumt8r117PCa2zwHnImfBtRWYExreJlI48hr0WZaVrTBGj7w== }
     dependencies:
       ajv: 8.11.2
       ajv-formats: 2.1.1
       fast-uri: 2.2.0
     dev: false
 
+  /@fastify/cookie/8.3.0:
+    resolution: { integrity: sha512-P9hY9GO11L20TnZ33XN3i0bt+3x0zaT7S0ohAzWO950E9PB2xnNhLYzPFJIGFi5AVN0yr5+/iZhWxeYvR6KCzg== }
+    dependencies:
+      cookie: 0.5.0
+      fastify-plugin: 4.4.0
+    dev: false
+
   /@fastify/deepmerge/1.3.0:
-    resolution: {integrity: sha512-J8TOSBq3SoZbDhM9+R/u77hP93gz/rajSA+K2kGyijPpORPWUXHUpTaleoj+92As0S9uPRP7Oi8IqMf0u+ro6A==}
+    resolution: { integrity: sha512-J8TOSBq3SoZbDhM9+R/u77hP93gz/rajSA+K2kGyijPpORPWUXHUpTaleoj+92As0S9uPRP7Oi8IqMf0u+ro6A== }
     dev: false
 
   /@fastify/error/3.2.0:
-    resolution: {integrity: sha512-KAfcLa+CnknwVi5fWogrLXgidLic+GXnLjijXdpl8pvkvbXU5BGa37iZO9FGvsh9ZL4y+oFi5cbHBm5UOG+dmQ==}
+    resolution: { integrity: sha512-KAfcLa+CnknwVi5fWogrLXgidLic+GXnLjijXdpl8pvkvbXU5BGa37iZO9FGvsh9ZL4y+oFi5cbHBm5UOG+dmQ== }
     dev: false
 
   /@fastify/fast-json-stringify-compiler/4.1.0:
-    resolution: {integrity: sha512-cTKBV2J9+u6VaKDhX7HepSfPSzw+F+TSd+k0wzifj4rG+4E5PjSFJCk19P8R6tr/72cuzgGd+mbB3jFT6lvAgw==}
+    resolution: { integrity: sha512-cTKBV2J9+u6VaKDhX7HepSfPSzw+F+TSd+k0wzifj4rG+4E5PjSFJCk19P8R6tr/72cuzgGd+mbB3jFT6lvAgw== }
     dependencies:
       fast-json-stringify: 5.5.0
     dev: false
 
+  /@fastify/session/10.1.0:
+    resolution: { integrity: sha512-s7Jchybp2VvPanH5V5+RuKGSmjA5Fp6II9Gos3ntNggLTMqb/b6GYBiol+h6+o7opIQs1NRaJdWGAauOkLdnGA== }
+    dependencies:
+      fastify-plugin: 4.4.0
+      safe-stable-stringify: 2.4.1
+    dev: false
+
   /@fastify/static/6.6.0:
-    resolution: {integrity: sha512-UiYSN2dUmDZ48M40xdIwY1dPwSSYD7c+wtoIQP8y7wyxCwcUtf1YT5/Q4n1uJsBF1fySvuo9njQZKlHeiKy4HQ==}
+    resolution: { integrity: sha512-UiYSN2dUmDZ48M40xdIwY1dPwSSYD7c+wtoIQP8y7wyxCwcUtf1YT5/Q4n1uJsBF1fySvuo9njQZKlHeiKy4HQ== }
     dependencies:
       '@fastify/accept-negotiator': 1.1.0
       content-disposition: 0.5.4
