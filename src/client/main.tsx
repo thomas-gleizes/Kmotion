@@ -4,9 +4,14 @@ import { BrowserRouter } from "react-router-dom"
 
 import App from "client/App"
 
-ReactDom.hydrateRoot(
-  document.getElementById("root") as Element,
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
-)
+const pageProps = JSON.parse(document.getElementById("app-data")?.textContent || "{}")
+
+const ClientApp = () => {
+  return (
+    <BrowserRouter>
+      <App pageProps={pageProps} />
+    </BrowserRouter>
+  )
+}
+
+ReactDom.hydrateRoot(document.getElementById("root") as Element, <ClientApp />)

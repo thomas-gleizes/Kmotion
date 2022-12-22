@@ -3,10 +3,19 @@ import { FastifyReply, FastifyRequest } from "fastify"
 import ReactDom from "react-dom/server"
 import { StaticRouter } from "react-router-dom/server.js"
 
+import { Route } from "types"
 import App from "./App"
 
-export default async function renderApp(route: any, request: FastifyRequest, reply: FastifyReply) {
-  const props = {}
+export default async function renderApp(
+  route: Route,
+  request: FastifyRequest<any>,
+  reply: FastifyReply
+) {
+  let props: any = {}
+
+  if (route.serverSideProps) {
+    props = await route.serverSideProps(request, reply)
+  }
 
   return fs
     .readFile("src/client/base.html")
@@ -16,7 +25,7 @@ export default async function renderApp(route: any, request: FastifyRequest, rep
         "<!-- APP -->",
         ReactDom.renderToString(
           <StaticRouter location={route.path}>
-            <App />
+            <App pageProps={props} />
           </StaticRouter>
         )
       )

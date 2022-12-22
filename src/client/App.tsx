@@ -1,14 +1,29 @@
 import React from "react"
-import { Routes, Route } from "react-router-dom"
-import routes from "client/routes"
+import { Route, Routes } from "react-router-dom"
 
-const App = () => {
+import routes from "client/routes"
+import Layout from "client/components/layouts/Layout"
+import ContextsProvider from "client/contexts"
+
+interface Props {
+  pageProps: any
+}
+
+const App: Component<Props> = ({ pageProps }) => {
   return (
-    <Routes>
-      {routes.map((route) => (
-        <Route key={route.path} path={route.path} element={<route.page />} />
-      ))}
-    </Routes>
+    <ContextsProvider>
+      <Layout>
+        <Routes>
+          {routes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={<route.component {...pageProps} />}
+            />
+          ))}
+        </Routes>
+      </Layout>
+    </ContextsProvider>
   )
 }
 

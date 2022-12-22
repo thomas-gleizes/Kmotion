@@ -1,16 +1,12 @@
 import React from "react"
 
-import Login from "client/pages/Login"
-import NotFound from "client/pages/NotFound"
-
-interface Route {
-  path: string
-  page: Component
-}
+import * as Login from "client/pages/Login"
+import * as NotFound from "client/pages/NotFound"
+import { Route } from "types"
 
 const routes: Array<Route> = [
-  { path: "/", page: Login },
-  { path: "/*", page: NotFound }
+  { path: "/", component: Login.default, serverSideProps: Login.serverSideProps },
+  { path: "/*", component: NotFound.default }
 ]
 
 export default routes
