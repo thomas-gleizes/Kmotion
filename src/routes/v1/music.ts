@@ -30,7 +30,7 @@ export default function musicRoutes(instance: FastifyInstance, options: any, don
               title: music.title,
               artist: music.author,
               youtubeId: music.id,
-              downloaderId: request.user.id
+              downloaderId: request.session.user.id
             }
           })
           .then((music) => newMusics.push(music))
@@ -60,7 +60,7 @@ export default function musicRoutes(instance: FastifyInstance, options: any, don
         title: info.title,
         artist: info.author.name,
         youtubeId: request.params.youtubeId,
-        downloaderId: request.user.id
+        downloaderId: request.session.user.id
       }
     })
 

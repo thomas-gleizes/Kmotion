@@ -4,20 +4,21 @@ import { User } from "@prisma/client"
 import prisma from "utils/prisma"
 
 export default async function isLogin(request: FastifyRequest, reply: FastifyReply) {
-  if (!request.jwt) throw new UnauthorizedException("Access denied 08")
+  if (!request.session.isLogin) throw new UnauthorizedException("Access denied 08")
 
-  const user = await prisma.user.findUnique({ where: { id: request.jwt.user.id } })
+  const user = await prisma.user.findUnique({ where: { id: request.session.user.id } })
 
   if (!user) throw new UnauthorizedException("Access denied 05")
 
   // @ts-ignore
   delete user.password
 
-  request.user = user
+  request.session.user = user
 }
 
 declare module "fastify" {
-  export interface FastifyRequest {
+  interface Session {
     user: Omit<User, "password">
+    isLogin: boolean
   }
 }

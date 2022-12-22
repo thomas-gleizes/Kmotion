@@ -7,10 +7,8 @@ export default async function isAdmin(
   reply: FastifyReply,
   done: Function
 ) {
-  if (!request.jwt) throw new UnauthorizedException("Access denied")
-  if (!request.user.isAdmin) throw new UnauthorizedException("Access denied")
-
-  request.user = request.jwt.user
+  if (!request.session.isLogin) throw new UnauthorizedException("Access denied")
+  if (!request.session.user.isAdmin) throw new UnauthorizedException("Access denied")
 
   done()
 }

@@ -4,14 +4,13 @@ import { Visibility } from "@prisma/client"
 import isLogin from "middlewares/isLogin"
 import isAdmin from "middlewares/isAdmin"
 import prisma from "utils/prisma"
-import { generateJwt } from "utils/jwt"
 import NotFoundException from "exceptions/http/NotFoundException"
 
 export default function userRoutes(instance: FastifyInstance, opts: any, done: Function) {
   instance.addHook("onRequest", isLogin)
 
   instance.get("/me", async (request, reply) => {
-    reply.send({ success: true, user: request.user })
+    reply.send({ success: true, user: request.session.user })
   })
 
   instance.get("/", { onRequest: [isAdmin] }, async (request, reply) => {
@@ -25,11 +24,13 @@ export default function userRoutes(instance: FastifyInstance, opts: any, done: F
 
   instance.get<{ Params: { id: string } }>("/:id", async (request, reply) => {
     const visiblities: Visibility[] = ["public"]
-    if (request.user.isAdmin) visiblities.push("private")
+    if (request.session.user.isAdmin) visiblities.push("private")
 
     const user = await prisma.user.findUnique({
       where: { id: +request.params.id }
     })
+
+    console.log("User", user)
 
     if (!user || visiblities.includes(user.visibility))
       throw new NotFoundException("User not found")
@@ -42,7 +43,7 @@ export default function userRoutes(instance: FastifyInstance, opts: any, done: F
     async (request, reply) => {
       const user = await prisma.user.update({
         where: {
-          id: request.user.id
+          id: request.session.user.id
         },
         data: {
           name: request.body.name,
@@ -51,7 +52,9 @@ export default function userRoutes(instance: FastifyInstance, opts: any, done: F
         }
       })
 
-      reply.send({ success: true, user, token: generateJwt(user) })
+      request.session.user = user
+
+      reply.send({ success: true, user })
     }
   )
 
@@ -70,7 +73,8 @@ export default function userRoutes(instance: FastifyInstance, opts: any, done: F
 
   instance.get<{ Params: { id: string } }>("/:id/playlists", async (request, reply) => {
     const visibilities: Visibility[] = ["public"]
-    if (request.user.id === +request.params.id || request.user.isAdmin) visibilities.push("private")
+    if (request.session.user.id === +request.params.id || request.session.user.isAdmin)
+      visibilities.push("private")
 
     const user = await prisma.user.findUnique({
       where: { id: +request.params.id }

@@ -15,6 +15,8 @@ export default function exceptionHandler(
     return reply.status(error.status).send({ success: false, message: error.message })
   }
 
+  console.log("Error", error)
+
   if (process.env.NODE_ENV !== "production") {
     void trace("Development error", error)
     return reply.status(500).send({ success: false, message: error.message, stack: error.stack })

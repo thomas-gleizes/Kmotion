@@ -1,34 +1,37 @@
-import { join } from "node:path"
-
 import fastify from "fastify"
 import fastifyStatic from "@fastify/static"
 import fastifyCookie from "@fastify/cookie"
-
+import fastifySession from "@fastify/session"
 import dotenv from "dotenv"
 
-import routes from "routes"
-import trace from "utils/trace"
-import render from "plugins/render"
 import { APP_DIST, APP_PORT } from "utils/constants"
+import trace from "utils/trace"
+import pageRoutes from "plugins/render"
+import apiRoutes from "routes"
 
 dotenv.config()
 
 const app = fastify()
 
 app.register(fastifyStatic, {
-  root: join(APP_DIST, "static"),
+  root: `${APP_DIST}/static`,
   prefix: "/static",
   decorateReply: false
 })
 app.register(fastifyStatic, {
-  root: join(APP_DIST, "public"),
+  root: `${APP_DIST}/public`,
   prefix: "/public",
   decorateReply: false
 })
 
 app.register(fastifyCookie)
-app.register(routes, { prefix: "/api" })
-app.register(render)
+app.register(fastifySession, {
+  secret: process.env.SECRET_SESSION as string,
+  cookieName: "kmotion",
+  cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 360, secure: false }
+})
+app.register(apiRoutes, { prefix: "/api" })
+app.register(pageRoutes)
 
 app
   .listen({ port: APP_PORT })

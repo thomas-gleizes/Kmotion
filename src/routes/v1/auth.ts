@@ -4,11 +4,12 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index.js"
 import { UnauthorizedException } from "exceptions/http/UnauthorizedException"
 import prisma from "utils/prisma"
 import { comparePassword, hashPassword } from "utils/security"
-import { generateJwt } from "utils/jwt"
 import { LoginSchema, RegisterSchema } from "schemas/auth"
 
 export default function authRoutes(instance: FastifyInstance, opts: any, done: Function) {
   instance.post<{ Body: LoginSchema }>("/login", async (request, reply) => {
+    console.log("Request.body.em", request.body.email)
+
     const user = await prisma.user.findUnique({
       where: {
         email: request.body.email
@@ -24,7 +25,10 @@ export default function authRoutes(instance: FastifyInstance, opts: any, done: F
     // @ts-ignore
     delete user.password
 
-    reply.send({ success: true, user, token: generateJwt({ user }) })
+    request.session.user = user
+    request.session.isLogin = true
+
+    reply.send({ success: true, user })
   })
 
   instance.post<{ Body: RegisterSchema }>("/register", async (request, reply) => {
@@ -48,6 +52,12 @@ export default function authRoutes(instance: FastifyInstance, opts: any, done: F
 
       throw error
     }
+  })
+
+  instance.post("/logout", async (request, reply) => {
+    request.session.destroy()
+
+    reply.send({ success: true })
   })
 
   done()

@@ -17,7 +17,7 @@ export default function playlistRoutes(instance: FastifyInstance, options: any, 
         title: request.body.title,
         slug: request.body.title.toLowerCase().replace(/\s/g, "-"),
         description: request.body.description,
-        authorId: request.user.id,
+        authorId: request.session.user.id,
         visibility: request.body.visibility
       }
     })
@@ -37,7 +37,8 @@ export default function playlistRoutes(instance: FastifyInstance, options: any, 
     const playlist = await prisma.playlist.findUnique({ where: { id: +request.params.id } })
 
     if (!playlist) throw new NotFoundException("Playlist not found")
-    if (request.user.isAdmin || playlist.authorId === request.user.id) visiblities.push("private")
+    if (request.session.user.isAdmin || playlist.authorId === request.session.user.id)
+      visiblities.push("private")
     if (!visiblities.includes(playlist.visibility))
       throw new NotFoundException("Playlist not found")
 
@@ -50,7 +51,7 @@ export default function playlistRoutes(instance: FastifyInstance, options: any, 
 
       if (!playlist) throw new NotFoundException("Playlist not found")
 
-      if (!request.user.isAdmin && !(playlist.authorId === +request.user.id))
+      if (!request.session.user.isAdmin && !(playlist.authorId === +request.session.user.id))
         throw new NotFoundException("Playlist not found")
 
       await prisma.playlist.delete({ where: { id: playlist.id } })
@@ -75,7 +76,7 @@ export default function playlistRoutes(instance: FastifyInstance, options: any, 
       if (!music) throw new NotFoundException("Music not found")
       if (!playlist) throw new NotFoundException("Playlist not found")
 
-      if (!(playlist.authorId === request.user.id) && !request.user.isAdmin)
+      if (!(playlist.authorId === request.session.user.id) && !request.session.user.isAdmin)
         throw new NotFoundException("Playlist not found")
 
       const entry = await prisma.playlistEntry.create({
