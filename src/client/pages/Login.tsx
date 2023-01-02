@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form"
 
 import { ServerSideProps, TUser } from "types"
 import { LoginSchema } from "schemas/auth"
+import useAuthStore from "client/stores/auth"
 
 export const serverSideProps: ServerSideProps = async (request, reply) => {
   console.log("Request.session.isLogin", request.session.isLogin)
@@ -19,12 +20,20 @@ const Login: Component = () => {
     defaultValues: { email: "kalat@kmotion.fr", password: "azerty" }
   })
 
+  const login = useAuthStore((state) => state.login)
+
   const onSubmit = async (values: LoginSchema) => {
-    const data: { user: TUser } = await fetch("/api/v1/auth/login", {
-      method: "POST",
-      body: JSON.stringify(values),
-      headers: { "Content-Type": "application/json" }
-    }).then((response) => response.json())
+    try {
+      const data: { user: TUser } = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        body: JSON.stringify(values),
+        headers: { "Content-Type": "application/json" }
+      }).then((response) => response.json())
+
+      login(data.user)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
