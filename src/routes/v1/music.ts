@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify"
 import { Music } from "@prisma/client"
 
 import isLogin from "middlewares/isLogin"
-import prisma from "utils/prisma"
+import prisma from "services/prisma"
 import isAdmin from "middlewares/isAdmin"
 import YtConverter from "services/ytconverter"
 import BadRequestException from "exceptions/http/BadRequestException"

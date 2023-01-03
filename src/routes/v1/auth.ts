@@ -2,14 +2,12 @@ import { FastifyInstance } from "fastify"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index.js"
 
 import { UnauthorizedException } from "exceptions/http/UnauthorizedException"
-import prisma from "utils/prisma"
+import prisma from "services/prisma"
 import { comparePassword, hashPassword } from "utils/security"
 import { LoginSchema, RegisterSchema } from "schemas/auth"
 
 export default function authRoutes(instance: FastifyInstance, opts: any, done: Function) {
   instance.post<{ Body: LoginSchema }>("/login", async (request, reply) => {
-    console.log("Request.body.em", request.body.email)
-
     const user = await prisma.user.findUnique({
       where: {
         email: request.body.email

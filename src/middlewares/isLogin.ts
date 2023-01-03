@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify"
 import { UnauthorizedException } from "exceptions/http/UnauthorizedException"
 import { User } from "@prisma/client"
-import prisma from "utils/prisma"
+import prisma from "services/prisma"
 
 export default async function isLogin(request: FastifyRequest, reply: FastifyReply) {
   if (!request.session.isLogin) throw new UnauthorizedException("Access denied 08")

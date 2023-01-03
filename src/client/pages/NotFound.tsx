@@ -2,9 +2,9 @@ import { Link } from "react-router-dom"
 
 const NotFound: Component = () => {
   return (
-    <div className="w-screen h-screen flex flex-col justify-center items-center space-y-3">
+    <div className="w-full h-full flex flex-col justify-center items-center space-y-3">
       <div>
-        <h1>Error - 404 not found </h1>
+        <h1>Erreur 404 - Page introuvable </h1>
       </div>
       <div>
         <Link

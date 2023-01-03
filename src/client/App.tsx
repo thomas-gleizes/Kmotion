@@ -1,14 +1,24 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Route, Routes } from "react-router-dom"
 
+import { AppComponent, GetInitialAppProps, TUser } from "types"
 import routes from "client/routes"
 import Layout from "client/components/layouts/Layout"
+import useAuthStore from "client/stores/auth"
 
-interface Props {
-  pageProps: any
+interface InitialAppProps {
+  user?: TUser
 }
 
-const App: Component<Props> = ({ pageProps }) => {
+export const getInitialAppProps: GetInitialAppProps<InitialAppProps> = (request) => {
+  return { user: request.session.user || null }
+}
+
+const App: AppComponent<InitialAppProps> = ({ pageProps, appProps }) => {
+  const login = useAuthStore((state) => state.login)
+
+  useEffect(() => appProps.user && login(appProps.user), [appProps])
+
   return (
     <Layout>
       <Routes>

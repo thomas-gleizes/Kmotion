@@ -4,12 +4,14 @@ import { BrowserRouter } from "react-router-dom"
 
 import App from "client/App"
 
-const pageProps = JSON.parse(document.getElementById("app-data")?.textContent || "{}")
+const props = JSON.parse(document.getElementById("app-data")?.textContent || "{}")
 
 const ClientApp = () => {
+  console.log("Props", props)
+
   return (
     <BrowserRouter>
-      <App pageProps={pageProps} />
+      <App {...props} />
     </BrowserRouter>
   )
 }

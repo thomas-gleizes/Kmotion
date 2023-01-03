@@ -1,21 +1,18 @@
 import React from "react"
 import { useForm } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 
-import { ServerSideProps, TUser } from "types"
+import { GetServerSideProps, TUser } from "types"
 import { LoginSchema } from "schemas/auth"
 import useAuthStore from "client/stores/auth"
 
-export const serverSideProps: ServerSideProps = async (request, reply) => {
-  console.log("Request.session.isLogin", request.session.isLogin)
-
-  if (request.session.isLogin) return reply.redirect("/playlist")
-
-  return {
-    props: {}
-  }
+export const serverSideProps: GetServerSideProps = async (request, reply) => {
+  if (request.session.isLogin) reply.redirect("/")
 }
 
 const Login: Component = () => {
+  const navigate = useNavigate()
+
   const { register, handleSubmit } = useForm<LoginSchema>({
     defaultValues: { email: "kalat@kmotion.fr", password: "azerty" }
   })
@@ -31,6 +28,7 @@ const Login: Component = () => {
       }).then((response) => response.json())
 
       login(data.user)
+      navigate("/")
     } catch (error) {
       console.log(error)
     }
@@ -51,7 +49,7 @@ const Login: Component = () => {
               <label>Email</label>
               <input
                 type="email"
-                className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                className="block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 {...register("email")}
                 placeholder="Email"
               />
@@ -60,7 +58,7 @@ const Login: Component = () => {
               <label>Mot de passe</label>
               <input
                 type="password"
-                className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                className="block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 {...register("password")}
                 placeholder="Mot de passe"
               />

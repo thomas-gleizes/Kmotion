@@ -11,16 +11,20 @@ declare module "types" {
     query?: any
   }
 
-  type ServerSideProps<P extends Parameter = {}> = (
+  type GetServerSideProps<P extends Parameter = {}> = (
     request: FastifyRequest<{ Params: P["params"]; Query: P["query"]; Body: null }>,
     reply: FastifyReply
-  ) => Promise<P["props"]> | P["props"]
+  ) => Promise<P["props"]> | P["props"] | Promise<void> | void
 
-  type Route = {
+  type GetInitialAppProps<Props> = (request: FastifyRequest) => Promise<Props> | Props
+
+  type Route<Props = {}, T extends {} = { props: Props }> = {
     path: string
-    component: Component
-    serverSideProps?: ServerSideProps
+    component: Component<Props>
+    serverSideProps?: GetServerSideProps<T>
   }
+
+  type AppComponent<AppProps> = Component<{ pageProps: any; appProps: AppProps }>
 
   type TUser = Omit<User, "password">
 }

@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify"
 import { Visibility } from "@prisma/client"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index.js"
 
-import prisma from "utils/prisma"
+import prisma from "services/prisma"
 import isLogin from "middlewares/isLogin"
 import isAdmin from "middlewares/isAdmin"
 import { CreatePlaylistSchema } from "schemas/playlist"

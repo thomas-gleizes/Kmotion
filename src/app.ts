@@ -13,6 +13,10 @@ dotenv.config()
 
 const app = fastify()
 
+app.addHook("preHandler", async (request, reply) => {
+  console.log("Request", request.url, request.session.user)
+})
+
 app.register(fastifyStatic, {
   root: `${APP_DIST}/static`,
   prefix: "/static",

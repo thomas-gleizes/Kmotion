@@ -3,7 +3,7 @@ import { Visibility } from "@prisma/client"
 
 import isLogin from "middlewares/isLogin"
 import isAdmin from "middlewares/isAdmin"
-import prisma from "utils/prisma"
+import prisma from "services/prisma"
 import NotFoundException from "exceptions/http/NotFoundException"
 
 export default function userRoutes(instance: FastifyInstance, opts: any, done: Function) {
