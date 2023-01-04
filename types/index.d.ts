@@ -1,4 +1,4 @@
-declare type Component<Props = {}> = React.FC<Props>
+declare type Component<Props = undefined> = React.FC<Props>
 declare type ReactNode = React.ReactNode
 
 declare module "types" {

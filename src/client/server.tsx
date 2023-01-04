@@ -13,11 +13,11 @@ export default async function renderApp(
 ) {
   let pageProps: any = {}
 
+  const appProps = await getInitialAppProps(request)
+
   if (route.serverSideProps) {
     pageProps = await route.serverSideProps(request, reply)
   }
-
-  const appProps = await getInitialAppProps(request)
 
   return fs
     .readFile("src/client/base.html")

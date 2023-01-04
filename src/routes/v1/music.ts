@@ -110,5 +110,18 @@ export default function musicRoutes(instance: FastifyInstance, options: any, don
     reply.status(202).send({ success: true, music })
   })
 
+  instance.get<{ Params: { query: string } }>("/search/:query", async (request, reply) => {
+    const musics = await prisma.music.findMany({
+      where: {
+        OR: [
+          { title: { contains: request.params.query } },
+          { artist: { contains: request.params.query } }
+        ]
+      }
+    })
+
+    reply.send({ success: true, musics })
+  })
+
   done()
 }

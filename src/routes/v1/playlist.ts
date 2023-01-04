@@ -91,5 +91,18 @@ export default function playlistRoutes(instance: FastifyInstance, options: any, 
     }
   )
 
+  instance.get<{ Params: { query: string } }>("/search/:query", async (request, reply) => {
+    const playlists = await prisma.playlist.findMany({
+      where: {
+        OR: [
+          { title: { contains: request.params.query } },
+          { slug: { contains: request.params.query } }
+        ]
+      }
+    })
+
+    reply.send({ success: true, playlists })
+  })
+
   done()
 }
