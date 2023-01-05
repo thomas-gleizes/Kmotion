@@ -3,6 +3,7 @@ import fastifyStatic from "@fastify/static"
 import fastifyCookie from "@fastify/cookie"
 import fastifySession from "@fastify/session"
 import dotenv from "dotenv"
+import "reflect-metadata"
 
 import { APP_DIST, APP_PORT } from "utils/constants"
 import trace from "utils/trace"
@@ -12,10 +13,6 @@ import apiRoutes from "routes"
 dotenv.config()
 
 const app = fastify()
-
-app.addHook("preHandler", async (request, reply) => {
-  console.log("Request", request.url, request.session.user)
-})
 
 app.register(fastifyStatic, {
   root: `${APP_DIST}/static`,

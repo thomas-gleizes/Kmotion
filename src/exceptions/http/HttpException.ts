@@ -2,28 +2,31 @@ import Exception from "exceptions/Exception"
 
 abstract class HttpException extends Exception {
   private readonly _status: number
-  private readonly _error: string
+  private readonly _errors?: any
 
-  protected constructor(message: string, status: number, error: string) {
+  protected constructor(message: string, status: number, errors?: any) {
     super(message)
     this._status = status
-    this._error = error
+    this._errors = errors
   }
 
   get status(): number {
     return this._status
   }
 
-  get error(): string {
-    return this._error
+  get errors(): any {
+    return this._errors
   }
 
   toJSON(): object {
-    return {
-      status: this.status,
-      error: this.error,
+    const base: { success: false; message: string; errors?: object } = {
+      success: false,
       message: this.message
     }
+
+    if (typeof this.errors !== "undefined") base.errors = this.errors
+
+    return base
   }
 
   toString(): string {

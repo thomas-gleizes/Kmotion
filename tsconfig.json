@@ -11,6 +11,9 @@
     "moduleResolution": "Node",
     "jsx": "react-jsx",
     "paths": {
+      "decorators/*": [
+        "decorators/*"
+      ],
       "exceptions/*": [
         "exceptions/*"
       ],

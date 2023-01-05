@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator"
+import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator"
 
 export class LoginSchema {
   @IsString()
@@ -17,9 +17,11 @@ export class RegisterSchema {
 
   @IsString()
   @IsNotEmpty()
+  @MinLength(8)
   password!: string
 
   @IsString()
   @IsNotEmpty()
+  @MinLength(3)
   name!: string
 }

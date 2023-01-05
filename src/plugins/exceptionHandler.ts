@@ -6,22 +6,22 @@ import * as process from "process"
 
 export default function exceptionHandler(
   this: FastifyInstance,
-  error: Exception,
+  exception: Exception,
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  if (error instanceof HttpException) {
-    void trace("http exception", error)
-    return reply.status(error.status).send({ success: false, message: error.message })
+  if (exception instanceof HttpException) {
+    void trace("http exception", exception.status, exception.message)
+    return reply.status(exception.status).send(exception.toJSON())
   }
-
-  console.log("Error", error)
 
   if (process.env.NODE_ENV !== "production") {
-    void trace("Development error", error)
-    return reply.status(500).send({ success: false, message: error.message, stack: error.stack })
+    void trace("Development exception", exception)
+    return reply
+      .status(500)
+      .send({ success: false, message: exception.message, stack: exception.stack })
   }
 
-  void trace("Production Error", error)
+  void trace("Production Error", exception)
   return reply.status(500).send({ success: true, message: "Internal Server Error" })
 }

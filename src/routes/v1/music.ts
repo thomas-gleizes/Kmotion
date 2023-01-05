@@ -7,6 +7,8 @@ import isAdmin from "middlewares/isAdmin"
 import YtConverter from "services/ytconverter"
 import BadRequestException from "exceptions/http/BadRequestException"
 import NotFoundException from "exceptions/http/NotFoundException"
+import { DownloadMusicParams, GetMusicParams } from "schemas/music"
+import { SearchParamsSchema } from "schemas/generic"
 
 //JRf3n9XZ5Ms
 
@@ -20,6 +22,7 @@ export default function musicRoutes(instance: FastifyInstance, options: any, don
 
     const newMusics: Array<Music> = []
 
+    // TODO: BUG have to be fixed
     for (const music of musics) {
       const find = await prisma.music.findUnique({ where: { youtubeId: music.id } })
 
@@ -34,94 +37,126 @@ export default function musicRoutes(instance: FastifyInstance, options: any, don
             }
           })
           .then((music) => newMusics.push(music))
-          .catch((error) => console.log("err", error))
+          .catch((error) => void null)
       }
     }
 
     reply.send({ success: true, musics: newMusics })
   })
 
-  instance.post<{ Params: { youtubeId: string } }>("/:youtubeId/add", async (request, reply) => {
-    await prisma.music
-      .findUniqueOrThrow({ where: { youtubeId: request.params.youtubeId } })
-      .then(() => {
-        throw new BadRequestException("Music already exists")
+  instance.post<{ Params: DownloadMusicParams }>(
+    "/:youtubeId/add",
+    { preHandler: instance.validateParams(DownloadMusicParams) },
+    async (request, reply) => {
+      await prisma.music
+        .findUniqueOrThrow({ where: { youtubeId: request.params.youtubeId } })
+        .then(() => {
+          throw new BadRequestException("Music already exists")
+        })
+        .catch(() => {})
+
+      const response = await ytConverter.download(request.params.youtubeId)
+
+      if (response.status !== 200) throw new BadRequestException(response.headers.reason)
+
+      const info = await ytConverter.info(request.params.youtubeId)
+
+      const music = await prisma.music.create({
+        data: {
+          title: info.title,
+          artist: info.author.name,
+          youtubeId: request.params.youtubeId,
+          downloaderId: request.session.user.id
+        }
       })
-      .catch(() => {})
 
-    const response = await ytConverter.download(request.params.youtubeId)
+      reply.send({ success: "true", music, info })
+    }
+  )
 
-    if (response.status !== 200) throw new BadRequestException(response.headers.reason)
+  instance.get<{ Params: GetMusicParams }>(
+    "/:id",
+    { preHandler: instance.validateParams(GetMusicParams) },
+    async (request, reply) => {
+      const music = await prisma.music.findUnique({ where: { id: +request.params.id } })
 
-    const info = await ytConverter.info(request.params.youtubeId)
+      if (!music) throw new NotFoundException("Music not found")
 
-    const music = await prisma.music.create({
-      data: {
-        title: info.title,
-        artist: info.author.name,
-        youtubeId: request.params.youtubeId,
-        downloaderId: request.session.user.id
-      }
-    })
+      reply.send({ success: true, music })
+    }
+  )
 
-    reply.send({ success: "true", music, info })
-  })
+  instance.get<{ Params: GetMusicParams }>(
+    "/:id/stream",
+    { preHandler: instance.validateParams(GetMusicParams) },
+    async (request, reply) => {
+      const music = await prisma.music.findUnique({ where: { id: request.params.id } })
 
-  instance.get<{ Params: { id: string } }>("/:id", async (request, reply) => {
-    const music = await prisma.music.findUnique({ where: { id: +request.params.id } })
+      if (!music) throw new NotFoundException("Music not found")
 
-    if (!music) throw new NotFoundException("Music not found")
+      const stream = await ytConverter.stream(music.youtubeId)
 
-    reply.send({ success: true, music })
-  })
+      reply
+        .headers({
+          "Content-Type": "audio/mpeg",
+          "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.mp3"`
+        })
+        .send(stream)
+    }
+  )
 
-  instance.get<{ Params: { id: string } }>("/:id/stream", async (request, reply) => {
-    const music = await prisma.music.findUnique({ where: { id: +request.params.id } })
+  instance.get<{ Params: GetMusicParams }>(
+    "/:id/cover",
+    { preHandler: instance.validateParams(GetMusicParams) },
+    async (request, reply) => {
+      const music = await prisma.music.findUnique({ where: { id: request.params.id } })
 
-    if (!music) throw new NotFoundException("Music not found")
+      if (!music) throw new NotFoundException("Music not found")
 
-    const stream = await ytConverter.stream(music.youtubeId)
+      const stream = await ytConverter.cover(music.youtubeId)
 
-    reply.type("audio/mpeg")
-    reply.send(stream)
-  })
+      reply
+        .headers({
+          "Content-Type": "image/jpeg",
+          "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.jpg"`
+        })
+        .send(stream)
+    }
+  )
 
-  instance.get<{ Params: { id: string } }>("/:id/cover", async (request, reply) => {
-    const music = await prisma.music.findUnique({ where: { id: +request.params.id } })
+  instance.delete<{ Params: GetMusicParams }>(
+    "/:id",
+    { preHandler: instance.validateParams(GetMusicParams) },
+    async (request, reply) => {
+      const music = await prisma.music.findUnique({ where: { id: +request.params.id } })
 
-    if (!music) throw new NotFoundException("Music not found")
+      if (!music) throw new NotFoundException("Music not found")
 
-    const stream = await ytConverter.cover(music.youtubeId)
+      await Promise.all([
+        prisma.music.delete({ where: { id: music.id } }),
+        ytConverter.delete(music.youtubeId)
+      ])
 
-    reply.type("image/jpeg")
-    reply.send(stream)
-  })
+      reply.status(202).send({ success: true, music })
+    }
+  )
 
-  instance.delete<{ Params: { id: string } }>("/:id", async (request, reply) => {
-    const music = await prisma.music.findUnique({ where: { id: +request.params.id } })
+  instance.get<{ Params: SearchParamsSchema }>(
+    "/search/:query",
+    { preHandler: instance.validateParams(SearchParamsSchema) },
+    async (request, reply) => {
+      const musics = await prisma.music.findMany({
+        where: {
+          OR: [
+            { title: { contains: request.params.query } },
+            { artist: { contains: request.params.query } }
+          ]
+        }
+      })
 
-    if (!music) throw new NotFoundException("Music not found")
-
-    await Promise.all([
-      prisma.music.delete({ where: { id: music.id } }),
-      ytConverter.delete(music.youtubeId)
-    ])
-
-    reply.status(202).send({ success: true, music })
-  })
-
-  instance.get<{ Params: { query: string } }>("/search/:query", async (request, reply) => {
-    const musics = await prisma.music.findMany({
-      where: {
-        OR: [
-          { title: { contains: request.params.query } },
-          { artist: { contains: request.params.query } }
-        ]
-      }
-    })
-
-    reply.send({ success: true, musics })
-  })
+      reply.send({ success: true, musics })
+    }
+  )
 
   done()
 }
