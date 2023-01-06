@@ -4,7 +4,7 @@ import renderApp from "client/server"
 import routes from "client/routes"
 import logger from "plugins/logger"
 
-export default function render(instance: FastifyInstance, opts: any, done: Function) {
+export default function page(instance: FastifyInstance, opts: any, done: Function) {
   instance.addHook("onRequest", logger)
 
   for (const route of routes) {

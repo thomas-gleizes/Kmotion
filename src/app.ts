@@ -7,7 +7,7 @@ import "reflect-metadata"
 
 import { APP_DIST, APP_PORT } from "utils/constants"
 import trace from "utils/trace"
-import pageRoutes from "plugins/render"
+import pageRoutes from "routes/page"
 import apiRoutes from "routes"
 
 dotenv.config()

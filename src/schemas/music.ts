@@ -1,9 +1,11 @@
-import { IsNotEmpty, IsString, Min } from "class-validator"
+import { IsNotEmpty, IsNumber, IsString, Min } from "class-validator"
+import { Type } from "class-transformer"
 
 export class GetMusicParams {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
   @Min(1)
+  @Type(() => Number)
   id!: number
 }
 
