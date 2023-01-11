@@ -66,5 +66,9 @@ export default function authRoutes(instance: FastifyInstance, opts: any, done: F
     reply.send({ success: true })
   })
 
+  instance.post("/test", (request, reply) => {
+    reply.send({ success: true })
+  })
+
   done()
 }

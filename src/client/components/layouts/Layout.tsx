@@ -1,10 +1,7 @@
 import useAuthStore from "client/stores/auth"
+import { Outlet } from "react-router-dom"
 
-interface LayoutProps {
-  children?: ReactNode
-}
-
-const Layout: Component<LayoutProps> = ({ children }) => {
+const Layout: Component = () => {
   const user = useAuthStore((state) => state.user)
 
   return (
@@ -15,7 +12,7 @@ const Layout: Component<LayoutProps> = ({ children }) => {
             {user.name}
           </div>
         )}
-        {children}
+        <Outlet />
       </div>
     </div>
   )

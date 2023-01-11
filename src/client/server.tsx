@@ -4,20 +4,15 @@ import ReactDom from "react-dom/server"
 import { StaticRouter } from "react-router-dom/server.js"
 
 import { Route } from "types"
-import App, { getInitialAppProps } from "./App"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import routes from "client/routes"
 
 export default async function renderApp(
   route: Route,
   request: FastifyRequest<any>,
   reply: FastifyReply
 ) {
-  let pageProps: any = {}
-
-  const appProps = await getInitialAppProps(request)
-
-  if (route.serverSideProps) {
-    pageProps = await route.serverSideProps(request, reply)
-  }
+  const router = createBrowserRouter(routes)
 
   return fs
     .readFile("src/client/base.html")
@@ -27,7 +22,7 @@ export default async function renderApp(
         "<!-- APP -->",
         ReactDom.renderToString(
           <StaticRouter location={route.path}>
-            <App pageProps={pageProps} appProps={appProps} />
+            <RouterProvider router={router} />
           </StaticRouter>
         )
       )

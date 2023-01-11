@@ -1,19 +1,19 @@
 import React from "react"
 import ReactDom from "react-dom/client"
-import { BrowserRouter } from "react-router-dom"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
-import App from "client/App"
+import routes from "client/routes"
 
 const props = JSON.parse(document.getElementById("app-data")?.textContent || "{}")
 
 const ClientApp = () => {
-  console.log("Props", props)
+  const router = createBrowserRouter(routes)
 
-  return (
-    <BrowserRouter>
-      <App {...props} />
-    </BrowserRouter>
-  )
+  return <RouterProvider router={router} />
 }
 
-ReactDom.hydrateRoot(document.getElementById("root") as Element, <ClientApp />)
+if (true) {
+  ReactDom.createRoot(document.getElementById("root") as HTMLElement).render(<ClientApp />)
+} else {
+  ReactDom.hydrateRoot(document.getElementById("root") as HTMLElement, <ClientApp />)
+}

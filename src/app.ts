@@ -25,7 +25,7 @@ app.register(fastifyStatic, {
   decorateReply: false
 })
 
-app.register(fastifyCookie)
+app.register(fastifyCookie  )
 app.register(fastifySession, {
   secret: process.env.SECRET_SESSION as string,
   cookieName: "kmotion",

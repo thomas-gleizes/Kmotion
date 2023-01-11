@@ -1,14 +1,21 @@
 import React from "react"
+import { RouteObject } from "react-router-dom"
+import Layout from "client/components/layouts/Layout"
+import Login from "client/pages/auth/Login"
+import createRoute from "client/utils/createRoute"
+import Register from "client/pages/auth/Register"
 
-import { Route } from "types"
-import * as Login from "client/pages/Login"
-import * as Home from "client/pages/Home"
-import * as NotFound from "client/pages/NotFound"
-
-const routes: Route<any, any>[] = [
-  { path: "/login", component: Login.default, serverSideProps: Login.serverSideProps },
-  { path: "/", component: Home.default, serverSideProps: Home.serverSideProps },
-  { path: "/*", component: NotFound.default }
+const routes: RouteObject[] = [
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        path: "auth",
+        children: [createRoute("login", Login), createRoute("register", Register)]
+      }
+    ]
+  }
 ]
 
 export default routes
