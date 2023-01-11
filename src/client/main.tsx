@@ -12,8 +12,4 @@ const ClientApp = () => {
   return <RouterProvider router={router} />
 }
 
-if (true) {
-  ReactDom.createRoot(document.getElementById("root") as HTMLElement).render(<ClientApp />)
-} else {
-  ReactDom.hydrateRoot(document.getElementById("root") as HTMLElement, <ClientApp />)
-}
+ReactDom.createRoot(document.getElementById("root") as HTMLElement).render(<ClientApp />)

@@ -9,8 +9,6 @@ export default async function isAdmin(
 ) {
   if (!request.session.isLogin) throw new UnauthorizedException("Access denied")
   if (!request.session.user.isAdmin) throw new UnauthorizedException("Access denied")
-
-  done()
 }
 
 declare module "fastify" {

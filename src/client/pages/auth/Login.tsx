@@ -1,8 +1,8 @@
 import React from "react"
 import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
-import { GetServerSideProps, TUser } from "types"
+import { GetServerSideProps, Page, TUser } from "types"
 import { LoginSchema } from "schemas/auth"
 import useAuthStore from "client/stores/auth"
 
@@ -10,7 +10,7 @@ export const serverSideProps: GetServerSideProps = async (request, reply) => {
   if (request.session.isLogin) reply.redirect("/")
 }
 
-const Login: Component = () => {
+const Login: Page = () => {
   const navigate = useNavigate()
 
   const { register, handleSubmit } = useForm<LoginSchema>({
@@ -76,9 +76,19 @@ const Login: Component = () => {
             Connexion
           </button>
         </div>
+        <div className="flex justify-center items-center my-3">
+          <Link
+            to="/auth/register"
+            className="bg-gradient-to-br from-blue-500 to-blue-700 px-3 py-1 font-medium rounded text-white"
+          >
+            Rejoinez K'motion
+          </Link>
+        </div>
       </form>
     </div>
   )
 }
+
+Login.serverSideProps = serverSideProps
 
 export default Login

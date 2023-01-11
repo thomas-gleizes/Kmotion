@@ -7,8 +7,9 @@ import "reflect-metadata"
 
 import { APP_DIST, APP_PORT } from "utils/constants"
 import trace from "utils/trace"
-import pageRoutes from "routes/page"
 import apiRoutes from "routes"
+import propsRoutes from "routes/props"
+import pageRoutes from "routes/page"
 
 dotenv.config()
 
@@ -25,13 +26,15 @@ app.register(fastifyStatic, {
   decorateReply: false
 })
 
-app.register(fastifyCookie  )
+app.register(fastifyCookie)
 app.register(fastifySession, {
   secret: process.env.SECRET_SESSION as string,
   cookieName: "kmotion",
   cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 360, secure: false }
 })
+
 app.register(apiRoutes, { prefix: "/api" })
+app.register(propsRoutes, { prefix: "props" })
 app.register(pageRoutes)
 
 app

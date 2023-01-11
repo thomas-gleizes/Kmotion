@@ -1,27 +1,27 @@
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Kmotion</title>
-  <link rel="icon" type="image/svg+xml" href="public/favicon.png">
-  <script type="module">
-    const publicUrl = `${new URL(import.meta.url).origin}/static`
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kmotion</title>
+    <link rel="icon" type="image/svg+xml" href="public/favicon.png" />
+    <script type="module">
+      const publicUrl = `${new URL(import.meta.url).origin}/static`
 
-    const script = document.createElement("script")
-    script.src = `${publicUrl}/main.js`
-    script.defer = true
-    document.head.appendChild(script)
+      const script = document.createElement("script")
+      script.src = `${publicUrl}/main.js`
+      script.defer = true
+      document.head.appendChild(script)
 
-    const link = document.createElement("link")
-    link.type = "text/css"
-    link.rel = "stylesheet"
-    link.href = `${publicUrl}/styles.css`
-    document.head.appendChild(link)
-  </script>
-</head>
-<body>
-<div id="root"><!-- APP --></div>
-<script id="app-data" type="application/json"><!-- PROPS --></script>
-</body>
+      const link = document.createElement("link")
+      link.type = "text/css"
+      link.rel = "stylesheet"
+      link.href = `${publicUrl}/styles.css`
+      document.head.appendChild(link)
+    </script>
+  </head>
+  <body>
+    <div id="root"><!-- APP --></div>
+    <script id="app-data" type="application/json">
+      <!-- PROPS -->
+    </script>
+  </body>
 </html>
-
-

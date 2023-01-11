@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "node build.js",
+    "build": "tsc && node build.js",
     "build:dev": "node build.js --dev",
     "start": "node dist/app.js",
     "start:dev": "node --watch dist/app.js",

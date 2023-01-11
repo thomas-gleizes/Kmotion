@@ -10,10 +10,6 @@ interface InitialAppProps {
   user?: TUser
 }
 
-export const getInitialAppProps: GetInitialAppProps<InitialAppProps> = (request) => {
-  return { user: request.session.user || null }
-}
-
 const App: AppComponent<InitialAppProps> = ({ pageProps, appProps }) => {
   const login = useAuthStore((state) => state.login)
 
