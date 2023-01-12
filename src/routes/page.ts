@@ -1,22 +1,20 @@
-import fs from "node:fs/promises"
 import { FastifyInstance } from "fastify"
 
 import logger from "plugins/logger"
+import routes from "client/routes"
+import generateRouter from "client/utils/generateRouter"
+import renderApp from "client/server"
 
 export default function page(instance: FastifyInstance, opts: any, done: Function) {
   instance.addHook("onRequest", logger)
 
-  instance.get("*", async (request, reply) => {
-    const html = await fs
-      .readFile("src/client/base.html")
-      .then((buffer) => buffer.toString("utf-8"))
-      .then((html) => html.replace("<!-- APP -->", ""))
-      .then((html) =>
-        html.replace("<!-- PROPS -->", JSON.stringify({ pageProps: {}, appProps: {} }))
-      )
+  const router = generateRouter(routes)
 
-    reply.type("text/html").send(html)
-  })
+  for (const route of router) {
+    instance.get(route.path, async (request, reply) => {
+      reply.type("text/html").send(await renderApp(route, request, reply))
+    })
+  }
 
   done()
 }

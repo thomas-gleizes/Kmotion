@@ -14,16 +14,13 @@ const routes: RouteObject[] = [
   createRoute("/", Layout, {
     children: [
       createRoute("auth", AuthLayout, {
-        children: [
-          createRoute("login", Login),
-          createRoute("register", Register),
-          createRoute("", NotFound)
-        ]
+        children: [createRoute("login", Login), createRoute("register", Register)],
+        errorElement: <NotFound />
       }),
       createRoute("app", ProtectedLayout, {
-        children: [createRoute("home", Home), createRoute("", NotFound)]
-      }),
-      createRoute("", NotFound)
+        children: [createRoute("home", Home)],
+        errorElement: <NotFound />
+      })
     ]
   })
 ]

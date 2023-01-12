@@ -1,9 +1,5 @@
 import { RouteObject } from "react-router-dom"
-
-type Route = {
-  path: string
-  page: any
-}
+import { Route } from "types"
 
 export default function generateRouter(routes: RouteObject[], basePath: string = ""): Route[] {
   const result: Route[] = []
