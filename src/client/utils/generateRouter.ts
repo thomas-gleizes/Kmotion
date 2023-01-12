@@ -1,23 +1,23 @@
-import { generatePath, RouteObject } from "react-router-dom"
-import { Page } from "types"
+import { RouteObject } from "react-router-dom"
 
 type Route = {
   path: string
-  page: any,
-
+  page: any
 }
 
 export default function generateRouter(routes: RouteObject[], basePath: string = ""): Route[] {
   const result: Route[] = []
 
   for (const route of routes) {
+    result.push({
+      path: `${basePath}/${route.path}`.replace(/\/+/g, "/"),
+      page: route.element
+    })
+
     if (typeof route.children !== "undefined") {
-      result.push(...generateRouter(route.children, route.path))
-    } else {
-      result.push({
-        path: `${basePath}/${route.path}`,
-        page: route.element
-      })
+      result.push(
+        ...generateRouter(route.children, `${basePath}/${route.path}`.replace(/\/+/g, "/"))
+      )
     }
   }
 

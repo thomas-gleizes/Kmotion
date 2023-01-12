@@ -2,13 +2,9 @@ import React from "react"
 import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
 
-import { GetServerSideProps, Page, TUser } from "types"
+import { Page, TUser } from "types"
 import { LoginSchema } from "schemas/auth"
 import useAuthStore from "client/stores/auth"
-
-export const serverSideProps: GetServerSideProps = async (request, reply) => {
-  if (request.session.isLogin) reply.redirect("/")
-}
 
 const Login: Page = () => {
   const navigate = useNavigate()
@@ -28,7 +24,7 @@ const Login: Page = () => {
       }).then((response) => response.json())
 
       login(data.user)
-      navigate("/")
+      navigate("/app/home")
     } catch (error) {
       console.log(error)
     }
@@ -88,7 +84,5 @@ const Login: Page = () => {
     </div>
   )
 }
-
-Login.serverSideProps = serverSideProps
 
 export default Login

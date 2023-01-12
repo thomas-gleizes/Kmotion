@@ -1,5 +1,6 @@
 import React from "react"
-import { LoaderFunction, RouteObject, useLoaderData } from "react-router-dom"
+import { LoaderFunction, redirect, RouteObject, useLoaderData } from "react-router-dom"
+
 import { Page } from "types"
 
 const ConnectProps: React.FC<{ Page: React.FC }> = ({ Page }) => {
@@ -9,16 +10,36 @@ const ConnectProps: React.FC<{ Page: React.FC }> = ({ Page }) => {
   return <Page {...props} />
 }
 
-const loader: LoaderFunction = async ({ request }) => {
-  console.log("loader", new URL(request.url).pathname)
-
-  return fetch(`/props${new URL(request.url).pathname}`)
+function truncatePath(url: string, path: string) {
+  let truncatedUrl = url
+  const pathIndex = url.indexOf(path)
+  if (pathIndex !== -1) {
+    truncatedUrl = url.substring(0, pathIndex + path.length)
+  }
+  return truncatedUrl
 }
 
-export default function createRoute(path: string, Page: Page): RouteObject {
+function createLoader(path: string): LoaderFunction {
+  return async ({ request }) => {
+    const requestPath = "/props" + new URL(request.url).pathname
+    const response = await fetch(truncatePath(requestPath, path))
+
+    if (response.redirected) return redirect(response.url)
+
+    return response.json()
+  }
+}
+
+export default function createRoute(
+  path: string,
+  Page: Page,
+  rest: Omit<Omit<Omit<RouteObject, "path">, "element">, "loader"> = {}
+): RouteObject {
+  // @ts-ignore
   return {
     path,
     element: <ConnectProps Page={Page} />,
-    loader: typeof Page.serverSideProps === "function" ? loader : undefined
+    loader: typeof Page.serverSideProps === "function" ? createLoader(path) : undefined,
+    ...rest
   }
 }
