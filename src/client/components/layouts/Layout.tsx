@@ -12,11 +12,6 @@ const Layout: Page = () => {
         onClick={() => fetch("/api/v1/auth/logout")}
       />
       <div className="max-w-[375px] max-h-[560px] w-full h-full relative z-0 border bg-white">
-        {user && (
-          <div className="w-full text-center text-red-500 bg-gradient-to-br from-slate-100 to-blue-50">
-            {user.name}
-          </div>
-        )}
         <Outlet />
       </div>
     </div>

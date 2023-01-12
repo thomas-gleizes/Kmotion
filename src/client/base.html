@@ -2,21 +2,10 @@
   <head>
     <meta charset="UTF-8" />
     <title>Kmotion</title>
-    <link rel="icon" type="image/svg+xml" href="public/favicon.png" />
-    <script type="module">
-      const publicUrl = `${new URL(import.meta.url).origin}/static`
-
-      const script = document.createElement("script")
-      script.src = `${publicUrl}/main.js`
-      script.defer = true
-      document.head.appendChild(script)
-
-      const link = document.createElement("link")
-      link.type = "text/css"
-      link.rel = "stylesheet"
-      link.href = `${publicUrl}/styles.css`
-      document.head.appendChild(link)
-    </script>
+    <link rel="icon" type="image/svg+xml" href="%URL%/public/favicon.png" />
+    <link rel="stylesheet" href="%URL%/static/styles.css" />
+    <script type="module" defer src="%URL%/static/main.js"></script>
+    <script type="module" defer src="%URL%/static/styles.js"></script>
   </head>
   <body>
     <div id="root"><!-- APP --></div>

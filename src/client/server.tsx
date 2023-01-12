@@ -20,6 +20,7 @@ export default async function renderApp(
   return fs
     .readFile("src/client/base.html")
     .then((buffer) => buffer.toString("utf-8"))
+    .then((html) => html.replaceAll("%URL%", "http://localhost:8000"))
     .then((html) =>
       html.replace(
         "<!-- APP -->",
