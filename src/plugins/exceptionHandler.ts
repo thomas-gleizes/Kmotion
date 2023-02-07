@@ -1,8 +1,8 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify"
-import HttpException from "exceptions/http/HttpException"
-import Exception from "exceptions/Exception"
-import trace from "utils/trace"
-import * as process from "process"
+
+import HttpException from "../exceptions/http/HttpException"
+import Exception from "../exceptions/Exception"
+import trace from "../utils/trace"
 
 export default function exceptionHandler(
   this: FastifyInstance,

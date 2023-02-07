@@ -1,12 +1,9 @@
-import { FastifyReply, FastifyRequest } from "fastify"
-import { UnauthorizedException } from "exceptions/http/UnauthorizedException"
+import { FastifyRequest } from "fastify"
 import { User } from "@prisma/client"
 
-export default async function isAdmin(
-  request: FastifyRequest,
-  reply: FastifyReply,
-  done: Function
-) {
+import { UnauthorizedException } from "../exceptions/http/UnauthorizedException"
+
+export default async function isAdmin(request: FastifyRequest) {
   if (!request.session.isLogin) throw new UnauthorizedException("Access denied")
   if (!request.session.user.isAdmin) throw new UnauthorizedException("Access denied")
 }

@@ -1,13 +1,11 @@
 {
-  "type": "module",
+  "name": "K'motion",
+  "version": "0.1",
+  "main": "dist/app.js",
+  "description": "",
   "scripts": {
-    "clean": "rm -rf dist",
-    "build": "tsc && node build.js",
-    "build:dev": "node build.js --dev",
-    "start": "node dist/app.js",
-    "start:dev": "node --watch dist/app.js",
-    "deploy": "npm run clean && node build.js && node dist/app.js",
-    "dev": "concurrently \"npm run build:dev\" \"npm run start:dev\""
+    "start": "ts-node src/app.ts",
+    "dev": "tsnd --respawn src/app.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
@@ -16,34 +14,30 @@
     "@prisma/client": "^4.7.1",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.13.2",
+    "class-validator": "^0.14.0",
     "class-validator-jsonschema": "^3.1.1",
     "dotenv": "^16.0.3",
     "fastify": "^4.10.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.41.0",
-    "react-router-dom": "^6.4.5",
-    "react-use": "^17.4.0",
-    "reflect-metadata": "^0.1.13",
-    "zustand": "^4.1.5"
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
+    "@open-wc/building-rollup": "^2.2.1",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@tsconfig/node18": "^1.0.1",
     "@types/bcrypt": "^5.0.0",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^18.11.11",
-    "@types/react": "^18.0.26",
-    "@types/react-dom": "^18.0.9",
-    "autoprefixer": "^10.4.13",
-    "concurrently": "^7.6.0",
-    "esbuild": "^0.15.14",
-    "esbuild-node-externals": "^1.5.0",
-    "esbuild-style-plugin": "^1.6.0",
-    "postcss": "^8.4.20",
+    "@types/validator": "^13.7.11",
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "eslint": "^8.20.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.0",
     "prisma": "^4.7.1",
-    "tailwindcss": "^3.2.4",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^4.9.3"
   },
   "prettier": {
@@ -51,5 +45,35 @@
     "singleQuote": false,
     "trailingComma": "none",
     "printWidth": 100
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": false,
+      "es2021": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "plugins": [
+      "@typescript-eslint",
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": "error",
+      "class-methods-use-this": "off",
+      "no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "next"
+        }
+      ]
+    }
   }
 }

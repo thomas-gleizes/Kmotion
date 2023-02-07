@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 
 const Connexion = {
-  instance: typeof window === "undefined" ? new PrismaClient() : null
+  instance: new PrismaClient()
 }
 
 export type ConnexionType = typeof Connexion

@@ -1,9 +1,10 @@
-import { FastifyReply, FastifyRequest } from "fastify"
-import { UnauthorizedException } from "exceptions/http/UnauthorizedException"
+import { FastifyRequest } from "fastify"
 import { User } from "@prisma/client"
-import prisma from "services/prisma"
 
-export default async function isLogin(request: FastifyRequest, reply: FastifyReply) {
+import prisma from "../services/prisma"
+import { UnauthorizedException } from "../exceptions/http/UnauthorizedException"
+
+export default async function isLogin(request: FastifyRequest) {
   if (!request.session.isLogin) throw new UnauthorizedException("Access denied 08")
 
   const user = await prisma.user.findUnique({ where: { id: request.session.user.id } })

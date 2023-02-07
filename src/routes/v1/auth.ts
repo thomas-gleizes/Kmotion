@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index.js"
 
-import prisma from "services/prisma"
-import { comparePassword, hashPassword } from "utils/security"
-import { UnauthorizedException } from "exceptions/http/UnauthorizedException"
-import { LoginSchema, RegisterSchema } from "schemas/auth"
+import prisma from "../../services/prisma"
+import { comparePassword, hashPassword } from "../../utils/security"
+import { UnauthorizedException } from "../../exceptions/http/UnauthorizedException"
+import { LoginSchema, RegisterSchema } from "../../schemas/auth"
 
 export default function authRoutes(instance: FastifyInstance, opts: any, done: Function) {
   instance.post<{ Body: LoginSchema }>(

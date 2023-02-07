@@ -2,12 +2,16 @@ import { FastifyInstance } from "fastify"
 import { Visibility } from "@prisma/client"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index.js"
 
-import prisma from "services/prisma"
-import isLogin from "middlewares/isLogin"
-import isAdmin from "middlewares/isAdmin"
-import NotFoundException from "exceptions/http/NotFoundException"
-import { SearchParamsSchema } from "schemas/generic"
-import { AddMusicToPlaylistSchema, CreatePlaylistSchema, GetPlaylistSchema } from "schemas/playlist"
+import prisma from "../../services/prisma"
+import isLogin from "../../middlewares/isLogin"
+import isAdmin from "../../middlewares/isAdmin"
+import NotFoundException from "../../exceptions/http/NotFoundException"
+import { SearchParamsSchema } from "../../schemas/generic"
+import {
+  AddMusicToPlaylistSchema,
+  CreatePlaylistSchema,
+  GetPlaylistSchema
+} from "../../schemas/playlist"
 
 export default function playlistRoutes(instance: FastifyInstance, options: any, done: Function) {
   instance.addHook("onRequest", isLogin)

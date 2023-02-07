@@ -5,25 +5,17 @@ import fastifySession from "@fastify/session"
 import dotenv from "dotenv"
 import "reflect-metadata"
 
-import { APP_DIST, APP_PORT } from "utils/constants"
-import trace from "utils/trace"
-import apiRoutes from "routes"
-import propsRoutes from "routes/props"
-import pageRoutes from "routes/page"
+import { APP_PORT, APP_PUBLIC } from "./utils/constants"
+import trace from "./utils/trace"
+import apiRoutes from "./routes"
 
 dotenv.config()
 
 const app = fastify()
 
 app.register(fastifyStatic, {
-  root: `${APP_DIST}/static`,
-  prefix: "/static",
-  decorateReply: false
-})
-app.register(fastifyStatic, {
-  root: `${APP_DIST}/public`,
-  prefix: "/public",
-  decorateReply: false
+  root: `${APP_PUBLIC}`,
+  prefix: "/public"
 })
 
 app.register(fastifyCookie)
@@ -34,8 +26,6 @@ app.register(fastifySession, {
 })
 
 app.register(apiRoutes, { prefix: "/api" })
-app.register(propsRoutes, { prefix: "props" })
-app.register(pageRoutes)
 
 app
   .listen({ port: APP_PORT })

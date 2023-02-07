@@ -3,3 +3,4 @@
 /trace.log
 /.env
 node_modules
+/tsconfig.tsbuildinfo

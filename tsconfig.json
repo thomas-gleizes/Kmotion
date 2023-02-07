@@ -1,54 +1,30 @@
 {
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es5",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "baseUrl": "src",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "jsx": "react-jsx",
-    "paths": {
-      "decorators/*": [
-        "decorators/*"
-      ],
-      "exceptions/*": [
-        "exceptions/*"
-      ],
-      "middlewares/*": [
-        "middlewares/*"
-      ],
-      "plugins/*": [
-        "plugins/*"
-      ],
-      "routes/*": [
-        "routes/*"
-      ],
-      "schemas/*": [
-        "schemas/*"
-      ],
-      "services/*": [
-        "services/*"
-      ],
-      "utils/*": [
-        "utils/*"
-      ],
-      "client/*": [
-        "client/*"
-      ]
-    },
     "lib": [
-      "dom",
-      "es5",
-      "scripthost",
-      "es2015.promise",
-      "ES2021.String"
-    ]
+      "ES2020",
+      "webworker"
+    ],
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": false,
+    "sourceMap": true,
+    "moduleResolution": "Node",
+    "incremental": true,
+    "target": "ES2020",
+    "module": "CommonJS",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "baseUrl": "src"
   },
+  "lib": [
+    "es2015"
+  ],
   "include": [
-    "src",
-    "types"
+    "./src/**/*.ts",
+    "./types/index.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

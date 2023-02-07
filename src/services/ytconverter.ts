@@ -1,5 +1,3 @@
-const token = process.env.CONVERTER_TOKEN as string
-
 export default class YtConverter {
   private static instance: YtConverter
 

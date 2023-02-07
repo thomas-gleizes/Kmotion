@@ -1,4 +1,4 @@
-import Exception from "exceptions/Exception"
+import Exception from "../Exception"
 
 abstract class HttpException extends Exception {
   private readonly _status: number

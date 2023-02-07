@@ -1,11 +1,11 @@
-import { FastifyReply, FastifyRequest } from "fastify"
+import { FastifyRequest } from "fastify"
 import { plainToClass } from "class-transformer"
-
 import { validate } from "class-validator"
-import BadRequestException from "exceptions/http/BadRequestException"
+
+import BadRequestException from "../exceptions/http/BadRequestException"
 
 export function validateBody(dtoClass: any) {
-  return async (request: FastifyRequest, reply: FastifyReply) => {
+  return async (request: FastifyRequest) => {
     const body: typeof dtoClass = plainToClass(dtoClass, request.body)
     const errors = await validate(body)
 
@@ -16,7 +16,7 @@ export function validateBody(dtoClass: any) {
 }
 
 export function validateParams(dtoClass: any) {
-  return async (request: FastifyRequest, reply: FastifyReply) => {
+  return async (request: FastifyRequest) => {
     const params: typeof dtoClass = plainToClass(dtoClass, request.params)
     const errors = await validate(params)
 
@@ -28,7 +28,7 @@ export function validateParams(dtoClass: any) {
 }
 
 export function validateQuery(dtoClass: any) {
-  return async (request: FastifyRequest, reply: FastifyReply) => {
+  return async (request: FastifyRequest) => {
     const query: typeof dtoClass = plainToClass(dtoClass, request.query)
     const errors = await validate(query)
 

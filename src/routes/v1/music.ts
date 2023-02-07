@@ -1,14 +1,14 @@
 import { FastifyInstance } from "fastify"
 import { Music } from "@prisma/client"
 
-import isLogin from "middlewares/isLogin"
-import prisma from "services/prisma"
-import isAdmin from "middlewares/isAdmin"
-import YtConverter from "services/ytconverter"
-import BadRequestException from "exceptions/http/BadRequestException"
-import NotFoundException from "exceptions/http/NotFoundException"
-import { DownloadMusicParams, GetMusicParams } from "schemas/music"
-import { SearchParamsSchema } from "schemas/generic"
+import isLogin from "../../middlewares/isLogin"
+import prisma from "../../services/prisma"
+import isAdmin from "../../middlewares/isAdmin"
+import YtConverter from "../../services/ytconverter"
+import BadRequestException from "../../exceptions/http/BadRequestException"
+import NotFoundException from "../../exceptions/http/NotFoundException"
+import { DownloadMusicParams, GetMusicParams } from "../../schemas/music"
+import { SearchParamsSchema } from "../../schemas/generic"
 
 //JRf3n9XZ5Ms
 
@@ -37,7 +37,7 @@ export default function musicRoutes(instance: FastifyInstance, options: any, don
             }
           })
           .then((music) => newMusics.push(music))
-          .catch((error) => void null)
+          .catch(() => void null)
       }
     }
 
@@ -53,7 +53,7 @@ export default function musicRoutes(instance: FastifyInstance, options: any, don
         .then(() => {
           throw new BadRequestException("Music already exists")
         })
-        .catch(() => {})
+        .catch(() => void null)
 
       const response = await ytConverter.download(request.params.youtubeId)
 
