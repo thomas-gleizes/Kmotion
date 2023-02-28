@@ -2,14 +2,11 @@ import fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import fastifyCookie from "@fastify/cookie";
 import fastifySession from "@fastify/session";
-import { config } from "dotenv";
 import "reflect-metadata";
 
 import { APP_PORT, APP_PUBLIC } from "./utils/constants";
 import trace from "./utils/trace";
 import apiRoutes from "./routes";
-
-config({ path: "../../.env" });
 
 const app = fastify();
 

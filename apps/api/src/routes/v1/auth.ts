@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index.js";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 import prisma from "../../services/prisma";
 import { comparePassword, hashPassword } from "../../utils/security";

@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Visibility } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index.js";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 import prisma from "../../services/prisma";
 import isLogin from "../../middlewares/isLogin";

@@ -2,3 +2,15 @@
 28/02/2023 15:34:25: Server listening on http://127.0.0.1:8000
 28/02/2023 15:34:46: Server listening on http://127.0.0.1:8000
 28/02/2023 15:36:29: Server listening on http://127.0.0.1:8000
+28/02/2023 19:05:24: server crash Error: the secret option is required!
+28/02/2023 19:06:04: server crash Error: the secret option is required!
+28/02/2023 19:06:16: server crash Error: the secret option is required!
+28/02/2023 19:12:17: server crash Error: the secret option is required!
+28/02/2023 19:31:32: server crash Error: the secret option is required!
+28/02/2023 19:32:00: server crash Error: the secret option is required!
+28/02/2023 19:32:16: Server listening on http://127.0.0.1:8000
+28/02/2023 19:32:59: Server listening on http://127.0.0.1:8001
+28/02/2023 19:34:11: Server listening on http://127.0.0.1:8001
+28/02/2023 19:34:35: Server listening on http://127.0.0.1:8001
+28/02/2023 20:03:19: Server listening on http://127.0.0.1:8001
+28/02/2023 20:04:45: Server listening on http://127.0.0.1:8001
