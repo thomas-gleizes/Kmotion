@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tanstack/react-query": "^4.24.10",
+    "@tanstack/react-router": "0.0.1-beta.83",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
