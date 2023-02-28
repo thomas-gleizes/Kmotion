@@ -1,6 +1,3 @@
-/dist/
-.idea/
-/trace.log
-/.env
 node_modules
-/tsconfig.tsbuildinfo
+.idea
+.env
