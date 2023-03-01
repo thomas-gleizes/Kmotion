@@ -1,4 +1,5 @@
 import { ReactRouter, RootRoute, Route, lazy } from "@tanstack/react-router";
+
 import Root from "./pages/Root";
 
 const rootRoute = new RootRoute({ component: Root });
