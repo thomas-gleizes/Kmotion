@@ -12,14 +12,14 @@ const app = fastify();
 
 app.register(fastifyStatic, {
   root: `${APP_PUBLIC}`,
-  prefix: "/public",
+  prefix: "/public"
 });
 
 app.register(fastifyCookie);
 app.register(fastifySession, {
   secret: process.env.SECRET_SESSION as string,
   cookieName: "kmotion",
-  cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 360, secure: false },
+  cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 360, secure: false }
 });
 
 app.register(apiRoutes, { prefix: "/api" });

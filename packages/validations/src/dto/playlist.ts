@@ -10,7 +10,7 @@ import {
 } from "class-validator"
 import { Type } from "class-transformer"
 
-export class CreatePlaylistSchema {
+export class CreatePlaylistDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
@@ -28,7 +28,7 @@ export class CreatePlaylistSchema {
   visibility: "public" | "private" = "public"
 }
 
-export class UpdatePlaylistSchema {
+export class UpdatePlaylistDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
@@ -46,7 +46,7 @@ export class UpdatePlaylistSchema {
   visibility!: "public" | "private"
 }
 
-export class GetPlaylistSchema {
+export class GetPlaylistParamsDto {
   @IsNumber()
   @IsNotEmpty()
   @Min(1)
@@ -54,7 +54,7 @@ export class GetPlaylistSchema {
   id!: number
 }
 
-export class AddMusicToPlaylistSchema {
+export class AddMusicToPlaylistDto {
   @IsNumber()
   @IsNotEmpty()
   @Min(1)

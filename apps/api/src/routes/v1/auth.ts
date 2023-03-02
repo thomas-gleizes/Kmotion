@@ -4,12 +4,12 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import prisma from "../../services/prisma";
 import { comparePassword, hashPassword } from "../../utils/security";
 import { UnauthorizedException } from "../../exceptions/http/UnauthorizedException";
-import { LoginSchema, RegisterSchema } from "../../schemas/auth";
+import { LoginDto, RegisterSchema } from "@kmotion/validations";
 
 export default async function authRoutes(instance: FastifyInstance) {
-  instance.post<{ Body: LoginSchema }>(
+  instance.post<{ Body: LoginDto }>(
     "/login",
-    { preHandler: instance.validateBody(LoginSchema) },
+    { preHandler: instance.validateBody(LoginDto) },
     async (request, reply) => {
       const user = await prisma.user.findUnique({
         where: {

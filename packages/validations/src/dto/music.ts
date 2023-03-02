@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsNumber, IsString, Min } from "class-validator"
 import { Type } from "class-transformer"
 
-export class GetMusicParams {
+export class GetMusicPramsDto {
   @IsNumber()
   @IsNotEmpty()
   @Min(1)
@@ -9,7 +9,7 @@ export class GetMusicParams {
   id!: number
 }
 
-export class DownloadMusicParams {
+export class DownloadMusicParamsDto {
   @IsString()
   @IsNotEmpty()
   @Min(8)
