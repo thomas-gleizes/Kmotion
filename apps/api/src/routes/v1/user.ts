@@ -18,7 +18,10 @@ export default async function userRoutes(instance: FastifyInstance) {
 
     reply.send({
       success: true,
-      users: users.map(({ password, ...user }) => user),
+      users: users.map((user) => {
+        delete user.password
+        return user
+      }),
     })
   })
 

@@ -6,10 +6,15 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "web:dev": "cd apps/web && pnpm dev"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.54.0",
     "eslint": "^8.35.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.4",
     "prisma": "^4.10.1",
     "typescript": "^4.9.5"

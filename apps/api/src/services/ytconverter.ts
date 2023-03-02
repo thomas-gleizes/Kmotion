@@ -24,19 +24,19 @@ export default class YtConverter {
     return headers
   }
 
-  public async musics(): Promise<any> {
+  public async musics(): Promise<unknown> {
     return fetch(`${this._url}/musics`, { method: "GET", headers: this.getHeaders() })
       .then((response) => response.json())
       .then((data) => data.musics)
   }
 
-  public info(youtubeId: string): Promise<any> {
+  public info(youtubeId: string): Promise<unknown> {
     return fetch(`${this._url}/info/${youtubeId}`, { method: "GET", headers: this.getHeaders() })
       .then((response) => response.json())
       .then((data) => data.details)
   }
 
-  public download(youtubeId: string): Promise<any> {
+  public download(youtubeId: string): Promise<unknown> {
     return fetch(`${this._url}/download/${youtubeId}`, {
       method: "GET",
       headers: this.getHeaders(),
@@ -61,7 +61,7 @@ export default class YtConverter {
       .then((buffer) => Buffer.from(buffer))
   }
 
-  public delete(youtubeId: string): Promise<any> {
+  public delete(youtubeId: string): Promise<unknown> {
     return fetch(`${this._url}/delete/${youtubeId}`, {
       method: "DELETE",
       headers: this.getHeaders(),

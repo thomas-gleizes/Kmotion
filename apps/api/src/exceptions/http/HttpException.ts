@@ -1,10 +1,10 @@
 import Exception from "../Exception"
 
-abstract class HttpException extends Exception {
+abstract class HttpException<Errors extends object = object> extends Exception {
   private readonly _status: number
-  private readonly _errors?: any
+  private readonly _errors?: Errors
 
-  protected constructor(message: string, status: number, errors?: any) {
+  protected constructor(message: string, status: number, errors?: Errors) {
     super(message)
     this._status = status
     this._errors = errors
@@ -14,7 +14,7 @@ abstract class HttpException extends Exception {
     return this._status
   }
 
-  get errors(): any {
+  get errors(): Errors {
     return this._errors
   }
 

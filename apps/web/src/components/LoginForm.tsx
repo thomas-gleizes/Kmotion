@@ -13,7 +13,9 @@ const LoginForm: React.FC = () => {
     formState: { errors },
   } = useForm<LoginDto>({ resolver })
 
-  const onSubmit = async (data: LoginDto) => {}
+  const onSubmit = async (data: LoginDto) => {
+    console.log("", data)
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

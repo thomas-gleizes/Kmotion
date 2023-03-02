@@ -11,7 +11,6 @@ export default async function isLogin(request: FastifyRequest) {
 
   if (!user) throw new UnauthorizedException("Access denied 05")
 
-  // @ts-ignore
   delete user.password
 
   request.session.user = user
