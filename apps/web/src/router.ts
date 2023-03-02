@@ -10,24 +10,25 @@ const indexRoute = new Route({
   getParentRoute: () => rootRoute,
 })
 
-const authRootRoute = new RootRoute({
-  component: lazy(() => import("./pages/auth/Root")),
+const authRootRoute = new Route({
+  path: "auth",
+  getParentRoute: () => rootRoute,
 })
 
 const authRoutes = [
   new Route({
-    path: "/auth/login",
+    path: "login",
     component: lazy(() => import("./pages/auth/Login")),
     getParentRoute: () => authRootRoute,
   }),
   new Route({
-    path: "/auth/register",
+    path: "register",
     component: lazy(() => import("./pages/auth/Login")),
     getParentRoute: () => authRootRoute,
   }),
 ]
 
-const routeTree = rootRoute.addChildren([indexRoute, ...authRoutes])
+const routeTree = rootRoute.addChildren([indexRoute, authRootRoute.addChildren(authRoutes)])
 
 export const router = new ReactRouter({
   routeTree,
