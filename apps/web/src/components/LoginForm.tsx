@@ -1,8 +1,11 @@
 import React from "react"
 import { useForm } from "react-hook-form"
 import { classValidatorResolver } from "@hookform/resolvers/class-validator"
-import { Link } from "@tanstack/react-router"
+import { Link, Navigate } from "@tanstack/react-router"
 import { LoginDto } from "@kmotion/validations"
+
+import { api } from "../utils/Api"
+import { useAuthContext } from "../contexts/auth"
 
 const resolver = classValidatorResolver(LoginDto)
 
@@ -13,8 +16,17 @@ const LoginForm: React.FC = () => {
     formState: { errors },
   } = useForm<LoginDto>({ resolver })
 
+  const authContext = useAuthContext("dont_now")
+
+  if (authContext.authenticated) return <Navigate to="/" />
   const onSubmit = async (data: LoginDto) => {
-    console.log("", data)
+    try {
+      const response = await api.login(data)
+
+      authContext.login(response.user)
+    } catch (err) {
+      console.log("Error:", err)
+    }
   }
 
   return (

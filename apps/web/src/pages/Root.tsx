@@ -1,11 +1,13 @@
 import React from "react"
 import { Outlet, SyncRouteComponent } from "@tanstack/react-router"
 
+import ContextsProvider from "../contexts"
+
 const Root: SyncRouteComponent = () => {
   return (
-    <div>
+    <ContextsProvider>
       <Outlet />
-    </div>
+    </ContextsProvider>
   )
 }
 

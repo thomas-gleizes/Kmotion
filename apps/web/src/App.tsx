@@ -5,7 +5,7 @@ import { RouterProvider } from "@tanstack/react-router"
 import { router } from "./router"
 import { queryClient } from "./queryClient"
 
-const App: React.FC = () => {
+const App: Component = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />

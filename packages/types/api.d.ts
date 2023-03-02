@@ -1,4 +1,4 @@
-import { IUser } from "./models"
+import { IPlaylist, IUser } from "./models"
 
 export interface SuccessData {
   success: true
@@ -13,3 +13,7 @@ export interface RegisterResponse extends SuccessData {
 }
 
 export type LogoutResponse = SuccessData
+
+interface PlaylistsResponse extends SuccessData {
+  playlists: IPlaylist[]
+}
