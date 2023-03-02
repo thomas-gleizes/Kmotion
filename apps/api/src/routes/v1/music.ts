@@ -1,16 +1,13 @@
 import { FastifyInstance } from "fastify"
 import { Music } from "@prisma/client"
 
-import isLogin from "../../middlewares/isLogin"
-import prisma from "../../services/prisma"
-import isAdmin from "../../middlewares/isAdmin"
+import { DownloadMusicParamsDto, GetMusicPramsDto, SearchParamsDto } from "@kmotion/validations"
 import YtConverter from "../../services/ytconverter"
+import prisma from "../../services/prisma"
+import isLogin from "../../middlewares/isLogin"
+import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
-import { DownloadMusicParams, GetMusicParams } from "../../schemas/music"
-import { SearchParamsSchema } from "../../schemas/generic"
-
-//JRf3n9XZ5Ms
 
 export default async function musicRoutes(instance: FastifyInstance) {
   instance.addHook("onRequest", isLogin)
@@ -46,9 +43,9 @@ export default async function musicRoutes(instance: FastifyInstance) {
     reply.send({ success: true, musics: newMusics })
   })
 
-  instance.post<{ Params: DownloadMusicParams }>(
+  instance.post<{ Params: DownloadMusicParamsDto }>(
     "/:youtubeId/add",
-    { preHandler: instance.validateParams(DownloadMusicParams) },
+    { preHandler: instance.validateParams(DownloadMusicParamsDto) },
     async (request, reply) => {
       await prisma.music
         .findUniqueOrThrow({ where: { youtubeId: request.params.youtubeId } })
@@ -59,9 +56,9 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       const response = await ytConverter.download(request.params.youtubeId)
 
-      if (response.status !== 200) throw new BadRequestException(response.headers.reason)
+      if (response.status !== 200) throw new BadRequestException("request to converter failed")
 
-      const info = await ytConverter.info(request.params.youtubeId)
+      const info: any = await ytConverter.info(request.params.youtubeId)
 
       const music = await prisma.music.create({
         data: {
@@ -76,9 +73,9 @@ export default async function musicRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.get<{ Params: GetMusicParams }>(
+  instance.get<{ Params: GetMusicPramsDto }>(
     "/:id",
-    { preHandler: instance.validateParams(GetMusicParams) },
+    { preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
         where: { id: +request.params.id },
@@ -90,9 +87,9 @@ export default async function musicRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.get<{ Params: GetMusicParams }>(
+  instance.get<{ Params: GetMusicPramsDto }>(
     "/:id/stream",
-    { preHandler: instance.validateParams(GetMusicParams) },
+    { preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
         where: { id: request.params.id },
@@ -111,9 +108,9 @@ export default async function musicRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.get<{ Params: GetMusicParams }>(
+  instance.get<{ Params: GetMusicPramsDto }>(
     "/:id/cover",
-    { preHandler: instance.validateParams(GetMusicParams) },
+    { preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
         where: { id: request.params.id },
@@ -132,9 +129,9 @@ export default async function musicRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.delete<{ Params: GetMusicParams }>(
+  instance.delete<{ Params: GetMusicPramsDto }>(
     "/:id",
-    { preHandler: instance.validateParams(GetMusicParams) },
+    { preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
         where: { id: +request.params.id },
@@ -151,9 +148,9 @@ export default async function musicRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.get<{ Params: SearchParamsSchema }>(
+  instance.get<{ Params: SearchParamsDto }>(
     "/search/:query",
-    { preHandler: instance.validateParams(SearchParamsSchema) },
+    { preHandler: instance.validateParams(SearchParamsDto) },
     async (request, reply) => {
       const musics = await prisma.music.findMany({
         where: {

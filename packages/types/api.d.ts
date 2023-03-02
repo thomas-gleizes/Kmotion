@@ -1,0 +1,15 @@
+import { IUser } from "./models"
+
+export interface SuccessData {
+  success: true
+}
+
+export interface LoginResponse extends SuccessData {
+  user: IUser
+}
+
+export interface RegisterResponse extends SuccessData {
+  message: string
+}
+
+export type LogoutResponse = SuccessData

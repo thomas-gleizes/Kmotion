@@ -1,7 +1,7 @@
 import { FastifyRequest } from "fastify"
-import { User } from "@prisma/client"
 
 import { UnauthorizedException } from "../exceptions/http/UnauthorizedException"
+import { IUser } from "@kmotion/types"
 
 export default async function isAdmin(request: FastifyRequest) {
   if (!request.session.isLogin) throw new UnauthorizedException("Access denied")
@@ -10,6 +10,6 @@ export default async function isAdmin(request: FastifyRequest) {
 
 declare module "fastify" {
   export interface FastifyRequest {
-    user: Omit<User, "password">
+    user: IUser
   }
 }

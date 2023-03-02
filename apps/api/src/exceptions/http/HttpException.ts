@@ -14,7 +14,7 @@ abstract class HttpException<Errors extends object = object> extends Exception {
     return this._status
   }
 
-  get errors(): Errors {
+  get errors(): Errors | undefined {
     return this._errors
   }
 

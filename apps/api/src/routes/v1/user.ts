@@ -1,10 +1,12 @@
 import { FastifyInstance } from "fastify"
 import { Visibility } from "@prisma/client"
 
+import { userMapper } from "@kmotion/mappers"
 import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import prisma from "../../services/prisma"
 import NotFoundException from "../../exceptions/http/NotFoundException"
+import { IdNumberDto } from "@kmotion/validations"
 
 export default async function userRoutes(instance: FastifyInstance) {
   instance.addHook("onRequest", isLogin)
@@ -18,10 +20,7 @@ export default async function userRoutes(instance: FastifyInstance) {
 
     reply.send({
       success: true,
-      users: users.map((user) => {
-        delete user.password
-        return user
-      }),
+      users: userMapper.many(users),
     })
   })
 
@@ -33,44 +32,57 @@ export default async function userRoutes(instance: FastifyInstance) {
       where: { id: +request.params.id },
     })
 
-    console.log("User", user)
-
     if (!user || visiblities.includes(user.visibility))
       throw new NotFoundException("User not found")
 
-    reply.send({ success: true, user })
+    reply.send({ success: true, user: userMapper.one(user) })
   })
 
   instance.patch<{
     Params: { id: string }
     Body: { name: string; visibility: Visibility }
   }>("/", async (request, reply) => {
-    const user = await prisma.user.update({
-      where: {
-        id: request.session.user.id,
-      },
-      data: {
-        name: request.body.name,
-        slug: request.body.name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
-        visibility: request.body.visibility,
-      },
-    })
+    const user = await prisma.user
+      .update({
+        where: {
+          id: request.session.user.id,
+        },
+        data: {
+          name: request.body.name,
+          slug: request.body.name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+          visibility: request.body.visibility,
+        },
+      })
+      .then((user) => userMapper.one(user))
 
     request.session.user = user
 
     reply.send({ success: true, user })
   })
 
-  instance.patch<{ Params: { id: string } }>(
+  instance.patch<{ Params: IdNumberDto }>(
     "/:id/activate",
-    { onRequest: [isAdmin] },
+    { onRequest: [isAdmin], preHandler: instance.validateParams(IdNumberDto) },
     async (request, reply) => {
       const user = await prisma.user.update({
-        where: { id: +request.params.id },
+        where: { id: request.params.id },
         data: { isActivate: true },
       })
 
-      reply.status(200).send({ success: true, user })
+      reply.status(200).send({ success: true, user: userMapper.one(user) })
+    }
+  )
+
+  instance.patch<{ Params: IdNumberDto }>(
+    "/:id/deactivate",
+    { onRequest: [isAdmin], preHandler: instance.validateParams(IdNumberDto) },
+    async (request, reply) => {
+      const user = await prisma.user.update({
+        where: { id: request.params.id },
+        data: { isActivate: false },
+      })
+
+      reply.status(200).send({ success: true, user: userMapper.one(user) })
     }
   )
 

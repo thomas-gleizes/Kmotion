@@ -1,6 +1,7 @@
 import { FastifyRequest } from "fastify"
-import { User } from "@prisma/client"
 
+import { IUser } from "@kmotion/types"
+import { userMapper } from "@kmotion/mappers"
 import prisma from "../services/prisma"
 import { UnauthorizedException } from "../exceptions/http/UnauthorizedException"
 
@@ -11,14 +12,12 @@ export default async function isLogin(request: FastifyRequest) {
 
   if (!user) throw new UnauthorizedException("Access denied 05")
 
-  delete user.password
-
-  request.session.user = user
+  request.session.user = userMapper.one(user)
 }
 
 declare module "fastify" {
   interface Session {
-    user: Omit<User, "password">
+    user: IUser
     isLogin: boolean
   }
 }

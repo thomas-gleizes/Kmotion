@@ -1,20 +1,28 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["ES2020", "webworker"],
-    "outDir": "dist",
+    "lib": [
+      "ES2020",
+      "webworker"
+    ],
     "rootDir": "src",
-    "strict": false,
     "sourceMap": true,
     "moduleResolution": "Node",
     "incremental": true,
     "target": "ES2020",
     "module": "CommonJS",
+    "baseUrl": "src",
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "baseUrl": "src"
+    "experimentalDecorators": true
   },
-  "lib": ["es2015"],
-  "include": ["./src/**/*.ts", "./types/index.d.ts"],
-  "exclude": ["node_modules"]
+  "lib": [
+    "es2015"
+  ],
+  "include": [
+    "./src/**/*.ts",
+    "./types/index.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

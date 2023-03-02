@@ -1,3 +1,5 @@
+import { ConverterMusic } from "@kmotion/types"
+
 export default class YtConverter {
   private static instance: YtConverter
 
@@ -24,7 +26,7 @@ export default class YtConverter {
     return headers
   }
 
-  public async musics(): Promise<unknown> {
+  public async musics(): Promise<Array<ConverterMusic>> {
     return fetch(`${this._url}/musics`, { method: "GET", headers: this.getHeaders() })
       .then((response) => response.json())
       .then((data) => data.musics)
@@ -36,7 +38,7 @@ export default class YtConverter {
       .then((data) => data.details)
   }
 
-  public download(youtubeId: string): Promise<unknown> {
+  public download(youtubeId: string): Promise<Response> {
     return fetch(`${this._url}/download/${youtubeId}`, {
       method: "GET",
       headers: this.getHeaders(),

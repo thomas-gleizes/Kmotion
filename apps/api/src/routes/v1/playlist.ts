@@ -2,23 +2,23 @@ import { FastifyInstance } from "fastify"
 import { Visibility } from "@prisma/client"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
+import {
+  AddMusicToPlaylistDto,
+  CreatePlaylistDto,
+  GetPlaylistParamsDto,
+  SearchParamsDto,
+} from "@kmotion/validations"
 import prisma from "../../services/prisma"
 import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import NotFoundException from "../../exceptions/http/NotFoundException"
-import { SearchParamsSchema } from "../../schemas/generic"
-import {
-  AddMusicToPlaylistSchema,
-  CreatePlaylistSchema,
-  GetPlaylistSchema,
-} from "../../schemas/playlist"
 
 export default async function playlistRoutes(instance: FastifyInstance) {
   instance.addHook("onRequest", isLogin)
 
-  instance.post<{ Body: CreatePlaylistSchema }>(
+  instance.post<{ Body: CreatePlaylistDto }>(
     "/",
-    { preHandler: instance.validateBody(CreatePlaylistSchema) },
+    { preHandler: instance.validateBody(CreatePlaylistDto) },
     async (request, reply) => {
       const playlist = await prisma.playlist.create({
         data: {
@@ -40,9 +40,9 @@ export default async function playlistRoutes(instance: FastifyInstance) {
     reply.send({ success: true, playlists })
   })
 
-  instance.get<{ Params: GetPlaylistSchema }>(
+  instance.get<{ Params: GetPlaylistParamsDto }>(
     "/:id",
-    { preHandler: instance.validateParams(GetPlaylistSchema) },
+    { preHandler: instance.validateParams(GetPlaylistParamsDto) },
     async (request, reply) => {
       const visiblities: Visibility[] = ["public"]
 
@@ -60,9 +60,9 @@ export default async function playlistRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.delete<{ Params: GetPlaylistSchema }>(
+  instance.delete<{ Params: GetPlaylistParamsDto }>(
     "/:id",
-    { preHandler: instance.validateParams(GetPlaylistSchema) },
+    { preHandler: instance.validateParams(GetPlaylistParamsDto) },
     async (request, reply) => {
       try {
         const playlist = await prisma.playlist.findUnique({
@@ -86,9 +86,9 @@ export default async function playlistRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.post<{ Params: AddMusicToPlaylistSchema }>(
+  instance.post<{ Params: AddMusicToPlaylistDto }>(
     "/:id/music/:musicId",
-    { preHandler: instance.validateParams(AddMusicToPlaylistSchema) },
+    { preHandler: instance.validateParams(AddMusicToPlaylistDto) },
     async (request, reply) => {
       const [music, playlist] = await Promise.all([
         prisma.music.findUnique({ where: { id: +request.params.musicId } }),
@@ -113,9 +113,9 @@ export default async function playlistRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.get<{ Params: SearchParamsSchema }>(
+  instance.get<{ Params: SearchParamsDto }>(
     "/search/:query",
-    { preHandler: instance.validateParams(SearchParamsSchema) },
+    { preHandler: instance.validateParams(SearchParamsDto) },
     async (request, reply) => {
       const playlists = await prisma.playlist.findMany({
         where: {

@@ -2,7 +2,12 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "sourceMap": true
+    "sourceMap": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

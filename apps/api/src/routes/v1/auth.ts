@@ -1,13 +1,15 @@
 import { FastifyInstance } from "fastify"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
+import { LoginDto, RegisterDto } from "@kmotion/validations"
+import { LoginResponse } from "@kmotion/types"
+import { userMapper } from "@kmotion/mappers"
 import prisma from "../../services/prisma"
 import { comparePassword, hashPassword } from "../../utils/security"
 import { UnauthorizedException } from "../../exceptions/http/UnauthorizedException"
-import { LoginDto, RegisterDto } from "@kmotion/validations"
 
 export default async function authRoutes(instance: FastifyInstance) {
-  instance.post<{ Body: LoginDto }>(
+  instance.post<{ Body: LoginDto; Reply: LoginResponse }>(
     "/login",
     { preHandler: instance.validateBody(LoginDto) },
     async (request, reply) => {
@@ -23,12 +25,12 @@ export default async function authRoutes(instance: FastifyInstance) {
       if (!user.isActivate)
         throw new UnauthorizedException("Your account must be validate by an admin. Please Wait")
 
-      delete user.password
+      const mappedUser = userMapper.one(user)
 
-      request.session.user = user
+      request.session.user = mappedUser
       request.session.isLogin = true
 
-      reply.send({ success: true, user })
+      reply.send({ success: true, user: mappedUser })
     }
   )
 
@@ -62,10 +64,6 @@ export default async function authRoutes(instance: FastifyInstance) {
   instance.post("/logout", async (request, reply) => {
     request.session.destroy()
 
-    reply.send({ success: true })
-  })
-
-  instance.post("/test", (request, reply) => {
     reply.send({ success: true })
   })
 }
