@@ -6,7 +6,7 @@ import {
   IsString,
   MaxLength,
   Min,
-  MinLength
+  MinLength,
 } from "class-validator"
 import { Type } from "class-transformer"
 

@@ -21,7 +21,7 @@ abstract class HttpException extends Exception {
   toJSON(): object {
     const base: { success: false; message: string; errors?: object } = {
       success: false,
-      message: this.message
+      message: this.message,
     }
 
     if (typeof this.errors !== "undefined") base.errors = this.errors

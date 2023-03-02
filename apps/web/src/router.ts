@@ -1,26 +1,31 @@
-import { ReactRouter, RootRoute, Route, lazy } from "@tanstack/react-router";
+import { ReactRouter, RootRoute, Route, lazy } from "@tanstack/react-router"
 
-import Root from "./pages/Root";
+import Root from "./pages/Root"
 
-const rootRoute = new RootRoute({ component: Root });
+const rootRoute = new RootRoute({ component: Root })
 
 const indexRoute = new Route({
   path: "/",
   component: lazy(() => import("./pages/Home")),
-  getParentRoute: () => rootRoute
-});
+  getParentRoute: () => rootRoute,
+})
 
-const routeTree = rootRoute.addChildren([indexRoute]);
+const authRootRoute = new RootRoute({
+  component: lazy(() => import("./pages/auth/Root")),
+})
+
+const authRouteTree = authRootRoute.addChildren([])
+
+const routeTree = rootRoute.addChildren([indexRoute])
 
 export const router = new ReactRouter({
   routeTree,
   defaultPreload: "intent",
-  defaultPreloadDelay: 200
-});
-
+  defaultPreloadDelay: 200,
+})
 
 declare module "@tanstack/react-router" {
   interface Register {
-    router: typeof router;
+    router: typeof router
   }
 }

@@ -1,1 +1,1 @@
-export type Foo = { success: true };
+export type Foo = { success: true }

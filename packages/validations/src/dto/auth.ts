@@ -1,28 +1,28 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
-import { Dto } from "../lib/Schema";
+import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator"
+import { Dto } from "../lib/Schema"
 
 export class LoginDto extends Dto {
   @IsString()
   @IsNotEmpty()
-  email!: string;
+  email!: string
 
   @IsString()
   @IsNotEmpty()
-  password!: string;
+  password!: string
 }
 
 export class RegisterDto extends Dto {
   @IsEmail()
   @IsNotEmpty()
-  email!: string;
+  email!: string
 
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
-  password!: string;
+  password!: string
 
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
-  name!: string;
+  name!: string
 }

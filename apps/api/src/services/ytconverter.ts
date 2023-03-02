@@ -39,14 +39,14 @@ export default class YtConverter {
   public download(youtubeId: string): Promise<any> {
     return fetch(`${this._url}/download/${youtubeId}`, {
       method: "GET",
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     })
   }
 
   public stream(youtubeId: string): Promise<Buffer> {
     return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.mp3`, {
       method: "GET",
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     })
       .then((response) => response.arrayBuffer())
       .then((buffer) => Buffer.from(buffer))
@@ -55,7 +55,7 @@ export default class YtConverter {
   public cover(youtubeId: string): Promise<Buffer> {
     return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.jpg`, {
       method: "GET",
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     })
       .then((response) => response.arrayBuffer())
       .then((buffer) => Buffer.from(buffer))
@@ -64,7 +64,7 @@ export default class YtConverter {
   public delete(youtubeId: string): Promise<any> {
     return fetch(`${this._url}/delete/${youtubeId}`, {
       method: "DELETE",
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     }).then((response) => response.json())
   }
 }

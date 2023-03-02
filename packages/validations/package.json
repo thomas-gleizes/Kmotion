@@ -1,13 +1,18 @@
 {
   "name": "@kmotion/validations",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "src/index.ts",
+  "exports": {
+    "*": "./src/index.ts"
+  },
   "dependencies": {
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "lodash": "^4.17.21",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
-    "@types/validator": "^13.7.12"
+    "@types/validator": "^13.7.12",
+    "typescript": "^4.9.5"
   }
 }

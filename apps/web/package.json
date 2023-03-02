@@ -9,10 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hookform/resolvers": "^2.9.11",
+    "@kmotion/validations": "workspace:*",
     "@tanstack/react-query": "^4.24.10",
     "@tanstack/react-router": "0.0.1-beta.83",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.3"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

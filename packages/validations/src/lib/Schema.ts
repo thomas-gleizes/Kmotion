@@ -1,2 +1,1 @@
-export abstract class Dto {
-}
+export abstract class Dto {}

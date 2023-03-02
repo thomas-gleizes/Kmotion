@@ -1,8 +1,12 @@
-import React from "react";
-import { Outlet } from "@tanstack/react-router";
+import React from "react"
+import { Outlet, SyncRouteComponent } from "@tanstack/react-router"
 
-export default function Root() {
-  return <div>
-    <Outlet />
-  </div>;
+const Root: SyncRouteComponent = () => {
+  return (
+    <div>
+      <Outlet />
+    </div>
+  )
 }
+
+export default Root

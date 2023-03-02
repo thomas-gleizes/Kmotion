@@ -1,20 +1,20 @@
-import { FastifyInstance } from "fastify";
-import { Visibility } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { FastifyInstance } from "fastify"
+import { Visibility } from "@prisma/client"
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
-import prisma from "../../services/prisma";
-import isLogin from "../../middlewares/isLogin";
-import isAdmin from "../../middlewares/isAdmin";
-import NotFoundException from "../../exceptions/http/NotFoundException";
-import { SearchParamsSchema } from "../../schemas/generic";
+import prisma from "../../services/prisma"
+import isLogin from "../../middlewares/isLogin"
+import isAdmin from "../../middlewares/isAdmin"
+import NotFoundException from "../../exceptions/http/NotFoundException"
+import { SearchParamsSchema } from "../../schemas/generic"
 import {
   AddMusicToPlaylistSchema,
   CreatePlaylistSchema,
   GetPlaylistSchema,
-} from "../../schemas/playlist";
+} from "../../schemas/playlist"
 
 export default async function playlistRoutes(instance: FastifyInstance) {
-  instance.addHook("onRequest", isLogin);
+  instance.addHook("onRequest", isLogin)
 
   instance.post<{ Body: CreatePlaylistSchema }>(
     "/",
@@ -28,40 +28,37 @@ export default async function playlistRoutes(instance: FastifyInstance) {
           authorId: request.session.user.id,
           visibility: request.body.visibility,
         },
-      });
+      })
 
-      reply.status(201).send({ success: true, playlist });
+      reply.status(201).send({ success: true, playlist })
     }
-  );
+  )
 
   instance.get("/", { onRequest: [isAdmin] }, async (request, reply) => {
-    const playlists = await prisma.playlist.findMany();
+    const playlists = await prisma.playlist.findMany()
 
-    reply.send({ success: true, playlists });
-  });
+    reply.send({ success: true, playlists })
+  })
 
   instance.get<{ Params: GetPlaylistSchema }>(
     "/:id",
     { preHandler: instance.validateParams(GetPlaylistSchema) },
     async (request, reply) => {
-      const visiblities: Visibility[] = ["public"];
+      const visiblities: Visibility[] = ["public"]
 
       const playlist = await prisma.playlist.findUnique({
         where: { id: request.params.id },
-      });
+      })
 
-      if (!playlist) throw new NotFoundException("Playlist not found");
-      if (
-        request.session.user.isAdmin ||
-        playlist.authorId === request.session.user.id
-      )
-        visiblities.push("private");
+      if (!playlist) throw new NotFoundException("Playlist not found")
+      if (request.session.user.isAdmin || playlist.authorId === request.session.user.id)
+        visiblities.push("private")
       if (!visiblities.includes(playlist.visibility))
-        throw new NotFoundException("Playlist not found");
+        throw new NotFoundException("Playlist not found")
 
-      reply.send({ success: true, playlist });
+      reply.send({ success: true, playlist })
     }
-  );
+  )
 
   instance.delete<{ Params: GetPlaylistSchema }>(
     "/:id",
@@ -70,28 +67,24 @@ export default async function playlistRoutes(instance: FastifyInstance) {
       try {
         const playlist = await prisma.playlist.findUnique({
           where: { id: +request.params.id },
-        });
+        })
 
-        if (!playlist) throw new NotFoundException("Playlist not found");
+        if (!playlist) throw new NotFoundException("Playlist not found")
 
-        if (
-          !request.session.user.isAdmin &&
-          !(playlist.authorId === +request.session.user.id)
-        )
-          throw new NotFoundException("Playlist not found");
+        if (!request.session.user.isAdmin && !(playlist.authorId === +request.session.user.id))
+          throw new NotFoundException("Playlist not found")
 
-        await prisma.playlist.delete({ where: { id: playlist.id } });
+        await prisma.playlist.delete({ where: { id: playlist.id } })
 
-        reply.send({ success: true, playlist });
+        reply.send({ success: true, playlist })
       } catch (err) {
         if (err instanceof PrismaClientKnownRequestError)
-          if (err.code === "P2025")
-            throw new NotFoundException("Playlist not found");
+          if (err.code === "P2025") throw new NotFoundException("Playlist not found")
 
-        throw err;
+        throw err
       }
     }
-  );
+  )
 
   instance.post<{ Params: AddMusicToPlaylistSchema }>(
     "/:id/music/:musicId",
@@ -100,16 +93,13 @@ export default async function playlistRoutes(instance: FastifyInstance) {
       const [music, playlist] = await Promise.all([
         prisma.music.findUnique({ where: { id: +request.params.musicId } }),
         prisma.playlist.findUnique({ where: { id: +request.params.id } }),
-      ]);
+      ])
 
-      if (!music) throw new NotFoundException("Music not found");
-      if (!playlist) throw new NotFoundException("Playlist not found");
+      if (!music) throw new NotFoundException("Music not found")
+      if (!playlist) throw new NotFoundException("Playlist not found")
 
-      if (
-        !(playlist.authorId === request.session.user.id) &&
-        !request.session.user.isAdmin
-      )
-        throw new NotFoundException("Playlist not found");
+      if (!(playlist.authorId === request.session.user.id) && !request.session.user.isAdmin)
+        throw new NotFoundException("Playlist not found")
 
       const entry = await prisma.playlistEntry.create({
         data: {
@@ -117,11 +107,11 @@ export default async function playlistRoutes(instance: FastifyInstance) {
           musicId: music.id,
           position: 0,
         },
-      });
+      })
 
-      reply.send({ success: true, entry });
+      reply.send({ success: true, entry })
     }
-  );
+  )
 
   instance.get<{ Params: SearchParamsSchema }>(
     "/search/:query",
@@ -134,9 +124,9 @@ export default async function playlistRoutes(instance: FastifyInstance) {
             { slug: { contains: request.params.query } },
           ],
         },
-      });
+      })
 
-      reply.send({ success: true, playlists });
+      reply.send({ success: true, playlists })
     }
-  );
+  )
 }
