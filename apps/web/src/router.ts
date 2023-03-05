@@ -1,8 +1,11 @@
-import { ReactRouter, RootRoute, Route, lazy } from "@tanstack/react-router"
+import { lazy, ReactRouter, RootRoute, Route } from "@tanstack/react-router"
 
 import Root from "./pages/Root"
+import NotFound from "./pages/NotFound"
 
-const rootRoute = new RootRoute({ component: Root })
+const rootRoute = new RootRoute({
+  component: Root,
+})
 
 const indexRoute = new Route({
   path: "/",
@@ -28,7 +31,17 @@ const authRoutes = [
   }),
 ]
 
-const routeTree = rootRoute.addChildren([indexRoute, authRootRoute.addChildren(authRoutes)])
+const notFoundRoute = new Route({
+  path: "*",
+  component: NotFound,
+  getParentRoute: () => rootRoute,
+})
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  authRootRoute.addChildren(authRoutes),
+  notFoundRoute,
+])
 
 export const router = new ReactRouter({
   routeTree,

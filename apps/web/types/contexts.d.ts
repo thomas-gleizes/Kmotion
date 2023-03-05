@@ -16,5 +16,5 @@ declare type AuthContextValues = AuthenticatedValues | UnauthenticatedValues
 declare type IsAuth = {
   ["yes"]: AuthenticatedValues
   ["no"]: UnauthenticatedValues
-  ["dont_now"]: AuthContextValues
+  ["dont_know"]: AuthContextValues
 }

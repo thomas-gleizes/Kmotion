@@ -86,8 +86,21 @@ export default async function playlistRoutes(instance: FastifyInstance) {
     }
   )
 
+  instance.get<{ Params: GetPlaylistParamsDto }>("/:id/musics", async (request, reply) => {
+    const playlist = await prisma.playlist.findUnique({ where: { id: +request.params.id } })
+
+    if (!playlist) throw new NotFoundException("Playlist not found")
+
+    const entries = await prisma.playlistEntry.findMany({
+      where: { playlistId: playlist.id },
+      orderBy: { position: "asc" },
+    })
+
+    return reply.send({ success: true, entries })
+  })
+
   instance.post<{ Params: AddMusicToPlaylistDto }>(
-    "/:id/music/:musicId",
+    "/:id/musics/:musicId",
     { preHandler: instance.validateParams(AddMusicToPlaylistDto) },
     async (request, reply) => {
       const [music, playlist] = await Promise.all([

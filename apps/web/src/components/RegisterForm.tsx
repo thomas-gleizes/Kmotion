@@ -25,7 +25,7 @@ const RegisterForm: Component = () => {
     formState: { errors },
   } = useForm<RegisterDto>({ resolver, defaultValues })
 
-  const authContext = useAuthContext("dont_now")
+  const authContext = useAuthContext("dont_know")
 
   if (authContext.authenticated) return <Navigate to="/" />
   const onSubmit = async (data: RegisterDto) => {

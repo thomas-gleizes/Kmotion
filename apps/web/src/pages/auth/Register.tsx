@@ -15,13 +15,13 @@ const RegisterPage: Page = () => {
       <RegisterForm />
       <div className="flex items-center justify-between mt-5">
         <div>
-          <Link to="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
-            mot de passe oublié ?
+          <Link to="/auth/login" className="text-sm text-blue-600 hover:underline">
+            Déjà inscrit ?
           </Link>
         </div>
         <div>
-          <Link to="/auth/login" className="text-sm text-blue-600 hover:underline">
-            Déjà inscrit ?
+          <Link to="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
+            mot de passe oublié ?
           </Link>
         </div>
       </div>
