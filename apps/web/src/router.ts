@@ -23,7 +23,7 @@ const authRoutes = [
   }),
   new Route({
     path: "register",
-    component: lazy(() => import("./pages/auth/Login")),
+    component: lazy(() => import("./pages/auth/Register")),
     getParentRoute: () => authRootRoute,
   }),
 ]

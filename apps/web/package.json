@@ -13,10 +13,12 @@
     "@kmotion/validations": "workspace:*",
     "@tanstack/react-query": "^4.24.10",
     "@tanstack/react-router": "0.0.1-beta.83",
+    "classnames": "^2.3.2",
     "daisyui": "^2.51.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.3",
+    "reflect-metadata": "^0.1.13",
     "use-local-storage-state": "^18.1.2"
   },
   "devDependencies": {

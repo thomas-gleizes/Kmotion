@@ -2,43 +2,43 @@ import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { classValidatorResolver } from "@hookform/resolvers/class-validator"
 import { Navigate } from "@tanstack/react-router"
-import { LoginDto } from "@kmotion/validations"
+import { RegisterDto } from "@kmotion/validations"
 
 import { api } from "../utils/Api"
 import { useAuthContext } from "../contexts/auth"
+import classnames from "classnames"
 
-const resolver = classValidatorResolver(LoginDto)
+const resolver = classValidatorResolver(RegisterDto)
 
-const defaultValues: LoginDto = {
+const defaultValues: RegisterDto = {
   email: "kalat@kmotion.fr",
+  name: "Kalat",
   password: "azerty123",
 }
 
-const LoginForm: Component = () => {
+const RegisterForm: Component = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginDto>({ resolver, defaultValues })
+  } = useForm<RegisterDto>({ resolver, defaultValues })
 
   const authContext = useAuthContext("dont_now")
 
   if (authContext.authenticated) return <Navigate to="/" />
-  const onSubmit = async (data: LoginDto) => {
+  const onSubmit = async (data: RegisterDto) => {
     try {
       setIsSubmitting(true)
-      cons;t response = await api.login(data)
-
-      aut;hContext.login(response.user)
-    } catc;h (err) {
+      await api.register(data)
+    } catch (err) {
       console.log("Error:", err)
-    } fina;lly {
+    } finally {
       setIsSubmitting(false)
     }
   }
-;
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col space-y-2">
@@ -52,7 +52,21 @@ const LoginForm: Component = () => {
               {...register("email")}
               type="text"
               placeholder="info@site.com"
-              className="input input-bordered ring-0"
+              className="input input-bordered"
+            />
+          </label>
+        </div>
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">Pseudo</span>
+          </label>
+          <label className="input-group">
+            <span>Pseudo</span>
+            <input
+              {...register("name")}
+              type="text"
+              placeholder="kalat"
+              className="input input-bordered"
             />
           </label>
         </div>
@@ -66,7 +80,7 @@ const LoginForm: Component = () => {
               {...register("password")}
               type="password"
               placeholder="info@site.com"
-              className="input input-bordered ring-0"
+              className="input input-bordered"
             />
           </label>
         </div>
@@ -78,8 +92,16 @@ const LoginForm: Component = () => {
               Chargement
             </button>
           ) : (
-            <button className="btn btn-block bg-gradient-to-bl from-blue-600 to-blue-900 shadow border-800 transition transform hover:scale-105">
-              Connexion
+            <button
+              type="submit"
+              className={classnames(
+                "btn btn-block shadow border-800 transition transform hover:scale-105",
+                isSubmitting
+                  ? "loading text-gray-800"
+                  : " bg-gradient-to-bl from-blue-600 to-blue-900 border-800"
+              )}
+            >
+              S'inscrire
             </button>
           )}
         </div>
@@ -88,4 +110,4 @@ const LoginForm: Component = () => {
   )
 }
 
-export default LoginForm
+export default RegisterForm

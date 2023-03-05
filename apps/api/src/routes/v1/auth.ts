@@ -39,7 +39,7 @@ export default async function authRoutes(instance: FastifyInstance) {
     { preHandler: instance.validateBody(RegisterDto) },
     async (request, reply) => {
       try {
-        await prisma.user.create({
+        const user = await prisma.user.create({
           data: {
             email: request.body.email,
             password: await hashPassword(request.body.password),
@@ -47,6 +47,8 @@ export default async function authRoutes(instance: FastifyInstance) {
             slug: request.body.name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
           },
         })
+
+        console.log("User", user)
 
         reply.send({
           success: true,
