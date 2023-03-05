@@ -29,16 +29,15 @@ const LoginForm: Component = () => {
   const onSubmit = async (data: LoginDto) => {
     try {
       setIsSubmitting(true)
-      cons;t response = await api.login(data)
+      const response = await api.login(data)
 
-      aut;hContext.login(response.user)
-    } catc;h (err) {
+      authContext.login(response.user)
+    } catch (err) {
       console.log("Error:", err)
-    } fina;lly {
+    } finally {
       setIsSubmitting(false)
     }
   }
-;
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col space-y-2">
