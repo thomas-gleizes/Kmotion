@@ -1,6 +1,7 @@
 import React from "react"
 import { Outlet, SyncRouteComponent } from "@tanstack/react-router"
 
+import Header from "../components/Header"
 import ContextsProvider from "../contexts"
 
 const Root: SyncRouteComponent = () => {
@@ -11,6 +12,7 @@ const Root: SyncRouteComponent = () => {
           <div className="camera" />
           <div className="display relative">
             <div className="artboard artboard-demo phone-3">
+              <Header />
               <Outlet />
             </div>
           </div>

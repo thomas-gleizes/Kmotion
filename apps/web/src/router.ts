@@ -31,6 +31,20 @@ const authRoutes = [
   }),
 ]
 
+const appRootRoute = new Route({
+  path: "app",
+  getParentRoute: () => rootRoute,
+  component: lazy(() => import("./pages/app/Root")),
+})
+
+const appRoutes = [
+  new Route({
+    path: "playlists",
+    component: lazy(() => import("./pages/app/Playlist")),
+    getParentRoute: () => appRootRoute,
+  }),
+]
+
 const notFoundRoute = new Route({
   path: "*",
   component: NotFound,
@@ -39,6 +53,7 @@ const notFoundRoute = new Route({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  appRootRoute.addChildren(appRoutes),
   authRootRoute.addChildren(authRoutes),
   notFoundRoute,
 ])

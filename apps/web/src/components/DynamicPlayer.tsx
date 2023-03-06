@@ -1,23 +1,43 @@
+import { FaForward, FaPause, FaPlay } from "react-icons/all"
+import { useState } from "react"
+
 const music = {
-  id: 1,
-  title: "Satellite Empire & DREAMOIR - Apocrypha I: Warrior's Vigil",
+  id: 11,
+  title: "AViVA - GRRRLS",
   artist: "MrSuicideSheep",
-  youtubeId: "I_qskCKAlFA",
+  youtubeId: "Shk7qcvqDOo",
   downloaderId: 1,
-  createdAt: "2023-03-05T14:33:05.418Z",
-  updatedAt: "2023-03-05T14:33:05.418Z",
+  createdAt: "2023-03-05T14:33:05.470Z",
+  updatedAt: "2023-03-05T14:33:05.470Z",
 }
 
 const DynamicPlayer: Component = () => {
+  const [isPlaying, setIsPlaying] = useState<boolean>(Math.random() > 0.5)
+
   return (
-    <div className="absolute bottom-0 right-0 w-full">
-      <div className="h-[50px] bg-black">
-        <div className="w">
-          <img className="h-[40px] rounded-md" src={`/api/v1/musics/${music.id}/cover`} />
+    <div className="h-[50px] flex items-center justify-between py-2 px-4 backdrop-blur bg-black bg-opacity-90 border-b border-gray-800">
+      <div className="h-full flex items-center space-x-4">
+        <div className="h-full">
+          <img className="h-full rounded-md shadow-xl" src={`/api/v1/musics/${music.id}/cover`} />
+        </div>
+        <div>
+          <div className="text-sm text-white font-bold text-ellipsis">{music.title}</div>
         </div>
       </div>
-      <div className="h-[40px] bg-gray-300">
-        <div></div>
+      <div className="flex justify-end space-x-10">
+        <div>
+          <i
+            className="text-2xl text-white cursor-pointer"
+            onClick={() => setIsPlaying(!isPlaying)}
+          >
+            {isPlaying ? <FaPause /> : <FaPlay />}
+          </i>
+        </div>
+        <div>
+          <i className="text-2xl text-white cursor-pointer">
+            <FaForward />
+          </i>
+        </div>
       </div>
     </div>
   )
