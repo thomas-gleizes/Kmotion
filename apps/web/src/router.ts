@@ -50,17 +50,17 @@ const appRootRoute = new Route({
 const appRoutes = [
   new Route({
     path: "playlists",
-    component: lazy(() => import("./pages/app/Playlist")),
+    component: lazy(() => import("./pages/app/Playlists")),
     getParentRoute: () => appRootRoute,
   }),
   new Route({
     path: "musics",
-    component: lazy(() => import("./pages/app/Playlist")),
+    component: lazy(() => import("./pages/app/Playlists")),
     getParentRoute: () => appRootRoute,
   }),
   new Route({
     path: "settings",
-    component: lazy(() => import("./pages/app/Playlist")),
+    component: lazy(() => import("./pages/app/Playlists")),
     getParentRoute: () => appRootRoute,
   }),
   new Route({

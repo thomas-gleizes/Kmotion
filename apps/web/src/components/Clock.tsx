@@ -11,7 +11,7 @@ const Clock: Component = () => {
 
   return (
     <div className="flex items-center space-x-2">
-      <div className="text-sm text-gray-500 font-bold">{time.toLocaleTimeString()}</div>
+      <div className="text-sm text-white font-bold">{time.toLocaleTimeString()}</div>
     </div>
   )
 }
