@@ -4,10 +4,10 @@ import { FaList, FaMusic, FaSlidersH } from "react-icons/all"
 
 const NavBar = () => {
   return (
-    <div className="bg-black bg-opacity-90 pb-2 backdrop-blur rounded-b-2xl">
+    <div className="bg-black bg-opacity-80 pb-2 backdrop-blur rounded-b-2xl">
       <div className="h-full flex justify-evenly items-center py-4">
         <div>
-          <Link to="/musics/playlists">
+          <Link to="/app/musics">
             <i className="text-2xl font-bolder text-red-800 cursor-pointer">
               <FaMusic />
             </i>
@@ -21,7 +21,7 @@ const NavBar = () => {
           </Link>
         </div>
         <div>
-          <Link to="app/settings">
+          <Link to="/app/settings">
             <i className="text-2xl font-bolder text-red-800 cursor-pointer">
               <FaSlidersH />
             </i>

@@ -1,16 +1,24 @@
 import React from "react"
-import { Outlet } from "@tanstack/react-router"
+import { Navigate, Outlet } from "@tanstack/react-router"
 import DynamicPlayer from "../../components/DynamicPlayer"
 import NavBar from "../../components/NavBar"
+import { useAuthContext } from "../../contexts/auth"
+import SimpleBar from "simplebar-react"
 
 const AppRoot: Component = () => {
+  const authContext = useAuthContext("dont_know")
+
+  if (!authContext.authenticated) return <Navigate to="/" />
+
   return (
     <>
-      <Outlet />
-      <div className="absolute bottom-0 right-0 w-full">
+      <SimpleBar style={{ maxHeight: "736px" }}>
+        <Outlet />
+      </SimpleBar>
+      <section className="absolute bottom-0 right-0 w-full">
         <DynamicPlayer />
         <NavBar />
-      </div>
+      </section>
     </>
   )
 }

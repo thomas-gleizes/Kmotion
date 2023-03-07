@@ -1,4 +1,4 @@
-import { Visibility, Playlist } from "@prisma/client"
+import { Visibility } from "@prisma/client"
 
 export interface IUser {
   id: number
@@ -16,6 +16,10 @@ export interface IMusic {
   artist: string | null
   youtubeId: string
   downloaderId: number
+  links: {
+    cover: string
+    stream: string
+  }
 }
 
 export interface IPlaylist {

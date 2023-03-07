@@ -11,9 +11,11 @@ const Root: SyncRouteComponent = () => {
         <div className="mockup-phone">
           <div className="camera" />
           <div className="display relative">
-            <div className="artboard artboard-demo phone-3">
+            <div className="artboard artboard-demo phone-3 block pt-8 bg-[#0E0E0E]">
               <Header />
-              <Outlet />
+              <div className="block h-full w-full">
+                <Outlet />
+              </div>
             </div>
           </div>
         </div>

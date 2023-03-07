@@ -1,6 +1,8 @@
 import { lazy, ReactRouter, RootRoute, Route } from "@tanstack/react-router"
 
 import Root from "./pages/Root"
+import AppRoot from "./pages/app/Root"
+import AuthRoot from "./pages/auth/Root"
 import NotFound from "./pages/NotFound"
 
 const rootRoute = new RootRoute({
@@ -13,9 +15,11 @@ const indexRoute = new Route({
   getParentRoute: () => rootRoute,
 })
 
+// Auth => /auth/*
 const authRootRoute = new Route({
   path: "auth",
   getParentRoute: () => rootRoute,
+  component: AuthRoot,
 })
 
 const authRoutes = [
@@ -29,18 +33,39 @@ const authRoutes = [
     component: lazy(() => import("./pages/auth/Register")),
     getParentRoute: () => authRootRoute,
   }),
+  new Route({
+    path: "*",
+    component: NotFound,
+    getParentRoute: () => authRootRoute,
+  }),
 ]
 
+// App => /app/*
 const appRootRoute = new Route({
   path: "app",
   getParentRoute: () => rootRoute,
-  component: lazy(() => import("./pages/app/Root")),
+  component: AppRoot,
 })
 
 const appRoutes = [
   new Route({
     path: "playlists",
     component: lazy(() => import("./pages/app/Playlist")),
+    getParentRoute: () => appRootRoute,
+  }),
+  new Route({
+    path: "musics",
+    component: lazy(() => import("./pages/app/Playlist")),
+    getParentRoute: () => appRootRoute,
+  }),
+  new Route({
+    path: "settings",
+    component: lazy(() => import("./pages/app/Playlist")),
+    getParentRoute: () => appRootRoute,
+  }),
+  new Route({
+    path: "*",
+    component: NotFound,
     getParentRoute: () => appRootRoute,
   }),
 ]

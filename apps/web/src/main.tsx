@@ -1,6 +1,7 @@
 import React from "react"
 import ReactDom from "react-dom/client"
 import "reflect-metadata"
+import "simplebar-react/dist/simplebar.min.css"
 
 import App from "./App"
 import "./styles/global.css"

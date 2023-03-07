@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify"
 import { Music } from "@prisma/client"
 
 import { DownloadMusicParamsDto, GetMusicPramsDto, SearchParamsDto } from "@kmotion/validations"
+import { musicMapper } from "@kmotion/mappers"
 import YtConverter from "../../services/ytconverter"
 import prisma from "../../services/prisma"
 import isLogin from "../../middlewares/isLogin"
@@ -13,6 +14,12 @@ export default async function musicRoutes(instance: FastifyInstance) {
   instance.addHook("onRequest", isLogin)
 
   const ytConverter = YtConverter.getInstance()
+
+  instance.get("/", { onRequest: [isAdmin] }, async (request, reply) => {
+    const musics = await prisma.music.findMany({ orderBy: { createdAt: "desc" } })
+
+    return reply.send({ success: true, musics: musicMapper.many(musics) })
+  })
 
   instance.get("/sync", { onRequest: [isAdmin] }, async (request, reply) => {
     const musics = await ytConverter.musics()
@@ -40,7 +47,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
       }
     }
 
-    reply.send({ success: true, musics: newMusics })
+    reply.send({ success: true, musics: musicMapper.many(newMusics) })
   })
 
   instance.post<{ Params: DownloadMusicParamsDto }>(
@@ -69,7 +76,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
         },
       })
 
-      reply.send({ success: "true", music, info })
+      reply.send({ success: "true", music: musicMapper.one(music), info })
     }
   )
 
@@ -83,7 +90,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       if (!music) throw new NotFoundException("Music not found")
 
-      reply.send({ success: true, music })
+      reply.send({ success: true, music: musicMapper.one(music) })
     }
   )
 
@@ -144,7 +151,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
         ytConverter.delete(music.youtubeId),
       ])
 
-      reply.status(202).send({ success: true, music })
+      reply.status(202).send({ success: true })
     }
   )
 
@@ -161,7 +168,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
         },
       })
 
-      reply.send({ success: true, musics })
+      reply.send({ success: true, musics: musicMapper.many(musics) })
     }
   )
 }
