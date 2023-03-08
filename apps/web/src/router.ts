@@ -54,6 +54,11 @@ const appRoutes = [
     getParentRoute: () => appRootRoute,
   }),
   new Route({
+    path: "playlist/$id",
+    component: lazy(() => import("./pages/app/Playlist")),
+    getParentRoute: () => appRootRoute,
+  }),
+  new Route({
     path: "musics",
     component: lazy(() => import("./pages/app/Playlists")),
     getParentRoute: () => appRootRoute,

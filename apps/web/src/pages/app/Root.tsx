@@ -12,7 +12,7 @@ const AppRoot: Component = () => {
 
   return (
     <>
-      <SimpleBar style={{ maxHeight: "736px" }}>
+      <SimpleBar style={{ height: "100%", maxHeight: "736px" }}>
         <Outlet />
       </SimpleBar>
       <section className="absolute bottom-0 right-0 w-full">

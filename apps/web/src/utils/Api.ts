@@ -1,4 +1,4 @@
-import { LoginResponse, LogoutResponse, PlaylistsResponse, RegisterResponse } from "@kmotion/types"
+import { LoginResponse, LogoutResponse, PlaylistResponse, PlaylistsResponse, RegisterResponse } from "@kmotion/types"
 import { LoginDto, RegisterDto } from "@kmotion/validations"
 import { Fetcher } from "./Fetcher"
 
@@ -29,7 +29,7 @@ class Api {
     return this.fetcher.get("playlists", {}).then(this.toJson)
   }
 
-  public fetchPlaylist(id: number): Promise<PlaylistsResponse> {
+  public fetchPlaylist(id: number): Promise<PlaylistResponse> {
     return this.fetcher.get(`playlists/${id}`, {}).then(this.toJson)
   }
 }

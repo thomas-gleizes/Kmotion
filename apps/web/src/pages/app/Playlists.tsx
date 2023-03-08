@@ -1,4 +1,5 @@
 import React from "react"
+import { Link } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { FaChevronRight, FaPlus } from "react-icons/all"
 
@@ -7,7 +8,7 @@ import { api } from "../../utils/Api"
 
 const PlaylistPage: Component = () => {
   const { data: playlists } = useQuery<IPlaylist[]>({
-    queryKey: ["playlist"],
+    queryKey: ["playlists"],
     queryFn: () => api.fetchPlaylists().then((response) => response.playlists),
     initialData: [],
   })
@@ -30,8 +31,12 @@ const PlaylistPage: Component = () => {
             </div>
           </div>
         </div>
-        {[...playlists, ...playlists, ...playlists].map((playlist) => (
-          <div className="h-[100px] w-full cursor-pointer">
+        {[...playlists, ...playlists].map((playlist, index) => (
+          <Link
+            key={index}
+            to={`/app/playlist/${playlist.id}`}
+            className="h-[100px] w-full cursor-pointer"
+          >
             <div className="flex items-center h-full">
               <div className="grid grid-cols-2 h-full bg-neutral-800 rounded-xl grid-rows-2 basis-1/4">
                 <div
@@ -44,7 +49,7 @@ const PlaylistPage: Component = () => {
                 />
                 <div
                   className="h-[50px] w-[50px] bg-cover bg-center rounded-bl-xl"
-                  style={{ backgroundImage: "url(/api/v1/musics/20/cover)" }}
+                  style={{ backgroundImage: "url(/api/v1/musics/37/cover)" }}
                 />
                 <div
                   className="h-[50px] w-[50px] bg-cover bg-center rounded-br-xl"
@@ -65,7 +70,7 @@ const PlaylistPage: Component = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

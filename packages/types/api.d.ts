@@ -17,3 +17,7 @@ export type LogoutResponse = SuccessData
 interface PlaylistsResponse extends SuccessData {
   playlists: IPlaylist[]
 }
+
+interface PlaylistResponse extends SuccessData {
+  playlist: IPlaylist
+}
