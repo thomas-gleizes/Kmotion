@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -65,5 +66,22 @@ export class AddMusicToPlaylistDto {
   @IsNotEmpty()
   @Min(1)
   @Type(() => Number)
-  musicId!: number
+  musicId!: numbe
+  r
+}
+
+export class QueryGetPlaylist {
+  @IsBoolean()
+  @IsOptional()
+  @Type(() => Boolean)
+  entries?: boolea
+  n
+}
+
+export class QueryGetPlaylistEntries {
+  @IsBoolean()
+  @IsOptional()
+  @Type(() => Boolean)
+  musics?: boolea
+  n
 }

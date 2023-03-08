@@ -1,7 +1,13 @@
-import { LoginResponse, LogoutResponse, PlaylistResponse, PlaylistsResponse, RegisterResponse } from "@kmotion/types"
+import {
+  LoginResponse,
+  LogoutResponse,
+  PlaylistResponse,
+  PlaylistsResponse,
+  RegisterResponse,
+} from "@kmotion/types"
 import { LoginDto, RegisterDto } from "@kmotion/validations"
 import { Fetcher } from "./Fetcher"
-
+import { Prisma } from "@prisma/client"
 class Api {
   private fetcher: Fetcher
 
@@ -25,12 +31,22 @@ class Api {
     return this.fetcher.post("auth/logout").then(this.toJson)
   }
 
-  public fetchPlaylists(search?: { limit: number; skip: number }): Promise<PlaylistsResponse> {
-    return this.fetcher.get("playlists", {}).then(this.toJson)
+  public fetchPlaylists(withEntries: boolean): Promise<PlaylistsResponse> {
+    return this.fetcher
+      .get("playlists" + this.fetcher.parseQueryString({ entries: withEntries }), {})
+      .then(this.toJson)
   }
 
-  public fetchPlaylist(id: number): Promise<PlaylistResponse> {
-    return this.fetcher.get(`playlists/${id}`, {}).then(this.toJson)
+  public fetchPlaylist(id: number, withEntries: boolean): Promise<PlaylistResponse> {
+    return this.fetcher
+      .get(`playlists/${id}` + this.fetcher.parseQueryString({ entries: withEntries }), {})
+      .then(this.toJson)
+  }
+
+  public fetchEntries(id: number, include: Prisma.PlaylistEntryInclude) {
+    return this.fetcher
+      .get("playlists/" + id + "/entries" + this.fetcher.parseQueryString(include))
+      .then(this.toJson)
   }
 }
 

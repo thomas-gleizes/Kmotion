@@ -23,7 +23,7 @@ model User {
   updatedAt  DateTime   @default(now()) @map("updated_at")
 
   playlists Playlist[]
-  Music     Music[]
+  musics     Music[]
 
   @@map("users")
 }

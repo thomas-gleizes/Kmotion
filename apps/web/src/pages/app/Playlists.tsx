@@ -6,10 +6,15 @@ import { FaChevronRight, FaPlus } from "react-icons/all"
 import { IPlaylist } from "@kmotion/types"
 import { api } from "../../utils/Api"
 
+const backgroundImgUrl = (id: string | undefined) => {
+  if (id) return `/api/v1/musics/${id}/cover`
+  return "/api/v1/musics/1/cover"
+}
+
 const PlaylistPage: Component = () => {
   const { data: playlists } = useQuery<IPlaylist[]>({
     queryKey: ["playlists"],
-    queryFn: () => api.fetchPlaylists().then((response) => response.playlists),
+    queryFn: () => api.fetchPlaylists(true).then((response) => response.playlists),
     initialData: [],
   })
 
@@ -31,7 +36,7 @@ const PlaylistPage: Component = () => {
             </div>
           </div>
         </div>
-        {[...playlists, ...playlists].map((playlist, index) => (
+        {playlists.map((playlist, index) => (
           <Link
             key={index}
             to={`/app/playlist/${playlist.id}`}
@@ -41,19 +46,27 @@ const PlaylistPage: Component = () => {
               <div className="grid grid-cols-2 h-full bg-neutral-800 rounded-xl grid-rows-2 basis-1/4">
                 <div
                   className="h-[50x] w-[50px] bg-cover bg-center rounded-tl-xl"
-                  style={{ backgroundImage: "url(/api/v1/musics/22/cover)" }}
+                  style={{
+                    backgroundImage: `url(${backgroundImgUrl(playlist.entries[0]?.musicId)})`,
+                  }}
                 />
                 <div
                   className="h-[50px] w-[50px] bg-cover bg-center rounded-tr-xl"
-                  style={{ backgroundImage: "url(/api/v1/musics/24/cover)" }}
+                  style={{
+                    backgroundImage: `url(${backgroundImgUrl(playlist.entries[1]?.musicId)})`,
+                  }}
                 />
                 <div
                   className="h-[50px] w-[50px] bg-cover bg-center rounded-bl-xl"
-                  style={{ backgroundImage: "url(/api/v1/musics/37/cover)" }}
+                  style={{
+                    backgroundImage: `url(${backgroundImgUrl(playlist.entries[2]?.musicId)})`,
+                  }}
                 />
                 <div
                   className="h-[50px] w-[50px] bg-cover bg-center rounded-br-xl"
-                  style={{ backgroundImage: "url(/api/v1/musics/25/cover)" }}
+                  style={{
+                    backgroundImage: `url(${backgroundImgUrl(playlist.entries[3]?.musicId)})`,
+                  }}
                 />
               </div>
               <div className="basis-3/4 px-2 h-full">

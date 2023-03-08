@@ -39,4 +39,8 @@ export class Fetcher {
   public put(path: string, init?: Omit<RequestInit, "method">) {
     return this.fetch(path, { method: "PUT", ...init })
   }
+
+  public parseQueryString(obj: any): string {
+    return `?${new URLSearchParams(obj).toString()}`
+  }
 }

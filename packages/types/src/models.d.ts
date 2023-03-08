@@ -1,6 +1,6 @@
 import { Visibility } from "@prisma/client"
 
-export interface IUser {
+export type IUser = {
   id: number
   name: string
   email: string
@@ -8,9 +8,12 @@ export interface IUser {
   isAdmin: boolean
   isActivate: boolean
   visibility: Visibility
+} & {
+  playlists?: IPlaylist[]
+  musics?: IMusic[]
 }
 
-export interface IMusic {
+export type IMusic = {
   id: number
   title: string
   artist: string | null
@@ -20,19 +23,28 @@ export interface IMusic {
     cover: string
     stream: string
   }
+} & {
+  playlistEntries?: IPlaylistEntry[]
+  downloader?: IUser
 }
 
-export interface IPlaylist {
+export type IPlaylist = {
   id: number
   title: string
   description: string
   slug: string
   authorId: number
   visibility: Visibility
+} & {
+  author?: IUser
+  entries?: IPlaylistEntry[]
 }
 
-export interface IPlaylistEntry {
+export type IPlaylistEntry = {
   playlistId: number
   musicId: number
   position: number
+} & {
+  playlist?: IPlaylist
+  music?: IMusic
 }
