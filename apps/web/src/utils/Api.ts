@@ -8,6 +8,7 @@ import {
 import { LoginDto, RegisterDto } from "@kmotion/validations"
 import { Fetcher } from "./Fetcher"
 import { Prisma } from "@prisma/client"
+
 class Api {
   private fetcher: Fetcher
 
@@ -33,19 +34,19 @@ class Api {
 
   public fetchPlaylists(withEntries: boolean): Promise<PlaylistsResponse> {
     return this.fetcher
-      .get("playlists" + this.fetcher.parseQueryString({ entries: withEntries }), {})
+      .get("playlists" + this.fetcher.parseQueryString({ entries: withEntries }))
       .then(this.toJson)
   }
 
   public fetchPlaylist(id: number, withEntries: boolean): Promise<PlaylistResponse> {
     return this.fetcher
-      .get(`playlists/${id}` + this.fetcher.parseQueryString({ entries: withEntries }), {})
+      .get(`playlists/${id}` + this.fetcher.parseQueryString({ entries: withEntries }))
       .then(this.toJson)
   }
 
-  public fetchEntries(id: number, include: Prisma.PlaylistEntryInclude) {
+  public fetchEntries(id: number, withMusic: boolean) {
     return this.fetcher
-      .get("playlists/" + id + "/entries" + this.fetcher.parseQueryString(include))
+      .get(`playlists/${id}/entries${this.fetcher.parseQueryString({ music: withMusic })}`)
       .then(this.toJson)
   }
 }
