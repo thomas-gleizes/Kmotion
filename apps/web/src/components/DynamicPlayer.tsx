@@ -1,18 +1,11 @@
 import React, { MouseEvent } from "react"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
 import { useToggle } from "react-use"
-
-const music = {
-  id: 11,
-  title: "AViVA - GRRRLS",
-  artist: "MrSuicideSheep",
-  youtubeId: "Shk7qcvqDOo",
-  downloaderId: 1,
-  createdAt: "2023-03-05T14:33:05.470Z",
-  updatedAt: "2023-03-05T14:33:05.470Z",
-}
+import { usePlayerContext } from "../contexts/player"
 
 const DynamicPlayer: Component = () => {
+  const { currentMusic, actions } = usePlayerContext()
+
   const [isPlaying, togglePlaying] = useToggle(Math.random() > 0.5)
   const [isFullscreen, toggleFullscreen] = useToggle(false)
 
@@ -20,6 +13,8 @@ const DynamicPlayer: Component = () => {
     event.stopPropagation()
     toggleFullscreen()
   }
+
+  if (!currentMusic) return null
 
   return (
     <div
@@ -30,18 +25,18 @@ const DynamicPlayer: Component = () => {
         <div className="h-full">
           <img
             className="h-full w-full rounded-md shadow-xl"
-            src={`/api/v1/musics/${music.id}/cover`}
-            alt={"cover of " + music.title}
+            src={`/api/v1/musics/${currentMusic.id}/cover`}
+            alt={"cover of " + currentMusic.title}
           />
         </div>
         <div>
-          <div className="text-sm text-white font-bold">{music.title}</div>
+          <p className="text-sm text-white truncate max-w-[160px]">{currentMusic.title}</p>
         </div>
       </div>
       <div className="flex justify-between items-center w-[35%]">
         <div>
           <i className="text-2xl text-white cursor-pointer">
-            <FaBackward />
+            <FaBackward onClick={actions.previous} />
           </i>
         </div>
         <div>
@@ -51,7 +46,7 @@ const DynamicPlayer: Component = () => {
         </div>
         <div>
           <i className="text-2xl text-white cursor-pointer">
-            <FaForward />
+            <FaForward onClick={actions.next} />
           </i>
         </div>
       </div>

@@ -4,8 +4,9 @@ import { Link, useParams } from "@tanstack/react-router"
 import { FaChevronLeft, FaEllipsisH, FaPlay, IoShuffleOutline } from "react-icons/all"
 import SimpleBar from "simplebar-react"
 
-import { IPlaylist, IPlaylistEntry } from "@kmotion/types"
+import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
+import { usePlayerContext } from "../../contexts/player"
 
 const backgroundImgUrl = (id: number | undefined) => {
   if (id) return `/api/v1/musics/${id}/cover`
@@ -13,6 +14,8 @@ const backgroundImgUrl = (id: number | undefined) => {
 }
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
+
+  const { actions } = usePlayerContext()
 
   const { data: playlist } = useQuery<IPlaylist>({
     queryKey: ["playlist", id],
@@ -33,11 +36,18 @@ const Playlist: Page = () => {
   }
 
   const handlePlayPlaylist = (random: boolean) => {
-    console.log("Random", random)
+    if (random)
+      actions.set(
+        [...entries]?.sort(() => Math.random() - 0.5).map((entry) => entry.music as IMusic)
+      )
+    else actions.set(entries?.map((entry) => entry.music as IMusic))
   }
 
-  const handlePlayMusic = (entry: IPlaylistEntry) => {
-    console.log("Entry", entry)
+  const handlePlayMusic = (index: number) => {
+    actions.set(
+      entries?.map((entry) => entry.music as IMusic),
+      index
+    )
   }
 
   if (!playlist) return null
@@ -108,7 +118,7 @@ const Playlist: Page = () => {
           <div className="flex flex-col mt-8 border-t border-neutral-500 mx-3 py-1">
             {entries.map((entry, index) => (
               <div
-                onClick={handleStopPropagation(() => handlePlayMusic(entry))}
+                onClick={handleStopPropagation(() => handlePlayMusic(index))}
                 key={index}
                 className="h-[55px] cursor-pointer"
               >
