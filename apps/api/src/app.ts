@@ -4,16 +4,11 @@ import fastifyCookie from "@fastify/cookie"
 import fastifySession from "@fastify/session"
 import "reflect-metadata"
 
-import { APP_PORT, APP_PUBLIC } from "./utils/constants"
+import { APP_PORT } from "./utils/constants"
 import trace from "./utils/trace"
 import apiRoutes from "./routes"
 
 const app = fastify()
-
-app.register(fastifyStatic, {
-  root: `${APP_PUBLIC}`,
-  prefix: "/public",
-})
 
 app.register(fastifyCookie)
 app.register(fastifySession, {

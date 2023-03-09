@@ -14,10 +14,10 @@ const AppRoot: Component = () => {
   return (
     <PlayerProvider>
       <Outlet />
-      <section className="absolute bottom-0 right-0 w-full">
+      <div className="absolute w-full bottom-0">
         <DynamicPlayer />
         <NavBar />
-      </section>
+      </div>
     </PlayerProvider>
   )
 }

@@ -2,7 +2,7 @@ import { createContext, useContext } from "react"
 import useLocalStorageState from "use-local-storage-state"
 
 import { IMusic } from "@kmotion/types"
-import { PlayerContextValues } from "../../types/contexts"
+import { LoopType, PlayerContextValues } from "../../types/contexts"
 import { useLocalQueue } from "../hooks"
 
 // TODO: replace it
@@ -29,7 +29,7 @@ export const usePlayerContext = () => {
 }
 
 const PlayerProvider: ComponentWithChild = ({ children }) => {
-  const [loop, setLoop] = useLocalStorageState<boolean>("loop", { defaultValue: false })
+  const [loop, setLoop] = useLocalStorageState<LoopType>("loop", { defaultValue: "none" })
 
   const { queue, actions } = useLocalQueue<IMusic>()
 

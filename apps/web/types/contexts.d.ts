@@ -22,8 +22,10 @@ declare type IsAuth = {
 
 // Player
 
+declare type LoopType = "none" | "one" | "all"
+
 interface PlayerContextValues {
-  loop: { value: boolean; set: (value: boolean) => void }
+  loop: { value: LoopType; set: (value: LoopType) => void }
   currentMusic: IMusic | null
   queue: IMusic[]
   actions: UseLocalActions<IMusic>

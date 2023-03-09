@@ -40,10 +40,10 @@ export function useLocalQueue<Item>(): UseLocalQueueResult<Item> {
     },
     previous: () => {
       if (index > 0) setIndex(index - 1)
-      else setIndex(queue.length - 1)
+      else setIndex(list.length - 1)
     },
     next: () => {
-      if (index < queue.length - 1) setIndex(index + 1)
+      if (index < list.length - 1) setIndex(index + 1)
       else setIndex(0)
     },
     addNext: (item: Item) => {

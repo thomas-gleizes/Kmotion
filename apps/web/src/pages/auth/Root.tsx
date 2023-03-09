@@ -10,9 +10,7 @@ const AuthRoot: SyncRouteComponent = () => {
 
   return (
     <section className="h-full h-full flex flex-col items-center justify-center">
-      <div>
-        <Outlet />
-      </div>
+      <Outlet />
     </section>
   )
 }

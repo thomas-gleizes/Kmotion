@@ -4,7 +4,7 @@ import { FaList, FaMusic, FaSlidersH } from "react-icons/all"
 
 const NavBar = () => {
   return (
-    <div className="bg-black bg-opacity-80 pb-2 backdrop-blur rounded-b-2xl">
+    <div className="bg-black backdrop-blur bg-opacity-70 pb-2 rounded-b-2xl">
       <div className="h-full flex justify-evenly items-center py-4">
         <div>
           <Link to="/app/musics">

@@ -20,8 +20,8 @@ const PlaylistPage: Component = () => {
   })
 
   return (
-    <SimpleBar className="max-h-[650px]">
-      <div className="pt-5 px-4 pb-42 text-white">
+    <SimpleBar className="max-h-[700px] pt-12 pb-56">
+      <div className="px-4 text-white">
         <h2 className="text-4xl font-bold text-opacity-90">Playlists</h2>
         <div className="flex flex-col space-y-2 mt-5">
           <div className="h-[100px] w-full cursor-pointer">

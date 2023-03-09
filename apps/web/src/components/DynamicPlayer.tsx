@@ -1,56 +1,120 @@
-import React, { MouseEvent } from "react"
+import React, { MouseEvent, MouseEventHandler } from "react"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
-import { useToggle } from "react-use"
+import { useAudio, useEvent, useTitle, useToggle } from "react-use"
 import { usePlayerContext } from "../contexts/player"
+import playlist from "../pages/app/Playlist"
+import classnames from "classnames"
 
 const DynamicPlayer: Component = () => {
-  const { currentMusic, actions } = usePlayerContext()
+  const { currentMusic, queue, actions, loop } = usePlayerContext()
 
-  const [isPlaying, togglePlaying] = useToggle(Math.random() > 0.5)
   const [isFullscreen, toggleFullscreen] = useToggle(false)
 
-  const handleFullPlayer = (event: MouseEvent) => {
-    event.stopPropagation()
-    toggleFullscreen()
+  const [audio, state, controls, ref] = useAudio({
+    src: currentMusic?.links.stream || "",
+    autoPlay: true,
+  })
+
+  const togglePlaying = () => (state.playing ? controls.pause() : controls.play())
+
+  useEvent("keydown", (event: KeyboardEvent) => {
+    switch (event.key) {
+      case " ":
+        return togglePlaying()
+      case "ArrowLeft":
+        return controls.seek(state.time)
+      case "ArrowRight":
+        return controls.seek(state.time + 50)
+      case "ArrowUp":
+        return controls.volume(state.volume + 0.05)
+      case "ArrowDown":
+        return controls.volume(state.volume - 0.05)
+    }
+  })
+
+  useEvent(
+    "ended",
+    () => {
+      if (loop.value === "none" && queue.length === 1) controls.pause()
+      else if (loop.value === "all" && queue.length === 1) {
+        controls.seek(0)
+        controls.play()
+      } else actions.next()
+    },
+    ref.current
+  )
+
+  const handleStopPropagation = (callback: () => void): MouseEventHandler => {
+    return (event) => {
+      event.stopPropagation()
+      callback()
+    }
   }
+
+  useTitle(currentMusic?.title || "Kmotion")
 
   if (!currentMusic) return null
 
+  // @ts-ignore
   return (
-    <div
-      onClick={handleFullPlayer}
-      className="h-[50px] flex items-center justify-between py-2 px-3 backdrop-blur bg-black bg-opacity-80 border-b border-neutral-800"
-    >
-      <div className="h-full flex items-center space-x-4 w-[65%]">
-        <div className="h-full">
-          <img
-            className="h-full w-full rounded-md shadow-xl"
-            src={`/api/v1/musics/${currentMusic.id}/cover`}
-            alt={"cover of " + currentMusic.title}
-          />
+    <>
+      {audio}
+      <div
+        onClick={handleStopPropagation(toggleFullscreen)}
+        className={classnames(
+          "flex items-center z-30 py-2 px-3 border-b border-neutral-800 transition-all transform duration-300 ease-in-out",
+          isFullscreen
+            ? "h-[634px] flex-col bg-black space-y-8"
+            : "h-[50px] justify-between bg-opacity-70 bg-dark backdrop-blur cursor-default"
+        )}
+      >
+        <div
+          className={classnames(
+            "flex items-center transition-all",
+            isFullscreen
+              ? "px-10 mt-20 h-[250px] flex-col justify-between"
+              : "h-[50px] w-[65%] space-x-4 py-2"
+          )}
+        >
+          <div className="h-full">
+            <img
+              className={classnames("shadow-xl", isFullscreen ? "rounded-xl" : "h-full rounded-md")}
+              src={`/api/v1/musics/${currentMusic.id}/cover`}
+              alt={`cover of ${currentMusic.title}`}
+            />
+          </div>
+          <div className={classnames("truncate", { "max-w-[160px]": !isFullscreen })}>
+            <p
+              className={classnames("text-sm text-white", {
+                "text-scroll-overflow": !isFullscreen,
+              })}
+            >
+              {currentMusic.title}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm text-white truncate max-w-[160px]">{currentMusic.title}</p>
+        <div className="flex justify-between items-center w-[35%]">
+          <div>
+            <i className="text-2xl text-white cursor-pointer">
+              <FaBackward onClick={handleStopPropagation(actions.previous)} />
+            </i>
+          </div>
+          <div>
+            <i
+              className="text-2xl text-white cursor-pointer"
+              onClick={handleStopPropagation(togglePlaying)}
+            >
+              {state.playing ? <FaPause /> : <FaPlay />}
+            </i>
+          </div>
+          <div>
+            <i className="text-2xl text-white cursor-pointer">
+              <FaForward onClick={handleStopPropagation(actions.next)} />
+            </i>
+          </div>
         </div>
       </div>
-      <div className="flex justify-between items-center w-[35%]">
-        <div>
-          <i className="text-2xl text-white cursor-pointer">
-            <FaBackward onClick={actions.previous} />
-          </i>
-        </div>
-        <div>
-          <i className="text-2xl text-white cursor-pointer" onClick={togglePlaying}>
-            {isPlaying ? <FaPause /> : <FaPlay />}
-          </i>
-        </div>
-        <div>
-          <i className="text-2xl text-white cursor-pointer">
-            <FaForward onClick={actions.next} />
-          </i>
-        </div>
-      </div>
-    </div>
+    </>
   )
 }
 

@@ -10,7 +10,7 @@ import { usePlayerContext } from "../../contexts/player"
 
 const backgroundImgUrl = (id: number | undefined) => {
   if (id) return `/api/v1/musics/${id}/cover`
-  return "/api/v1/musics/1/cover"
+  return ""
 }
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
@@ -54,7 +54,7 @@ const Playlist: Page = () => {
 
   return (
     <div className="relative text-white">
-      <div className="absolute top-0 left-0 w-full bg-black z-10 bg-opacity-80 backdrop-blur-2xl pb-1">
+      <div className="absolute top-[36px] left-0 w-full bg-dark z-0 bg-opacity-70 pb-1">
         <div className="flex justify-between px-4 py-3">
           <Link to="/app/playlists">
             <FaChevronLeft className="text-red-800 text-2xl" />
@@ -101,7 +101,7 @@ const Playlist: Page = () => {
             <div>
               <button
                 onClick={() => handlePlayPlaylist(false)}
-                className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-black rounded-lg"
+                className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-dark rounded-lg"
               >
                 <FaPlay /> <span>Lecture</span>
               </button>
@@ -109,13 +109,13 @@ const Playlist: Page = () => {
             <div>
               <button
                 onClick={() => handlePlayPlaylist(true)}
-                className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-black rounded-lg"
+                className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-dark rounded-lg"
               >
                 <IoShuffleOutline /> <span>Aléatoire</span>
               </button>
             </div>
           </div>
-          <div className="flex flex-col mt-8 border-t border-neutral-500 mx-3 py-1">
+          <div className="flex flex-col mt-6 border-t border-neutral-500 mx-3 py-1">
             {entries.map((entry, index) => (
               <div
                 onClick={handleStopPropagation(() => handlePlayMusic(index))}

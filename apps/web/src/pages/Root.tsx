@@ -7,11 +7,11 @@ import ContextsProvider from "../contexts"
 const Root: SyncRouteComponent = () => {
   return (
     <ContextsProvider>
-      <div className="flex justify-center items-center w-screen h-screen bg-black">
+      <div className="flex justify-center items-center w-screen h-screen bg-gray-900 shadow-2xl">
         <div className="mockup-phone">
           <div className="camera" />
           <div className="display relative">
-            <div className="artboard artboard-demo phone-3 block pt-[30px] bg-[#0E0E0E]">
+            <div className="artboard artboard-demo phone-3 block bg-black">
               <Header />
               <div className="block h-full w-full">
                 <Outlet />
