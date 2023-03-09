@@ -66,22 +66,19 @@ export class AddMusicToPlaylistDto {
   @IsNotEmpty()
   @Min(1)
   @Type(() => Number)
-  musicId!: numbe
-  r
+  musicId!: number
 }
 
 export class QueryGetPlaylist {
   @IsBoolean()
   @IsOptional()
   @Type(() => Boolean)
-  entries?: boolea
-  n
+  entries?: boolean
 }
 
 export class QueryGetPlaylistEntries {
   @IsBoolean()
   @IsOptional()
   @Type(() => Boolean)
-  musics?: boolea
-  n
+  musics?: boolean
 }

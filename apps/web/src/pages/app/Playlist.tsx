@@ -3,28 +3,28 @@ import { useQuery } from "@tanstack/react-query"
 import { Link, useParams } from "@tanstack/react-router"
 
 import { IPlaylist, IPlaylistEntry } from "@kmotion/types"
-i;mport { api } from "../../utils/Api"
-i;mport { FaChevronLeft, FaEllipsisH, FaPlay, IoShuffleOutline } from "react-icons/all"
+import { api } from "../../utils/Api"
+import { FaChevronLeft, FaEllipsisH, FaPlay, IoShuffleOutline } from "react-icons/all"
 
-;const backgroundImgUrl = (id: number | undefined) => {
-  if (id) return `/api/v1/musics/${id}/cover`;
-  return "/api/v1/musics/1/cover";
-};
+const backgroundImgUrl = (id: number | undefined) => {
+  if (id) return `/api/v1/musics/${id}/cover`
+  return "/api/v1/musics/1/cover"
+}
 const Playlist: Page = () => {
-  const { id } = useParams() as { id: string };
+  const { id } = useParams() as { id: string }
 
   const { data: playlist } = useQuery<IPlaylist>({
     queryKey: ["playlist", id],
-    queryFn: () => api.fetchPlaylist(+id, true).then((res) => res.playlist)
-  });
+    queryFn: () => api.fetchPlaylist(+id, true).then((res) => res.playlist),
+  })
 
   const { data: entries } = useQuery<IPlaylistEntry[]>({
     queryKey: ["playlist-entries", id],
     queryFn: () => api.fetchEntries(+id, { music: true }).then((res) => res.entries),
-    initialData: []
-  });
+    initialData: [],
+  })
 
-  if (!playlist) return null;
+  if (!playlist) return null
 
   return (
     <div className="relative text-white">
@@ -41,30 +41,29 @@ const Playlist: Page = () => {
 
       <div className="pt-16 px-2">
         <div>
-          <div
-            className="relative grid grid-cols-2 h-full h-[200px] mx-auto w-[200px] bg-neutral-800 rounded-xl grid-rows-2 basis-1/4">
+          <div className="relative grid grid-cols-2 h-full h-[200px] mx-auto w-[200px] bg-neutral-800 rounded-xl grid-rows-2 basis-1/4">
             <div
               className="h-[1/2] w-[1/2] bg-cover bg-center rounded-tl-xl"
               style={{
-                backgroundImage: `url(${backgroundImgUrl(playlist?.entries?.[0]?.musicId)})`
+                backgroundImage: `url(${backgroundImgUrl(playlist?.entries?.[0]?.musicId)})`,
               }}
             />
             <div
               className="h-[1/2] w-[1/2] bg-cover bg-center rounded-tr-xl"
               style={{
-                backgroundImage: `url(${backgroundImgUrl(playlist?.entries?.[1]?.musicId)})`
+                backgroundImage: `url(${backgroundImgUrl(playlist?.entries?.[1]?.musicId)})`,
               }}
             />
             <div
               className="h-[1/2] w-[1/2] bg-cover bg-center rounded-bl-xl"
               style={{
-                backgroundImage: `url(${backgroundImgUrl(playlist?.entries?.[2]?.musicId)})`
+                backgroundImage: `url(${backgroundImgUrl(playlist?.entries?.[2]?.musicId)})`,
               }}
             />
             <div
               className="h-[1/2] w-[1/2] bg-cover bg-center rounded-br-xl"
               style={{
-                backgroundImage: `url(${backgroundImgUrl(playlist?.entries?.[3]?.musicId)})`
+                backgroundImage: `url(${backgroundImgUrl(playlist?.entries?.[3]?.musicId)})`,
               }}
             />
           </div>
