@@ -4,6 +4,7 @@ import useLocalStorageState from "use-local-storage-state"
 import { IMusic } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
 import { useLocalQueue } from "../hooks"
+import { useToggle } from "react-use"
 
 // TODO: replace it
 const defaultMusic: IMusic = {
@@ -30,6 +31,7 @@ export const usePlayerContext = () => {
 
 const PlayerProvider: ComponentWithChild = ({ children }) => {
   const [loop, setLoop] = useLocalStorageState<LoopType>("loop", { defaultValue: "none" })
+  const [isFullscreen, toggleFullscreen] = useToggle(false)
 
   const { queue, actions } = useLocalQueue<IMusic>()
 
@@ -40,6 +42,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         queue,
         actions,
         loop: { value: loop, set: setLoop },
+        fullscreen: { value: isFullscreen, toggle: toggleFullscreen },
       }}
     >
       {children}

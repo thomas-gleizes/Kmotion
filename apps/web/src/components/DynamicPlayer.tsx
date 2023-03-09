@@ -1,14 +1,12 @@
-import React, { MouseEvent, MouseEventHandler } from "react"
-import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
-import { useAudio, useEvent, useTitle, useToggle } from "react-use"
-import { usePlayerContext } from "../contexts/player"
-import playlist from "../pages/app/Playlist"
+import React, { MouseEventHandler } from "react"
 import classnames from "classnames"
+import { useAudio, useEvent, useTitle } from "react-use"
+import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
+
+import { usePlayerContext } from "../contexts/player"
 
 const DynamicPlayer: Component = () => {
-  const { currentMusic, queue, actions, loop } = usePlayerContext()
-
-  const [isFullscreen, toggleFullscreen] = useToggle(false)
+  const { currentMusic, queue, actions, loop, fullscreen } = usePlayerContext()
 
   const [audio, state, controls, ref] = useAudio({
     src: currentMusic?.links.stream || "",
@@ -55,15 +53,14 @@ const DynamicPlayer: Component = () => {
 
   if (!currentMusic) return null
 
-  // @ts-ignore
   return (
     <>
       {audio}
       <div
-        onClick={handleStopPropagation(toggleFullscreen)}
+        onClick={handleStopPropagation(fullscreen.toggle)}
         className={classnames(
           "flex items-center z-30 py-2 px-3 border-b border-neutral-800 transition-all transform duration-300 ease-in-out",
-          isFullscreen
+          fullscreen.value
             ? "h-[634px] flex-col bg-black space-y-8"
             : "h-[50px] justify-between bg-opacity-70 bg-dark backdrop-blur cursor-default"
         )}
@@ -71,22 +68,25 @@ const DynamicPlayer: Component = () => {
         <div
           className={classnames(
             "flex items-center transition-all",
-            isFullscreen
+            fullscreen.value
               ? "px-10 mt-20 h-[250px] flex-col justify-between"
               : "h-[50px] w-[65%] space-x-4 py-2"
           )}
         >
           <div className="h-full">
             <img
-              className={classnames("shadow-xl", isFullscreen ? "rounded-xl" : "h-full rounded-md")}
+              className={classnames(
+                "shadow-xl",
+                fullscreen.value ? "rounded-xl" : "h-full rounded-md"
+              )}
               src={`/api/v1/musics/${currentMusic.id}/cover`}
               alt={`cover of ${currentMusic.title}`}
             />
           </div>
-          <div className={classnames("truncate", { "max-w-[160px]": !isFullscreen })}>
+          <div className={classnames("truncate", { "w-[170px]": !fullscreen.value })}>
             <p
               className={classnames("text-sm text-white", {
-                "text-scroll-overflow": !isFullscreen,
+                "text-scroll-overflow": !fullscreen.value,
               })}
             >
               {currentMusic.title}
