@@ -1,9 +1,10 @@
-import React, { MouseEventHandler } from "react"
+import React, { MouseEventHandler, useEffect, useRef } from "react"
 import classnames from "classnames"
 import { useAudio, useEvent, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
 
 import { usePlayerContext } from "../contexts/player"
+import { useParentOverflow } from "../hooks/useParentOverflow"
 
 const DynamicPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen } = usePlayerContext()
@@ -44,6 +45,8 @@ const DynamicPlayer: Component = () => {
 
   useTitle(currentMusic?.title || "Kmotion")
 
+  const tRef = useRef<HTMLElement | null>()
+
   if (!currentMusic) return null
 
   const handleStopPropagation = (callback: () => void): MouseEventHandler => {
@@ -52,6 +55,9 @@ const DynamicPlayer: Component = () => {
       callback()
     }
   }
+
+  const isOverflow =
+    (tRef.current?.offsetWidth || 0) >= (tRef.current?.parentElement?.offsetWidth || 2000)
 
   return (
     <>
@@ -83,14 +89,16 @@ const DynamicPlayer: Component = () => {
               alt={`cover of ${currentMusic.title}`}
             />
           </div>
-          <div className={classnames("truncate", { "w-[170px]": !fullscreen.value })}>
-            <p
+          <div className={classnames("overflow-hidden", { "w-[170px]": !fullscreen.value })}>
+            <span
+              ref={tRef}
               className={classnames("text-sm text-white", {
-                "text-scroll-overflow": !fullscreen.value,
+                "overflow-defilement": !fullscreen.value && isOverflow,
+                "inline-block whitespace-nowrap": !fullscreen.value,
               })}
             >
               {currentMusic.title}
-            </p>
+            </span>
           </div>
         </div>
         <div className="flex justify-between items-center w-[35%]">

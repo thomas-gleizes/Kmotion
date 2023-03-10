@@ -54,7 +54,7 @@ const Playlist: Page = () => {
 
   return (
     <div className="relative text-white">
-      <div className="absolute top-[36px] left-0 w-full bg-dark z-0 bg-opacity-70 pb-1">
+      <div className="absolute top-[36px] left-0 w-full bg-dark z-20 bg-opacity-70 pb-1">
         <div className="flex justify-between px-4 py-3">
           <Link to="/app/playlists">
             <FaChevronLeft className="text-red-800 text-2xl" />
@@ -137,8 +137,24 @@ const Playlist: Page = () => {
                         {entry.music?.artist}
                       </p>
                     </div>
-                    <div className="basis-1/12">
-                      <FaEllipsisH />
+                    <div
+                      className="basis-1/12 dropdown dropdown-left"
+                      onClick={handleStopPropagation(() => null)}
+                    >
+                      <label className="cursor-pointer">
+                        <FaEllipsisH />
+                      </label>
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+                      >
+                        <li>
+                          <a>Item 1</a>
+                        </li>
+                        <li>
+                          <a>Item 2</a>
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>

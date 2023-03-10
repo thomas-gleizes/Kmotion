@@ -2,19 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
-.text-scroll-overflow {
-    animation: marquee 10s infinite linear;
+.overflow-defilement {
+    animation: defilement 10s infinite linear;
 }
 
-.text-scroll-overflow:hover {
+.overflow-defilement:hover {
     animation-play-state: paused;
 }
 
-@keyframes marquee {
+@keyframes defilement {
     0% {
-        transform: translateX(100%);
+        transform: translateX(0%);
+    }
+    60% {
+        transform: translateX(-100%);
+    }
+    70% {
+        transform: translateX(0%);
     }
     100% {
-        transform: translateX(-100%);
+        transform: translateX(0%);
     }
 }

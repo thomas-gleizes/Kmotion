@@ -31,6 +31,17 @@ const Root: SyncRouteComponent = () => {
         >
           Clear
         </button>
+        <button
+          className="btn bg-blue-400"
+          onClick={() => {
+            fetch("/api/v1/musics/sync")
+              .then((response) => response.json())
+              .then(console.log)
+              .catch(console.error)
+          }}
+        >
+          SYNC
+        </button>
       </div>
     </ContextsProvider>
   )
