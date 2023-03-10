@@ -1,11 +1,12 @@
-import { Music } from "@prisma/client"
-import { IMusic } from "@kmotion/types"
+import { IMusic, PrismaMusic } from "@kmotion/types"
 
 import { Mapper } from "./lib/Mapper"
+import { userMapper } from "./user"
+import { entryMapper } from "./entry"
 
-class MusicMapper extends Mapper<Music, IMusic> {
-  one(input: Music): IMusic {
-    return {
+class MusicMapper extends Mapper<PrismaMusic, IMusic> {
+  one(input: PrismaMusic): IMusic {
+    const output: IMusic = {
       id: input.id,
       youtubeId: input.youtubeId,
       title: input.title,
@@ -16,6 +17,11 @@ class MusicMapper extends Mapper<Music, IMusic> {
         stream: `/api/v1/musics/${input.id}/stream`,
       },
     }
+
+    if (input.downloader) output.downloader = userMapper.one(input.downloader)
+    if (input.playlistEntries) output.playlistEntries = entryMapper.many(input.playlistEntries)
+
+    return output
   }
 }
 

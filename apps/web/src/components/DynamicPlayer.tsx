@@ -42,16 +42,16 @@ const DynamicPlayer: Component = () => {
     ref.current
   )
 
+  useTitle(currentMusic?.title || "Kmotion")
+
+  if (!currentMusic) return null
+
   const handleStopPropagation = (callback: () => void): MouseEventHandler => {
     return (event) => {
       event.stopPropagation()
       callback()
     }
   }
-
-  useTitle(currentMusic?.title || "Kmotion")
-
-  if (!currentMusic) return null
 
   return (
     <>

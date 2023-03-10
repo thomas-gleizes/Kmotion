@@ -1,11 +1,12 @@
-import { User } from "@prisma/client"
-import { IUser } from "@kmotion/types"
+import { IUser, PrismaUser } from "@kmotion/types"
 
 import { Mapper } from "./lib/Mapper"
+import { playlistMapper } from "./playlist"
+import { musicMapper } from "./music"
 
-class UserMapper extends Mapper<User, IUser> {
-  one(input: User): IUser {
-    return {
+class UserMapper extends Mapper<PrismaUser, IUser> {
+  one(input: PrismaUser): IUser {
+    const output: IUser = {
       id: input.id,
       name: input.name,
       email: input.email,
@@ -14,6 +15,11 @@ class UserMapper extends Mapper<User, IUser> {
       isActivate: input.isActivate,
       visibility: input.visibility,
     }
+
+    if (input.playlists) output.playlists = playlistMapper.many(input.playlists)
+    if (input.musics) output.musics = musicMapper.many(input.musics)
+
+    return output
   }
 }
 
