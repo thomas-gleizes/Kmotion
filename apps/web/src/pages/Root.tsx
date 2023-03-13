@@ -25,7 +25,7 @@ const Root: SyncRouteComponent = () => {
           className="btn bg-blue-400"
           onClick={() => {
             localStorage.clear()
-            window.location.reload()
+            window.location.href = "/"
           }}
         >
           Clear

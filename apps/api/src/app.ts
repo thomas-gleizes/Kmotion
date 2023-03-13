@@ -17,8 +17,13 @@ app.register(fastifySession, {
   cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 360, secure: false },
 })
 
-app.register(apiRoutes, { prefix: "/api" })
 app.register(fastifyStatic, { root: APP_PUBLIC, prefix: "/" })
+app.setNotFoundHandler((req, res) => {
+  res.sendFile("index.html")
+})
+
+app.register(apiRoutes, { prefix: "/api" })
+
 app
   .listen({ port: APP_PORT })
   .then((url) => trace(`Server listening on ${url}`))
