@@ -9,8 +9,11 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "api:dev": "cd apps/api && pnpm dev",
+    "api:start": "cd apps/api && pnpm start",
     "web:dev": "cd apps/web && pnpm dev",
-    "dev": "concurrently \"pnpm api:dev\" \"pnpm web:dev\""
+    "web:build": "cd apps/web && pnpm build && cp -r dist ../api/public",
+    "dev": "concurrently \"pnpm api:dev\" \"pnpm web:dev\"",
+    "deploy": "pnpm web:build && pnpm api:start"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.54.0",

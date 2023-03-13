@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "vite dev --host"
+    "dev": "vite dev --host",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@headlessui/react": "^1.7.13",
     "@hookform/resolvers": "^2.9.11",
     "@kmotion/validations": "workspace:*",
     "@tanstack/react-query": "^4.26.1",

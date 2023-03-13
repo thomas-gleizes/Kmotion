@@ -4,7 +4,7 @@ import fastifyCookie from "@fastify/cookie"
 import fastifySession from "@fastify/session"
 import "reflect-metadata"
 
-import { APP_PORT } from "./utils/constants"
+import { APP_PORT, APP_PUBLIC } from "./utils/constants"
 import trace from "./utils/trace"
 import apiRoutes from "./routes"
 
@@ -18,7 +18,7 @@ app.register(fastifySession, {
 })
 
 app.register(apiRoutes, { prefix: "/api" })
-
+app.register(fastifyStatic, { root: APP_PUBLIC, prefix: "/" })
 app
   .listen({ port: APP_PORT })
   .then((url) => trace(`Server listening on ${url}`))

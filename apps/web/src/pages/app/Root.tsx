@@ -18,6 +18,7 @@ const AppRoot: Component = () => {
         <DynamicPlayer />
         <NavBar />
       </div>
+      <div id="portal" />
     </PlayerProvider>
   )
 }

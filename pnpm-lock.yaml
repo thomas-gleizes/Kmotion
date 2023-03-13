@@ -68,6 +68,7 @@ importers:
 
   apps/web:
     specifiers:
+      '@headlessui/react': ^1.7.13
       '@hookform/resolvers': ^2.9.11
       '@kmotion/types': workspace:*
       '@kmotion/validations': workspace:*
@@ -91,6 +92,7 @@ importers:
       use-local-storage-state: ^18.2.1
       vite: ^4.1.4
     dependencies:
+      '@headlessui/react': 1.7.13_biqbaboplfbrettd7655fr4n2y
       '@hookform/resolvers': 2.9.11_react-hook-form@7.43.5
       '@kmotion/validations': link:../../packages/validations
       '@tanstack/react-query': 4.26.1_biqbaboplfbrettd7655fr4n2y
@@ -668,6 +670,18 @@ packages:
       glob: 8.1.0
       p-limit: 3.1.0
       readable-stream: 4.3.0
+    dev: false
+
+  /@headlessui/react/1.7.13_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-9n+EQKRtD9266xIHXdY5MfiXPDfYwl7zBM7KOx2Ae3Gdgxy8QML1FkCMjq6AsOf0l6N9uvI4HcFtuFlenaldKg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
+    dependencies:
+      client-only: 0.0.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@hookform/resolvers/2.9.11_react-hook-form@7.43.5:
@@ -1390,6 +1404,10 @@ packages:
 
   /classnames/2.3.2:
     resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
+    dev: false
+
+  /client-only/0.0.1:
+    resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
     dev: false
 
   /cliui/8.0.1:

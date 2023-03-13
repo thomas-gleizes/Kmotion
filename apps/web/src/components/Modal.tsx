@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import ReactDom from "react-dom"
-import classnames from "classnames"
+import { Transition } from "@headlessui/react"
 
 interface Props {
   isOpen: boolean
@@ -22,16 +22,8 @@ const Modal: ComponentWithChild<Props> = ({ isOpen, close, children }) => {
   if (!isOpen && !display) return null
 
   const jsx = (
-    <div
-      onClick={close}
-      className={classnames(
-        "absolute top-0 h-full bg-red-500 w-full z-90 transition-all transform duration-1000",
-        {
-          "-translate-y-1/2": isOpen,
-        }
-      )}
-    >
-      <div>{children}</div>
+    <div className="absolute h-full">
+      <Transition show={true}>{children}</Transition>
     </div>
   )
 

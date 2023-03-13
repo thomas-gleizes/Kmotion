@@ -54,8 +54,8 @@ export default async function playlistRoutes(instance: FastifyInstance) {
     async (request, reply) => {
       const visiblities: Visibility[] = ["public"]
 
-      const include = { entries: false }
-      if (request.query.entries) include.entries = true
+      const include: Prisma.PlaylistInclude = { entries: false }
+      if (request.query.entries) include.entries = { orderBy: { position: "asc" } }
 
       const playlist = await prisma.playlist.findUnique({
         where: { id: request.params.id },

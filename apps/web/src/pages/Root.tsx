@@ -16,7 +16,6 @@ const Root: SyncRouteComponent = () => {
               <div className="block h-full w-full">
                 <Outlet />
               </div>
-              <div id="portal" />
             </div>
           </div>
         </div>

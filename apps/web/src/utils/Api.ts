@@ -7,7 +7,6 @@ import {
 } from "@kmotion/types"
 import { LoginDto, RegisterDto } from "@kmotion/validations"
 import { Fetcher } from "./Fetcher"
-import { Prisma } from "@prisma/client"
 
 class Api {
   private fetcher: Fetcher
@@ -30,6 +29,10 @@ class Api {
 
   public logout(): Promise<LogoutResponse> {
     return this.fetcher.post("auth/logout").then(this.toJson)
+  }
+
+  public profile(): Promise<LoginResponse> {
+    return this.fetcher.get("users/me").then(this.toJson)
   }
 
   public fetchPlaylists(withEntries: boolean): Promise<PlaylistsResponse> {
