@@ -7,11 +7,8 @@ import SimpleBar from "simplebar-react"
 import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { usePlayerContext } from "../../contexts/player"
+import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 
-const backgroundImgUrl = (id: number | undefined) => {
-  if (id) return `/api/v1/musics/${id}/cover`
-  return ""
-}
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
 
@@ -67,32 +64,7 @@ const Playlist: Page = () => {
       <SimpleBar className="max-h-[700px] pb-32">
         <div className="pt-24 px-2">
           <div className="relative h-[200px] w-[200px] mx-auto">
-            <div className="grid grid-cols-2 grid-rows-2 h-full w-full rounded-xl bg-neutral-800">
-              <div
-                className="h-[100px] w-[100px] bg-cover bg-center rounded-tl-xl"
-                style={{
-                  backgroundImage: `url(${backgroundImgUrl(entries?.[0]?.musicId)})`,
-                }}
-              />
-              <div
-                className="h-[1/2] w-[1/2] bg-cover bg-center rounded-tr-xl"
-                style={{
-                  backgroundImage: `url(${backgroundImgUrl(entries?.[1]?.musicId)})`,
-                }}
-              />
-              <div
-                className="h-[1/2] w-[1/2] bg-cover bg-center rounded-bl-xl"
-                style={{
-                  backgroundImage: `url(${backgroundImgUrl(entries?.[2]?.musicId)})`,
-                }}
-              />
-              <div
-                className="h-[1/2] w-[1/2] bg-cover bg-center rounded-br-xl"
-                style={{
-                  backgroundImage: `url(${backgroundImgUrl(entries?.[3]?.musicId)})`,
-                }}
-              />
-            </div>
+            <PlaylistGridImage ids={entries.map((entry) => entry.musicId)} />
           </div>
           <div className="my-6">
             <h3 className="text-center font-semibold text-2xl">{playlist.title}</h3>

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    outline: none;
+}
+
 .overflow-defilement {
     animation: defilement 10s infinite linear;
 }
