@@ -1,18 +1,17 @@
-import React, { MouseEventHandler, useEffect, useRef } from "react"
+import React, { MouseEventHandler, useRef } from "react"
 import classnames from "classnames"
 import { useAudio, useEvent, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
 
-import { usePlayerContext } from "../contexts/player"
-import { useParentOverflow } from "../hooks/useParentOverflow"
+import { usePlayerContext } from "../../contexts/player"
+import FullscreenPlayer from "../modals/FullscreenPlayer"
 
 const DynamicPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen } = usePlayerContext()
 
-  const [audio, state, controls, ref] = useAudio({
-    src: currentMusic?.links.stream || "",
-    autoPlay: true,
-  })
+  const [audio, state, controls, ref] = useAudio(
+    <audio src={currentMusic?.links.stream} autoPlay={true} />
+  )
 
   const togglePlaying = () => (state.playing ? controls.pause() : controls.play())
 
@@ -37,7 +36,7 @@ const DynamicPlayer: Component = () => {
       if (loop.value === "none" && queue.length === 1) controls.pause()
       else if (loop.value === "all" && queue.length === 1) {
         controls.seek(0)
-        controls.play()
+        void controls.play()
       } else actions.next()
     },
     ref.current
@@ -62,39 +61,29 @@ const DynamicPlayer: Component = () => {
   return (
     <>
       {audio}
+      <FullscreenPlayer
+        isOpen={fullscreen.value}
+        close={fullscreen.toggle}
+        state={state}
+        controls={controls}
+      />
       <div
         onClick={handleStopPropagation(fullscreen.toggle)}
-        className={classnames(
-          "flex items-center z-30 py-2 px-3 border-b border-neutral-800 transition-all transform duration-300 ease-in-out",
-          fullscreen.value
-            ? "h-[634px] flex-col bg-black space-y-8"
-            : "h-[50px] justify-between bg-opacity-70 bg-dark backdrop-blur cursor-default"
-        )}
+        className="flex items-center z-30 py-2 px-3 border-b border-neutral-800 transition-all transform duration-300 ease-in-out h-[50px] justify-between bg-opacity-70 bg-dark backdrop-blur cursor-default"
       >
-        <div
-          className={classnames(
-            "flex items-center transition-all",
-            fullscreen.value
-              ? "px-10 mt-20 h-[250px] flex-col justify-between"
-              : "h-[50px] w-[65%] space-x-4 py-2"
-          )}
-        >
+        <div className="flex items-center transition-all h-[50px] w-[65%] space-x-4 py-2">
           <div className="h-full">
             <img
-              className={classnames(
-                "shadow-xl",
-                fullscreen.value ? "rounded-xl" : "h-full rounded-md"
-              )}
+              className="shadow-xl h-full rounded-md"
               src={`/api/v1/musics/${currentMusic.id}/cover`}
               alt={`cover of ${currentMusic.title}`}
             />
           </div>
-          <div className={classnames("overflow-hidden", { "w-[170px]": !fullscreen.value })}>
+          <div className="overflow-hidden w-[170px]">
             <span
               ref={tRef}
-              className={classnames("text-sm text-white", {
-                "overflow-defilement": !fullscreen.value && isOverflow,
-                "inline-block whitespace-nowrap": !fullscreen.value,
+              className={classnames("text-sm text-white inline-block whitespace-nowrap", {
+                "overflow-defilement": isOverflow,
               })}
             >
               {currentMusic.title}

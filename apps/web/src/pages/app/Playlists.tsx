@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import { Link } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { FaChevronRight, FaPlus } from "react-icons/all"
@@ -6,7 +6,6 @@ import SimpleBar from "simplebar-react"
 
 import { IPlaylist } from "@kmotion/types"
 import { api } from "../../utils/Api"
-import Modal from "../../components/Modal"
 
 const backgroundImgUrl = (id: number | undefined) => {
   if (id) return `/api/v1/musics/${id}/cover`
@@ -20,18 +19,12 @@ const PlaylistPage: Component = () => {
     initialData: [],
   })
 
-  const [modalState, setModalState] = useState({ isOpen: false })
-
-  const handleClick = () => {
-    setModalState({ isOpen: !modalState.isOpen })
-  }
-
   return (
     <SimpleBar className="max-h-[700px] pt-12 pb-56">
       <div className="px-4 text-white">
         <h2 className="text-4xl font-bold text-opacity-90">Playlists</h2>
         <div className="flex flex-col space-y-2 mt-5">
-          <div className="h-[100px] w-full cursor-pointer" onClick={handleClick}>
+          <div className="h-[100px] w-full cursor-pointer">
             <div className="flex items-center h-full">
               <div className="basis-1/4 flex items-center justify-center bg-neutral-800 rounded-xl h-full w-[100px]">
                 <FaPlus className="text-red-600 text-3xl" />
@@ -93,9 +86,6 @@ const PlaylistPage: Component = () => {
             </Link>
           ))}
         </div>
-        <Modal isOpen={modalState.isOpen} close={handleClick}>
-          <div>hello world</div>
-        </Modal>
       </div>
     </SimpleBar>
   )

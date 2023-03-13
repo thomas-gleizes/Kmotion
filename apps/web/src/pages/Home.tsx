@@ -1,7 +1,7 @@
 import React from "react"
 
 import { useAuthContext } from "../contexts/auth"
-import UnauthenticatedHome from "../components/UnauthenticatedHome"
+import UnauthenticatedHome from "../components/common/UnauthenticatedHome"
 import { Navigate } from "@tanstack/react-router"
 
 const HomePage: Page = () => {

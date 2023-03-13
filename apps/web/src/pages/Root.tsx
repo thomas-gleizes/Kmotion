@@ -1,7 +1,7 @@
 import React from "react"
 import { Outlet, SyncRouteComponent } from "@tanstack/react-router"
 
-import Header from "../components/Header"
+import Header from "../components/common/Header"
 import ContextsProvider from "../contexts"
 
 const Root: SyncRouteComponent = () => {

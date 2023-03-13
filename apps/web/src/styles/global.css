@@ -24,3 +24,47 @@
         transform: translateX(0%);
     }
 }
+
+.input-slider {
+    -webkit-appearance: none;
+    background-color: transparent;
+}
+
+.input-slider::-webkit-slider-runnable-track {
+    background-color: transparent;
+    height: 100%;
+}
+
+.input-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    width: 10px;
+    height: 100%;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+.animate-delay {
+    animation-delay: 75ms;
+}
+
+@keyframes backAndForth {
+    0% {
+        transform: translateX(0);
+    }
+    10% {
+        transform: translateX(0);
+    }
+    45% {
+        transform: translateX(calc(100% - 340px));
+    }
+    55% {
+        transform: translateX(calc(100% - 340px));
+    }
+    90% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}

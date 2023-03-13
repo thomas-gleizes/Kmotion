@@ -1,7 +1,7 @@
 import React from "react"
 import { Link } from "@tanstack/react-router"
 
-import RegisterForm from "../../components/RegisterForm"
+import RegisterForm from "../../components/forms/RegisterForm"
 
 const RegisterPage: Page = () => {
   return (

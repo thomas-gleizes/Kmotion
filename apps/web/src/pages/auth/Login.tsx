@@ -1,7 +1,7 @@
 import React from "react"
 import { Link } from "@tanstack/react-router"
 
-import LoginForm from "../../components/LoginForm"
+import LoginForm from "../../components/forms/LoginForm"
 
 const LoginPage: Page = () => {
   return (

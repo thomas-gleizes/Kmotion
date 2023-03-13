@@ -1,13 +1,13 @@
 import React from "react"
 import { Link } from "@tanstack/react-router"
 import { FaList, FaMusic, FaSlidersH } from "react-icons/all"
-import { usePlayerContext } from "../contexts/player"
+import { usePlayerContext } from "../../contexts/player"
 
 const NavBar = () => {
   const { fullscreen } = usePlayerContext()
 
   return (
-    <div className="bg-black backdrop-blur bg-opacity-70 pb-2 rounded-b-2xl">
+    <div className="bg-dark backdrop-blur bg-opacity-70 pb-2 rounded-b-2xl">
       <div className="h-full flex justify-evenly items-center py-4">
         <div>
           <Link to="/app/musics" onClick={() => fullscreen.toggle(false)}>
