@@ -48,13 +48,9 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
     <Modal isOpen={isOpen}>
       <div className="relative h-full w-full">
         <div className="absolute top-0 left-0 w-full h-full">
-          <img
-            src={assets.cover}
-            alt="cover"
-            className="h-full w-full brightness-[200%] contrast-[200%]"
-          />
+          <img src={assets.cover} alt="cover" className="h-full w-full" />
         </div>
-        <div className="h-full pt-20 pb-10 px-8 bg-black/50 backdrop-blur-[150px]">
+        <div className="h-full pt-20 pb-10 px-8 bg-black/40 backdrop-blur-[180px] backdrop-brightness-[150%] backdrop-contrast-[150%]">
           <div className="h-full flex flex-col justify-between">
             <div className="px-2 my-8 z-90">
               <img
