@@ -76,7 +76,6 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         fullscreen: { value: isFullscreen, toggle: toggleFullscreen },
       }}
     >
-      <div className="fixed top-0 left-0">{JSON.stringify(stream.data, null, 2)}</div>
       {children}
     </PlayerContext.Provider>
   )
