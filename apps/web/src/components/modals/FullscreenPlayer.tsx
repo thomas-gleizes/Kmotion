@@ -40,27 +40,21 @@ interface Props {
 }
 
 const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, controls }) => {
-  const { currentMusic, actions, loop } = usePlayerContext()
+  const { currentMusic, actions, loop, assets } = usePlayerContext()
 
   if (!currentMusic) return null
 
   return (
     <Modal isOpen={isOpen}>
       <div className="relative h-full w-full">
-        <div className="absolute top-0 left-0 w-full h-full ">
-          <div
-            style={{ backgroundImage: `url('${currentMusic.links.cover}')` }}
-            className="h-full w-full bg-center bg-cover bg-no-repeat backdrop-blur-xl"
+        <div className="absolute top-0 left-0 w-full h-full">
+          <img
+            src={assets.cover}
+            alt="cover"
+            className="h-full w-full brightness-[200%] contrast-[200%]"
           />
         </div>
-        {/*<div className="absolute w-full bg-dark bg-opacity-80 backdrop-blur top-0 left-0">*/}
-        {/*  <div className="flex justify-between items-center mx-3 my-2">*/}
-        {/*    <div onClick={close}>*/}
-        {/*      <FaChevronLeft className="cursor-pointer text-red-800 text-2xl" />*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-        <div className="h-full pt-20 pb-10 px-8 bg-black/50 backdrop-brightness-[150%] backdrop-contrast-150 backdrop-blur-[200px]">
+        <div className="h-full pt-20 pb-10 px-8 bg-black/50 backdrop-blur-[150px]">
           <div className="h-full flex flex-col justify-between">
             <div className="px-2 my-8 z-90">
               <img

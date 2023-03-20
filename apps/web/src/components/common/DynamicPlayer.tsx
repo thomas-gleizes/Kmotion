@@ -7,11 +7,9 @@ import { usePlayerContext } from "../../contexts/player"
 import FullscreenPlayer from "../modals/FullscreenPlayer"
 
 const DynamicPlayer: Component = () => {
-  const { currentMusic, queue, actions, loop, fullscreen } = usePlayerContext()
+  const { currentMusic, queue, actions, loop, fullscreen, assets } = usePlayerContext()
 
-  const [audio, state, controls, ref] = useAudio(
-    <audio src={currentMusic?.links.stream} autoPlay={true} />
-  )
+  const [audio, state, controls, ref] = useAudio(<audio src={assets.stream} autoPlay={true} />)
 
   const togglePlaying = () => (state.playing ? controls.pause() : controls.play())
 
@@ -44,7 +42,7 @@ const DynamicPlayer: Component = () => {
 
   useTitle(currentMusic?.title || "Kmotion")
 
-  const tRef = useRef<HTMLElement | null>()
+  const tRef = useRef<HTMLElement>(null)
 
   if (!currentMusic) return null
 
@@ -75,7 +73,7 @@ const DynamicPlayer: Component = () => {
           <div className="h-full">
             <img
               className="shadow-xl h-full rounded-md"
-              src={`/api/v1/musics/${currentMusic.id}/cover`}
+              src={assets.cover}
               alt={`cover of ${currentMusic.title}`}
             />
           </div>

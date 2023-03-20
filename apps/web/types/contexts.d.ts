@@ -26,6 +26,10 @@ declare type LoopType = "none" | "one" | "all"
 
 interface PlayerContextValues {
   currentMusic: IMusic | null
+  assets: {
+    stream?: string
+    cover?: string
+  }
   queue: IMusic[]
   actions: UseLocalActions<IMusic>
   loop: { value: LoopType; set: (value: LoopType) => void }

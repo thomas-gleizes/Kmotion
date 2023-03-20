@@ -1,10 +1,11 @@
-import { createContext, useContext } from "react"
+import { createContext, useContext, useEffect } from "react"
 import useLocalStorageState from "use-local-storage-state"
 
 import { IMusic } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
 import { useLocalQueue } from "../hooks"
 import { useToggle } from "react-use"
+import { useQuery } from "@tanstack/react-query"
 
 // TODO: replace it
 const defaultMusic: IMusic = {
@@ -35,16 +36,47 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
 
   const { queue, actions } = useLocalQueue<IMusic>()
 
+  const currentMusic = queue.at(0) || null
+
+  const stream = useQuery({
+    queryKey: ["music-stream", currentMusic?.id],
+    queryFn: () =>
+      fetch(currentMusic?.links.stream)
+        .then((res) => res.blob())
+        .then((blob) => URL.createObjectURL(blob)),
+    enabled: !!currentMusic,
+  })
+
+  const cover = useQuery({
+    queryKey: ["music-cover", currentMusic?.id],
+    queryFn: () =>
+      fetch(currentMusic?.links.cover)
+        .then((res) => res.blob())
+        .then((blob) => URL.createObjectURL(blob)),
+    enabled: !!currentMusic,
+  })
+
+  useEffect(() => {
+    if ("mediaSession" in navigator && cover.data && currentMusic)
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: currentMusic.title,
+        artist: currentMusic.artist || "Unknown",
+        artwork: [{ src: cover.data, sizes: "512x512", type: "image/jpg" }],
+      })
+  }, [currentMusic])
+
   return (
     <PlayerContext.Provider
       value={{
-        currentMusic: queue.at(0) || null,
+        currentMusic,
+        assets: { cover: cover.data, stream: stream.data },
         queue,
         actions,
         loop: { value: loop, set: setLoop },
         fullscreen: { value: isFullscreen, toggle: toggleFullscreen },
       }}
     >
+      <div className="fixed top-0 left-0">{JSON.stringify(stream.data, null, 2)}</div>
       {children}
     </PlayerContext.Provider>
   )
