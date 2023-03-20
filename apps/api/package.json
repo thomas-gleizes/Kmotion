@@ -21,16 +21,16 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "dotenv": "^16.0.3",
-    "fastify": "^4.13.0",
+    "fastify": "^4.15.0",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@kmotion/types": "workspace:*",
     "@types/bcrypt": "^5.0.0",
-    "@types/node": "^18.14.2",
-    "@types/validator": "^13.7.12",
+    "@types/node": "^18.15.3",
+    "@types/validator": "^13.7.14",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.2"
   }
 }
