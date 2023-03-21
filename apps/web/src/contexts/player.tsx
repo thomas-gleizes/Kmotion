@@ -60,12 +60,12 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         currentMusic,
         assets: {
           cover: { url: coverUrl, isFetching: coverQuery.isFetching },
-          stream: { url: streamQuery.data || "", isFetching: streamQuery.isFetchin },
+          stream: { url: streamQuery.data || "", isFetching: streamQuery.isFetching },
         },
         queue,
         actions,
         loop: { value: loop, set: setLoop },
-        fullscreen: { value: isFullscreen, toggle: toggleFullscree },
+        fullscreen: { value: isFullscreen, toggle: toggleFullscreen },
       }}
     >
       {children}
