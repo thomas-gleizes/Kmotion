@@ -9,46 +9,51 @@ import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
+import { MusicResponse } from "@kmotion/types"
 
 export default async function musicRoutes(instance: FastifyInstance) {
   instance.addHook("onRequest", isLogin)
 
   const ytConverter = YtConverter.getInstance()
 
-  instance.get("/", { onRequest: [isAdmin] }, async (request, reply) => {
+  instance.get<{ Reply: MusicResponse }>("/", async (request, reply) => {
     const musics = await prisma.music.findMany({ orderBy: { createdAt: "desc" } })
 
     return reply.send({ success: true, musics: musicMapper.many(musics) })
   })
 
-  instance.get("/sync", { onRequest: [isAdmin] }, async (request, reply) => {
-    const musics = await ytConverter.musics()
+  instance.get<{ Reply: MusicResponse }>(
+    "/sync",
+    { onRequest: [isAdmin] },
+    async (request, reply) => {
+      const musics = await ytConverter.musics()
 
-    const newMusics: Array<Music> = []
+      const newMusics: Array<Music> = []
 
-    // TODO: BUG have to be fixed
-    for (const music of musics) {
-      const find = await prisma.music.findUnique({
-        where: { youtubeId: music.id },
-      })
+      // TODO: BUG have to be fixed
+      for (const music of musics) {
+        const find = await prisma.music.findUnique({
+          where: { youtubeId: music.id },
+        })
 
-      if (!find) {
-        await prisma.music
-          .create({
-            data: {
-              title: music.title,
-              artist: music.author,
-              youtubeId: music.id,
-              downloaderId: request.session.user.id,
-            },
-          })
-          .then((music) => newMusics.push(music))
-          .catch(() => void null)
+        if (!find) {
+          await prisma.music
+            .create({
+              data: {
+                title: music.title,
+                artist: music.author,
+                youtubeId: music.id,
+                downloaderId: request.session.user.id,
+              },
+            })
+            .then((music) => newMusics.push(music))
+            .catch(() => void null)
+        }
       }
-    }
 
-    reply.send({ success: true, musics: musicMapper.many(newMusics) })
-  })
+      reply.send({ success: true, musics: musicMapper.many(newMusics) })
+    }
+  )
 
   instance.post<{ Params: DownloadMusicParamsDto }>(
     "/:youtubeId/add",

@@ -10,7 +10,7 @@ const CreatePlaylist: ModalComponent<Props> = ({ isOpen, close }) => {
   return (
     <Modal isOpen={isOpen}>
       <form>
-        <div className="absolute w-full bg-dark py-2">
+        <div className="absolute w-full bg-secondary py-2">
           <div className="flex justify-between items-center py-1 px-3">
             <button type="button" className="text-red-600" onClick={close}>
               Annuler

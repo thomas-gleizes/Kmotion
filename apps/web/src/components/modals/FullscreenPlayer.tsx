@@ -48,18 +48,18 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
     <Modal isOpen={isOpen}>
       <div className="relative h-full w-full">
         <div className="absolute top-0 left-0 w-full h-full">
-          <img src={assets.cover} alt="cover" className="h-full w-full" />
+          <img src={assets.cover} alt="cover" className="h-full w-full rotate-180" />
         </div>
-        <div className="h-full pt-20 pb-10 px-8 bg-black/40 backdrop-blur-[180px] backdrop-brightness-[150%] backdrop-contrast-[150%]">
+        <div className="h-full pt-20 pb-10 px-8 bg-black/20 backdrop-blur-[135px] backdrop-brightness-[125%] backdrop-saturate-[150%]">
           <div className="h-full flex flex-col justify-between">
             <div className="px-2 my-8 z-90">
               <img
+                src={assets.cover}
+                alt={currentMusic.title}
                 className={classnames(
                   "rounded-lg shadow-2xl transition-all duration-500 ease-in-out z-90 select-none",
                   { "scale-[75%] shadow-lg": state.paused }
                 )}
-                src={currentMusic?.links.cover}
-                alt="cover image"
               />
             </div>
             <div className="flex flex-col mx-2">

@@ -16,12 +16,12 @@ const Playlist: Page = () => {
 
   const { data: playlist } = useQuery<IPlaylist>({
     queryKey: ["playlist", id],
-    queryFn: () => api.fetchPlaylist(+id, false).then((res) => res.playlist),
+    queryFn: () => api.fetchPlaylist(+id, false).then((data) => data.playlist),
   })
 
   const { data: entries } = useQuery<IPlaylistEntry[]>({
     queryKey: ["playlist-entries", id],
-    queryFn: () => api.fetchEntries(+id, true).then((res) => res.entries),
+    queryFn: () => api.fetchEntries(+id, true).then((data) => data.entries),
     initialData: [],
   })
 
@@ -51,7 +51,7 @@ const Playlist: Page = () => {
 
   return (
     <div className="relative text-white">
-      <div className="absolute top-[36px] left-0 w-full bg-dark z-20 bg-opacity-70 pb-1">
+      <div className="absolute top-[36px] left-0 w-full bg-secondary z-20 bg-opacity-70 pb-1">
         <div className="flex justify-between px-4 py-3">
           <Link to="/app/playlists">
             <FaChevronLeft className="text-red-800 text-2xl" />
@@ -73,7 +73,7 @@ const Playlist: Page = () => {
             <div>
               <button
                 onClick={() => handlePlayPlaylist(false)}
-                className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-dark rounded-lg"
+                className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-secondary rounded-lg"
               >
                 <FaPlay /> <span>Lecture</span>
               </button>
@@ -81,7 +81,7 @@ const Playlist: Page = () => {
             <div>
               <button
                 onClick={() => handlePlayPlaylist(true)}
-                className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-dark rounded-lg"
+                className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-secondary rounded-lg"
               >
                 <IoShuffleOutline /> <span>Aléatoire</span>
               </button>

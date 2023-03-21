@@ -6,6 +6,7 @@ import { LoopType, PlayerContextValues } from "../../types/contexts"
 import { useLocalQueue } from "../hooks"
 import { useToggle } from "react-use"
 import { useQuery } from "@tanstack/react-query"
+import { useImageLoader } from "../hooks/useImageLoader"
 
 // TODO: replace it
 const defaultMusic: IMusic = {
@@ -41,35 +42,45 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
   const stream = useQuery({
     queryKey: ["music-stream", currentMusic?.id],
     queryFn: () =>
-      fetch(currentMusic?.links.stream)
+      fetch(currentMusic?.links.stream as string)
         .then((res) => res.blob())
         .then((blob) => URL.createObjectURL(blob)),
-    enabled: !!currentMusic,
+    enabled: !!currentMusic?.links.stream,
   })
 
   const cover = useQuery({
     queryKey: ["music-cover", currentMusic?.id],
     queryFn: () =>
-      fetch(currentMusic?.links.cover)
+      fetch(currentMusic?.links.cover as string)
         .then((res) => res.blob())
         .then((blob) => URL.createObjectURL(blob)),
-    enabled: !!currentMusic,
+    enabled: !!currentMusic?.links.cover,
   })
+
+  const [coverUrl] = useImageLoader(currentMusic?.links.cover)
+
+  console.log("CoverUrl", coverUrl)
 
   useEffect(() => {
     if ("mediaSession" in navigator && cover.data && currentMusic)
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currentMusic.title,
         artist: currentMusic.artist || "Unknown",
-        artwork: [{ src: cover.data, sizes: "512x512", type: "image/jpg" }],
+        artwork: [
+          {
+            src: "https://i.ytimg.com/vi_webp/MUMqVG8ECys/maxresdefault.webp",
+            sizes: "512x512",
+            type: "image/jpg",
+          },
+        ],
       })
-  }, [currentMusic])
+  }, [currentMusic, cover.data])
 
   return (
     <PlayerContext.Provider
       value={{
         currentMusic,
-        assets: { cover: cover.data, stream: stream.data },
+        assets: { cover: coverUrl, stream: stream.data },
         queue,
         actions,
         loop: { value: loop, set: setLoop },

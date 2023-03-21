@@ -67,7 +67,7 @@ const DynamicPlayer: Component = () => {
       />
       <div
         onClick={handleStopPropagation(fullscreen.toggle)}
-        className="flex items-center z-30 py-2 px-3 border-b border-neutral-800 transition-all transform duration-300 ease-in-out h-[50px] justify-between bg-opacity-70 bg-dark backdrop-blur cursor-default"
+        className="flex items-center z-30 py-2 px-3 border-b border-neutral-800 transition-all transform duration-300 ease-in-out h-[50px] justify-between bg-opacity-70 bg-secondary backdrop-blur cursor-default"
       >
         <div className="flex items-center transition-all h-[50px] w-[65%] space-x-4 py-2">
           <div className="h-full">

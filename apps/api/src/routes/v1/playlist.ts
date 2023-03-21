@@ -9,7 +9,7 @@ import {
   QueryGetPlaylist,
   SearchParamsDto,
 } from "@kmotion/validations"
-import { PrismaEntry } from "@kmotion/types"
+import { PlaylistEntriesResponse, PrismaEntry } from "@kmotion/types"
 import { entryMapper, playlistMapper } from "@kmotion/mappers"
 import prisma from "../../services/prisma"
 import isLogin from "../../middlewares/isLogin"
@@ -98,22 +98,23 @@ export default async function playlistRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.get<{ Params: GetPlaylistParamsDto; Querystring: Prisma.PlaylistEntryInclude }>(
-    "/:id/entries",
-    async (request, reply) => {
-      const playlist = await prisma.playlist.findUnique({ where: { id: +request.params.id } })
+  instance.get<{
+    Reply: PlaylistEntriesResponse
+    Params: GetPlaylistParamsDto
+    Querystring: Prisma.PlaylistEntryInclude
+  }>("/:id/entries", async (request, reply) => {
+    const playlist = await prisma.playlist.findUnique({ where: { id: +request.params.id } })
 
-      if (!playlist) throw new NotFoundException("Playlist not found")
+    if (!playlist) throw new NotFoundException("Playlist not found")
 
-      const entries: PrismaEntry[] = await prisma.playlistEntry.findMany({
-        where: { playlistId: playlist.id },
-        orderBy: { position: "asc" },
-        include: request.query,
-      })
+    const entries: PrismaEntry[] = await prisma.playlistEntry.findMany({
+      where: { playlistId: playlist.id },
+      orderBy: { position: "asc" },
+      include: request.query,
+    })
 
-      return reply.send({ success: true, entries: entryMapper.many(entries) })
-    }
-  )
+    return reply.send({ success: true, entries: entryMapper.many(entries) })
+  })
 
   instance.post<{ Params: AddMusicToPlaylistDto }>(
     "/:id/musics/:musicId",

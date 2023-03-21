@@ -1,4 +1,4 @@
-import { IPlaylist, IUser } from "./models"
+import { IMusic, IPlaylist, IPlaylistEntry, IUser } from "./models"
 
 export interface SuccessData {
   success: true
@@ -20,4 +20,12 @@ interface PlaylistsResponse extends SuccessData {
 
 interface PlaylistResponse extends SuccessData {
   playlist: IPlaylist
+}
+
+interface PlaylistEntriesResponse extends SuccessData {
+  entries: IPlaylistEntry[]
+}
+
+interface MusicResponse extends SuccessData {
+  musics: IMusic[]
 }

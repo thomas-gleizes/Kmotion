@@ -5,7 +5,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        dark: "#090909",
+        primary: {
+          light: "#ef4444",
+          DEFAULT: "#dc2626",
+          dark: "#991b1b",
+        },
+        secondary: {
+          light: "#131313",
+          DEFAULT: "#101010",
+          dark: "#0d0d0d",
+        },
       },
       zIndex: {
         "-10": "-10",

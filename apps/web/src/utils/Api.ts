@@ -1,6 +1,8 @@
 import {
   LoginResponse,
   LogoutResponse,
+  MusicResponse,
+  PlaylistEntriesResponse,
   PlaylistResponse,
   PlaylistsResponse,
   RegisterResponse,
@@ -47,10 +49,14 @@ class Api {
       .then(this.toJson)
   }
 
-  public fetchEntries(id: number, withMusic: boolean) {
+  public fetchEntries(id: number, withMusic: boolean): Promise<PlaylistEntriesResponse> {
     return this.fetcher
       .get(`playlists/${id}/entries${this.fetcher.parseQueryString({ music: withMusic })}`)
       .then(this.toJson)
+  }
+
+  public fetchMusics(): Promise<MusicResponse> {
+    return this.fetcher.get("musics").then(this.toJson)
   }
 }
 
