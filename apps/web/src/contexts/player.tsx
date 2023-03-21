@@ -46,23 +46,13 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         .then((res) => res.blob())
         .then((blob) => URL.createObjectURL(blob)),
     enabled: !!currentMusic?.links.stream,
-  })
-
-  const cover = useQuery({
-    queryKey: ["music-cover", currentMusic?.id],
-    queryFn: () =>
-      fetch(currentMusic?.links.cover as string)
-        .then((res) => res.blob())
-        .then((blob) => URL.createObjectURL(blob)),
-    enabled: !!currentMusic?.links.cover,
+    staleTime: Infinity,
   })
 
   const [coverUrl] = useImageLoader(currentMusic?.links.cover)
 
-  console.log("CoverUrl", coverUrl)
-
   useEffect(() => {
-    if ("mediaSession" in navigator && cover.data && currentMusic)
+    if ("mediaSession" in navigator && coverUrl && currentMusic)
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currentMusic.title,
         artist: currentMusic.artist || "Unknown",
@@ -74,7 +64,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
           },
         ],
       })
-  }, [currentMusic, cover.data])
+  }, [currentMusic, coverUrl])
 
   return (
     <PlayerContext.Provider

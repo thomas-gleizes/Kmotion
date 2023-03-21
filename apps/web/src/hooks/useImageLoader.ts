@@ -7,8 +7,7 @@ export function useImageLoader(src?: string): [string, UseQueryResult<string>] {
       fetch(src as string)
         .then((res) => res.blob())
         .then((blob) => URL.createObjectURL(blob)),
-    refetchOnMount: true,
-    staleTime: 10 * 1000,
+    staleTime: Infinity,
     enabled: !!src,
   })
 

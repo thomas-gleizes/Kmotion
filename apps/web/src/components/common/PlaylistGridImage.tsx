@@ -1,5 +1,6 @@
 import React from "react"
 import classnames from "classnames"
+import ImageLoader from "./ImageLoader"
 
 interface Props {
   ids: Array<number>
@@ -9,7 +10,7 @@ interface Props {
 const PlaylistGridImage: Component<Props> = ({ ids, className }) => {
   const backgroundImgUrl = (id: number | undefined) => {
     if (id) return `/api/v1/musics/${id}/cover`
-    return ""
+    return undefined
   }
 
   return (
@@ -19,30 +20,38 @@ const PlaylistGridImage: Component<Props> = ({ ids, className }) => {
         className
       )}
     >
-      <div
-        className="h-[1/2] w-[1/2] bg-cover bg-center rounded-tl-xl"
-        style={{
-          backgroundImage: `url(${backgroundImgUrl(ids[0])})`,
-        }}
-      />
-      <div
-        className="h-h-[1/2] w-[1/2] bg-cover bg-center rounded-tr-xl"
-        style={{
-          backgroundImage: `url(${backgroundImgUrl(ids[1])})`,
-        }}
-      />
-      <div
-        className="h-[1/2] w-[1/2] bg-cover bg-center rounded-bl-xl"
-        style={{
-          backgroundImage: `url(${backgroundImgUrl(ids[2])})`,
-        }}
-      />
-      <div
-        className="h-[1/2] w-[1/2] bg-cover bg-center rounded-br-xl"
-        style={{
-          backgroundImage: `url(${backgroundImgUrl(ids[3])})`,
-        }}
-      />
+      <ImageLoader src={backgroundImgUrl(ids[0])}>
+        {({ src }) => (
+          <div
+            className="h-[1/2] w-[1/2] bg-cover bg-center rounded-tl-xl"
+            style={{ backgroundImage: `url(${src})` }}
+          />
+        )}
+      </ImageLoader>
+      <ImageLoader src={backgroundImgUrl(ids[1])}>
+        {({ src }) => (
+          <div
+            className="h-[1/2] w-[1/2] bg-cover bg-center rounded-tr-xl"
+            style={{ backgroundImage: `url(${src})` }}
+          />
+        )}
+      </ImageLoader>
+      <ImageLoader src={backgroundImgUrl(ids[2])}>
+        {({ src }) => (
+          <div
+            className="h-[1/2] w-[1/2] bg-cover bg-center rounded-bl-xl"
+            style={{ backgroundImage: `url(${src})` }}
+          />
+        )}
+      </ImageLoader>
+      <ImageLoader src={backgroundImgUrl(ids[3])}>
+        {({ src }) => (
+          <div
+            className="h-[1/2] w-[1/2] bg-cover bg-center rounded-br-xl"
+            style={{ backgroundImage: `url(${src})` }}
+          />
+        )}
+      </ImageLoader>
     </div>
   )
 }
