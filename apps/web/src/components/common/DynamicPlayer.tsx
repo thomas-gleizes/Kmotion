@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useRef } from "react"
+import React, { MouseEventHandler, useEffect, useRef } from "react"
 import classnames from "classnames"
 import { useAudio, useEvent, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
@@ -9,8 +9,9 @@ import FullscreenPlayer from "../modals/FullscreenPlayer"
 const DynamicPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen, assets } = usePlayerContext()
 
-  const [audio, state, controls, ref] = useAudio(<audio src={assets.stream} autoPlay={true} />)
-
+  const [audio, state, controls, ref] = useAudio(
+    <audio src={assets.stream.isFetching ? "" : assets.stream.url} autoPlay={true} />
+  )
   const togglePlaying = () => (state.playing ? controls.pause() : controls.play())
 
   useEvent("keydown", (event: KeyboardEvent) => {
@@ -18,9 +19,9 @@ const DynamicPlayer: Component = () => {
       case " ":
         return togglePlaying()
       case "ArrowLeft":
-        return controls.seek(state.time)
+        return controls.seek(state.time - 10)
       case "ArrowRight":
-        return controls.seek(state.time + 50)
+        return controls.seek(state.time + 10)
       case "ArrowUp":
         return controls.volume(state.volume + 0.05)
       case "ArrowDown":
@@ -73,7 +74,7 @@ const DynamicPlayer: Component = () => {
           <div className="h-full">
             <img
               className="shadow-xl h-full rounded-md"
-              src={assets.cover}
+              src={assets.cover.url}
               alt={`cover of ${currentMusic.title}`}
             />
           </div>

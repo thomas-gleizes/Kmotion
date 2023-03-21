@@ -10,12 +10,17 @@ const Root: SyncRouteComponent = () => {
 
   return (
     <ContextsProvider>
-      <div className="flex justify-center items-center w-screen h-screen bg-gray-900 shadow-2xl">
-        {isMobileLayout ? (
-          <div className="h-screen w-screen">
-            <Outlet />
+      {isMobileLayout ? (
+        <div className="flex items-center justify-center h-screen bg-gray-900">
+          <div className="relative w-[375px] h-[735px] bg-black overflow-hidden">
+            <Header />
+            <div className="block h-full w-full">
+              <Outlet />
+            </div>
           </div>
-        ) : (
+        </div>
+      ) : (
+        <div className="flex justify-center items-center w-screen h-screen bg-gray-900 shadow-2xl">
           <div className="mockup-phone">
             <div className="camera" />
             <div className="display relative">
@@ -27,8 +32,8 @@ const Root: SyncRouteComponent = () => {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
       <div className="fixed bottom-0 flex space-x-4">
         <button
           className="btn bg-blue-400"

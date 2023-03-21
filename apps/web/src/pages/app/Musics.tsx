@@ -37,12 +37,14 @@ const Musics: Page = () => {
     { defaultValue: DisplayMode.GRID }
   )
 
-  const { data: musics } = useQuery<IMusic[]>({
+  const musicsQuery = useQuery<IMusic[]>({
     queryKey: ["musics"],
     queryFn: () => api.fetchMusics().then((data) => data.musics as IMusic[]),
-    initialData: [],
-    refetchOnMount: "always",
+    refetchOnMount: true,
+    staleTime: 1000 * 30,
   })
+
+  const musics: IMusic[] = musicsQuery.data || []
 
   const [search, setSearch] = useState<string>("")
 
@@ -97,23 +99,23 @@ const Musics: Page = () => {
             />
           </div>
         </div>
-        <div className="flex justify-center space-x-3 mt-5">
+        <div className="flex justify-center space-x-3 mb-10">
           <button
             onClick={() => handlePlayMusic(0)}
-            className="w-full px-8 py-2 font-semibold flex justify-center items-center space-x-3 text-red-800 bg-secondary rounded-lg"
+            className="px-8 py-2 font-semibold flex justify-center items-center space-x-3 text-red-800 bg-secondary rounded-lg"
           >
             <FaPlay /> <span>Lecture</span>
           </button>
           <button
             onClick={() => handlePlayRandom()}
-            className="w-full px-8 py-2 font-semibold flex justify-center items-center space-x-3 text-red-800 bg-secondary rounded-lg"
+            className="px-8 py-2 font-semibold flex justify-center items-center space-x-3 text-red-800 bg-secondary rounded-lg"
           >
             <IoShuffleOutline /> <span>Aléatoire</span>
           </button>
         </div>
         <div className="mt-3">
           {displayMode === DisplayMode.GRID ? (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-x-5 gap-y-4 px-3">
               {filteredMusics.map((music) => (
                 <div
                   key={music.id}
@@ -125,11 +127,11 @@ const Musics: Page = () => {
                   <div>
                     <ImageLoader src={music.links.cover}>
                       {({ src }) => (
-                        <img className="rounded-xl shadow-lg" src={src} alt={music.title} />
+                        <img className="rounded-xl shadow-lg mb-1" src={src} alt={music.title} />
                       )}
                     </ImageLoader>
                   </div>
-                  <h2 className="text-white text-center overflow-y-hidden truncate w-full px-1">
+                  <h2 className="text-white text-sm text-center overflow-y-hidden truncate w-full px-1">
                     {music.title}
                   </h2>
                 </div>

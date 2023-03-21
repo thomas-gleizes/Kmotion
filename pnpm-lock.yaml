@@ -80,6 +80,7 @@ importers:
       '@kmotion/validations': workspace:*
       '@tanstack/react-query': ^4.28.0
       '@tanstack/react-router': 0.0.1-beta.83
+      '@tanstack/react-virtual': 3.0.0-beta.54
       '@types/react': ^18.0.28
       '@types/react-dom': ^18.0.11
       '@vitejs/plugin-react': ^3.1.0
@@ -105,6 +106,7 @@ importers:
       '@kmotion/validations': link:../../packages/validations
       '@tanstack/react-query': 4.28.0_biqbaboplfbrettd7655fr4n2y
       '@tanstack/react-router': 0.0.1-beta.83_biqbaboplfbrettd7655fr4n2y
+      '@tanstack/react-virtual': 3.0.0-beta.54_react@18.2.0
       classnames: 2.3.2
       daisyui: 2.51.4_j7yt3jd32cwenjqavrrga47yr4
       react: 18.2.0
@@ -894,7 +896,7 @@ packages:
 
   /@tanstack/react-store/0.0.1-beta.81_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-wN4YVYzWQOvNKBnS+3+JINkR8qx93tX52iqzJfzzt3b7e3oqlkl3X3SnpGH1/hRwMNklMxvT7dIg//qfWGzUhA==}
-    engines: {node: '>=12'}
+    engines: { node: '>=12' }
     peerDependencies:
       react: '>=16'
       react-dom: '>=16'
@@ -905,9 +907,18 @@ packages:
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
+  /@tanstack/react-virtual/3.0.0-beta.54_react@18.2.0:
+    resolution: { integrity: sha512-D1mDMf4UPbrtHRZZriCly5bXTBMhylslm4dhcHqTtDJ6brQcgGmk8YD9JdWBGWfGSWPKoh2x1H3e7eh+hgPXtQ== }
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@tanstack/virtual-core': 3.0.0-beta.54
+      react: 18.2.0
+    dev: false
+
   /@tanstack/router/0.0.1-beta.83:
-    resolution: {integrity: sha512-cwkfyvgg7g60wbKZBRl1sbut+eYyE6bPc/Efz2ozFD//oV6qBUftoRm4PbN5cdPgrHjjLOFuOKW43EEUXM/exQ==}
-    engines: {node: '>=12'}
+    resolution: { integrity: sha512-cwkfyvgg7g60wbKZBRl1sbut+eYyE6bPc/Efz2ozFD//oV6qBUftoRm4PbN5cdPgrHjjLOFuOKW43EEUXM/exQ== }
+    engines: { node: '>=12' }
     dependencies:
       '@babel/runtime': 7.21.0
       '@tanstack/store': 0.0.1-beta.81
@@ -916,16 +927,20 @@ packages:
     dev: false
 
   /@tanstack/store/0.0.1-beta.81:
-    resolution: {integrity: sha512-OYFQ4RmDjSIzJnJrhsvpSpM4+lO/3NBaXGloC5IO3YNm0Ewgy/MSCePJgUamstXPmBAaLC2KEgi4O9FHyzA6lw==}
-    engines: {node: '>=12'}
+    resolution: { integrity: sha512-OYFQ4RmDjSIzJnJrhsvpSpM4+lO/3NBaXGloC5IO3YNm0Ewgy/MSCePJgUamstXPmBAaLC2KEgi4O9FHyzA6lw== }
+    engines: { node: '>=12' }
+    dev: false
+
+  /@tanstack/virtual-core/3.0.0-beta.54:
+    resolution: { integrity: sha512-jtkwqdP2rY2iCCDVAFuaNBH3fiEi29aTn2RhtIoky8DTTiCdc48plpHHreLwmv1PICJ4AJUUESaq3xa8fZH8+g== }
     dev: false
 
   /@tsconfig/node10/1.0.9:
-    resolution: {integrity: sha512-jNsYVVxU8v5g43Erja32laIDHXeoNvFEpX33OK4d6hljo3jDhCBDhx5dhCCTMWUojscpAagGiRkBKxpdl9fxqA==}
+    resolution: { integrity: sha512-jNsYVVxU8v5g43Erja32laIDHXeoNvFEpX33OK4d6hljo3jDhCBDhx5dhCCTMWUojscpAagGiRkBKxpdl9fxqA== }
     dev: true
 
   /@tsconfig/node12/1.0.11:
-    resolution: {integrity: sha512-cqefuRsh12pWyGsIoBKJA9luFu3mRxCA+ORZvA4ktLSzIuCUtWVxGIuXigEwO5/ywWFMZ2QEGKWvkZG1zDMTag==}
+    resolution: { integrity: sha512-cqefuRsh12pWyGsIoBKJA9luFu3mRxCA+ORZvA4ktLSzIuCUtWVxGIuXigEwO5/ywWFMZ2QEGKWvkZG1zDMTag== }
     dev: true
 
   /@tsconfig/node14/1.0.3:

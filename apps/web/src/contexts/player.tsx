@@ -8,19 +8,6 @@ import { useToggle } from "react-use"
 import { useQuery } from "@tanstack/react-query"
 import { useImageLoader } from "../hooks/useImageLoader"
 
-// TODO: replace it
-const defaultMusic: IMusic = {
-  id: 11,
-  title: "AViVA - GRRRLS",
-  artist: "MrSuicideSheep",
-  youtubeId: "Shk7qcvqDOo",
-  downloaderId: 1,
-  links: {
-    cover: "/api/v1/musics/11/cover",
-    stream: "/api/v1/musics/11/stream",
-  },
-}
-
 const PlayerContext = createContext<PlayerContextValues>(null as never)
 
 export const usePlayerContext = () => {
@@ -39,7 +26,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
 
   const currentMusic = queue.at(0) || null
 
-  const stream = useQuery({
+  const streamQuery = useQuery({
     queryKey: ["music-stream", currentMusic?.id],
     queryFn: () =>
       fetch(currentMusic?.links.stream as string)
@@ -49,18 +36,19 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
     staleTime: Infinity,
   })
 
-  const [coverUrl] = useImageLoader(currentMusic?.links.cover)
+  const [coverUrl, coverQuery] = useImageLoader(currentMusic?.links.cover)
 
   useEffect(() => {
     if ("mediaSession" in navigator && coverUrl && currentMusic)
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currentMusic.title,
         artist: currentMusic.artist || "Unknown",
+        album: "Unknown",
         artwork: [
           {
             src: "https://i.ytimg.com/vi_webp/MUMqVG8ECys/maxresdefault.webp",
             sizes: "512x512",
-            type: "image/jpg",
+            type: "image/webp",
           },
         ],
       })
@@ -70,11 +58,14 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
     <PlayerContext.Provider
       value={{
         currentMusic,
-        assets: { cover: coverUrl, stream: stream.data },
+        assets: {
+          cover: { url: coverUrl, isFetching: coverQuery.isFetching },
+          stream: { url: streamQuery.data || "", isFetching: streamQuery.isFetchin },
+        },
         queue,
         actions,
         loop: { value: loop, set: setLoop },
-        fullscreen: { value: isFullscreen, toggle: toggleFullscreen },
+        fullscreen: { value: isFullscreen, toggle: toggleFullscree },
       }}
     >
       {children}

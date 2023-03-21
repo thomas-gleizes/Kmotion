@@ -24,11 +24,13 @@ declare type IsAuth = {
 
 declare type LoopType = "none" | "one" | "all"
 
+declare type AssetType = { url: string; isFetching: boolean }
+
 interface PlayerContextValues {
   currentMusic: IMusic | null
   assets: {
-    stream?: string
-    cover?: string
+    stream: AssetType
+    cover: AssetType
   }
   queue: IMusic[]
   actions: UseLocalActions<IMusic>
