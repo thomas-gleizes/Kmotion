@@ -1,13 +1,27 @@
-import React, { useMemo, useState } from "react"
+import React, { Fragment, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import SimpleBar from "simplebar-react"
-import { FaEllipsisH, FaList, FaPlay, FaSearch, FaThLarge, IoShuffleOutline } from "react-icons/all"
 import useLocalStorageState from "use-local-storage-state"
+import { Menu, Transition } from "@headlessui/react"
+import {
+  CgRowFirst,
+  CgRowLast,
+  FaEllipsisH,
+  FaHeart,
+  FaList,
+  FaPlay,
+  FaPlus,
+  FaSearch,
+  FaThLarge,
+  FaTrash,
+  IoShuffleOutline,
+} from "react-icons/all"
 
 import { IMusic } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { usePlayerContext } from "../../contexts/player"
 import ImageLoader from "../../components/common/ImageLoader"
+import { useAuthContext } from "../../contexts/auth"
 
 const DisplayMode: Record<string, string> = {
   GRID: "grid",
@@ -16,6 +30,7 @@ const DisplayMode: Record<string, string> = {
 
 const Musics: Page = () => {
   const { actions } = usePlayerContext()
+  const authContext = useAuthContext("yes")
 
   const [displayMode, setDisplayMode] = useLocalStorageState<keyof typeof DisplayMode>(
     "displayMode",
@@ -47,9 +62,16 @@ const Musics: Page = () => {
 
   const handlePlayMusic = (index: number) => actions.set(musics, index)
 
+  const handleStopPropagation = (callback: () => void) => {
+    return (event: React.MouseEvent) => {
+      event.stopPropagation()
+      callback()
+    }
+  }
+
   return (
     <div className="relative">
-      <SimpleBar className="max-h-[700px] pt-16 px-2">
+      <SimpleBar className="max-h-[700px] pt-16 pb-42 px-2">
         <div className="mx-2 pb-5">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-semibold text-white">Morceaux</h1>
@@ -95,8 +117,10 @@ const Musics: Page = () => {
               {filteredMusics.map((music) => (
                 <div
                   key={music.id}
-                  onClick={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
                   className="cursor-pointer"
+                  onClick={handleStopPropagation(() =>
+                    handlePlayMusic(musics.findIndex((m) => m.id === music.id))
+                  )}
                 >
                   <div>
                     <ImageLoader src={music.links.cover}>
@@ -116,8 +140,10 @@ const Musics: Page = () => {
               {filteredMusics.map((music) => (
                 <div
                   key={music.id}
-                  onClick={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
                   className="cursor-pointer"
+                  onClick={handleStopPropagation(() =>
+                    handlePlayMusic(musics.findIndex((m) => m.id === music.id))
+                  )}
                 >
                   <div className="flex items-center h-full">
                     <div className="basis-1/5 py-2">
@@ -132,21 +158,80 @@ const Musics: Page = () => {
                         <p className="truncate text-white">{music.title}</p>
                         <p className="text-sm text-white/70">{music.artist}</p>
                       </div>
-                      <div className="basis-1/12 dropdown dropdown-left">
-                        <label className="cursor-pointer">
-                          <FaEllipsisH />
-                        </label>
-                        <ul
-                          tabIndex={0}
-                          className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-                        >
-                          <li>
-                            <a>Item 1</a>
-                          </li>
-                          <li>
-                            <a>Item 2</a>
-                          </li>
-                        </ul>
+                      <div className="basis-1/12">
+                        <Menu as="div" className="relative inline-block text-left">
+                          <div>
+                            <Menu.Button
+                              onClick={handleStopPropagation(() => null)}
+                              className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+                            >
+                              <FaEllipsisH className="" aria-hidden="true" />
+                            </Menu.Button>
+                          </div>
+                          <Transition
+                            as={Fragment}
+                            enter="transition ease-out duration-100"
+                            enterFrom="transform opacity-0 scale-95"
+                            enterTo="transform opacity-100 scale-100"
+                            leave="transition ease-in duration-75"
+                            leaveFrom="transform opacity-100 scale-100"
+                            leaveTo="transform opacity-0 scale-95"
+                          >
+                            <Menu.Items className="z-[100000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                              <div className="py-1">
+                                {authContext.authenticated && authContext.user.isAdmin && (
+                                  <Menu.Item>
+                                    <button
+                                      onClick={handleStopPropagation(() => null)}
+                                      className="w-full px-2 py-1 text-primary hover:bg-primary/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
+                                    >
+                                      <span>Supprimer</span>
+                                      <FaTrash />
+                                    </button>
+                                  </Menu.Item>
+                                )}
+                                <Menu.Item>
+                                  <button
+                                    onClick={handleStopPropagation(() => null)}
+                                    className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
+                                  >
+                                    <span className="truncate">Ajouter à une playlist... </span>
+                                    <FaPlus />
+                                  </button>
+                                </Menu.Item>
+                                <Menu.Item>
+                                  <button
+                                    onClick={handleStopPropagation(() => null)}
+                                    className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
+                                  >
+                                    <span className="truncate">J'aime </span>
+                                    <FaHeart />
+                                  </button>
+                                </Menu.Item>
+                              </div>
+                              <div className="py-1">
+                                <Menu.Item>
+                                  <button
+                                    onClick={handleStopPropagation(() => actions.addNext(music))}
+                                    className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
+                                  >
+                                    <span>Lire ensuite</span>
+                                    <CgRowFirst />
+                                  </button>
+                                </Menu.Item>
+                                <Menu.Item>
+                                  <button
+                                    onClick={handleStopPropagation(() => actions.addLast(music))}
+                                    className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
+                                  >
+                                    <span>Lire en dernier</span>
+                                    <CgRowLast />
+                                  </button>
+                                </Menu.Item>
+                              </div>
+                            </Menu.Items>
+                          </Transition>
+                        </Menu>
                       </div>
                     </div>
                   </div>

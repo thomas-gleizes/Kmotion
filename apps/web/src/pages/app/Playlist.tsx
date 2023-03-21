@@ -17,14 +17,18 @@ const Playlist: Page = () => {
   const { data: playlist } = useQuery<IPlaylist>({
     queryKey: ["playlist", id],
     queryFn: () => api.fetchPlaylist(+id, false).then((data) => data.playlist),
+    staleTime: 1000 * 60 * 5,
+    refetchOnMount: true,
   })
 
-  const { data: entries } = useQuery<IPlaylistEntry[]>({
+  const entriesQuery = useQuery<IPlaylistEntry[]>({
     queryKey: ["playlist-entries", id],
     queryFn: () => api.fetchEntries(+id, true).then((data) => data.entries),
-    initialData: [],
+    staleTime: 1000 * 60 * 5,
+    refetchOnMount: true,
   })
 
+  const entries: IPlaylistEntry[] = entriesQuery.data || []
   const handleStopPropagation = (callback: () => void): MouseEventHandler<HTMLDivElement> => {
     return (event) => {
       event.stopPropagation()
@@ -34,9 +38,7 @@ const Playlist: Page = () => {
 
   const handlePlayPlaylist = (random: boolean) => {
     if (random)
-      actions.set(
-        [...entries]?.sort(() => Math.random() - 0.5).map((entry) => entry.music as IMusic)
-      )
+      actions.set([...entries]?.sort(() => Math.random() - 0.5).map((entry) => entry.music))
     else actions.set(entries?.map((entry) => entry.music as IMusic))
   }
 

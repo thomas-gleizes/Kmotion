@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { Outlet, SyncRouteComponent } from "@tanstack/react-router"
 import { isMobile } from "react-device-detect"
 
@@ -6,11 +6,15 @@ import Header from "../components/common/Header"
 import ContextsProvider from "../contexts"
 
 const Root: SyncRouteComponent = () => {
+  const [isMobileLayout, setIsMobileLayout] = useState(isMobile)
+
   return (
     <ContextsProvider>
       <div className="flex justify-center items-center w-screen h-screen bg-gray-900 shadow-2xl">
-        {isMobile ? (
-          <Outlet />
+        {isMobileLayout ? (
+          <div className="h-screen w-screen">
+            <Outlet />
+          </div>
         ) : (
           <div className="mockup-phone">
             <div className="camera" />
@@ -45,6 +49,12 @@ const Root: SyncRouteComponent = () => {
           }}
         >
           SYNC
+        </button>
+        <button
+          onClick={() => setIsMobileLayout(!isMobileLayout)}
+          className="btn bg-blue-400 text-black"
+        >
+          {isMobileLayout ? "Desktop" : "Mobile"}
         </button>
       </div>
     </ContextsProvider>

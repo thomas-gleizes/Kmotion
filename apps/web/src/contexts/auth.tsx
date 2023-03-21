@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo } from "react"
 import useLocalStorageState from "use-local-storage-state"
 
-import { AuthContextValues, IsAuth } from "../../types/contexts"
+import { AuthContextValues, IsAuth, UnauthenticatedValues } from "../../types/contexts"
 import { IUser } from "@kmotion/types"
 
 const AuthContext = createContext<AuthContextValues>({ authenticated: false } as AuthContextValues)
@@ -11,7 +11,8 @@ export const useAuthContext = (isAuth: keyof IsAuth) => {
 
   if (!context) throw new Error("useAuthContext must be used within AuthProvider")
 
-  return context as IsAuth[keyof IsAuth]
+  if (isAuth) return context as AuthContextValues
+  else return context as UnauthenticatedValues
 }
 
 const AuthProvider: ComponentWithChild = ({ children }) => {

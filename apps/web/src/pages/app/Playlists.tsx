@@ -14,7 +14,8 @@ const PlaylistPage: Component = () => {
   const { data: playlists } = useQuery<IPlaylist[]>({
     queryKey: ["playlists"],
     queryFn: () => api.fetchPlaylists(true).then((response) => response.playlists),
-    initialData: [],
+    refetchOnMount: true,
+    staleTime: 1000 * 60,
   })
 
   const [isOpen, toggleOpen] = useToggle(false)
@@ -39,7 +40,7 @@ const PlaylistPage: Component = () => {
               </div>
             </div>
           </div>
-          {playlists.map((playlist, index) => (
+          {(playlists || []).map((playlist, index) => (
             <Link key={index} to={`/app/playlist/${playlist.id}`}>
               <div className="h-[100px] w-full cursor-pointer">
                 <div className="flex items-center h-full">
