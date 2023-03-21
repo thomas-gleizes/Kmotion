@@ -1,10 +1,11 @@
 import fastify from "fastify"
-import fastifyStatic from "@fastify/static"
 import fastifyCookie from "@fastify/cookie"
 import fastifySession from "@fastify/session"
 import "reflect-metadata"
 
-import { APP_PORT, APP_PUBLIC } from "./utils/constants"
+import { APP_PORT } from "./utils/constants"
+import { clientPlugin } from "./plugins/client"
+import { jobsPlugins } from "./plugins/jobsPlugins"
 import trace from "./utils/trace"
 import apiRoutes from "./routes"
 
@@ -17,11 +18,8 @@ app.register(fastifySession, {
   cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 360, secure: false },
 })
 
-app.register(fastifyStatic, { root: APP_PUBLIC, prefix: "/" })
-app.setNotFoundHandler((req, res) => {
-  res.sendFile("index.html")
-})
-
+app.register(jobsPlugins)
+app.register(clientPlugin)
 app.register(apiRoutes, { prefix: "/api" })
 
 app

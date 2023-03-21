@@ -30,7 +30,6 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       const newMusics: Array<Music> = []
 
-      // TODO: BUG have to be fixed
       for (const music of musics) {
         const find = await prisma.music.findUnique({
           where: { youtubeId: music.id },
