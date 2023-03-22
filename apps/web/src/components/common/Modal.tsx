@@ -22,7 +22,7 @@ const Modal: ComponentWithChild<Props> = memo(({ isOpen, children }) => {
         leaveFrom="translate-y-0"
         leaveTo="translate-y-full"
       >
-        <div className="w-full h-[635px] bg-black">{children}</div>
+        <div className="w-full h-[575px] bg-black">{children}</div>
       </Transition>
     </div>
   )

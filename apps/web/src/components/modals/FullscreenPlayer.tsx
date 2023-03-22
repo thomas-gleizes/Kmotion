@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useRef } from "react"
 import {
   FaBackward,
   FaEllipsisH,
@@ -15,10 +15,10 @@ import {
 import classnames from "classnames"
 
 import { usePlayerContext } from "../../contexts/player"
+import { formatTime } from "../../utils/time"
+import { roundMinMax } from "../../utils/number"
 import Modal from "../common/Modal"
 import Slider from "../common/Slider"
-import { roundMinMax } from "../../utils/number"
-import { formatTime } from "../../utils/time"
 
 interface Props {
   isOpen: boolean
@@ -42,7 +42,12 @@ interface Props {
 const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, controls }) => {
   const { currentMusic, actions, loop, assets } = usePlayerContext()
 
+  const tRef = useRef<HTMLHeadingElement>(null)
+
   if (!currentMusic) return null
+
+  const isOverflow =
+    (tRef.current?.offsetWidth || 0) >= (tRef.current?.parentElement?.offsetWidth || 2000)
 
   return (
     <Modal isOpen={isOpen}>
@@ -50,7 +55,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
         <div className="absolute top-0 left-0 w-full h-full">
           <img src={assets.cover.url} alt="cover" className="h-full w-full " />
         </div>
-        <div className="h-full pt-20 pb-10 px-8 bg-black/20 backdrop-blur-[135px] backdrop-brightness-[125%] backdrop-saturate-[150%]">
+        <div className="h-full sm:pt-12 md:pt-20 pb-10 px-8 bg-black/20 backdrop-blur-[135px] backdrop-brightness-[125%] backdrop-saturate-[150%]">
           <div className="h-full flex flex-col justify-between">
             <div className="px-2 my-8 z-90">
               <img
@@ -64,18 +69,24 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
             </div>
             <div className="flex flex-col mx-2">
               <div className="flex justify-between items-center mt-2">
-                <div className="w-10/12 relative overflow-hidden whitespace-nowrap">
-                  <h3 className="w-fit max-w-full animate-text-scroll text-white text-lg font-semibold capitalize py-1.5 leading-[0.5rem]">
+                <div className="basis-10/12 overflow-hidden w-[170px]">
+                  <h3
+                    ref={tRef}
+                    className={classnames(
+                      "text-white text-lg font-semibold capitalize py-1.5 leading-[0.5rem] inline-block whitespace-nowrap",
+                      { "overflow-defilement": isOverflow }
+                    )}
+                  >
                     {currentMusic.title}
                   </h3>
-                  <p className="w-fit max-w-full text-opacity-90 font-light text-white text-lg py-1.5 leading-[0.5rem]">
+                  <p className="text-white/80 text-lg py-1.5 leading-[0.5rem]">
                     {currentMusic.artist}
                   </p>
                 </div>
-                <div className="flex justify-center items-center bg-white/30 backdrop-blur-lg h-7 w-7 rounded-full">
-                  <i className="cursor-pointer text-white text-lg">
-                    <FaEllipsisH />
-                  </i>
+                <div className="basis-2/12 flex justify-end items-center">
+                  <div className="flex items-center justify-center cursor-pointer bg-white/50 backdrop-blur rounded-full h-7 w-7">
+                    <FaEllipsisH className="text-white text-lg" />
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col space-y-2 mt-2.5 group">

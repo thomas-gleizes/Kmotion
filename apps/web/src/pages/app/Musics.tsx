@@ -30,7 +30,7 @@ const DisplayMode: Record<string, string> = {
 
 const Musics: Page = () => {
   const { actions } = usePlayerContext()
-  const authContext = useAuthContext("yes")
+  const authContext = useAuthContext()
 
   const [displayMode, setDisplayMode] = useLocalStorageState<keyof typeof DisplayMode>(
     "displayMode",
@@ -64,6 +64,10 @@ const Musics: Page = () => {
 
   const handlePlayMusic = (index: number) => actions.set(musics, index)
 
+  const handleDeleteMusic = async (music: IMusic) => {
+    console.log("Delete", music)
+  }
+
   const handleStopPropagation = (callback: () => void) => {
     return (event: React.MouseEvent) => {
       event.stopPropagation()
@@ -73,7 +77,7 @@ const Musics: Page = () => {
 
   return (
     <div className="relative">
-      <SimpleBar className="max-h-[700px] pt-16 pb-42 px-2">
+      <SimpleBar className="max-h-[700px] pt-16 pb-48 md:pb-36 px-2">
         <div className="mx-2 pb-5">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-semibold text-white">Morceaux</h1>
@@ -184,7 +188,9 @@ const Musics: Page = () => {
                                 {authContext.authenticated && authContext.user.isAdmin && (
                                   <Menu.Item>
                                     <button
-                                      onClick={handleStopPropagation(() => null)}
+                                      onClick={handleStopPropagation(() =>
+                                        handleDeleteMusic(music)
+                                      )}
                                       className="w-full px-2 py-1 text-primary hover:bg-primary/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
                                     >
                                       <span>Supprimer</span>

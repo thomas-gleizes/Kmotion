@@ -5,7 +5,7 @@ import UnauthenticatedHome from "../components/common/UnauthenticatedHome"
 import { Navigate } from "@tanstack/react-router"
 
 const HomePage: Page = () => {
-  const authContext = useAuthContext("dont_know")
+  const authContext = useAuthContext()
 
   if (!authContext.authenticated) return <UnauthenticatedHome />
 

@@ -7,7 +7,7 @@ import PlayerProvider from "../../contexts/player"
 import { useAuthContext } from "../../contexts/auth"
 
 const AppRoot: Component = () => {
-  const authContext = useAuthContext("dont_know")
+  const authContext = useAuthContext()
 
   if (!authContext.authenticated) return <Navigate to="/" />
 

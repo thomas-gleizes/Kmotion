@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useEffect, useRef } from "react"
+import React, { MouseEventHandler, useRef } from "react"
 import classnames from "classnames"
 import { useAudio, useEvent, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"

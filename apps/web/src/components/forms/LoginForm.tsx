@@ -17,13 +17,9 @@ const defaultValues: LoginDto = {
 const LoginForm: Component = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginDto>({ resolver, defaultValues })
+  const { register, handleSubmit } = useForm<LoginDto>({ resolver, defaultValues })
 
-  const authContext = useAuthContext("dont_know")
+  const authContext = useAuthContext()
 
   if (authContext.authenticated) return <Navigate to="/" />
   const onSubmit = async (data: LoginDto) => {
@@ -38,6 +34,7 @@ const LoginForm: Component = () => {
       setIsSubmitting(false)
     }
   }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col space-y-2">

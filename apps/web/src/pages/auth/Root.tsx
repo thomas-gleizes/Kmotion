@@ -4,7 +4,7 @@ import { Navigate, Outlet, SyncRouteComponent } from "@tanstack/react-router"
 import { useAuthContext } from "../../contexts/auth"
 
 const AuthRoot: SyncRouteComponent = () => {
-  const authContext = useAuthContext("dont_know")
+  const authContext = useAuthContext()
 
   if (authContext.authenticated) return <Navigate to="/" />
 

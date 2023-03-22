@@ -19,13 +19,9 @@ const defaultValues: RegisterDto = {
 const RegisterForm: Component = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterDto>({ resolver, defaultValues })
+  const { register, handleSubmit } = useForm<RegisterDto>({ resolver, defaultValues })
 
-  const authContext = useAuthContext("dont_know")
+  const authContext = useAuthContext()
 
   if (authContext.authenticated) return <Navigate to="/" />
   const onSubmit = async (data: RegisterDto) => {

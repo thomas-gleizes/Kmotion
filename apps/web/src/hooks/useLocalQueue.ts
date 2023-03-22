@@ -63,10 +63,5 @@ export function useLocalQueue<Item>(): UseLocalQueueResult<Item> {
     },
   }
 
-  return {
-    queue,
-    index,
-    actions,
-    list,
-  }
+  return { queue, index, actions, list }
 }
