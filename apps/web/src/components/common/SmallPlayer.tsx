@@ -68,46 +68,44 @@ const SmallPlayer: Component = () => {
       />
       <div
         onClick={handleStopPropagation(fullscreen.toggle)}
-        className="flex items-center z-30 py-2 px-3 border-b border-neutral-800 transition-all transform duration-300 ease-in-out h-[50px] justify-between bg-opacity-70 bg-secondary backdrop-blur cursor-default"
+        className="flex items-center z-30 py-2 lg:py-4 px-3 lg:px-16 border-b border-neutral-800 transition-all transform duration-300 ease-in-out justify-between bg-opacity-70 bg-secondary backdrop-blur cursor-default"
       >
-        <div className="flex items-center transition-all h-[50px] w-[65%] space-x-0.5 py-2">
-          <div className="h-full">
+        <div className="flex items-center">
+          <div className="w-1/4">
             <img
-              className="shadow-xl h-full rounded-md"
+              className="shadow-xl max-h-20 rounded-md"
               src={assets.cover.url}
               alt={`cover of ${currentMusic.title}`}
             />
           </div>
-          <div className="overflow-hidden w-full lg:text-center px-2">
+          <div className="overflow-hidden w-3/4 lg:text-center px-4 lg:px-10">
             <span
               ref={tRef}
               className={classnames(
-                "text-sm lg:text-xl text-white inline-block whitespace-nowrap",
-                {
-                  "overflow-defilement": isOverflow,
-                }
+                "text-sm lg:text-2xl text-white inline-block whitespace-nowrap",
+                { "overflow-defilement": isOverflow }
               )}
             >
               {currentMusic.title}
             </span>
           </div>
         </div>
-        <div className="flex justify-between items-center w-[35%]">
+        <div className="flex justify-center items-center space-x-5 md:space-x-16">
           <div>
-            <i className="text-2xl text-white cursor-pointer">
+            <i className="text-2xl md:text-3xl lg:text-5xl text-white cursor-pointer">
               <FaBackward onClick={handleStopPropagation(actions.previous)} />
             </i>
           </div>
           <div>
             <i
-              className="text-2xl text-white cursor-pointer"
+              className="text-2xl md:text-3xl lg:text-5xl text-white cursor-pointer"
               onClick={handleStopPropagation(togglePlaying)}
             >
               {state.playing ? <FaPause /> : <FaPlay />}
             </i>
           </div>
           <div>
-            <i className="text-2xl text-white cursor-pointer">
+            <i className="text-2xl md:text-3xl lg:text-5xl text-white cursor-pointer">
               <FaForward onClick={handleStopPropagation(actions.next)} />
             </i>
           </div>

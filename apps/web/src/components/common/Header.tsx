@@ -7,7 +7,7 @@ const Header: Component = () => {
   const { mobile } = useLayoutContext()
 
   return (
-    <div className="absolute z-20 top-0 left-0 w-full h-header bg-secondary/50 backdrop-blur-lg">
+    <div className="absolute z-[1000] top-0 left-0 w-full h-header bg-secondary/50 backdrop-blur-lg">
       {!mobile.value ? (
         <div className="flex justify-between items-center h-full">
           <div className="w-1/3 px-4">

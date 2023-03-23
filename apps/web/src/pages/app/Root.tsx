@@ -14,9 +14,10 @@ const AppRoot: Component = () => {
   return (
     <PlayerProvider>
       <div id="portal" className="z-[100]" />
-
-      <div className="absolute z-[50] w-full bottom-0">
+      <div className="absolute z-[50] w-full bottom-footer">
         <SmallPlayer />
+      </div>
+      <div className="absolute z-[1000] w-full bottom-0">
         <NavBar />
       </div>
       <Outlet />

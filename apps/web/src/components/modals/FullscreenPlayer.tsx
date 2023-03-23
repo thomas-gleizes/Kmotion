@@ -51,7 +51,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
 
   return (
     <Modal isOpen={isOpen}>
-      <div className="relative h-full w-full">
+      <div className="relative h-screen -top-header w-full">
         <div className="absolute top-0 left-0 w-full h-full">
           <img src={assets.cover.url} alt="cover" className="h-full w-full " />
         </div>

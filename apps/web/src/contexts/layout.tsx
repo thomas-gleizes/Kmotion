@@ -1,5 +1,4 @@
 import { createContext, useContext } from "react"
-import { isMobile } from "react-device-detect"
 import useLocalStorageState from "use-local-storage-state"
 
 import { LayoutContextValues } from "../../types/contexts"
@@ -12,7 +11,7 @@ export const useLayoutContext = () => {
 
 const LayoutProvider: ComponentWithChild = ({ children }) => {
   const [isMobileLayout, setIsMobileLayout] = useLocalStorageState<boolean>("is-mobile", {
-    defaultValue: isMobile,
+    defaultValue: true,
   })
 
   return (
