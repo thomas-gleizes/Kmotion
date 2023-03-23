@@ -1,7 +1,7 @@
 import React from "react"
 import classnames from "classnames"
 import { Link, useRouter } from "@tanstack/react-router"
-import { FaList, FaMusic, FaSlidersH } from "react-icons/all"
+import { FaList, FaMusic, FaSlidersH, RiPlayList2Fill } from "react-icons/all"
 
 import { usePlayerContext } from "../../contexts/player"
 import { useLayoutContext } from "../../contexts/layout"
@@ -43,7 +43,7 @@ const NavBar: Component = () => {
         </div>
         <div>
           <NavLink to="/app/playlists">
-            <FaList />
+            <RiPlayList2Fill />
           </NavLink>
         </div>
         <div>

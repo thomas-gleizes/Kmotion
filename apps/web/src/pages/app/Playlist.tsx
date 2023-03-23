@@ -50,7 +50,9 @@ const Playlist: Page = () => {
 
   const handlePlayPlaylist = (random: boolean) => {
     if (random)
-      actions.set([...entries]?.sort(() => Math.random() - 0.5).map((entry) => entry.music))
+      actions.set(
+        [...entries]?.sort(() => Math.random() - 0.5).map((entry) => entry.music as IMusic)
+      )
     else actions.set(entries?.map((entry) => entry.music as IMusic))
   }
 
@@ -79,7 +81,7 @@ const Playlist: Page = () => {
   return (
     <ScrollableLayout>
       <div className="relative top-0 flex flex-col lg:flex-row">
-        <div className="lg:sticky lg:h-screen lg:bottom-0 lg:w-1/3 lg:top-[-25%] xl:top-[-20%] flex flex-col pt-10 lg:justify-center space-y-10">
+        <div className="lg:sticky lg:h-full lg:top-10 lg:bottom-0 lg:w-1/3 flex flex-col lg:justify-center space-y-10">
           <div className="h-[200px] w-[200px] lg:w-[300px] lg:h-[300px] xl:w-[420px] xl:h-[420px] mx-auto">
             <PlaylistGridImage ids={entries.map((entry) => entry.musicId)} />
           </div>

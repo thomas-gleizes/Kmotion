@@ -70,15 +70,15 @@ const SmallPlayer: Component = () => {
         onClick={handleStopPropagation(fullscreen.toggle)}
         className="flex items-center z-30 py-2 lg:py-4 px-3 lg:px-16 border-b border-neutral-800 transition-all transform duration-300 ease-in-out justify-between bg-opacity-70 bg-secondary backdrop-blur cursor-default"
       >
-        <div className="flex items-center">
-          <div className="w-1/4">
+        <div className="w-3/5 flex items-center">
+          <div className="w-1/3 md:w-1/4 pr-1.5">
             <img
               className="shadow-xl max-h-20 rounded-md"
               src={assets.cover.url}
               alt={`cover of ${currentMusic.title}`}
             />
           </div>
-          <div className="overflow-hidden w-3/4 lg:text-center px-4 lg:px-10">
+          <div className="w-2/3 md:w-3/4 overflow-hidden lg:text-center px-4 lg:px-5">
             <span
               ref={tRef}
               className={classnames(
@@ -90,7 +90,7 @@ const SmallPlayer: Component = () => {
             </span>
           </div>
         </div>
-        <div className="flex justify-center items-center space-x-5 md:space-x-16">
+        <div className="w-2/5 flex justify-center items-center space-x-5 md:space-x-16">
           <div>
             <i className="text-2xl md:text-3xl lg:text-5xl text-white cursor-pointer">
               <FaBackward onClick={handleStopPropagation(actions.previous)} />

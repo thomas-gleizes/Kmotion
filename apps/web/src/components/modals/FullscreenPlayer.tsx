@@ -2,8 +2,8 @@ import React, { useRef } from "react"
 import {
   FaBackward,
   FaEllipsisH,
-  FaExpand,
   FaForward,
+  FaListUl,
   FaPause,
   FaPlay,
   FaRandom,
@@ -19,6 +19,7 @@ import { formatTime } from "../../utils/time"
 import { roundMinMax } from "../../utils/number"
 import Modal from "../common/Modal"
 import Slider from "../common/Slider"
+import { useToggle } from "react-use"
 
 interface Props {
   isOpen: boolean
@@ -44,6 +45,8 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
 
   const tRef = useRef<HTMLHeadingElement>(null)
 
+  const [showQueue, toggleShowQueue] = useToggle(false)
+
   if (!currentMusic) return null
 
   const isOverflow =
@@ -62,7 +65,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
                 src={assets.cover.url}
                 alt={currentMusic.title}
                 className={classnames(
-                  "rounded-lg shadow-2xl transition-all duration-500 ease-in-out z-90 select-none w-full",
+                  "rounded-lg lg:rounded-2xl shadow-2xl transition-all duration-500 ease-in-out z-90 select-none w-full",
                   { "scale-[75%] shadow-lg": state.paused }
                 )}
               />
@@ -145,14 +148,6 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
               </div>
               <div className="flex justify-between items-center mx-9 mt-10">
                 <i
-                  onClick={close}
-                  className={
-                    "text-white text-opacity-50 active:text-opacity-90 duration-200 rounded-full text-xl transition transform duration-200"
-                  }
-                >
-                  <FaExpand />
-                </i>
-                <i
                   onClick={() => loop.set("all")}
                   className={classnames(
                     "text-white rounded-full text-xl transition transform duration-200",
@@ -169,6 +164,14 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
                   )}
                 >
                   <FaRandom />
+                </i>
+                <i
+                  onClick={toggleShowQueue}
+                  className={
+                    "text-white text-opacity-50 active:text-opacity-90 duration-200 rounded-full text-xl transition transform duration-200"
+                  }
+                >
+                  <FaListUl />
                 </i>
               </div>
             </div>
