@@ -1,7 +1,7 @@
 import React from "react"
 import { Navigate, Outlet } from "@tanstack/react-router"
 
-import DynamicPlayer from "../../components/common/DynamicPlayer"
+import SmallPlayer from "../../components/common/SmallPlayer"
 import NavBar from "../../components/common/NavBar"
 import PlayerProvider from "../../contexts/player"
 import { useAuthContext } from "../../contexts/auth"
@@ -13,12 +13,13 @@ const AppRoot: Component = () => {
 
   return (
     <PlayerProvider>
-      <Outlet />
-      <div className="absolute w-full bottom-0">
-        <DynamicPlayer />
+      <div id="portal" className="z-[100]" />
+
+      <div className="absolute z-[50] w-full bottom-0">
+        <SmallPlayer />
         <NavBar />
       </div>
-      <div id="portal" />
+      <Outlet />
     </PlayerProvider>
   )
 }

@@ -77,7 +77,7 @@ const Musics: Page = () => {
 
   return (
     <div className="relative">
-      <SimpleBar className="max-h-[700px] pt-16 pb-48 md:pb-36 px-2">
+      <SimpleBar className="max-h-screen pt-16 pb-48 md:pb-36 px-2">
         <div className="mx-2 pb-5">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-semibold text-white">Morceaux</h1>

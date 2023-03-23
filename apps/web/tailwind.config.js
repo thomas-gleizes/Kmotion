@@ -4,6 +4,10 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}", "./src/components/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      spacing: {
+        header: "35px",
+        footer: "56px",
+      },
       colors: {
         primary: {
           light: "#ef4444",

@@ -6,7 +6,7 @@ import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
 import { usePlayerContext } from "../../contexts/player"
 import FullscreenPlayer from "../modals/FullscreenPlayer"
 
-const DynamicPlayer: Component = () => {
+const SmallPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen, assets } = usePlayerContext()
 
   const [audio, state, controls, ref] = useAudio(
@@ -114,4 +114,4 @@ const DynamicPlayer: Component = () => {
   )
 }
 
-export default DynamicPlayer
+export default SmallPlayer

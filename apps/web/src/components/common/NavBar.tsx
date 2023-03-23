@@ -1,34 +1,53 @@
 import React from "react"
+import classnames from "classnames"
 import { Link } from "@tanstack/react-router"
 import { FaList, FaMusic, FaSlidersH } from "react-icons/all"
-import { usePlayerContext } from "../../contexts/player"
 
-const NavBar = () => {
+import { usePlayerContext } from "../../contexts/player"
+import { useLayoutContext } from "../../contexts/layout"
+
+const NavLink: ComponentWithChild<{ to: string }> = ({ to, children }) => {
   const { fullscreen } = usePlayerContext()
 
+  const active = document.location.pathname === to
+
   return (
-    <div className="bg-secondary backdrop-blur bg-opacity-70 pb-2 rounded-b-2xl">
-      <div className="h-full flex justify-evenly items-center py-4">
+    <Link to={to} onClick={() => fullscreen.toggle(false)}>
+      <span
+        className={classnames("text-2xl cursor-pointer", active ? "text-white" : "text-red-800")}
+      >
+        {children}
+      </span>
+    </Link>
+  )
+}
+
+const NavBar: Component = () => {
+  const { mobile } = useLayoutContext()
+
+  console.log(document.location.pathname)
+
+  return (
+    <div
+      className={classnames("bg-secondary h-footer backdrop-blur bg-opacity-70", {
+        "rounded-b-2xl": !mobile.value,
+      })}
+    >
+      <div className="h-full flex justify-evenly items-center">
         <div>
-          <Link to="/app/musics" onClick={() => fullscreen.toggle(false)}>
-            <i className="text-2xl font-bolder text-red-800 cursor-pointer">
-              <FaMusic />
-            </i>
-          </Link>
+          <NavLink to="/app/musics">
+            <FaMusic />
+          </NavLink>
         </div>
         <div>
-          <Link to="/app/playlists" onClick={() => fullscreen.toggle(false)}>
-            <i className="text-2xl font-bolder text-red-800 cursor-pointer">
-              <FaList />
-            </i>
-          </Link>
+          <NavLink to="/app/playlists">
+            <FaList />
+          </NavLink>
         </div>
         <div>
-          <Link to="/app/settings" onClick={() => fullscreen.toggle(false)}>
-            <i className="text-2xl font-bolder text-red-800 cursor-pointer">
-              <FaSlidersH />
-            </i>
-          </Link>
+          <NavLink to="/app/settings">
+            <FaSlidersH />
+          </NavLink>
         </div>
       </div>
     </div>

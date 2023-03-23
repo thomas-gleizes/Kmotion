@@ -37,3 +37,9 @@ interface PlayerContextValues {
   loop: { value: LoopType; set: (value: LoopType) => void }
   fullscreen: { value: boolean; toggle: (value?: boolean) => void }
 }
+
+// Layout
+
+interface LayoutContextValues {
+  mobile: { value: boolean; toggle: (value?: boolean) => void }
+}

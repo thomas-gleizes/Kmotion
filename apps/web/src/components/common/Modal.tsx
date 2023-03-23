@@ -12,7 +12,7 @@ const Modal: ComponentWithChild<Props> = memo(({ isOpen, children }) => {
   if (!portalNode) return null
 
   const jsx = (
-    <div className="absolute top-[36px] left-0 w-full z-90">
+    <div className="absolute top-header left-0 w-full z-90">
       <Transition
         show={isOpen}
         enter="transition-all transform duration-200"
@@ -22,7 +22,7 @@ const Modal: ComponentWithChild<Props> = memo(({ isOpen, children }) => {
         leaveFrom="translate-y-0"
         leaveTo="translate-y-full"
       >
-        <div className="w-full h-[575px] bg-black">{children}</div>
+        <div className="w-full test bg-black">{children}</div>
       </Transition>
     </div>
   )
