@@ -1,6 +1,7 @@
 import { ReactElement } from "react"
 import { UseQueryResult } from "@tanstack/react-query"
-import { useImageLoader } from "../../hooks/useImageLoader"
+
+import { useImageLoader } from "../../hooks"
 
 interface LoaderChildProps {
   src: string

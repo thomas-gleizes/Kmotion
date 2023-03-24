@@ -33,8 +33,9 @@ interface PlayerContextValues {
     cover: AssetType
   }
   queue: IMusic[]
-  actions: UseLocalActions<IMusic>
+  actions: UseStorageQueueActions<IMusic>
   loop: { value: LoopType; set: (value: LoopType) => void }
+  history: IMusic[]
   fullscreen: { value: boolean; toggle: (value?: boolean) => void }
 }
 

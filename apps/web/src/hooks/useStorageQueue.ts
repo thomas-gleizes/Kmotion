@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { useList } from "react-use"
 import useLocalStorageState from "use-local-storage-state"
 
-export function useLocalQueue<Item>(): UseLocalQueueResult<Item> {
+export function useStorageQueue<Item>(): UseStorageQueueResult<Item> {
   const [index, setIndex] = useLocalStorageState<number>("iindex", {
     defaultValue: 0,
   })
@@ -29,7 +29,7 @@ export function useLocalQueue<Item>(): UseLocalQueueResult<Item> {
     return list
   }
 
-  const actions: UseLocalActions<Item> = {
+  const actions: UseStorageQueueActions<Item> = {
     set: (items: Item[], initIndex?: number) => {
       listActions.set([...items])
       setStorageQueue([...items])
@@ -60,6 +60,11 @@ export function useLocalQueue<Item>(): UseLocalQueueResult<Item> {
       const shuffledList = list.sort(() => Math.random() - 0.5)
       setStorageQueue([...shuffledList])
       listActions.set([...shuffledList])
+    },
+    go: (destIndex: number) => {
+      if (index + destIndex < 0) return setIndex(0)
+      else if (index + destIndex >= list.length) return setIndex(list.length - 1)
+      else return setIndex(index + destIndex)
     },
   }
 
