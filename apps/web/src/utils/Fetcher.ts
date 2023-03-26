@@ -1,12 +1,24 @@
 export class Fetcher {
   private readonly version: string
+  private readonly requestInteceptor: Array<() => void>
+  private readonly responseInterceptor: Array<() => void>
 
   private readonly DEFAULT_HEADERS = {
     "Content-Type": "application/json",
   }
 
   constructor(version: string) {
-    this.version = version || "v1"
+    this.version = version
+    this.requestInteceptor = []
+    this.responseInterceptor = []
+  }
+
+  public async interceptRequest(interceptorCallback: () => void) {
+    this.requestInteceptor.push(interceptorCallback)
+  }
+
+  public async interceptResponse(interceptorCallback: () => void) {
+    this.responseInterceptor.push(interceptorCallback)
   }
 
   private async fetch(path: string, init?: RequestInit) {

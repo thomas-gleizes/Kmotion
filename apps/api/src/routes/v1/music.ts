@@ -1,7 +1,12 @@
 import { FastifyInstance } from "fastify"
 import { Music } from "@prisma/client"
 
-import { DownloadMusicParamsDto, GetMusicPramsDto, SearchParamsDto } from "@kmotion/validations"
+import {
+  DownloadMusicParamsDto,
+  GetMusicPramsDto,
+  GetMusicQuery,
+  SearchParamsDto,
+} from "@kmotion/validations"
 import { musicMapper } from "@kmotion/mappers"
 import YtConverter from "../../services/ytconverter"
 import prisma from "../../services/prisma"
@@ -16,11 +21,21 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
   const ytConverter = YtConverter.getInstance()
 
-  instance.get<{ Reply: MusicResponse }>("/", async (request, reply) => {
-    const musics = await prisma.music.findMany({ orderBy: { createdAt: "desc" } })
+  instance.get<{ Reply: MusicResponse; Querystring: GetMusicQuery }>(
+    "/",
+    { onRequest: instance.validateQuery(GetMusicQuery) },
+    async (request, reply) => {
+      const offset: number = request.query.offset || 0
 
-    return reply.send({ success: true, musics: musicMapper.many(musics) })
-  })
+      const musics = await prisma.music.findMany({
+        orderBy: { createdAt: "desc" },
+        skip: +offset * 40,
+        take: 4,
+      })
+
+      return reply.send({ success: true, musics: musicMapper.many(musics) })
+    }
+  )
 
   instance.get<{ Reply: MusicResponse }>(
     "/sync",

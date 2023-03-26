@@ -55,8 +55,8 @@ class Api {
       .then(this.toJson)
   }
 
-  public fetchMusics(): Promise<MusicResponse> {
-    return this.fetcher.get("musics").then(this.toJson)
+  public fetchMusics(offset: number): Promise<MusicResponse> {
+    return this.fetcher.get(`musics?offset=${offset}`).then(this.toJson)
   }
 }
 

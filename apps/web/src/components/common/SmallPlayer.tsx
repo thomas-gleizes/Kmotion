@@ -9,9 +9,7 @@ import FullscreenPlayer from "../modals/FullscreenPlayer"
 const SmallPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen, assets } = usePlayerContext()
 
-  const [audio, state, controls, ref] = useAudio(
-    <audio src={assets.stream.isFetching ? "" : assets.stream.url} autoPlay={true} />
-  )
+  const [audio, state, controls, ref] = useAudio(<audio src={assets.stream.url} autoPlay={true} />)
   const togglePlaying = () => (state.playing ? controls.pause() : controls.play())
 
   useEvent("keydown", (event: KeyboardEvent) => {

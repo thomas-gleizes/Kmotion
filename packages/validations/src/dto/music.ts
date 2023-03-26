@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, Min } from "class-validator"
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator"
 import { Type } from "class-transformer"
 
 export class GetMusicPramsDto {
@@ -14,4 +14,12 @@ export class DownloadMusicParamsDto {
   @IsNotEmpty()
   @Min(8)
   youtubeId!: string
+}
+
+export class GetMusicQuery {
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  @Min(0)
+  offset?: number
 }

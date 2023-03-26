@@ -5,7 +5,7 @@ import { useToggle } from "react-use"
 
 import { IMusic } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
-import { useStorageQueue, useImageLoader } from "../hooks"
+import { useImageLoader, useStorageQueue } from "../hooks"
 
 const PlayerContext = createContext<PlayerContextValues>(null as never)
 
@@ -67,7 +67,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         album: "Unknown",
         artwork: [
           {
-            src: "https://i.ytimg.com/vi_webp/MUMqVG8ECys/maxresdefault.webp",
+            src: coverUrl,
             sizes: "512x512",
             type: "image/webp",
           },

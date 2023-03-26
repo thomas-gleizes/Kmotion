@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery } from "@tanstack/react-query"
 import useLocalStorageState from "use-local-storage-state"
 import { Menu, Transition } from "@headlessui/react"
 import {
@@ -37,14 +37,17 @@ const Musics: Page = () => {
     { defaultValue: DisplayMode.GRID }
   )
 
-  const musicsQuery = useQuery<IMusic[]>({
+  const { data, fetchNextPage, isFetching } = useInfiniteQuery<IMusic[]>({
     queryKey: ["musics"],
-    queryFn: () => api.fetchMusics().then((data) => data.musics as IMusic[]),
+    queryFn: ({ pageParam = 0 }) => {
+      return api.fetchMusics(pageParam).then((data) => data.musics as IMusic[])
+    },
+    getNextPageParam: (_, pages) => pages.length,
+    staleTime: 0,
     refetchOnMount: true,
-    staleTime: 1000 * 30,
   })
 
-  const musics: IMusic[] = musicsQuery.data || []
+  const musics: IMusic[] = useMemo(() => (data ? data.pages.flat() : []), [data])
 
   const [search, setSearch] = useState<string>("")
 
@@ -54,8 +57,8 @@ const Musics: Page = () => {
         ? [...musics]
         : [...musics].filter(
             (music) =>
-              music.title.toLowerCase().includes(search) ||
-              (music.artist && music.artist.toLowerCase().includes(search))
+              music.title.toLowerCase().includes(search.toLowerCase()) ||
+              (music.artist && music.artist.toLowerCase().includes(search.toLowerCase()))
           ),
     [musics, search]
   )
@@ -248,6 +251,11 @@ const Musics: Page = () => {
             ))}
           </div>
         )}
+        <div className="flex justify-center mt-16">
+          <button disabled={isFetching} className="btn btn-sm" onClick={() => fetchNextPage()}>
+            Afficher plus
+          </button>
+        </div>
       </div>
     </ScrollableLayout>
   )
