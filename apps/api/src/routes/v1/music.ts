@@ -30,7 +30,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
       const musics = await prisma.music.findMany({
         orderBy: { createdAt: "desc" },
         skip: +offset * 40,
-        take: 4,
+        take: 40,
       })
 
       return reply.send({ success: true, musics: musicMapper.many(musics) })
