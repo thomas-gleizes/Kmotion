@@ -267,7 +267,9 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
                 showQueue ? "w-full" : ""
               )}
             >
-              <div className={classnames(showQueue ? "hidden lg:visible" : "")}>{TitleBlock}</div>
+              <div className={classnames(showQueue ? "hidden lg:block lg:pb-10" : "")}>
+                {TitleBlock}
+              </div>
               {QueueBlock}
               {ControlsBlock}
             </div>
