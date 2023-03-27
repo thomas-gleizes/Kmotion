@@ -25,10 +25,21 @@ const task = new AsyncTask(
               artist: music.author,
               youtubeId: music.id,
               downloaderId: 1,
+              duration: music.duration,
             },
           })
           .then((music) => console.log("CRON JOB: new music ", music.title))
           .catch(() => void null)
+      } else {
+        await prisma.music.update({
+          data: {
+            title: music.title,
+            artist: music.author,
+            youtubeId: music.id,
+            duration: music.duration,
+          },
+          where: { id: find.id },
+        })
       }
     }
   },

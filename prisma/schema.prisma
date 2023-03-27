@@ -23,7 +23,7 @@ model User {
   updatedAt  DateTime   @default(now()) @map("updated_at")
 
   playlists Playlist[]
-  musics     Music[]
+  musics    Music[]
 
   @@map("users")
 }
@@ -34,6 +34,7 @@ model Music {
   artist       String?  @db.VarChar(128)
   youtubeId    String   @unique @map("youtube_id") @db.VarChar(24)
   downloaderId Int      @map("downloader_id")
+  duration     Float    @db.Float
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @default(now()) @map("updated_at")
 

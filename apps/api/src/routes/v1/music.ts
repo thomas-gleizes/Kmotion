@@ -58,10 +58,20 @@ export default async function musicRoutes(instance: FastifyInstance) {
                 artist: music.author,
                 youtubeId: music.id,
                 downloaderId: request.session.user.id,
+                duration: music.duration,
               },
             })
             .then((music) => newMusics.push(music))
-            .catch(() => void null)
+        } else {
+          await prisma.music.update({
+            data: {
+              title: music.title,
+              artist: music.author,
+              youtubeId: music.id,
+              duration: music.duration,
+            },
+            where: { id: find.id },
+          })
         }
       }
 
@@ -86,12 +96,15 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       const info: any = await ytConverter.info(request.params.youtubeId)
 
+      console.log("Info", info)
+
       const music = await prisma.music.create({
         data: {
           title: info.title,
           artist: info.author.name,
           youtubeId: request.params.youtubeId,
           downloaderId: request.session.user.id,
+          duration: 0,
         },
       })
 

@@ -19,6 +19,7 @@ export type IMusic = {
   artist: string | null
   youtubeId: string
   downloaderId: number
+  duration: number
   links: {
     cover: string
     stream: string
