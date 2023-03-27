@@ -7,7 +7,7 @@ import {
   CreatePlaylistDto,
   GetPlaylistParamsDto,
   QueryGetPlaylist,
-  SearchParamsDto,
+  SearchMusicQuery,
 } from "@kmotion/validations"
 import { PlaylistEntriesResponse, PrismaEntry } from "@kmotion/types"
 import { entryMapper, playlistMapper } from "@kmotion/mappers"
@@ -29,6 +29,12 @@ export default async function playlistRoutes(instance: FastifyInstance) {
           description: request.body.description,
           authorId: request.session.user.id,
           visibility: request.body.visibility,
+          entries: {
+            create: (request.body.musics || []).map((music, index) => ({
+              musicId: music,
+              position: index,
+            })),
+          },
         },
       })
 
@@ -143,16 +149,13 @@ export default async function playlistRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.get<{ Params: SearchParamsDto }>(
+  instance.get<{ Querystring: SearchMusicQuery }>(
     "/search/:query",
-    { preHandler: instance.validateParams(SearchParamsDto) },
+    { preHandler: instance.validateQuery(SearchMusicQuery) },
     async (request, reply) => {
       const playlists = await prisma.playlist.findMany({
         where: {
-          OR: [
-            { title: { contains: request.params.query } },
-            { slug: { contains: request.params.query } },
-          ],
+          OR: [{ title: { contains: request.query.q } }, { slug: { contains: request.query.q } }],
         },
       })
 

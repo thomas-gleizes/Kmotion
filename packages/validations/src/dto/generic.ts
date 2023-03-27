@@ -2,11 +2,11 @@ import { IsNotEmpty, IsNumber, IsString, MinLength } from "class-validator"
 import { Dto } from "../lib/Schema"
 import { Type } from "class-transformer"
 
-export class SearchParamsDto extends Dto {
+export class SearchMusicQuery extends Dto {
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
-  query!: string
+  q!: string
 }
 
 export class IdNumberDto extends Dto {

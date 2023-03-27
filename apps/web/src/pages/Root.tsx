@@ -2,32 +2,20 @@ import React from "react"
 import { Outlet, SyncRouteComponent } from "@tanstack/react-router"
 
 import ContextsProvider from "../contexts"
-import MobileLayout from "../components/layouts/MobileLayout"
-import DesktopLayout from "../components/layouts/DesktopLayout"
-import { useLayoutContext } from "../contexts/layout"
+import Header from "../components/common/Header"
 
 const Root: SyncRouteComponent = () => {
   return (
     <ContextsProvider>
-      <Layout />
+      <div className="flex items-center justify-center h-screen bg-gray-900">
+        <div className="relative w-screen h-screen bg-black overflow-hidden">
+          <Header />
+          <div className="block h-full w-full">
+            <Outlet />
+          </div>
+        </div>
+      </div>
     </ContextsProvider>
-  )
-}
-
-const Layout = () => {
-  const context = useLayoutContext()
-
-  if (context.mobile.value)
-    return (
-      <MobileLayout>
-        <Outlet />
-      </MobileLayout>
-    )
-
-  return (
-    <DesktopLayout>
-      <Outlet />
-    </DesktopLayout>
   )
 }
 

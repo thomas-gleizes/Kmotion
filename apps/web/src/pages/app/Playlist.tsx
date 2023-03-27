@@ -1,10 +1,11 @@
-import React, { Fragment, MouseEventHandler } from "react"
+import React, { Fragment, MouseEventHandler, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Link, useParams } from "@tanstack/react-router"
+import { useParams } from "@tanstack/react-router"
+import { Menu, Transition } from "@headlessui/react"
+
 import {
   CgRowFirst,
   CgRowLast,
-  FaChevronLeft,
   FaEllipsisH,
   FaHeart,
   FaPlay,
@@ -19,7 +20,6 @@ import { usePlayerContext } from "../../contexts/player"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import ImageLoader from "../../components/common/ImageLoader"
-import { Menu, Transition } from "@headlessui/react"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
@@ -41,7 +41,7 @@ const Playlist: Page = () => {
   })
 
   const entries: IPlaylistEntry[] = entriesQuery.data || []
-  const handleStopPropagation = (callback: () => void): MouseEventHandler<HTMLDivElement> => {
+  const handleStopPropagation = (callback: () => void): MouseEventHandler => {
     return (event) => {
       event.stopPropagation()
       callback()
@@ -63,26 +63,22 @@ const Playlist: Page = () => {
     )
   }
 
-  if (!playlist) return null
+  const time = useMemo<{ hours: number; minutes: number }>(() => {
+    const seconds = entries.reduce((acc, entry) => acc + entry.music.duration, 0)
 
-  const Topbar = (
-    <div className="absolute top-[36px] left-0 w-full bg-secondary z-20 bg-opacity-70 pb-1">
-      <div className="flex justify-between px-4 py-3">
-        <Link to="/app/playlists">
-          <FaChevronLeft className="text-red-800 text-2xl" />
-        </Link>
-        <div>
-          <FaEllipsisH className="text-red-800 text-2xl" />
-        </div>
-      </div>
-    </div>
-  )
+    return {
+      hours: Math.floor(seconds / 3600),
+      minutes: Math.floor((seconds % 3600) / 60),
+    }
+  }, [entries])
+
+  if (!playlist) return null
 
   return (
     <ScrollableLayout>
       <div className="relative top-0 flex flex-col lg:flex-row">
         <div className="lg:sticky lg:h-full lg:top-10 lg:bottom-0 lg:w-1/3 flex flex-col lg:justify-center space-y-10">
-          <div className="h-[200px] w-[200px] lg:w-[300px] lg:h-[300px] xl:w-[420px] xl:h-[420px] mx-auto">
+          <div className="h-[200px] w-[200px] lg:w-[300px] lg:h-[300px] xl:w-[420px] xl:h-[420px] mx-auto mt-10">
             <PlaylistGridImage ids={entries.map((entry) => entry.musicId)} />
           </div>
           <div className="my-6">
@@ -107,8 +103,12 @@ const Playlist: Page = () => {
             </div>
           </div>
         </div>
-        <div className="lg:w-2/3">
-          <div className="grid grid-cols-1 mt-6 border-t border-white/75 lg:mx-5 py-1">
+        <div className="lg:w-2/3 lg:px-5 py-1 mt-6">
+          <div className="text-white/90">
+            {entries.length} morceaux, {time.hours} heure{time.hours > 1 && "s"} et {time.minutes}{" "}
+            minute{time.minutes > 1 && "s"}
+          </div>
+          <div className="grid grid-cols-1 border-t border-white/75">
             {entries.map((entry, index) => (
               <div
                 onClick={handleStopPropagation(() => handlePlayMusic(index))}
@@ -215,7 +215,8 @@ const Playlist: Page = () => {
           </div>
           <div className="px-3 pt-3">
             <p className="text-white text-sm text-opacity-80">
-              {entries.length} morceaux, 3 heurs et 21 minutes
+              {entries.length} morceaux, {time.hours} heure{time.hours > 1 && "s"} et {time.minutes}{" "}
+              minute{time.minutes > 1 && "s"}{" "}
             </p>
           </div>
         </div>

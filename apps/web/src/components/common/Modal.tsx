@@ -4,9 +4,10 @@ import { Transition } from "@headlessui/react"
 
 interface Props {
   isOpen: boolean
+  onOpened?: () => void
 }
 
-const Modal: ComponentWithChild<Props> = memo(({ isOpen, children }) => {
+const Modal: ComponentWithChild<Props> = memo(({ isOpen, onOpened, children }) => {
   const portalNode = document.getElementById("portal") as Element
 
   if (!portalNode) return null
@@ -21,6 +22,7 @@ const Modal: ComponentWithChild<Props> = memo(({ isOpen, children }) => {
         leave="transition-all transform duration-200"
         leaveFrom="translate-y-0"
         leaveTo="translate-y-full"
+        afterEnter={onOpened}
       >
         <div className="w-full test bg-black">{children}</div>
       </Transition>

@@ -1,10 +1,8 @@
 import React from "react"
-import { useLayoutContext } from "../../contexts/layout"
+
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 
 const Settings: Page = () => {
-  const layoutContext = useLayoutContext()
-
   return (
     <ScrollableLayout>
       <h1 className="text-center text-white pt-3">Settings</h1>
@@ -28,12 +26,6 @@ const Settings: Page = () => {
           }}
         >
           sync
-        </button>
-        <button
-          onClick={() => layoutContext.mobile.toggle()}
-          className="btn bg-blue-400 text-black"
-        >
-          {layoutContext.mobile.value ? "Desktop" : "Mobile"}
         </button>
       </div>
     </ScrollableLayout>

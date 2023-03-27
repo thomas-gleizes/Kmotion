@@ -5,7 +5,7 @@ import {
   DownloadMusicParamsDto,
   GetMusicPramsDto,
   GetMusicQuery,
-  SearchParamsDto,
+  SearchMusicQuery,
 } from "@kmotion/validations"
 import { musicMapper } from "@kmotion/mappers"
 import YtConverter from "../../services/ytconverter"
@@ -187,15 +187,15 @@ export default async function musicRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.get<{ Params: SearchParamsDto }>(
-    "/search/:query",
-    { preHandler: instance.validateParams(SearchParamsDto) },
+  instance.get<{ Querystring: SearchMusicQuery; Reply: MusicResponse }>(
+    "/search",
+    { preHandler: instance.validateQuery(SearchMusicQuery) },
     async (request, reply) => {
       const musics = await prisma.music.findMany({
         where: {
           OR: [
-            { title: { contains: request.params.query } },
-            { artist: { contains: request.params.query } },
+            { title: { contains: `%${request.query.q}%` } },
+            { artist: { contains: `%${request.query.q}%` } },
           ],
         },
       })

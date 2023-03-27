@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsBoolean,
   IsEnum,
   IsNotEmpty,
@@ -27,6 +28,10 @@ export class CreatePlaylistDto {
   @IsOptional()
   @IsEnum(["public", "private"])
   visibility: "public" | "private" = "public"
+
+  @IsOptional()
+  @IsArray()
+  musics?: number[]
 }
 
 export class UpdatePlaylistDto {

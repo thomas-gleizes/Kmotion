@@ -1,10 +1,9 @@
 import React from "react"
 import classnames from "classnames"
 import { Link, useRouter } from "@tanstack/react-router"
-import { FaList, FaMusic, FaSlidersH, RiPlayList2Fill } from "react-icons/all"
+import { FaMusic, FaSlidersH, RiPlayList2Fill } from "react-icons/all"
 
 import { usePlayerContext } from "../../contexts/player"
-import { useLayoutContext } from "../../contexts/layout"
 
 const NavLink: ComponentWithChild<{ to: string }> = ({ to, children }) => {
   const { fullscreen } = usePlayerContext()
@@ -24,15 +23,13 @@ const NavLink: ComponentWithChild<{ to: string }> = ({ to, children }) => {
 }
 
 const NavBar: Component = () => {
-  const { mobile } = useLayoutContext()
   const { fullscreen } = usePlayerContext()
 
   return (
     <div
       className={classnames(
-        "bg-secondary z-[1000] h-footer backdrop-blur-lg",
-        fullscreen.value ? "bg-opacity-30" : "bg-opacity-80",
-        { "rounded-b-2xl": !mobile.value }
+        "bg-secondary z-[1000] h-footer backdrop-blur-lg rounded-t-lg ",
+        fullscreen.value ? "bg-opacity-30" : "bg-opacity-80"
       )}
     >
       <div className="h-full flex justify-evenly items-center">

@@ -12,19 +12,20 @@ const SmallPlayer: Component = () => {
   const [audio, state, controls, ref] = useAudio(<audio src={assets.stream.url} autoPlay={true} />)
   const togglePlaying = () => (state.playing ? controls.pause() : controls.play())
 
-  useEvent("keydown", (event: KeyboardEvent) => {
-    switch (event.key) {
-      case " ":
-        return togglePlaying()
-      case "ArrowLeft":
-        return controls.seek(state.time - 10)
-      case "ArrowRight":
-        return controls.seek(state.time + 10)
-      case "ArrowUp":
-        return controls.volume(state.volume + 0.05)
-      case "ArrowDown":
-        return controls.volume(state.volume - 0.05)
-    }
+  useEvent("keydown", (event) => {
+    if (event.target.tagName !== "INPUT")
+      switch (event.key) {
+        case " ":
+          return togglePlaying()
+        case "ArrowLeft":
+          return controls.seek(state.time - 10)
+        case "ArrowRight":
+          return controls.seek(state.time + 10)
+        case "ArrowUp":
+          return controls.volume(state.volume + 0.05)
+        case "ArrowDown":
+          return controls.volume(state.volume - 0.05)
+      }
   })
 
   useEvent(

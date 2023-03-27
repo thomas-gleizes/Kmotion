@@ -41,6 +41,4 @@ interface PlayerContextValues {
 
 // Layout
 
-interface LayoutContextValues {
-  mobile: { value: boolean; toggle: (value?: boolean) => void }
-}
+interface LayoutContextValues {}

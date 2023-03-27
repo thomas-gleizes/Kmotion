@@ -7,7 +7,7 @@ import {
   PlaylistsResponse,
   RegisterResponse,
 } from "@kmotion/types"
-import { LoginDto, RegisterDto } from "@kmotion/validations"
+import { CreatePlaylistDto, LoginDto, RegisterDto } from "@kmotion/validations"
 import { Fetcher } from "./Fetcher"
 
 class Api {
@@ -37,6 +37,10 @@ class Api {
     return this.fetcher.get("users/me").then(this.toJson)
   }
 
+  public createPlaylist(body: CreatePlaylistDto): Promise<PlaylistResponse> {
+    return this.fetcher.post("playlists", { body: JSON.stringify(body) }).then(this.toJson)
+  }
+
   public fetchPlaylists(withEntries: boolean): Promise<PlaylistsResponse> {
     return this.fetcher
       .get("playlists" + this.fetcher.parseQueryString({ entries: withEntries }))
@@ -57,6 +61,10 @@ class Api {
 
   public fetchMusics(offset: number): Promise<MusicResponse> {
     return this.fetcher.get(`musics?offset=${offset}`).then(this.toJson)
+  }
+
+  public searchMusics(query: string): Promise<MusicResponse> {
+    return this.fetcher.get(`musics/search?q=${query}`).then(this.toJson)
   }
 }
 
