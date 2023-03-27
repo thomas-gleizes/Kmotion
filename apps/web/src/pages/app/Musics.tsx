@@ -137,7 +137,8 @@ const Musics: Page = () => {
                     )}
                   </ImageLoader>
                 </div>
-                <h2 className="text-white text-sm md:text-xl md:font-bold text-center overflow-y-hidden truncate w-full px-1">
+                <h2 className="text-white text-sm md:text-xl md:font-bold text-center overflow-y-hidden truncate w-full mt-2 px-1">
+                  <span className="text-white/80 text-xs md:text-lg">{music.artist}</span> -{" "}
                   {music.title}
                 </h2>
               </div>
