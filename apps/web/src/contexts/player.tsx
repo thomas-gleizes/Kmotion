@@ -64,14 +64,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currentMusic.title,
         artist: currentMusic.artist || "Unknown",
-        album: "Unknown",
-        artwork: [
-          {
-            src: coverUrl,
-            sizes: "512x512",
-            type: "image/webp",
-          },
-        ],
+        artwork: [{ src: coverUrl, sizes: "512x512", type: "image/jpeg" }],
       })
   }, [currentMusic, coverUrl])
 

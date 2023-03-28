@@ -30,6 +30,7 @@ const AuthProvider: ComponentWithChild = ({ children }) => {
   const logout = () => {
     setUser(null)
     setAuthenticated(false)
+    localStorage.clear()
   }
 
   useEffect(() => {

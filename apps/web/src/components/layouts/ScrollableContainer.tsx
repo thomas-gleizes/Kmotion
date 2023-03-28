@@ -7,11 +7,9 @@ const ScrollableContainer: ComponentWithChild<HTMLAttributes<HTMLDivElement>> = 
 }) => {
   const ref = useRef<HTMLDivElement>(null)
 
-  const height = ref.current?.clientHeight ?? 0
-
   return (
     <div ref={ref} {...props}>
-      <SimpleBar style={{ maxHeight: `${height}px` }}>{children}</SimpleBar>
+      <SimpleBar className="h-[10%]">{children}</SimpleBar>
     </div>
   )
 }
