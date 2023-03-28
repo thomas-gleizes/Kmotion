@@ -3,17 +3,17 @@ import { useForm } from "react-hook-form"
 import { classValidatorResolver } from "@hookform/resolvers/class-validator"
 import { Navigate } from "@tanstack/react-router"
 import { RegisterDto } from "@kmotion/validations"
+import classnames from "classnames"
 
 import { api } from "../../utils/Api"
 import { useAuthContext } from "../../contexts/auth"
-import classnames from "classnames"
 
 const resolver = classValidatorResolver(RegisterDto)
 
 const defaultValues: RegisterDto = {
-  email: "kalat@kmotion.fr",
-  name: "Kalat",
-  password: "azerty123",
+  email: "",
+  name: "",
+  password: "",
 }
 
 const RegisterForm: Component = () => {

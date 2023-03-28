@@ -39,9 +39,8 @@ const Musics: Page = () => {
 
   const { data, fetchNextPage, isFetching } = useInfiniteQuery<IMusic[]>({
     queryKey: ["musics"],
-    queryFn: ({ pageParam = 0 }) => {
-      return api.fetchMusics(pageParam).then((data) => data.musics as IMusic[])
-    },
+    queryFn: ({ pageParam = 0 }) =>
+      api.fetchMusics(pageParam).then((data) => data.musics as IMusic[]),
     getNextPageParam: (_, pages) => pages.length,
     staleTime: 0,
     refetchOnMount: true,

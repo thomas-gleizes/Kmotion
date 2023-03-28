@@ -10,8 +10,8 @@ import { useAuthContext } from "../../contexts/auth"
 const resolver = classValidatorResolver(LoginDto)
 
 const defaultValues: LoginDto = {
-  email: "kalat@kmotion.fr",
-  password: "azerty123",
+  email: "invite@kmotion.fr",
+  password: "invite123",
 }
 
 const LoginForm: Component = () => {
