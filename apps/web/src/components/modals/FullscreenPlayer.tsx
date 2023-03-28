@@ -65,8 +65,8 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
   const ImageBlock = (
     <div
       className={classnames(
-        "flex items-center transition-all duration-300 grow justify-center lg:h-full lg:px-16",
-        showQueue ? "pr-2" : "lg:flex-col lg:justify-center"
+        "flex items-center transition-all duration-300 justify-center lg:h-full lg:px-16",
+        showQueue ? "pr-2 w-1/4 lg:w-full" : "w-full lg:flex-col lg:justify-center"
       )}
     >
       <img
@@ -82,11 +82,11 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
 
   const TitleBlock = (
     <div className={classnames("flex justify-between items-center")}>
-      <div className="w-full overflow-hidden">
+      <div className={classnames("w-full overflow-hidden")}>
         <h3
           ref={tRef}
           className={classnames(
-            "text-white text-lg font-semibold capitalize py-1.5 leading-[0.5rem] inline-block whitespace-nowrap",
+            "text-white w-max text-lg font-semibold capitalize py-1.5 leading-[0.5rem] inline-block whitespace-nowrap",
             { "overflow-defilement": isOverflow }
           )}
         >
@@ -259,7 +259,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
               )}
             >
               {ImageBlock}
-              {showQueue && <div className="lg:hidden">{TitleBlock}</div>}
+              {showQueue && <div className="w-3/4 lg:w-0 lg:hidden">{TitleBlock}</div>}
             </div>
             <div
               className={classnames(

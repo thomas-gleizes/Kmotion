@@ -211,8 +211,8 @@ const ModalSearch: ModalComponent<{ confirm: (musics: IMusic[]) => void }> = ({
         </div>
         <SimpleBar className="max-h-[74vh] pb-footer">
           <div className="flex flex-col space-y-2 px-4">
-            {musics.map((music) => (
-              <div key={music.id} className="w-full py-0.5 flex" onClick={() => toggleCheck(music)}>
+            {musics.map((music, index) => (
+              <div key={index} className="w-full py-0.5 flex" onClick={() => toggleCheck(music)}>
                 <div className="w-1/5">
                   <ImageLoader src={music.links.cover}>
                     {({ src }) => <img src={src} alt={music.title} className="rounded-lg w-full" />}
