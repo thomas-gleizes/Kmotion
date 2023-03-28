@@ -3,7 +3,7 @@ import useLocalStorageState from "use-local-storage-state"
 import { useQuery } from "@tanstack/react-query"
 import { useToggle } from "react-use"
 
-import { IMusic } from "@kmotion/types"
+import { IMusic, IPlaylist } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
 import { useImageLoader, useStorageQueue } from "../hooks"
 
@@ -24,7 +24,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
   })
   const [isFullscreen, toggleFullscreen] = useToggle(false)
 
-  const [currentPlaylist, setCurrentPlaylist] = useState()
+  const [currentPlaylist, setCurrentPlaylist] = useState<IPlaylist | null>(null)
 
   const { queue, actions } = useStorageQueue<IMusic>()
 
@@ -74,6 +74,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
     <PlayerContext.Provider
       value={{
         currentMusic,
+        playlist: { value: currentPlaylist, set: (value) => setCurrentPlaylist(value) },
         assets: {
           cover: { url: coverUrl, isFetching: coverQuery.isFetching },
           stream: { url: streamQuery.data || "", isFetching: streamQuery.isFetching },

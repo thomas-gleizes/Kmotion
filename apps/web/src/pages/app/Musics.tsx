@@ -29,7 +29,10 @@ const DisplayMode: Record<string, string> = {
 }
 
 const Musics: Page = () => {
-  const { actions } = usePlayerContext()
+  const {
+    actions,
+    playlist: { set: setPlaylist },
+  } = usePlayerContext()
   const authContext = useAuthContext()
 
   const [displayMode, setDisplayMode] = useLocalStorageState<keyof typeof DisplayMode>(
@@ -62,9 +65,29 @@ const Musics: Page = () => {
     [musics, search]
   )
 
-  const handlePlayRandom = () => actions.set([...musics]?.sort(() => Math.random() - 0.5))
+  const handlePlayRandom = () => {
+    setPlaylist({
+      title: "tous les morceaux",
+      description: "",
+      id: 0,
+      slug: "",
+      authorId: 0,
+      visibility: "public",
+    })
+    actions.set([...musics]?.sort(() => Math.random() - 0.5))
+  }
 
-  const handlePlayMusic = (index: number) => actions.set(musics, index)
+  const handlePlayMusic = (index: number) => {
+    setPlaylist({
+      title: "tous les morceaux",
+      description: "",
+      id: 0,
+      slug: "",
+      authorId: 0,
+      visibility: "public",
+    })
+    actions.set(musics, index)
+  }
 
   const handleDeleteMusic = async (music: IMusic) => {
     console.log("Delete", music)

@@ -14,15 +14,23 @@ import PlaylistGridImage from "../common/PlaylistGridImage"
 
 interface Props {
   onValid: () => void
+  initialValues?: CreatePlaylistDto
+  musics: IMusic[]
 }
 
-const CreatePlaylist: ModalComponent<Props> = ({ isOpen, close, onValid }) => {
+const CreatePlaylist: ModalComponent<Props> = ({
+  isOpen,
+  close,
+  onValid,
+  initialValues = { title: "", description: "", musics: [] },
+  musics: initMusics = [],
+}) => {
   const { register, handleSubmit, setValue, getValues } = useForm<CreatePlaylistDto>({
-    defaultValues: { title: "", description: "", musics: [] },
+    defaultValues: initialValues,
   })
 
   const [openSearch, setOpenSearch] = useState(false)
-  const [musics, setMusics] = useState<IMusic[]>([])
+  const [musics, setMusics] = useState<IMusic[]>(initMusics)
 
   const handleConfirm = (addedMusics: IMusic[]) => {
     setValue("musics", [...(getValues().musics || []), ...addedMusics.map((m) => m.id)])

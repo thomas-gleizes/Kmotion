@@ -40,7 +40,7 @@ const SmallPlayer: Component = () => {
     ref.current
   )
 
-  useTitle(`${currentMusic?.artist} - ${currentMusic?.title}` || "Kmotion", {
+  useTitle(currentMusic ? `${currentMusic?.artist} - ${currentMusic?.title}` : "Kmotion", {
     restoreOnUnmount: true,
   })
 

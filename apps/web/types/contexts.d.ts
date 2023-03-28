@@ -28,7 +28,7 @@ declare type AssetType = { url: string; isFetching: boolean }
 
 interface PlayerContextValues {
   currentMusic: IMusic | null
-  currentPlaylist: IPlaylist | null
+  playlist: { value: IPlaylist | null; set: (value: IPlaylist) => void }
   assets: {
     stream: AssetType
     cover: AssetType

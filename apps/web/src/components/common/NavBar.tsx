@@ -28,7 +28,7 @@ const NavBar: Component = () => {
   return (
     <div
       className={classnames(
-        "bg-secondary z-[1000] h-footer backdrop-blur-lg rounded-t-lg ",
+        "bg-secondary z-[1000] h-footer backdrop-blur-lg ",
         fullscreen.value ? "bg-opacity-30" : "bg-opacity-50"
       )}
     >

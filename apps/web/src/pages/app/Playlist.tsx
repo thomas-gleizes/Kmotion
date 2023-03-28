@@ -1,4 +1,4 @@
-import React, { Fragment, MouseEventHandler, useMemo } from "react"
+import React, { Fragment, MouseEventHandler, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useParams, useRouter } from "@tanstack/react-router"
 import { Menu, Transition } from "@headlessui/react"
@@ -21,12 +21,16 @@ import { usePlayerContext } from "../../contexts/player"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import ImageLoader from "../../components/common/ImageLoader"
+import CreatePlaylist from "../../components/modals/CreatePlaylist"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
   const { history } = useRouter()
 
-  const { actions } = usePlayerContext()
+  const {
+    actions,
+    playlist: { set: setPlaylist },
+  } = usePlayerContext()
 
   const { data: playlist } = useQuery<IPlaylist>({
     queryKey: ["playlist", id],
@@ -42,6 +46,8 @@ const Playlist: Page = () => {
     refetchOnMount: true,
   })
 
+  const [modalProps, setModalProps] = useState<boolean>(false)
+
   const entries: IPlaylistEntry[] = entriesQuery.data || []
   const handleStopPropagation = (callback: () => void): MouseEventHandler => {
     return (event) => {
@@ -51,6 +57,7 @@ const Playlist: Page = () => {
   }
 
   const handlePlayPlaylist = (random: boolean) => {
+    setPlaylist(playlist as IPlaylist)
     if (random)
       actions.set(
         [...entries]?.sort(() => Math.random() - 0.5).map((entry) => entry.music as IMusic)
@@ -59,6 +66,7 @@ const Playlist: Page = () => {
   }
 
   const handlePlayMusic = (index: number) => {
+    setPlaylist(playlist as IPlaylist)
     actions.set(
       entries?.map((entry) => entry.music as IMusic),
       index
@@ -66,7 +74,7 @@ const Playlist: Page = () => {
   }
 
   const time = useMemo<{ hours: number; minutes: number }>(() => {
-    const seconds = entries.reduce((acc, entry) => acc + entry.music.duration, 0)
+    const seconds = entries.reduce((acc, entry) => acc + (entry.music as IMusic).duration, 0)
 
     return {
       hours: Math.floor(seconds / 3600),
@@ -78,18 +86,18 @@ const Playlist: Page = () => {
 
   return (
     <div className="relative">
-      <div className="absolute z-30 lg:hidden top-0 left-0 w-full py-2 bg-secondary/70 backdrop-blur">
+      <div className="absolute z-30 lg:hidden top-0 left-0 w-full py-3 bg-secondary/70 backdrop-blur">
         <div className="flex justify-between px-3">
-          <div onClick={() => history.back()}>
+          <button onClick={() => history.back()}>
             <FaChevronLeft className="text-primary text-xl" onClick={() => null} />
-          </div>
-          <div>
-            <p className="text-primary">Modifier</p>
-          </div>
+          </button>
+          <button onClick={() => setModalProps(true)} className="text-primary">
+            Modifier
+          </button>
         </div>
       </div>
       <ScrollableLayout>
-        <div className="relative top-2 flex flex-col lg:flex-row">
+        <div className="relative top-8 flex flex-col lg:flex-row">
           <div className="lg:sticky lg:h-full lg:top-10 lg:bottom-0 lg:w-1/3 flex flex-col lg:justify-center space-y-3">
             <div className="h-[200px] w-[200px] lg:w-[300px] lg:h-[300px] xl:w-[420px] xl:h-[420px] mx-auto mt-10">
               <PlaylistGridImage ids={entries.map((entry) => entry.musicId)} />
@@ -236,6 +244,19 @@ const Playlist: Page = () => {
           </div>
         </div>
       </ScrollableLayout>
+      {modalProps && (
+        <CreatePlaylist
+          isOpen={modalProps}
+          close={() => setModalProps(false)}
+          onValid={() => setModalProps(false)}
+          musics={entries.map((entry) => entry.music as IMusic)}
+          initialValues={{
+            title: playlist.title,
+            description: playlist.description,
+            musics: entries.map((entry) => entry.musicId),
+          }}
+        />
+      )}
     </div>
   )
 }

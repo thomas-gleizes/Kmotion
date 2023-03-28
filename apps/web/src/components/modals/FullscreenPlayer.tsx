@@ -44,7 +44,7 @@ interface Props {
 }
 
 const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) => {
-  const { currentMusic, actions, loop, assets, queue } = usePlayerContext()
+  const { currentMusic, playlist, actions, loop, assets, queue } = usePlayerContext()
 
   const tRef = useRef<HTMLHeadingElement>(null)
 
@@ -73,7 +73,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
         src={assets.cover.url}
         alt={currentMusic.title}
         className={classnames(
-          "rounded-lg transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
+          "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
           { "scale-[75%] shadow-lg": state.paused }
         )}
       />
@@ -81,12 +81,12 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
   )
 
   const TitleBlock = (
-    <div className={classnames("flex justify-between items-center")}>
-      <div className={classnames("w-full overflow-hidden")}>
+    <div className="flex justify-between items-center">
+      <div className="w-full overflow-hidden whitespace-nowrap">
         <h3
           ref={tRef}
           className={classnames(
-            "text-white w-max text-lg lg:text-xl leading-0 xl:text-3xl font-semibold capitalize py-1.5 leading-[0.5rem] inline-block whitespace-nowrap",
+            "text-white text-lg lg:text-xl xl:text-3xl font-semibold capitalize py-1.5 inline-block whitespace-nowrap",
             { "overflow-defilement": isOverflow }
           )}
         >
@@ -105,9 +105,9 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
   )
 
   const QueueBlock = (
-    <div className="flex flex-col space-y-1 pr-3 pb-24">
+    <div className="flex flex-col space-y-2 pr-3 pb-8">
       {nextMusics.slice(0, 50).map((music, index) => (
-        <div key={index} className="flex" onClick={() => actions.go(index + 1)}>
+        <div key={music.id} className="flex" onClick={() => actions.go(index + 1)}>
           <div className="w-1/5">
             <ImageLoader src={music.links.cover}>
               {({ src }) => (
@@ -255,7 +255,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
                     <div className="flex justify-between items-center pb-3">
                       <div>
                         <h6 className="text-xl text-white/90 mb-0.5">Suivant</h6>
-                        <p className="text-base text-white/75">De current playlist</p>
+                        <p className="text-base text-white/75">De {playlist.value?.title}</p>
                       </div>
                       <div className="flex justify-end space-x-4">
                         <span className="text-xl text-white">
