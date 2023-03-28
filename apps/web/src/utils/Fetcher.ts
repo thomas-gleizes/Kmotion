@@ -1,7 +1,7 @@
 export class Fetcher {
   private readonly version: string
-  private readonly requestInteceptor: Array<() => void>
-  private readonly responseInterceptor: Array<() => void>
+  private readonly requestInterceptor: RequestInterceptor[]
+  private readonly responseInterceptor: ResponseInterceptor[]
 
   private readonly DEFAULT_HEADERS = {
     "Content-Type": "application/json",
@@ -9,23 +9,31 @@ export class Fetcher {
 
   constructor(version: string) {
     this.version = version
-    this.requestInteceptor = []
+    this.requestInterceptor = []
     this.responseInterceptor = []
   }
 
-  public async interceptRequest(interceptorCallback: () => void) {
-    this.requestInteceptor.push(interceptorCallback)
+  public interceptRequest(interceptorCallback: RequestInterceptor) {
+    this.requestInterceptor.push(interceptorCallback)
   }
 
-  public async interceptResponse(interceptorCallback: () => void) {
+  public interceptResponse(interceptorCallback: ResponseInterceptor) {
     this.responseInterceptor.push(interceptorCallback)
   }
 
   private async fetch(path: string, init?: RequestInit) {
+    for (const interceptor of this.requestInterceptor) {
+      const { path: newPath, init: newInit } = interceptor({ path, init })
+      path = newPath
+      init = newInit
+    }
+
     const response = await fetch(`/api/${this.version}/${path}`, {
       ...init,
       headers: { ...this.DEFAULT_HEADERS, ...init?.headers },
     })
+
+    for (const interceptor of this.responseInterceptor) interceptor(response, { path, init })
 
     if (!response.ok) throw response
 

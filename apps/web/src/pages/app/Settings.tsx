@@ -19,7 +19,7 @@ const Settings: Page = () => {
             history.push("/", null)
           }}
         >
-          clean
+          Disconnect
         </button>
         {authContext.authenticated && authContext.user.isAdmin && (
           <button

@@ -9,12 +9,20 @@ import {
 } from "@kmotion/types"
 import { CreatePlaylistDto, LoginDto, RegisterDto } from "@kmotion/validations"
 import { Fetcher } from "./Fetcher"
+import { WINDOW_MESSAGE } from "./constants"
 
 class Api {
   private fetcher: Fetcher
 
   constructor() {
     this.fetcher = new Fetcher("v1")
+
+    this.fetcher.interceptResponse((response) => {
+      if (!response.ok && response.status === 401)
+        window.postMessage({ type: WINDOW_MESSAGE.logout })
+
+      return response
+    })
   }
 
   private toJson(response: Response) {

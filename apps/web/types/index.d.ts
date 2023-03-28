@@ -5,3 +5,16 @@ declare type ComponentWithChild<Props = unknown> = Component<{ children: ReactNo
 declare type ModalComponent<Props = unknown> = Component<
   { isOpen: boolean; close: () => void } & Props
 >
+
+declare type FetcherRequest = {
+  path: string
+  init?: RequestInit
+}
+
+declare type FetcherResponse = Response
+
+declare type RequestInterceptor = (request: FetcherRequest) => FetcherRequest
+declare type ResponseInterceptor = (
+  response: FetcherResponse,
+  request: FetcherRequest
+) => FetcherResponse

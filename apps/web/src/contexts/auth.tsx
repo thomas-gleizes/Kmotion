@@ -1,8 +1,9 @@
-import { createContext, useContext, useMemo } from "react"
+import { createContext, useContext, useEffect, useMemo } from "react"
 import useLocalStorageState from "use-local-storage-state"
 
 import { IUser } from "@kmotion/types"
 import { AuthContextValues, AuthenticatedValues, UnauthenticatedValues } from "../../types/contexts"
+import { WINDOW_MESSAGE } from "../utils/constants"
 
 const AuthContext = createContext<AuthContextValues>({ authenticated: false } as AuthContextValues)
 
@@ -30,6 +31,12 @@ const AuthProvider: ComponentWithChild = ({ children }) => {
     setUser(null)
     setAuthenticated(false)
   }
+
+  useEffect(() => {
+    window.addEventListener("message", (event) => {
+      if (event.data.type === WINDOW_MESSAGE.logout) logout()
+    })
+  }, [])
 
   const value = useMemo<AuthContextValues>(() => {
     if (authenticated) {

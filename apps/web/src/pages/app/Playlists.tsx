@@ -9,10 +9,11 @@ import { useToggle } from "react-use"
 import CreatePlaylist from "../../components/modals/CreatePlaylist"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
+import { QUERIES_KEY } from "../../utils/constants"
 
 const PlaylistPage: Component = () => {
   const { data: playlists, refetch } = useQuery<IPlaylist[]>({
-    queryKey: ["playlists"],
+    queryKey: QUERIES_KEY.playlists,
     queryFn: () => api.fetchPlaylists(true).then((response) => response.playlists),
     refetchOnMount: true,
     staleTime: 1000 * 60,

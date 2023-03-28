@@ -7,6 +7,7 @@ import SimpleBar from "simplebar-react"
 import { IMusic } from "@kmotion/types"
 import { CreatePlaylistDto } from "@kmotion/validations"
 import { api } from "../../utils/Api"
+import { QUERIES_KEY } from "../../utils/constants"
 import Modal from "../common/Modal"
 import ImageLoader from "../common/ImageLoader"
 import PlaylistGridImage from "../common/PlaylistGridImage"
@@ -152,7 +153,7 @@ const ModalSearch: ModalComponent<{ confirm: (musics: IMusic[]) => void }> = ({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const { data: musics } = useQuery<IMusic[]>({
-    queryKey: ["search-musics", search],
+    queryKey: [...QUERIES_KEY.musics_search, search],
     queryFn: () => api.searchMusics(search).then((data) => data.musics),
     enabled: search.length >= 3,
     initialData: [],
