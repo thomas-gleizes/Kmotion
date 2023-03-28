@@ -86,7 +86,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
         <h3
           ref={tRef}
           className={classnames(
-            "text-white w-[170px] text-lg font-semibold capitalize py-1.5 leading-[0.5rem] inline-block whitespace-nowrap",
+            "text-white text-lg font-semibold capitalize py-1.5 leading-[0.5rem] inline-block whitespace-nowrap",
             { "overflow-defilement": isOverflow }
           )}
         >
@@ -242,7 +242,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
 
   return (
     <Modal isOpen={isOpen}>
-      <div className="relative h-screen -top-header w-full">
+      <div className="relative z-[100] h-screen -top-header w-full">
         <div className="absolute top-0 left-0 w-full h-full">
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
         </div>

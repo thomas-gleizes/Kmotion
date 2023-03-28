@@ -68,7 +68,7 @@ const CreatePlaylist: ModalComponent<Props> = ({ isOpen, close, onValid }) => {
   return (
     <Modal isOpen={isOpen}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="absolute z-90 w-full bg-secondary/80 backdrop-blur py-2">
+        <div className="absolute z-[50] w-full bg-secondary/80 backdrop-blur py-2">
           <div className="flex justify-between items-center py-1 px-3">
             <button type="button" className="text-red-600" onClick={close}>
               Annuler
@@ -114,8 +114,8 @@ const CreatePlaylist: ModalComponent<Props> = ({ isOpen, close, onValid }) => {
                 </div>
                 <div className="text-white">Ajouter un music à la playlist</div>
               </div>
-              {(musics || []).map((music) => (
-                <div className="flex items-center">
+              {(musics || []).map((music, index) => (
+                <div key={index} className="flex items-center">
                   <div className="w-[23%]">
                     <ImageLoader src={music.links.cover}>
                       {({ src }) => <img alt={music.title} src={src} className="rounded-lg" />}

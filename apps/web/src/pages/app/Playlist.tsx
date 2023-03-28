@@ -78,7 +78,7 @@ const Playlist: Page = () => {
 
   return (
     <div className="relative">
-      <div className="absolute z-90 lg:hidden top-0 left-0 w-full py-2 bg-secondary/70 backdrop-blur">
+      <div className="absolute z-30 lg:hidden top-0 left-0 w-full py-2 bg-secondary/70 backdrop-blur">
         <div className="flex justify-between px-3">
           <div onClick={() => history.back()}>
             <FaChevronLeft className="text-primary text-xl" onClick={() => null} />

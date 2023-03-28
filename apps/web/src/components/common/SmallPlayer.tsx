@@ -40,7 +40,9 @@ const SmallPlayer: Component = () => {
     ref.current
   )
 
-  useTitle(currentMusic?.title || "Kmotion")
+  useTitle(`${currentMusic?.artist} - ${currentMusic?.title}` || "Kmotion", {
+    restoreOnUnmount: true,
+  })
 
   const tRef = useRef<HTMLElement>(null)
 
@@ -67,7 +69,7 @@ const SmallPlayer: Component = () => {
       />
       <div
         onClick={handleStopPropagation(fullscreen.toggle)}
-        className="flex items-center z-30 py-2 lg:py-4 px-3 lg:px-16 border-b border-neutral-800 transition-all transform duration-300 ease-in-out justify-between bg-opacity-70 bg-secondary backdrop-blur cursor-default"
+        className="flex items-center z-[30] py-2 lg:py-4 px-3 lg:px-16 border-b border-neutral-800 transition-all transform duration-300 ease-in-out justify-between bg-opacity-70 bg-secondary backdrop-blur cursor-default"
       >
         <div className="w-3/5 flex items-center">
           <div className="w-1/3 md:w-1/4 pr-1.5">
