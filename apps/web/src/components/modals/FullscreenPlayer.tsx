@@ -1,4 +1,7 @@
 import React, { useMemo, useRef } from "react"
+import SimpleBar from "simplebar-react"
+import classnames from "classnames"
+import { useToggle } from "react-use"
 import {
   FaBackward,
   FaBars,
@@ -8,15 +11,11 @@ import {
   FaPause,
   FaPlay,
   FaRandom,
-  FaSpaceShuttle,
   FaSync,
   FaSyncAlt,
   FaVolumeDown,
   FaVolumeUp,
 } from "react-icons/all"
-import classnames from "classnames"
-import SimpleBar from "simplebar-react"
-import { useToggle } from "react-use"
 
 import { usePlayerContext } from "../../contexts/player"
 import { formatTime } from "../../utils/time"
@@ -75,7 +74,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
         alt={currentMusic.title}
         className={classnames(
           "rounded-lg transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
-          { "scale-[75%] shadow-lg": state.paused && !showQueue }
+          { "scale-[75%] shadow-lg": state.paused }
         )}
       />
     </div>
@@ -107,7 +106,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
 
   const QueueBlock = (
     <div className="flex flex-col space-y-1 pr-3 pb-24">
-      {nextMusics.map((music, index) => (
+      {nextMusics.slice(0, 50).map((music, index) => (
         <div key={index} className="flex" onClick={() => actions.go(index + 1)}>
           <div className="w-1/5">
             <ImageLoader src={music.links.cover}>
@@ -134,24 +133,22 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
 
   const ControlsBlock = (
     <div className={classnames("h-full flex flex-col space-y-4", showQueue ? "" : "")}>
-      {!showQueue && (
-        <div className="flex flex-col space-y-3 group">
-          <div className="h-2 w-full transform group-active:scale-y-150 transition duration-200">
-            <Slider
-              value={roundMinMax((state.time / state.duration) * 100, 0, 100, 1)}
-              onChange={(value) => controls.seek((value * state.duration) / 100)}
-            />
+      <div className="flex flex-col space-y-3 group">
+        <div className="h-2 w-full transform group-active:scale-y-150 transition duration-200">
+          <Slider
+            value={roundMinMax((state.time / state.duration) * 100, 0, 100, 1)}
+            onChange={(value) => controls.seek((value * state.duration) / 100)}
+          />
+        </div>
+        <div className="flex justify-between">
+          <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
+            <span>{formatTime(state.time)}</span>
           </div>
-          <div className="flex justify-between">
-            <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
-              <span>{formatTime(state.time)}</span>
-            </div>
-            <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
-              <span>-{formatTime(state.duration - state.time)}</span>
-            </div>
+          <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
+            <span>-{formatTime(state.duration - state.time)}</span>
           </div>
         </div>
-      )}
+      </div>
       <div className="flex justify-between w-10/12 mx-auto">
         <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
           <i onClick={actions.previous} className="rounded-full">
@@ -187,37 +184,35 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
           </i>
         </div>
       </div>
-      {
-        <div className="flex justify-between items-center w-9/12 mx-auto">
-          <i
-            onClick={() => loop.set("all")}
-            className={classnames(
-              "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
-              loop.value !== "none" ? "text-opacity-90 scale-110" : "text-opacity-50"
-            )}
-          >
-            {loop.value === "all" ? <FaSync /> : <FaSyncAlt />}
-          </i>
-          <i
-            onClick={actions.shuffle}
-            className={classnames(
-              "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
-              currentMusic.title.length & 1 ? "text-opacity-90 scale-110" : "text-opacity-50"
-            )}
-          >
-            <FaRandom />
-          </i>
-          <i
-            onClick={toggleShowQueue}
-            className={classnames(
-              "text-white text-opacity-50 duration-200 rounded-full text-xl lg:text-2xl transition transform duration-200",
-              { "text-opacity-90": showQueue }
-            )}
-          >
-            <FaListUl />
-          </i>
-        </div>
-      }
+      <div className="flex justify-between items-center w-9/12 mx-auto">
+        <i
+          onClick={() => loop.set("all")}
+          className={classnames(
+            "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
+            loop.value !== "none" ? "text-opacity-90 scale-110" : "text-opacity-50"
+          )}
+        >
+          {loop.value === "all" ? <FaSync /> : <FaSyncAlt />}
+        </i>
+        <i
+          onClick={actions.shuffle}
+          className={classnames(
+            "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
+            currentMusic.title.length & 1 ? "text-opacity-90 scale-110" : "text-opacity-50"
+          )}
+        >
+          <FaRandom />
+        </i>
+        <i
+          onClick={toggleShowQueue}
+          className={classnames(
+            "text-white text-opacity-50 duration-200 rounded-full text-xl lg:text-2xl transition transform duration-200",
+            { "text-opacity-90": showQueue }
+          )}
+        >
+          <FaListUl />
+        </i>
+      </div>
     </div>
   )
 
@@ -264,7 +259,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
                       </div>
                       <div className="flex justify-end space-x-4">
                         <span className="text-xl text-white">
-                          <FaSpaceShuttle />
+                          <FaBars />
                         </span>
                         <span className="text-xl text-white">
                           <FaSyncAlt />
@@ -273,7 +268,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
                     </div>
                   )}
                   {showQueue && (
-                    <SimpleBar className="h-[calc(100vh-367px)] lg:h-[calc(80vh-367px)]">
+                    <SimpleBar className="h-[calc(100vh-420px)] lg:h-[calc(75vh-450px)]">
                       {QueueBlock}
                     </SimpleBar>
                   )}
