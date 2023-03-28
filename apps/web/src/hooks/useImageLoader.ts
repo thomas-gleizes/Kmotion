@@ -1,4 +1,4 @@
-import { UseQueryResult, useQuery } from "@tanstack/react-query"
+import { useQuery, UseQueryResult } from "@tanstack/react-query"
 
 export function useImageLoader(src?: string): [string, UseQueryResult<string>] {
   const queryImage = useQuery<string>({

@@ -1,4 +1,4 @@
-import { IMusic, IUser } from "@kmotion/types"
+import { IMusic, IPlaylist, IUser } from "@kmotion/types"
 
 // Auth
 interface AuthenticatedValues {
@@ -28,6 +28,7 @@ declare type AssetType = { url: string; isFetching: boolean }
 
 interface PlayerContextValues {
   currentMusic: IMusic | null
+  currentPlaylist: IPlaylist | null
   assets: {
     stream: AssetType
     cover: AssetType

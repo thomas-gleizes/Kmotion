@@ -29,7 +29,7 @@ const NavBar: Component = () => {
     <div
       className={classnames(
         "bg-secondary z-[1000] h-footer backdrop-blur-lg rounded-t-lg ",
-        fullscreen.value ? "bg-opacity-30" : "bg-opacity-80"
+        fullscreen.value ? "bg-opacity-30" : "bg-opacity-50"
       )}
     >
       <div className="h-full flex justify-evenly items-center">

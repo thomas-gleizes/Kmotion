@@ -1,7 +1,7 @@
 import React from "react"
 import { useRouter } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
-import { FaChevronRight } from "react-icons/all"
+import { FaChevronRight, FaPlus } from "react-icons/all"
 
 import { IPlaylist } from "@kmotion/types"
 import { api } from "../../utils/Api"
@@ -23,10 +23,9 @@ const PlaylistPage: Component = () => {
 
   const [isOpen, toggleOpen] = useToggle(false)
 
-  const handleValid = async () => {
+  const handleValid = () => {
     toggleOpen(false)
-    const test = await refetch()
-    console.log("Test", test)
+    void refetch()
   }
 
   return (
@@ -36,8 +35,10 @@ const PlaylistPage: Component = () => {
       <div className="grid grid-cols-1 gap-y-5 mt-5">
         <div className="w-full flex cursor-pointer" onClick={() => toggleOpen()}>
           <div>
-            <div className="h-[100px] w-[100px] lg:h-[200px] lg:w-[200px]">
-              <PlaylistGridImage ids={[]} />
+            <div className="h-[100px] w-[100px] lg:h-[200px] lg:w-[200px] flex items-center justify-center rounded-xl border border-neutral-800">
+              <div className="text-4xl text-primary">
+                <FaPlus />
+              </div>
             </div>
           </div>
           <div className="w-full px-2">

@@ -44,14 +44,12 @@ interface Props {
   }
 }
 
-const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, controls }) => {
+const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) => {
   const { currentMusic, actions, loop, assets, queue } = usePlayerContext()
 
   const tRef = useRef<HTMLHeadingElement>(null)
 
   const [showQueue, toggleShowQueue] = useToggle(false)
-
-  const queueRef = useRef<HTMLDivElement>(null)
 
   if (!currentMusic) return null
 
@@ -68,8 +66,8 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
     <div
       onClick={showQueue ? toggleShowQueue : undefined}
       className={classnames(
-        "flex items-center transition-all duration-300 justify-center lg:h-full lg:px-16 pb-4",
-        showQueue ? "pr-2 w-1/4 lg:w-full" : "w-full lg:flex-col lg:justify-center"
+        "flex items-center transition-all duration-300 h-full lg:px-16",
+        showQueue ? "pr-2 w-2/5 lg:w-full" : "w-full lg:flex-col lg:justify-center"
       )}
     >
       <img
@@ -89,13 +87,15 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
         <h3
           ref={tRef}
           className={classnames(
-            "text-white w-max text-lg font-semibold capitalize py-1.5 leading-[0.5rem] inline-block whitespace-nowrap",
+            "text-white w-max text-lg lg:text-xl leading-0 xl:text-3xl font-semibold capitalize py-1.5 leading-[0.5rem] inline-block whitespace-nowrap",
             { "overflow-defilement": isOverflow }
           )}
         >
           {currentMusic.title}
         </h3>
-        <p className="text-white/80 text-lg py-1.5 leading-[0.5rem]">{currentMusic.artist}</p>
+        <p className="text-white/80 text-base lg:text-lg xl:text-xl py-1.5 leading-[0.5rem]">
+          {currentMusic.artist}
+        </p>
       </div>
       <div className="flex justify-end items-center pl-3">
         <div className="flex items-center justify-center cursor-pointer bg-white/50 backdrop-blur rounded-full h-7 w-7">
@@ -106,9 +106,9 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
   )
 
   const QueueBlock = (
-    <div className="flex flex-col">
+    <div className="flex flex-col space-y-1 pr-3 pb-24">
       {nextMusics.map((music, index) => (
-        <div key={index} className="flex py-1" onClick={() => actions.go(index + 1)}>
+        <div key={index} className="flex" onClick={() => actions.go(index + 1)}>
           <div className="w-1/5">
             <ImageLoader src={music.links.cover}>
               {({ src }) => (
@@ -187,53 +187,39 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
           </i>
         </div>
       </div>
-      <div className="flex justify-between items-center w-9/12 mx-auto">
-        <i
-          onClick={() => loop.set("all")}
-          className={classnames(
-            "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
-            loop.value !== "none" ? "text-opacity-90 scale-110" : "text-opacity-50"
-          )}
-        >
-          {loop.value === "all" ? <FaSync /> : <FaSyncAlt />}
-        </i>
-        <i
-          onClick={actions.shuffle}
-          className={classnames(
-            "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
-            currentMusic.title.length & 1 ? "text-opacity-90 scale-110" : "text-opacity-50"
-          )}
-        >
-          <FaRandom />
-        </i>
-        <i
-          onClick={toggleShowQueue}
-          className={classnames(
-            "text-white text-opacity-50 duration-200 rounded-full text-xl lg:text-2xl transition transform duration-200",
-            { "text-opacity-90": showQueue }
-          )}
-        >
-          <FaListUl />
-        </i>
-      </div>
+      {
+        <div className="flex justify-between items-center w-9/12 mx-auto">
+          <i
+            onClick={() => loop.set("all")}
+            className={classnames(
+              "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
+              loop.value !== "none" ? "text-opacity-90 scale-110" : "text-opacity-50"
+            )}
+          >
+            {loop.value === "all" ? <FaSync /> : <FaSyncAlt />}
+          </i>
+          <i
+            onClick={actions.shuffle}
+            className={classnames(
+              "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
+              currentMusic.title.length & 1 ? "text-opacity-90 scale-110" : "text-opacity-50"
+            )}
+          >
+            <FaRandom />
+          </i>
+          <i
+            onClick={toggleShowQueue}
+            className={classnames(
+              "text-white text-opacity-50 duration-200 rounded-full text-xl lg:text-2xl transition transform duration-200",
+              { "text-opacity-90": showQueue }
+            )}
+          >
+            <FaListUl />
+          </i>
+        </div>
+      }
     </div>
   )
-
-  const queueHeight = (() => {
-    if (queueRef.current) {
-      return {
-        height: queueRef.current.offsetHeight,
-        1: queueRef.current.firstElementChild.offsetHeight,
-        2: queueRef.current.lastElementChild.offsetHeight,
-        result:
-          queueRef.current.offsetHeight -
-          queueRef.current.firstElementChild.offsetHeight -
-          queueRef.current.lastElementChild.offsetHeight,
-      }
-    }
-
-    return { result: 0 }
-  })()
 
   return (
     <Modal isOpen={isOpen}>
@@ -241,13 +227,9 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
         <div className="absolute top-0 left-0 w-full h-full">
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
         </div>
-        <div className="h-full  pt-header pb-footer bg-black/20 backdrop-blur-[120px] sm:backdrop-blur-[150px] md:backdrop-blur-[200px] lg:backdrop-blur-[250px] xl:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]">
-          <div
-            className={classnames(
-              "h-full flex flex-col lg:flex-wrap lg:items-center lg:content-end overflow-y-auto px-6 lg:px-10 py-4"
-            )}
-          >
-            <div className="flex flex-col justify-between pr-2">
+        <div className="h-full pt-header pb-footer bg-black/20 backdrop-blur-[120px] sm:backdrop-blur-[150px] md:backdrop-blur-[200px] lg:backdrop-blur-[250px] xl:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]">
+          <div className={classnames("h-full px-6 lg:px-10 py-4")}>
+            <div className="h-full flex flex-col lg:flex-row justify-evenly lg:items-center">
               <div
                 className={classnames(
                   "flex items-center lg:w-2/3",
@@ -257,7 +239,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
                 {ImageBlock}
                 <div
                   className={classnames(
-                    showQueue ? "w-3/4" : "w-0 hidden",
+                    showQueue ? "w-3/5" : "w-0 hidden",
                     "transition-all transform-gpu lg:w-0 lg:hidden"
                   )}
                 >
@@ -266,20 +248,19 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
               </div>
               <div
                 className={classnames(
-                  "lg:w-1/3 xl:px-16 lg:px-10 h-full",
-                  showQueue ? "w-full flex flex-col" : "flex flex-col justify-between"
+                  "lg:w-1/3 xl:px-16 lg:px-10",
+                  showQueue
+                    ? "w-full flex flex-col justify-evenly"
+                    : "flex flex-col justify-between lg:justify-center"
                 )}
               >
                 <div className={classnames(showQueue ? "hidden lg:block" : "")}>{TitleBlock}</div>
-                <div ref={queueRef} className="flex flex-col overflow-hidden h-max py-3">
+                <div className="flex flex-col justify-center h-full py-3">
                   {showQueue && (
                     <div className="flex justify-between items-center pb-3">
                       <div>
                         <h6 className="text-xl text-white/90 mb-0.5">Suivant</h6>
-                        <p className="text-base text-white/75">
-                          De {queueHeight.height} - {queueHeight["1"]} - {queueHeight["2"]} ={" "}
-                          {queueHeight.result}
-                        </p>
+                        <p className="text-base text-white/75">De current playlist</p>
                       </div>
                       <div className="flex justify-end space-x-4">
                         <span className="text-xl text-white">
@@ -292,7 +273,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
                     </div>
                   )}
                   {showQueue && (
-                    <SimpleBar style={{ maxHeight: `${queueHeight.result}px` }}>
+                    <SimpleBar className="h-[calc(100vh-367px)] lg:h-[calc(80vh-367px)]">
                       {QueueBlock}
                     </SimpleBar>
                   )}

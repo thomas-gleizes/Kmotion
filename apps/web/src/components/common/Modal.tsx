@@ -1,4 +1,4 @@
-import React, { memo } from "react"
+import React, { memo, useId } from "react"
 import ReactDom from "react-dom"
 import { Transition } from "@headlessui/react"
 
@@ -9,6 +9,8 @@ interface Props {
 
 const Modal: ComponentWithChild<Props> = memo(({ isOpen, onOpened, children }) => {
   const portalNode = document.getElementById("portal") as Element
+
+  const id = useId()
 
   if (!portalNode) return null
 
@@ -24,7 +26,9 @@ const Modal: ComponentWithChild<Props> = memo(({ isOpen, onOpened, children }) =
         leaveTo="translate-y-full"
         afterEnter={onOpened}
       >
-        <div className="w-full test bg-black">{children}</div>
+        <div id={`modal-content-${id}`} className="w-full modal-content bg-black">
+          {children}
+        </div>
       </Transition>
     </div>
   )

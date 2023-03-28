@@ -79,8 +79,8 @@ const CreatePlaylist: ModalComponent<Props> = ({ isOpen, close, onValid }) => {
             </button>
           </div>
         </div>
-        <SimpleBar className="max-h-[80vh]">
-          <div className="pt-24 px-5">
+        <SimpleBar className="h-[calc(100vh-17px)]">
+          <div className="pt-24 px-5 pb-footer">
             <div className="w-[150px] h-[150px] mx-auto">
               <PlaylistGridImage ids={musics.map((m) => m.id)} />
             </div>
@@ -209,8 +209,8 @@ const ModalSearch: ModalComponent<{ confirm: (musics: IMusic[]) => void }> = ({
             placeholder="Rechercher des Morceau"
           />
         </div>
-        <SimpleBar className="max-h-[74vh] pb-footer">
-          <div className="flex flex-col space-y-2 px-4">
+        <SimpleBar className="h-[calc(100vh-96px)] pb-footer">
+          <div className="flex flex-col space-y-2 px-4 pb-24">
             {musics.map((music, index) => (
               <div key={index} className="w-full py-0.5 flex" onClick={() => toggleCheck(music)}>
                 <div className="w-1/5">

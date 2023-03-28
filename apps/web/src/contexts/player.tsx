@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import useLocalStorageState from "use-local-storage-state"
 import { useQuery } from "@tanstack/react-query"
 import { useToggle } from "react-use"
@@ -23,6 +23,8 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
     defaultValue: [],
   })
   const [isFullscreen, toggleFullscreen] = useToggle(false)
+
+  const [currentPlaylist, setCurrentPlaylist] = useState()
 
   const { queue, actions } = useStorageQueue<IMusic>()
 
