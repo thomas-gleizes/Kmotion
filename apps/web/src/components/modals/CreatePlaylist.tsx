@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
-import { FaCheckCircle, FaPlusCircle, FaSearch } from "react-icons/all"
+import { FaCheckCircle, FaMinusCircle, FaPlusCircle, FaSearch } from "react-icons/all"
 import { useQuery } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import SimpleBar from "simplebar-react"
@@ -11,32 +11,63 @@ import Modal from "../common/Modal"
 import ImageLoader from "../common/ImageLoader"
 import PlaylistGridImage from "../common/PlaylistGridImage"
 
-const CreatePlaylist: ModalComponent = ({ isOpen, close }) => {
-  const [openSearch, setOpenSearch] = useState(false)
+interface Props {
+  onValid: () => void
+}
+
+const CreatePlaylist: ModalComponent<Props> = ({ isOpen, close, onValid }) => {
   const { register, handleSubmit, setValue, getValues } = useForm<CreatePlaylistDto>({
     defaultValues: { title: "", description: "", musics: [] },
   })
 
-  const handleConfirm = (musicsId: IMusic[]) => {
-    const { musics } = getValues()
+  const [openSearch, setOpenSearch] = useState(false)
+  const [musics, setMusics] = useState<IMusic[]>([])
 
-    setValue("musics", [...(musics || []), ...musicsId.map((m) => m.id)])
+  const handleConfirm = (addedMusics: IMusic[]) => {
+    setValue("musics", [...(getValues().musics || []), ...addedMusics.map((m) => m.id)])
+
+    setMusics([...musics, ...addedMusics])
     setOpenSearch(false)
   }
 
-  const onSubmit = (values: CreatePlaylistDto) => {
+  const onSubmit = async (values: CreatePlaylistDto) => {
     try {
-      const data = api.createPlaylist(values)
-      console.log("Daat", data)
+      const data = await api.createPlaylist(values)
+      console.log("Data", data)
+      onValid()
     } catch (err) {
       console.error(err)
     }
   }
 
+  const handleDeleteMusic = (music: IMusic) => {
+    const index = musics.findIndex((m) => m.id === music.id)
+    if (index >= 0) {
+      musics.splice(index, 1)
+      setMusics([...musics])
+    }
+
+    const idsMusic = getValues().musics || []
+    const index2 = idsMusic.findIndex((id) => id === music.id)
+    if (index2 >= 0) {
+      idsMusic.splice(index2, 1)
+      setValue("musics", idsMusic)
+    }
+  }
+
+  const time = useMemo<{ hours: number; minutes: number }>(() => {
+    const seconds = musics.reduce((acc, m) => acc + m.duration, 0)
+
+    return {
+      hours: Math.floor(seconds / 3600),
+      minutes: Math.floor((seconds % 3600) / 60),
+    }
+  }, [musics])
+
   return (
     <Modal isOpen={isOpen}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="absolute w-full bg-secondary py-2">
+        <div className="absolute z-90 w-full bg-secondary/80 backdrop-blur py-2">
           <div className="flex justify-between items-center py-1 px-3">
             <button type="button" className="text-red-600" onClick={close}>
               Annuler
@@ -47,46 +78,64 @@ const CreatePlaylist: ModalComponent = ({ isOpen, close }) => {
             </button>
           </div>
         </div>
-        <div className="pt-24 px-5">
-          <div className="w-[150px] h-[150px] mx-auto">
-            <PlaylistGridImage ids={[]} />
-          </div>
-          <div className="py-2 text-center pt-8">
-            <input
-              type="text"
-              className="bg-transparent outline:none text-center text-xl text-white placeholder:text-neutral-600"
-              placeholder="Nom de la playlist"
-              {...register("title")}
-            />
-          </div>
-          <div className="border-y py-4 border-neutral-500 my-5">
-            <textarea
-              rows={1}
-              className="bg-transparent outline:none w-full text-base text-neutral-400 placeholder:text-neutral-600"
-              placeholder="Description"
-              {...register("description")}
-            />
-          </div>
-          <div className="flex flex-col w-full pb-16">
-            <div
-              className="flex items-center space-x-4 cursor-pointer"
-              onClick={() => setOpenSearch(true)}
-            >
-              <div>
-                <FaPlusCircle className="text-red-800 text-xl" />
-              </div>
-              <div className="text-white">Ajouter un music à la playlist</div>
+        <SimpleBar className="max-h-[80vh]">
+          <div className="pt-24 px-5">
+            <div className="w-[150px] h-[150px] mx-auto">
+              <PlaylistGridImage ids={musics.map((m) => m.id)} />
             </div>
-            {[].map((music) => (
-              <div className="flex items-center space-x-4">
-                <div>
+            <div className="py-2 text-center pt-8">
+              <input
+                type="text"
+                className="bg-transparent outline:none text-center text-xl text-white placeholder:text-neutral-600"
+                placeholder="Nom de la playlist"
+                {...register("title")}
+              />
+            </div>
+            <div className="border-y py-4 border-neutral-500 mt-2">
+              <textarea
+                rows={1}
+                className="bg-transparent outline:none w-full text-base text-neutral-400 placeholder:text-neutral-600"
+                placeholder="Description"
+                {...register("description")}
+              />
+            </div>
+            <div className="text-white/70 mt-1">
+              {musics.length} morceaux, {time.hours} heure{time.hours > 1 && "s"} et {time.minutes}{" "}
+              minute{time.minutes > 1 && "s"}
+            </div>
+            <div className="flex flex-col w-full space-y-2 mt-5">
+              <div
+                className="flex items-center cursor-pointer pb-2"
+                onClick={() => setOpenSearch(true)}
+              >
+                <div className="pr-3">
                   <FaPlusCircle className="text-red-800 text-xl" />
                 </div>
                 <div className="text-white">Ajouter un music à la playlist</div>
               </div>
-            ))}
+              {(musics || []).map((music) => (
+                <div className="flex items-center">
+                  <div className="w-[23%]">
+                    <ImageLoader src={music.links.cover}>
+                      {({ src }) => <img alt={music.title} src={src} className="rounded-lg" />}
+                    </ImageLoader>
+                  </div>
+                  <div className="w-[77%] px-2">
+                    <div className="border-white border-b flex justify-between items-center h-full">
+                      <div className="w-max pb-1 truncate">
+                        <h3 className="text-base text-white truncate">{music.title}</h3>
+                        <p className="text-xs text-white/75">{music.artist}</p>
+                      </div>
+                      <div onClick={() => handleDeleteMusic(music)}>
+                        <FaMinusCircle className="text-xl text-red-600" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        </SimpleBar>
       </form>
       <ModalSearch isOpen={openSearch} close={() => setOpenSearch(false)} confirm={handleConfirm} />
     </Modal>
@@ -170,8 +219,8 @@ const ModalSearch: ModalComponent<{ confirm: (musics: IMusic[]) => void }> = ({
                 </div>
                 <div className="w-4/5 px-3">
                   <div className="flex items-center justify-between h-full pl-2 border-white/50 border-b">
-                    <div className="w-max pb-1">
-                      <h3 className="text-base text-white">{music.title}</h3>
+                    <div className="w-max pb-1 truncate">
+                      <h3 className="text-base truncate text-white">{music.title}</h3>
                       <p className="text-xs text-white/75">{music.artist}</p>
                     </div>
                     <div className="w-min text-primary pl-2">

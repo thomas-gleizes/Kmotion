@@ -11,7 +11,7 @@ import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 
 const PlaylistPage: Component = () => {
-  const { data: playlists } = useQuery<IPlaylist[]>({
+  const { data: playlists, refetch } = useQuery<IPlaylist[]>({
     queryKey: ["playlists"],
     queryFn: () => api.fetchPlaylists(true).then((response) => response.playlists),
     refetchOnMount: true,
@@ -22,9 +22,15 @@ const PlaylistPage: Component = () => {
 
   const [isOpen, toggleOpen] = useToggle(false)
 
+  const handleValid = async () => {
+    toggleOpen(false)
+    const test = await refetch()
+    console.log("Test", test)
+  }
+
   return (
     <ScrollableLayout>
-      <CreatePlaylist isOpen={isOpen} close={() => toggleOpen(false)} />
+      <CreatePlaylist isOpen={isOpen} close={() => toggleOpen(false)} onValid={handleValid} />
       <h2 className="text-4xl mt-8 font-bold text-white/90">Playlists</h2>
       <div className="grid grid-cols-1 gap-y-5 mt-5">
         <div className="w-full flex cursor-pointer" onClick={() => toggleOpen()}>
