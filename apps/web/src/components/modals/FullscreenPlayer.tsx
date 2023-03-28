@@ -24,6 +24,7 @@ import { roundMinMax } from "../../utils/number"
 import Modal from "../common/Modal"
 import Slider from "../common/Slider"
 import ImageLoader from "../common/ImageLoader"
+import ScrollableContainer from "../layouts/ScrollableContainer"
 
 interface Props {
   isOpen: boolean
@@ -106,10 +107,10 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
     <div
       className={classnames(
         "transition-opacity duration-1000 relative",
-        showQueue ? "col-span-full row-span-4 bg-opacity-100" : "hidden bg-opacity-0"
+        showQueue ? "bg-opacity-100 h-full" : "hidden bg-opacity-0"
       )}
     >
-      <div className="w-full flex justify-between items-center mb-2">
+      <div className="w-full h-1/5 flex justify-between items-center mb-2">
         <div>
           <h6 className="text-xl text-white/90 mb-0.5">Suivant</h6>
           <p className="text-base text-white/75">De Current playlist</p>
@@ -123,7 +124,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
           </span>
         </div>
       </div>
-      <SimpleBar className="max-h-[37vh] lg:max-h-[50vh] pr-3">
+      <ScrollableContainer className="h-4/5">
         <div className="flex flex-col space-y-3">
           {nextMusics.map((music, index) => (
             <div key={index} className="flex space-x-3" onClick={() => actions.go(index + 1)}>
@@ -148,7 +149,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
             </div>
           ))}
         </div>
-      </SimpleBar>
+      </ScrollableContainer>
       <div className="absolute h-[50px] bottom-0 w-full bg-gradient-to-t from-transparent/0 to-transparent"></div>
     </div>
   )
@@ -263,8 +264,8 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, close, state, control
             </div>
             <div
               className={classnames(
-                "lg:w-1/3 flex flex-col justify-end space-y-3 lg:space-y-0 lg:justify-center lg:px-10 xl:px-16 h-full",
-                showQueue ? "w-full" : ""
+                "lg:w-1/3 flex flex-col space-y-3 lg:space-y-0 lg:justify-center lg:px-10 xl:px-16 h-full",
+                showQueue ? "w-full justify-between" : "justify-end"
               )}
             >
               <div className={classnames(showQueue ? "hidden lg:block lg:pb-10" : "")}>
