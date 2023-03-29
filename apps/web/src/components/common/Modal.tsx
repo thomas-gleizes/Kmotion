@@ -17,6 +17,7 @@ const Modal: ComponentWithChild<Props> = memo(({ isOpen, onOpened, children }) =
   const jsx = (
     <div className="absolute top-header left-0 w-full z-90">
       <Transition
+        key={id}
         show={isOpen}
         enter="transition-all transform duration-200"
         enterFrom="translate-y-full"

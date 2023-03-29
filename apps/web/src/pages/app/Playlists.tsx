@@ -6,7 +6,7 @@ import { FaChevronRight, FaPlus } from "react-icons/all"
 import { IPlaylist } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { useToggle } from "react-use"
-import CreatePlaylist from "../../components/modals/CreatePlaylist"
+import EditPlaylist from "../../components/modals/EditPlaylist"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import { QUERIES_KEY } from "../../utils/constants"
@@ -30,7 +30,7 @@ const PlaylistPage: Component = () => {
 
   return (
     <ScrollableLayout>
-      <CreatePlaylist isOpen={isOpen} close={() => toggleOpen(false)} onValid={handleValid} />
+      <EditPlaylist isOpen={isOpen} close={() => toggleOpen(false)} onValid={handleValid} />
       <h2 className="text-4xl mt-8 font-bold text-white/90">Playlists</h2>
       <div className="grid grid-cols-1 gap-y-5 mt-5">
         <div className="w-full flex cursor-pointer" onClick={() => toggleOpen()}>

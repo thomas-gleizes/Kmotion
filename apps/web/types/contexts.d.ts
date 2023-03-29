@@ -43,3 +43,11 @@ interface PlayerContextValues {
 // Layout
 
 interface LayoutContextValues {}
+
+// Modals
+
+interface ModalsContextValues {
+  modals: ModalType[]
+  addModal: (modal: ModalType) => void
+  closeModal: (uid: string) => void
+}

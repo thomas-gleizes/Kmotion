@@ -63,7 +63,7 @@ const SmallPlayer: Component = () => {
       {audio}
       <FullscreenPlayer
         isOpen={fullscreen.value}
-        close={fullscreen.toggle}
+        close={() => fullscreen.toggle()}
         state={state}
         controls={controls}
       />

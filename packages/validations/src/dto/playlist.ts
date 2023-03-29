@@ -27,7 +27,7 @@ export class CreatePlaylistDto {
   @IsNotEmpty()
   @IsOptional()
   @IsEnum(["public", "private"])
-  visibility: "public" | "private" = "public"
+  visibility?: "public" | "private" = "public"
 
   @IsOptional()
   @IsArray()

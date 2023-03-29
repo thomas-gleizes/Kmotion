@@ -1,8 +1,12 @@
-export const WINDOW_MESSAGE: Record<string, string> = {
+export const WINDOW_MESSAGE = {
   logout: "logout",
 }
 
-export const QUERIES_KEY: Record<string, string[]> = {
+export const QUERIES_KEY = {
   playlists: ["playlists"],
   musics_search: ["musics", "search"],
+}
+
+export const MODAL = {
+  defaultTimeout: 300,
 }

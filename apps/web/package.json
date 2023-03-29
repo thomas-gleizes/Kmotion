@@ -18,24 +18,26 @@
     "@tanstack/react-router": "0.0.1-beta.83",
     "@tanstack/react-virtual": "3.0.0-beta.54",
     "classnames": "^2.3.2",
-    "daisyui": "^2.51.4",
+    "daisyui": "^2.51.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.43.7",
+    "react-hook-form": "^7.43.8",
     "react-icons": "^4.8.0",
     "react-use": "^17.4.0",
     "reflect-metadata": "^0.1.13",
     "simplebar-react": "^3.2.2",
-    "use-local-storage-state": "^18.2.1"
+    "use-local-storage-state": "^18.2.1",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@kmotion/types": "workspace:*",
-    "@types/react": "^18.0.28",
+    "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
+    "@types/uuid": "^9.0.1",
     "@vitejs/plugin-react": "^3.1.0",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.21",
-    "tailwindcss": "^3.2.7",
+    "tailwindcss": "^3.3.0",
     "typescript": "^5.0.2",
     "vite": "^4.2.1"
   }

@@ -1,8 +1,7 @@
-import React, { Fragment, MouseEventHandler, useMemo, useState } from "react"
+import React, { Fragment, MouseEventHandler, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useParams, useRouter } from "@tanstack/react-router"
 import { Menu, Transition } from "@headlessui/react"
-
 import {
   CgRowFirst,
   CgRowLast,
@@ -17,11 +16,12 @@ import {
 
 import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
+import { useModal } from "../../hooks"
 import { usePlayerContext } from "../../contexts/player"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import ImageLoader from "../../components/common/ImageLoader"
-import CreatePlaylist from "../../components/modals/CreatePlaylist"
+import EditPlaylist from "../../components/modals/EditPlaylist"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
@@ -46,9 +46,8 @@ const Playlist: Page = () => {
     refetchOnMount: true,
   })
 
-  const [modalProps, setModalProps] = useState<boolean>(false)
-
   const entries: IPlaylistEntry[] = entriesQuery.data || []
+
   const handleStopPropagation = (callback: () => void): MouseEventHandler => {
     return (event) => {
       event.stopPropagation()
@@ -73,6 +72,25 @@ const Playlist: Page = () => {
     )
   }
 
+  const openModal = useModal()
+
+  const handleEditPlaylist = async () => {
+    if (!playlist) return null
+
+    const result = await openModal(
+      <EditPlaylist
+        musics={entries.map((entry) => entry.music as IMusic)}
+        initialValues={{
+          title: playlist.title,
+          description: playlist.description,
+          musics: entries.map((entry) => entry.musicId),
+        }}
+      />
+    )
+
+    console.log("Result", result)
+  }
+
   const time = useMemo<{ hours: number; minutes: number }>(() => {
     const seconds = entries.reduce((acc, entry) => acc + (entry.music as IMusic).duration, 0)
 
@@ -91,7 +109,7 @@ const Playlist: Page = () => {
           <button onClick={() => history.back()}>
             <FaChevronLeft className="text-primary text-xl" onClick={() => null} />
           </button>
-          <button onClick={() => setModalProps(true)} className="text-primary">
+          <button onClick={handleEditPlaylist} className="text-primary">
             Modifier
           </button>
         </div>
@@ -244,19 +262,6 @@ const Playlist: Page = () => {
           </div>
         </div>
       </ScrollableLayout>
-      {modalProps && (
-        <CreatePlaylist
-          isOpen={modalProps}
-          close={() => setModalProps(false)}
-          onValid={() => setModalProps(false)}
-          musics={entries.map((entry) => entry.music as IMusic)}
-          initialValues={{
-            title: playlist.title,
-            description: playlist.description,
-            musics: entries.map((entry) => entry.musicId),
-          }}
-        />
-      )}
     </div>
   )
 }

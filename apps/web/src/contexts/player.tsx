@@ -1,21 +1,15 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 import useLocalStorageState from "use-local-storage-state"
 import { useQuery } from "@tanstack/react-query"
 import { useToggle } from "react-use"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
-import { useImageLoader, useStorageQueue } from "../hooks"
+import { useImageLoader, useStorageQueue, useContextFactory } from "../hooks"
 
 const PlayerContext = createContext<PlayerContextValues>(null as never)
 
-export const usePlayerContext = () => {
-  const context = useContext(PlayerContext)
-
-  // if (!context) throw new Error("usePlayerContext must be used within PlayerProvider")
-
-  return context
-}
+export const usePlayerContext = useContextFactory(PlayerContext)
 
 const PlayerProvider: ComponentWithChild = ({ children }) => {
   const [loop, setLoop] = useLocalStorageState<LoopType>("loop", { defaultValue: "none" })
@@ -66,7 +60,10 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currentMusic.title,
         artist: currentMusic.artist || "Unknown",
-        artwork: [{ src: coverUrl, sizes: "512x512", type: "image/jpeg" }],
+        artwork: [
+          { src: coverUrl, sizes: "512x512", type: "image/jpeg" },
+          { src: coverUrl, sizes: "248x248", type: "image/jpeg" },
+        ],
       })
   }, [currentMusic, coverUrl])
 

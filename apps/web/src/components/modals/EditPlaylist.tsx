@@ -11,17 +11,16 @@ import { QUERIES_KEY } from "../../utils/constants"
 import Modal from "../common/Modal"
 import ImageLoader from "../common/ImageLoader"
 import PlaylistGridImage from "../common/PlaylistGridImage"
+import { useModal } from "../../hooks"
 
 interface Props {
-  onValid: () => void
   initialValues?: CreatePlaylistDto
   musics: IMusic[]
 }
 
-const CreatePlaylist: ModalComponent<Props> = ({
+const EditPlaylist: ModalComponent<Props> = ({
   isOpen,
   close,
-  onValid,
   initialValues = { title: "", description: "", musics: [] },
   musics: initMusics = [],
 }) => {
@@ -29,21 +28,24 @@ const CreatePlaylist: ModalComponent<Props> = ({
     defaultValues: initialValues,
   })
 
-  const [openSearch, setOpenSearch] = useState(false)
   const [musics, setMusics] = useState<IMusic[]>(initMusics)
 
-  const handleConfirm = (addedMusics: IMusic[]) => {
-    setValue("musics", [...(getValues().musics || []), ...addedMusics.map((m) => m.id)])
+  const openModal = useModal()
 
-    setMusics([...musics, ...addedMusics])
-    setOpenSearch(false)
+  const handleSearchMusic = async () => {
+    const result = await openModal(<SearchPlaylist />)
+
+    if (result.action === "success") {
+      setValue("musics", [...(getValues().musics || []), ...result.data.map((m) => m.id)])
+      setMusics([...musics, ...result.data])
+    }
   }
 
   const onSubmit = async (values: CreatePlaylistDto) => {
     try {
       const data = await api.createPlaylist(values)
       console.log("Data", data)
-      onValid()
+      close(data)
     } catch (err) {
       console.error(err)
     }
@@ -113,10 +115,7 @@ const CreatePlaylist: ModalComponent<Props> = ({
               minute{time.minutes > 1 && "s"}
             </div>
             <div className="flex flex-col w-full space-y-2 mt-5">
-              <div
-                className="flex items-center cursor-pointer pb-2"
-                onClick={() => setOpenSearch(true)}
-              >
+              <div className="flex items-center cursor-pointer pb-2" onClick={handleSearchMusic}>
                 <div className="pr-3">
                   <FaPlusCircle className="text-red-800 text-xl" />
                 </div>
@@ -146,16 +145,11 @@ const CreatePlaylist: ModalComponent<Props> = ({
           </div>
         </SimpleBar>
       </form>
-      <ModalSearch isOpen={openSearch} close={() => setOpenSearch(false)} confirm={handleConfirm} />
     </Modal>
   )
 }
 
-const ModalSearch: ModalComponent<{ confirm: (musics: IMusic[]) => void }> = ({
-  isOpen,
-  close,
-  confirm,
-}) => {
+const SearchPlaylist: ModalComponent = ({ isOpen, close }) => {
   const [search, setSearch] = useState("")
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -197,11 +191,19 @@ const ModalSearch: ModalComponent<{ confirm: (musics: IMusic[]) => void }> = ({
       </div>
       <div className="bg-secondary py-1.5">
         <div className="flex justify-between items-center py-1 px-3">
-          <button type="button" className="text-red-600" onClick={close}>
+          <button
+            type="button"
+            className="text-red-600"
+            onClick={() => close({ action: "cancel" })}
+          >
             Annuler
           </button>
           <div className="text-white">Recherche des morceaux</div>
-          <button type="submit" className="text-red-600" onClick={() => confirm(selectedMusics)}>
+          <button
+            type="submit"
+            className="text-red-600"
+            onClick={() => close({ action: "success", data: selectedMusics })}
+          >
             Valider
           </button>
         </div>
@@ -250,4 +252,4 @@ const ModalSearch: ModalComponent<{ confirm: (musics: IMusic[]) => void }> = ({
   )
 }
 
-export default CreatePlaylist
+export default EditPlaylist
