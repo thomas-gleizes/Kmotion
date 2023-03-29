@@ -56,10 +56,8 @@ export function useStorageQueue<Item>(): UseStorageQueueResult<Item> {
       listActions.set([...newList])
       setStorageQueue([...newList])
     },
-    shuffle: () => {
-      const shuffledList = list.sort(() => Math.random() - 0.5)
-      setStorageQueue([...shuffledList])
-      listActions.set([...shuffledList])
+    shuffle: (i: number = index) => {
+      listActions.set([...list.slice(0, i), ...list.slice(i + 1).sort(() => Math.random() - 0.5)])
     },
     go: (destIndex: number) => {
       if (index + destIndex < 0) return setIndex(0)
