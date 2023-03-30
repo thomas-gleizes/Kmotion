@@ -1,3 +1,4 @@
+import React from "react"
 import { IMusic, IPlaylist, IUser } from "@kmotion/types"
 
 // Auth
@@ -47,7 +48,6 @@ interface LayoutContextValues {}
 // Modals
 
 interface ModalsContextValues {
-  modals: ModalType[]
-  addModal: (modal: ModalType) => void
-  closeModal: (uid: string) => void
+  open: <T>(component: React.ReactNode) => Promise<T>
+  close: () => void
 }

@@ -3,6 +3,8 @@ declare type UseStorageQueueResult<T> = {
   index: number
   actions: UseStorageQueueActions<T>
   list: T[]
+
+  isShuffled: boolean
 }
 
 declare type UseStorageQueueActions<T> = {

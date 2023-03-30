@@ -11,7 +11,6 @@ import { QUERIES_KEY } from "../../utils/constants"
 import Modal from "../common/Modal"
 import ImageLoader from "../common/ImageLoader"
 import PlaylistGridImage from "../common/PlaylistGridImage"
-import { useModal } from "../../hooks"
 
 interface Props {
   initialValues?: CreatePlaylistDto

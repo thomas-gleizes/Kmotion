@@ -1,16 +1,21 @@
-import { useMemo } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useList } from "react-use"
 import useLocalStorageState from "use-local-storage-state"
+import { IMusic } from "@kmotion/types"
 
-export function useStorageQueue<Item>(): UseStorageQueueResult<Item> {
+export function useStorageQueue(): UseStorageQueueResult<IMusic> {
   const [index, setIndex] = useLocalStorageState<number>("iindex", {
     defaultValue: 0,
   })
-  const [storageQueue, setStorageQueue] = useLocalStorageState<Item[]>("iqueue", {
+  const [storageQueue, setStorageQueue] = useLocalStorageState<IMusic[]>("iqueue", {
     defaultValue: [],
   })
 
-  const [list, listActions] = useList<Item>(storageQueue)
+  const savePlaylistRef = useRef<IMusic[]>([...storageQueue])
+
+  const [isShuffled, setIsShuffled] = useState<boolean>(false)
+
+  const [list, listActions] = useList<IMusic>([...storageQueue])
 
   const queue = useMemo(() => {
     const queue = [...list]
@@ -18,7 +23,7 @@ export function useStorageQueue<Item>(): UseStorageQueueResult<Item> {
     return queue
   }, [list, index])
 
-  function insertAt(item: Item, index: number): Item[] {
+  function insertAt(item: IMusic, index: number): IMusic[] {
     // Si l'index est inférieur à 0, on l'ajuste à 0.
     if (index < 0) index = 0
     // Si l'index est supérieur ou égal à la longueur du tableau, on l'ajuste à la fin du tableau.
@@ -29,42 +34,64 @@ export function useStorageQueue<Item>(): UseStorageQueueResult<Item> {
     return list
   }
 
-  const actions: UseStorageQueueActions<Item> = {
-    set: (items: Item[], initIndex?: number) => {
+  const actions: UseStorageQueueActions<IMusic> = {
+    set: function (items: IMusic[], initIndex?: number) {
       listActions.set([...items])
       setStorageQueue([...items])
+      savePlaylistRef.current = [...items]
+
       if (initIndex === undefined) return setIndex(0)
       else if (initIndex < 0) return setIndex(0)
       else if (initIndex >= items.length) return setIndex(items.length - 1)
       else setIndex(initIndex)
+
+      setIsShuffled(false)
     },
-    previous: () => {
+    previous: function () {
       if (index > 0) setIndex(index - 1)
       else setIndex(list.length - 1)
     },
-    next: () => {
+    next: function () {
       if (index < list.length - 1) setIndex(index + 1)
       else setIndex(0)
     },
-    addNext: (item: Item) => {
+    addNext: function (item: IMusic) {
       const newList = insertAt(item, index + 1)
       listActions.set([...newList])
       setStorageQueue([...newList])
+      savePlaylistRef.current = [...newList]
     },
-    addLast: (item: Item) => {
+    addLast: function (item: IMusic) {
       const newList = [...list, item]
       listActions.set([...newList])
       setStorageQueue([...newList])
+      savePlaylistRef.current = [...newList]
     },
-    shuffle: (i: number = index) => {
-      listActions.set([...list.slice(0, i), ...list.slice(i + 1).sort(() => Math.random() - 0.5)])
+    shuffle: function (i: number = index) {
+      if (isShuffled) {
+        const current = queue.at(0) as IMusic
+
+        const t = savePlaylistRef.current.findIndex((s) => s.id === current.id)
+
+        setStorageQueue([...savePlaylistRef.current])
+        listActions.set([...savePlaylistRef.current])
+      } else {
+        const begin = [...list].slice(0, i) as IMusic[]
+        const current = list.at(i) as IMusic
+        const end = [...list].slice(i + 1).sort(() => Math.random() - 0.5) as IMusic[]
+
+        setStorageQueue([current, ...end.sort(() => Math.random() - 0.5)])
+        listActions.set([...begin, current, ...end])
+      }
+
+      setIsShuffled(!isShuffled)
     },
-    go: (destIndex: number) => {
+    go: function (destIndex: number) {
       if (index + destIndex < 0) return setIndex(0)
       else if (index + destIndex >= list.length) return setIndex(list.length - 1)
       else return setIndex(index + destIndex)
     },
   }
 
-  return { queue, index, actions, list }
+  return { queue, index, actions, list, isShuffled }
 }

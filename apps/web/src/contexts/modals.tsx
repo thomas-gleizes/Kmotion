@@ -11,15 +11,15 @@ export const useModalContext = useContextFactory(ModalsContext)
 const ModalProvider: ComponentWithChild = ({ children }) => {
   const [modals, setModals] = useState<ModalType[]>([])
 
-  const addModal = (modal: ModalType) => setModals([...modals, modal])
+  const open = (modal: ModalType) => setModals([...modals, modal])
 
-  const closeModal = (uid: string) => {
+  const close = (uid: string) => {
     const index = modals.findIndex((d) => d.uid === uid)
     setModals([...modals.slice(0, index), ...modals.slice(index + 1)])
   }
 
   return (
-    <ModalsContext.Provider value={{ modals, closeModal, addModal }}>
+    <ModalsContext.Provider value={{ open, close }}>
       {children}
       {modals.map((modal) => (
         <ModalContainer key={modal.uid} {...modal} />
@@ -43,7 +43,7 @@ const ModalContainer: Component<Props> = ({ uid, component: Component, resolve }
     resolve(result)
     setIsOpen(false)
 
-    window.setTimeout(() => context.closeModal(uid), MODAL.defaultTimeout)
+    window.setTimeout(() => context.close(uid), MODAL.defaultTimeout)
   }
 
   return React.cloneElement(Component, { isOpen, close: handleClose })

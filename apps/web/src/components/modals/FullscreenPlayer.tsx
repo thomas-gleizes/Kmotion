@@ -105,20 +105,32 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
   )
 
   const QueueBlock = (
-    <div className="flex flex-col space-y-2 pr-3 pb-8">
+    <div className="flex flex-col space-y-2 pr-1 pb-8">
       {nextMusics.slice(0, 50).map((music, index) => (
-        <div key={music.id} className="flex" onClick={() => actions.go(index + 1)}>
+        <div
+          key={music.id}
+          className="flex cursor-pointer group px-1"
+          onClick={() => actions.go(index + 1)}
+        >
           <div className="w-1/5">
             <ImageLoader src={music.links.cover}>
               {({ src }) => (
-                <img src={src} alt={`cover ${music.title}`} className="rounded-lg w-full" />
+                <img
+                  src={src}
+                  alt={`cover ${music.title}`}
+                  className="rounded-lg w-full group-hover:scale-110 transform transition duration-50"
+                />
               )}
             </ImageLoader>
           </div>
           <div className="w-4/5 flex justify-between items-center">
             <div className="w-max truncate overflow-hidden px-3">
-              <h6 className="text-white/95 truncate text-sm">{music.title}</h6>
-              <p className="text-white/75 text-xs">{music.artist}</p>
+              <h6 className="text-white truncate text-sm lg:text-xl text-opacity-90 group-hover:text-opacity-100 group-hover:font-semibold">
+                {music.title}
+              </h6>
+              <p className="text-white text-xs lg:text-sm text-opacity-75 group-hover:text-opacity-90">
+                {music.artist}
+              </p>
             </div>
             <div className="w-min">
               <span className="text-white/70">
@@ -195,7 +207,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
           {loop.value === "all" ? <FaSync /> : <FaSyncAlt />}
         </i>
         <i
-          onClick={actions.shuffle}
+          onClick={() => actions.shuffle()}
           className={classnames(
             "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
             currentMusic.title.length & 1 ? "text-opacity-90 scale-110" : "text-opacity-50"

@@ -16,12 +16,12 @@ import {
 
 import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
-import { useModal } from "../../hooks"
 import { usePlayerContext } from "../../contexts/player"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import ImageLoader from "../../components/common/ImageLoader"
 import EditPlaylist from "../../components/modals/EditPlaylist"
+import { useModalContext } from "../../contexts/modals"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
@@ -72,12 +72,12 @@ const Playlist: Page = () => {
     )
   }
 
-  const openModal = useModal()
+  const modal = useModalContext()
 
   const handleEditPlaylist = async () => {
     if (!playlist) return null
 
-    const result = await openModal(
+    const result = await modal.open(
       <EditPlaylist
         musics={entries.map((entry) => entry.music as IMusic)}
         initialValues={{

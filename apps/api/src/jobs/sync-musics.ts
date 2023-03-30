@@ -2,6 +2,7 @@ import { AsyncTask, CronJob } from "toad-scheduler"
 import trace from "../utils/trace"
 import YtConverter from "../services/ytconverter"
 import prisma from "../services/prisma"
+import { PrismaMusic } from "@kmotion/types"
 
 const task = new AsyncTask(
   "sync-musics",
