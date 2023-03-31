@@ -17,16 +17,14 @@ import {
   FaVolumeUp,
 } from "react-icons/all"
 
-import { usePlayerContext } from "../../contexts/player"
-import { formatTime } from "../../utils/time"
-import { roundMinMax } from "../../utils/number"
-import Modal from "../common/Modal"
-import Slider from "../common/Slider"
-import ImageLoader from "../common/ImageLoader"
+import { usePlayerContext } from "../../../contexts/player"
+import { formatTime } from "../../../utils/time"
+import { roundMinMax } from "../../../utils/number"
+import Modal from "../Modal"
+import Slider from "../Slider"
+import QueueList from "./QueueList"
 
 interface Props {
-  isOpen: boolean
-  close: () => void
   state: {
     paused: boolean
     time: number
@@ -44,7 +42,7 @@ interface Props {
 }
 
 const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) => {
-  const { currentMusic, playlist, actions, loop, assets, queue } = usePlayerContext()
+  const { currentMusic, playlist, actions, loop, assets } = usePlayerContext()
 
   const tRef = useRef<HTMLHeadingElement>(null)
 
@@ -54,12 +52,6 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
 
   const isOverflow =
     (tRef.current?.offsetWidth || 0) >= (tRef.current?.parentElement?.offsetWidth || 2000)
-
-  const nextMusics = useMemo(() => {
-    const nextMusics = [...queue]
-    nextMusics.splice(0, 1)
-    return nextMusics
-  }, [queue])
 
   const ImageBlock = (
     <div
@@ -104,49 +96,10 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
     </div>
   )
 
-  const QueueBlock = (
-    <div className="flex flex-col space-y-2 pr-1 pb-8">
-      {nextMusics.slice(0, 50).map((music, index) => (
-        <div
-          key={music.id}
-          className="flex cursor-pointer group px-1"
-          onClick={() => actions.go(index + 1)}
-        >
-          <div className="w-1/5">
-            <ImageLoader src={music.links.cover}>
-              {({ src }) => (
-                <img
-                  src={src}
-                  alt={`cover ${music.title}`}
-                  className="rounded-lg w-full group-hover:scale-110 transform transition duration-50"
-                />
-              )}
-            </ImageLoader>
-          </div>
-          <div className="w-4/5 flex justify-between items-center">
-            <div className="w-max truncate overflow-hidden px-3">
-              <h6 className="text-white truncate text-sm lg:text-xl text-opacity-90 group-hover:text-opacity-100 group-hover:font-semibold">
-                {music.title}
-              </h6>
-              <p className="text-white text-xs lg:text-sm text-opacity-75 group-hover:text-opacity-90">
-                {music.artist}
-              </p>
-            </div>
-            <div className="w-min">
-              <span className="text-white/70">
-                <FaBars />
-              </span>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-
   const ControlsBlock = (
-    <div className={classnames("h-full flex flex-col space-y-4", showQueue ? "" : "")}>
-      <div className="flex flex-col space-y-3 group">
-        <div className="h-2 w-full transform group-active:scale-y-150 transition duration-200">
+    <div className={classnames("h-full flex flex-col space-y-5", showQueue ? "" : "")}>
+      <div className="flex flex-col group">
+        <div className="h-2 w-full transform group-active:scale-y-150 transition duration-200 mb-3">
           <Slider
             value={roundMinMax((state.time / state.duration) * 100, 0, 100, 1)}
             onChange={(value) => controls.seek((value * state.duration) / 100)}
@@ -266,7 +219,9 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
                   {showQueue && (
                     <div className="flex justify-between items-center pb-3">
                       <div>
-                        <h6 className="text-xl text-white/90 mb-0.5">Suivant</h6>
+                        <h6 className="text-xl lg:text-2xl font-semibold text-white/90 mb-0.5">
+                          Suivant
+                        </h6>
                         <p className="text-base text-white/75">De {playlist.value?.title}</p>
                       </div>
                       <div className="flex justify-end space-x-4">
@@ -281,7 +236,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
                   )}
                   {showQueue && (
                     <SimpleBar className="h-[calc(100vh-420px)] lg:h-[calc(75vh-450px)]">
-                      {QueueBlock}
+                      <QueueList />
                     </SimpleBar>
                   )}
                   <div className="h-min py-2">{ControlsBlock}</div>

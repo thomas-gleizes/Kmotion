@@ -1,4 +1,5 @@
 import React, { createContext, useState } from "react"
+import { v4 as uuid } from "uuid"
 
 import { ModalsContextValues } from "../../types/contexts"
 import { useContextFactory } from "../hooks"
@@ -11,7 +12,11 @@ export const useModalContext = useContextFactory(ModalsContext)
 const ModalProvider: ComponentWithChild = ({ children }) => {
   const [modals, setModals] = useState<ModalType[]>([])
 
-  const open = (modal: ModalType) => setModals([...modals, modal])
+  function open<Result>(component: ReturnType<ModalComponent<unknown, Result>>): Promise<Result> {
+    return new Promise<Result>((resolve) => {
+      setModals([...modals, { uid: uuid(), component, resolve }])
+    })
+  }
 
   const close = (uid: string) => {
     const index = modals.findIndex((d) => d.uid === uid)
@@ -28,13 +33,7 @@ const ModalProvider: ComponentWithChild = ({ children }) => {
   )
 }
 
-type Props = {
-  component: JSX.Element
-  uid: string
-  resolve: (result: unknown) => void
-}
-
-const ModalContainer: Component<Props> = ({ uid, component: Component, resolve }) => {
+const ModalContainer: Component<ModalType> = ({ uid, component: Component, resolve }) => {
   const context = useModalContext()
 
   const [isOpen, setIsOpen] = useState<boolean>(true)

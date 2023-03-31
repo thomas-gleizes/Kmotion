@@ -16,15 +16,14 @@ declare type ResponseInterceptor = (
   request: FetcherRequest
 ) => FetcherResponse
 
-declare type ModalProps = { isOpen: boolean; close: () => void }
+declare type ModalProps<Result = undefined> = { isOpen: boolean; close: (result: Result) => void }
 
-declare type ModalComponent<Props> = {
-  isOpen: boolean
-  close: () => void
-} & Props
+declare type ModalComponent<Props = undefined, Result = undefined> = Component<
+  ModalProps<Result> & Props
+>
 
 declare type ModalType<Result = unknown> = {
   uid: string
-  component: React.ReactElement
+  component: ReturnType<ModalComponent<unknown, Result>>
   resolve: (result: Result) => void
 }

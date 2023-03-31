@@ -8,6 +8,7 @@ import { IMusic } from "@kmotion/types"
 import { CreatePlaylistDto } from "@kmotion/validations"
 import { api } from "../../utils/Api"
 import { QUERIES_KEY } from "../../utils/constants"
+import { useModalContext } from "../../contexts/modals"
 import Modal from "../common/Modal"
 import ImageLoader from "../common/ImageLoader"
 import PlaylistGridImage from "../common/PlaylistGridImage"
@@ -29,10 +30,10 @@ const EditPlaylist: ModalComponent<Props> = ({
 
   const [musics, setMusics] = useState<IMusic[]>(initMusics)
 
-  const openModal = useModal()
+  const { open } = useModalContext()
 
   const handleSearchMusic = async () => {
-    const result = await openModal(<SearchPlaylist />)
+    const result = await open<SearchResult>(<SearchPlaylist title="string" />)
 
     if (result.action === "success") {
       setValue("musics", [...(getValues().musics || []), ...result.data.map((m) => m.id)])
@@ -148,7 +149,20 @@ const EditPlaylist: ModalComponent<Props> = ({
   )
 }
 
-const SearchPlaylist: ModalComponent = ({ isOpen, close }) => {
+declare type SearchResult =
+  | {
+      action: "cancel"
+    }
+  | {
+      action: "success"
+      data: IMusic[]
+    }
+
+const SearchPlaylist: ModalComponent<{ title: string }, SearchResult> = ({
+  isOpen,
+  close,
+  title,
+}) => {
   const [search, setSearch] = useState("")
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -197,7 +211,7 @@ const SearchPlaylist: ModalComponent = ({ isOpen, close }) => {
           >
             Annuler
           </button>
-          <div className="text-white">Recherche des morceaux</div>
+          <div className="text-white">Recherche des morceaux - {title}</div>
           <button
             type="submit"
             className="text-red-600"

@@ -48,6 +48,6 @@ interface LayoutContextValues {}
 // Modals
 
 interface ModalsContextValues {
-  open: <T>(component: React.ReactNode) => Promise<T>
-  close: () => void
+  open: <Result>(component: ReturnType<ModalComponent>) => Promise<Result>
+  close: (uid: string) => void
 }

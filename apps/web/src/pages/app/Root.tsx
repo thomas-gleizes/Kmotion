@@ -1,7 +1,7 @@
 import React from "react"
 import { Navigate, Outlet } from "@tanstack/react-router"
 
-import SmallPlayer from "../../components/common/SmallPlayer"
+import SmallPlayer from "../../components/common/Player/SmallPlayer"
 import NavBar from "../../components/common/NavBar"
 import PlayerProvider from "../../contexts/player"
 import { useAuthContext } from "../../contexts/auth"
