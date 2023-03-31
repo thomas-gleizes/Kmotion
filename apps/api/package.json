@@ -8,8 +8,6 @@
     "start": "ts-node src/app.ts",
     "clean": "rm -rf public"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
