@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import SimpleBar from "simplebar-react"
 
-import { IMusic } from "@kmotion/types"
+import { IMusic, IPlaylist } from "@kmotion/types"
 import { CreatePlaylistDto } from "@kmotion/validations"
 import { api } from "../../utils/Api"
 import { QUERIES_KEY } from "../../utils/constants"
@@ -18,7 +18,16 @@ interface Props {
   musics: IMusic[]
 }
 
-const EditPlaylist: ModalComponent<Props> = ({
+type Result =
+  | {
+      action: "cancel"
+    }
+  | {
+      action: "success"
+      playlist: IPlaylist
+    }
+
+const EditPlaylist: ModalComponent<Props, Result> = ({
   isOpen,
   close,
   initialValues = { title: "", description: "", musics: [] },
@@ -80,7 +89,11 @@ const EditPlaylist: ModalComponent<Props> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="absolute z-[50] w-full bg-secondary/80 backdrop-blur py-2">
           <div className="flex justify-between items-center py-1 px-3">
-            <button type="button" className="text-red-600" onClick={close}>
+            <button
+              type="button"
+              className="text-red-600"
+              onClick={() => close({ action: "cancel" })}
+            >
               Annuler
             </button>
             <div className="text-white">Nouvelle playlist</div>
@@ -196,7 +209,7 @@ const SearchPlaylist: ModalComponent<{ title: string }, SearchResult> = ({
   const musicsChecked = useMemo<number[]>(() => selectedMusics.map((m) => m.id), [selectedMusics])
 
   return (
-    <Modal isOpen={isOpen} onOpened={() => inputRef.current?.focus()}>
+    <Modal isOpen={isOpen} afterOpen={() => inputRef.current?.focus()}>
       <div className="bg-secondary-dark">
         <p className="text-white/90 text-sm text-center py-0.5">
           {musicsChecked.length} morceaux ajoutés a "nouvelle playlist"

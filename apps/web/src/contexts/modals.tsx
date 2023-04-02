@@ -12,9 +12,11 @@ export const useModalContext = useContextFactory(ModalsContext)
 const ModalProvider: ComponentWithChild = ({ children }) => {
   const [modals, setModals] = useState<ModalType[]>([])
 
-  function open<Result>(component: ReturnType<ModalComponent<unknown, Result>>): Promise<Result> {
+  function open<Result>(
+    component: ReturnType<ModalComponent<Omit<any, "isOpen" | "close">, Result>>
+  ): Promise<Result> {
     return new Promise<Result>((resolve) => {
-      setModals([...modals, { uid: uuid(), component, resolve }])
+      setModals((modals) => [...modals, { uid: uuid(), component, resolve }])
     })
   }
 

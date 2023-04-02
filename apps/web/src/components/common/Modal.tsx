@@ -1,40 +1,43 @@
-import React, { memo, useId } from "react"
+import React, { memo } from "react"
 import ReactDom from "react-dom"
 import { Transition } from "@headlessui/react"
 
 interface Props {
   isOpen: boolean
-  onOpened?: () => void
+  afterOpen?: () => void
+  beforeOpen?: () => void
+  beforeClose?: () => void
+  afterClose?: () => void
 }
 
-const Modal: ComponentWithChild<Props> = memo(({ isOpen, onOpened, children }) => {
-  const portalNode = document.getElementById("portal") as Element
+const Modal: ComponentWithChild<Props> = memo(
+  ({ isOpen, children, afterOpen, beforeOpen, beforeClose, afterClose }) => {
+    const container = document.getElementById("portal") as Element
 
-  const id = useId()
+    if (!container) return null
 
-  if (!portalNode) return null
+    const element = (
+      <div className="absolute top-header left-0 w-full z-90">
+        <Transition
+          show={isOpen}
+          enter="transition-all transform duration-200"
+          enterFrom="translate-y-full"
+          enterTo="translate-y-0"
+          leave="transition-all transform duration-200"
+          leaveFrom="translate-y-0"
+          leaveTo="translate-y-full"
+          beforeEnter={beforeOpen}
+          afterEnter={afterOpen}
+          beforeLeave={beforeClose}
+          afterLeave={afterClose}
+        >
+          <div className="w-full modal-content bg-black">{children}</div>
+        </Transition>
+      </div>
+    )
 
-  const jsx = (
-    <div className="absolute top-header left-0 w-full z-90">
-      <Transition
-        key={id}
-        show={isOpen}
-        enter="transition-all transform duration-200"
-        enterFrom="translate-y-full"
-        enterTo="translate-y-0"
-        leave="transition-all transform duration-200"
-        leaveFrom="translate-y-0"
-        leaveTo="translate-y-full"
-        afterEnter={onOpened}
-      >
-        <div id={`modal-content-${id}`} className="w-full modal-content bg-black">
-          {children}
-        </div>
-      </Transition>
-    </div>
-  )
-
-  return ReactDom.createPortal(jsx, portalNode)
-})
+    return ReactDom.createPortal(element, container)
+  }
+)
 
 export default Modal
