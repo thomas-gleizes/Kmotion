@@ -18,8 +18,10 @@ import {
 
 import { IMusic } from "@kmotion/types"
 import { api } from "../../utils/Api"
+import { handleStopPropagation } from "../../utils/helpers"
 import { usePlayerContext } from "../../contexts/player"
 import { useAuthContext } from "../../contexts/auth"
+import { useIsDisplay } from "../../hooks"
 import ImageLoader from "../../components/common/ImageLoader"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 
@@ -33,7 +35,6 @@ const Musics: Page = () => {
     actions,
     playlist: { set: setPlaylist },
   } = usePlayerContext()
-  const authContext = useAuthContext()
 
   const [displayMode, setDisplayMode] = useLocalStorageState<keyof typeof DisplayMode>(
     "displayMode",
@@ -93,13 +94,6 @@ const Musics: Page = () => {
     console.log("Delete", music)
   }
 
-  const handleStopPropagation = (callback: () => void) => {
-    return (event: React.MouseEvent) => {
-      event.stopPropagation()
-      callback()
-    }
-  }
-
   return (
     <ScrollableLayout>
       <div className="pb-5 mt-6 lg:mx-16">
@@ -145,132 +139,21 @@ const Musics: Page = () => {
         {displayMode === DisplayMode.GRID ? (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-4 px-3 sm:px-5 md:gap-10 md:px-10 xl:gap-20 xl:px-16">
             {filteredMusics.map((music) => (
-              <div
+              <GridItem
                 key={music.id}
-                className="cursor-pointer"
-                onClick={handleStopPropagation(() =>
-                  handlePlayMusic(musics.findIndex((m) => m.id === music.id))
-                )}
-              >
-                <div className="w-full">
-                  <ImageLoader src={music.links.cover}>
-                    {({ src }) => (
-                      <img className="rounded-xl shadow-lg w-full" src={src} alt={music.title} />
-                    )}
-                  </ImageLoader>
-                </div>
-                <h2 className="text-white text-sm md:text-xl md:font-bold text-center overflow-y-hidden truncate w-full mt-2 px-1">
-                  <span className="text-white/80 text-xs md:text-lg">{music.artist}</span> -{" "}
-                  {music.title}
-                </h2>
-              </div>
+                music={music}
+                onPlay={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
+              />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-2 md:gap-y-10 md:gap-x-5 lg:gap-x-10">
             {filteredMusics.map((music) => (
-              <div
+              <ListItem
                 key={music.id}
-                className="cursor-pointer"
-                onClick={handleStopPropagation(() =>
-                  handlePlayMusic(musics.findIndex((m) => m.id === music.id))
-                )}
-              >
-                <div className="flex w-full">
-                  <div className="w-1/5">
-                    <ImageLoader src={music.links.cover}>
-                      {({ src }) => (
-                        <img className="w-full rounded-lg shadow-lg" src={src} alt={music.title} />
-                      )}
-                    </ImageLoader>
-                  </div>
-                  <div className="w-4/5 pl-3">
-                    <div className="h-full border-b border-white/50 md:pl-2 flex items-center justify-between">
-                      <div className="w-[85%] h-full flex flex-col justify-center">
-                        <p className="truncate xl:text-3xl text-white">{music.title}</p>
-                        <p className="text-sm text-white/70">{music.artist}</p>
-                      </div>
-                      <div className="w-[15%] text-center">
-                        <Menu as="div" className="relative inline-block text-left">
-                          <div>
-                            <Menu.Button
-                              onClick={handleStopPropagation(() => null)}
-                              className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
-                            >
-                              <FaEllipsisH className="" aria-hidden="true" />
-                            </Menu.Button>
-                          </div>
-                          <Transition
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                          >
-                            <Menu.Items className="z-[100000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                              <div className="py-1">
-                                {authContext.authenticated && authContext.user.isAdmin && (
-                                  <Menu.Item>
-                                    <button
-                                      onClick={handleStopPropagation(() =>
-                                        handleDeleteMusic(music)
-                                      )}
-                                      className="w-full px-2 py-1 text-primary hover:bg-primary/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                                    >
-                                      <span>Supprimer</span>
-                                      <FaTrash />
-                                    </button>
-                                  </Menu.Item>
-                                )}
-                                <Menu.Item>
-                                  <button
-                                    onClick={handleStopPropagation(() => null)}
-                                    className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                                  >
-                                    <span className="truncate">Ajouter à une playlist... </span>
-                                    <FaPlus />
-                                  </button>
-                                </Menu.Item>
-                                <Menu.Item>
-                                  <button
-                                    onClick={handleStopPropagation(() => null)}
-                                    className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                                  >
-                                    <span className="truncate">J'aime </span>
-                                    <FaHeart />
-                                  </button>
-                                </Menu.Item>
-                              </div>
-                              <div className="py-1">
-                                <Menu.Item>
-                                  <button
-                                    onClick={handleStopPropagation(() => actions.addNext(music))}
-                                    className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                                  >
-                                    <span>Lire ensuite</span>
-                                    <CgRowFirst />
-                                  </button>
-                                </Menu.Item>
-                                <Menu.Item>
-                                  <button
-                                    onClick={handleStopPropagation(() => actions.addLast(music))}
-                                    className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                                  >
-                                    <span>Lire en dernier</span>
-                                    <CgRowLast />
-                                  </button>
-                                </Menu.Item>
-                              </div>
-                            </Menu.Items>
-                          </Transition>
-                        </Menu>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                music={music}
+                onPlay={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
+              />
             ))}
           </div>
         )}
@@ -281,6 +164,154 @@ const Musics: Page = () => {
         </div>
       </div>
     </ScrollableLayout>
+  )
+}
+
+interface ItemProps {
+  music: IMusic
+  onPlay: () => void
+}
+
+const GridItem: Component<ItemProps> = ({ music, onPlay }) => {
+  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.5)
+
+  return (
+    <div ref={ref} className="cursor-pointer" onClick={handleStopPropagation(onPlay)}>
+      <div className="w-full">
+        {isDisplay ? (
+          <ImageLoader src={music.links.cover}>
+            {({ src }) => (
+              <img className="rounded-xl shadow-lg w-full" src={src} alt={music.title} />
+            )}
+          </ImageLoader>
+        ) : (
+          <img
+            className="w-full rounded-lg shadow-lg"
+            src="/images/placeholder.png"
+            alt={music.title}
+          />
+        )}
+      </div>
+      <h2 className="text-white text-sm md:text-xl md:font-bold text-center overflow-y-hidden truncate w-full mt-2 px-1">
+        <span className="text-white/80 text-xs md:text-lg">{music.artist}</span> - {music.title}
+      </h2>
+    </div>
+  )
+}
+
+const ListItem: Component<ItemProps> = ({ music, onPlay }) => {
+  const authContext = useAuthContext()
+
+  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.5)
+
+  const {
+    actions,
+    playlist: { set: setPlaylist },
+  } = usePlayerContext()
+
+  return (
+    <div ref={ref} className="cursor-pointer" onClick={handleStopPropagation(onPlay)}>
+      <div className="flex w-full">
+        <div className="w-1/5">
+          {isDisplay ? (
+            <ImageLoader src={music.links.cover}>
+              {({ src }) => (
+                <img className="w-full rounded-lg shadow-lg" src={src} alt={music.title} />
+              )}
+            </ImageLoader>
+          ) : (
+            <img
+              className="w-full rounded-lg shadow-lg"
+              src="/images/placeholder.png"
+              alt={music.title}
+            />
+          )}
+        </div>
+        <div className="w-4/5 pl-3">
+          <div className="h-full border-b border-white/50 md:pl-2 flex items-center justify-between">
+            <div className="w-[85%] h-full flex flex-col justify-center">
+              <p className="truncate xl:text-3xl text-white">{music.title}</p>
+              <p className="truncate text-sm text-white/70">{music.artist}</p>
+            </div>
+            <div className="w-[15%] text-center">
+              <Menu as="div" className="relative inline-block text-left">
+                <div>
+                  <Menu.Button
+                    onClick={handleStopPropagation(() => null)}
+                    className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+                  >
+                    <FaEllipsisH className="" aria-hidden="true" />
+                  </Menu.Button>
+                </div>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="z-[100000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="py-1">
+                      {authContext.authenticated && authContext.user.isAdmin && (
+                        <Menu.Item>
+                          <button
+                            onClick={handleStopPropagation(() => null)}
+                            className="w-full px-2 py-1 text-primary hover:bg-primary/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
+                          >
+                            <span>Supprimer</span>
+                            <FaTrash />
+                          </button>
+                        </Menu.Item>
+                      )}
+                      <Menu.Item>
+                        <button
+                          onClick={handleStopPropagation(() => null)}
+                          className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
+                        >
+                          <span className="truncate">Ajouter à une playlist... </span>
+                          <FaPlus />
+                        </button>
+                      </Menu.Item>
+                      <Menu.Item>
+                        <button
+                          onClick={handleStopPropagation(() => null)}
+                          className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
+                        >
+                          <span className="truncate">J'aime </span>
+                          <FaHeart />
+                        </button>
+                      </Menu.Item>
+                    </div>
+                    <div className="py-1">
+                      <Menu.Item>
+                        <button
+                          onClick={handleStopPropagation(() => actions.addNext(music))}
+                          className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
+                        >
+                          <span>Lire ensuite</span>
+                          <CgRowFirst />
+                        </button>
+                      </Menu.Item>
+                      <Menu.Item>
+                        <button
+                          onClick={handleStopPropagation(() => actions.addLast(music))}
+                          className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
+                        >
+                          <span>Lire en dernier</span>
+                          <CgRowLast />
+                        </button>
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

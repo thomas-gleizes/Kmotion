@@ -26,6 +26,10 @@ const SmallPlayer: Component = () => {
           return controls.volume(state.volume + 0.05)
         case "ArrowDown":
           return controls.volume(state.volume - 0.05)
+        case "m":
+          return state.muted ? controls.unmute() : controls.mute()
+        case "f":
+          return fullscreen.toggle()
       }
   })
 

@@ -1,10 +1,16 @@
-import React from "react"
+import React, { Ref } from "react"
 import SimpleBar from "simplebar-react"
 
-const ScrollableLayout: ComponentWithChild = ({ children }) => {
+interface Props {
+  simpleBarRef?: Ref<any> | undefined
+}
+
+const ScrollableLayout: ComponentWithChild<Props> = ({ children, simpleBarRef }) => {
   return (
     <div className="relative">
-      <SimpleBar className="max-h-screen mt-header mx-4 pb-56">{children}</SimpleBar>
+      <SimpleBar ref={simpleBarRef} className="max-h-screen mt-header mx-4 pb-56">
+        {children}
+      </SimpleBar>
     </div>
   )
 }

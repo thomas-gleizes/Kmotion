@@ -1,6 +1,7 @@
-import React, { Fragment, MouseEventHandler, useMemo } from "react"
-import { useQuery } from "@tanstack/react-query"
+import React, { Fragment, useMemo } from "react"
 import { useParams, useRouter } from "@tanstack/react-router"
+import { Menu, Transition } from "@headlessui/react"
+import { useQuery } from "@tanstack/react-query"
 import {
   CgRowFirst,
   CgRowLast,
@@ -16,12 +17,13 @@ import {
 import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { usePlayerContext } from "../../contexts/player"
+import { useModalContext } from "../../contexts/modals"
+import { handleStopPropagation } from "../../utils/helpers"
+import { useIsDisplay } from "../../hooks"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import EditPlaylist from "../../components/modals/EditPlaylist"
-import { useModalContext } from "../../contexts/modals"
 import ImageLoader from "../../components/common/ImageLoader"
-import { Menu, Transition } from "@headlessui/react"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
@@ -31,6 +33,8 @@ const Playlist: Page = () => {
     actions,
     playlist: { set: setPlaylist },
   } = usePlayerContext()
+
+  const modal = useModalContext()
 
   const { data: playlist } = useQuery<IPlaylist>({
     queryKey: ["playlist", id],
@@ -48,13 +52,6 @@ const Playlist: Page = () => {
 
   const entries: IPlaylistEntry[] = entriesQuery.data || []
 
-  const handleStopPropagation = (callback: () => void): MouseEventHandler => {
-    return (event) => {
-      event.stopPropagation()
-      callback()
-    }
-  }
-
   const handlePlayPlaylist = (random: boolean) => {
     setPlaylist(playlist as IPlaylist)
     if (random)
@@ -71,8 +68,6 @@ const Playlist: Page = () => {
       index
     )
   }
-
-  const modal = useModalContext()
 
   const handleEditPlaylist = async () => {
     if (!playlist) return null
@@ -150,7 +145,11 @@ const Playlist: Page = () => {
             </div>
             <div className="grid grid-cols-1 border-t border-white/75">
               {entries.map((entry, index) => (
-                <ItemMusic key={index} music={entry.music as IMusic} />
+                <ItemMusic
+                  key={index}
+                  onPlay={() => handlePlayMusic(index)}
+                  music={entry.music as IMusic}
+                />
               ))}
             </div>
             <div className="px-3 pt-3">
@@ -166,38 +165,27 @@ const Playlist: Page = () => {
   )
 }
 
-interface Props {
+interface ItemMusicProps {
   onPlay: () => void
   music: IMusic
 }
 
-const ItemMusic: Component<Props> = ({ onPlay, music }) => {
-  function isInViewport(element) {
-    const rect = element.getBoundingClientRect()
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    )
-  }
-
-  const handleStopPropagation = (callback) => {
-    return (event) => {
-      event.stopPropagation()
-      callback(event)
-    }
-  }
-
+const ItemMusic: Component<ItemMusicProps> = ({ onPlay, music }) => {
   const { actions } = usePlayerContext()
 
+  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.5)
+
   return (
-    <div onClick={onPlay} className="cursor-pointer">
+    <div ref={ref} onClick={onPlay} className="cursor-pointer">
       <div className="flex h-full">
         <div className="w-1/5 h-full py-2">
-          <ImageLoader src={music.links.cover}>
-            {({ src }) => <img className="w-full rounded-lg" src={src} alt={music.title} />}
-          </ImageLoader>
+          {isDisplay ? (
+            <ImageLoader src={music.links.cover}>
+              {({ src }) => <img className="w-full rounded-lg" src={src} alt={music.title} />}
+            </ImageLoader>
+          ) : (
+            <img className="w-full rounded-lg" src="/images/placeholder.png" alt={music.title} />
+          )}
         </div>
         <div className="w-4/5 pl-3">
           <div className="h-full border-b border-white/50 md:pl-2 flex items-center justify-between">
@@ -259,9 +247,7 @@ const ItemMusic: Component<Props> = ({ onPlay, music }) => {
                       <Menu.Item>
                         <button
                           className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                          onClick={handleStopPropagation(() =>
-                            actions.addNext(entry.music as IMusic)
-                          )}
+                          onClick={handleStopPropagation(() => actions.addNext(music))}
                         >
                           <span>Lire ensuite</span>
                           <CgRowFirst />
@@ -270,9 +256,7 @@ const ItemMusic: Component<Props> = ({ onPlay, music }) => {
                       <Menu.Item>
                         <button
                           className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                          onClick={handleStopPropagation(() =>
-                            actions.addLast(entry.music as IMusic)
-                          )}
+                          onClick={handleStopPropagation(() => actions.addLast(music))}
                         >
                           <span>Lire en dernier</span>
                           <CgRowLast />
