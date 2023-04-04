@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react"
+import React, { useMemo } from "react"
 import { FaBars } from "react-icons/all"
 
 import { IMusic } from "@kmotion/types"
@@ -35,23 +35,25 @@ const Item: Component<Props> = ({ music, onGo }) => {
   return (
     <div ref={ref} key={music.id} onClick={onGo} className="flex cursor-pointer group px-1">
       <div className="w-[21%] h-full flex items-center">
-        {isDisplay ? (
-          <ImageLoader src={music.links.cover}>
-            {({ src }) => (
-              <img
-                src={src}
-                alt={`cover ${music.title}`}
-                className="rounded-lg w-full group-hover:scale-105 transform transition duration-50"
-              />
-            )}
-          </ImageLoader>
-        ) : (
-          <img
-            className="rounded-lg w-full group-hover:scale-105 transform transition duration-50"
-            src="/images/placeholder.png"
-            alt={music.title}
-          />
-        )}
+        <ImageLoader
+          src={music.links.cover}
+          enabled={isDisplay}
+          fallback={
+            <img
+              className="w-full rounded-lg shadow-lg"
+              src="/images/placeholder.png"
+              alt="placeholder"
+            />
+          }
+        >
+          {({ src }) => (
+            <img
+              src={src}
+              alt={`cover ${music.title}`}
+              className="rounded-lg w-full group-hover:scale-105 transform transition duration-50"
+            />
+          )}
+        </ImageLoader>
       </div>
       <div className="w-[79%] flex justify-between items-center">
         <div className="w-full truncate overflow-hidden px-3">

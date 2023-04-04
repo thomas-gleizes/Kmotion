@@ -179,13 +179,19 @@ const ItemMusic: Component<ItemMusicProps> = ({ onPlay, music }) => {
     <div ref={ref} onClick={onPlay} className="cursor-pointer">
       <div className="flex h-full">
         <div className="w-1/5 h-full py-2">
-          {isDisplay ? (
-            <ImageLoader src={music.links.cover}>
-              {({ src }) => <img className="w-full rounded-lg" src={src} alt={music.title} />}
-            </ImageLoader>
-          ) : (
-            <img className="w-full rounded-lg" src="/images/placeholder.png" alt={music.title} />
-          )}
+          <ImageLoader
+            enabled={isDisplay}
+            src={music.links.cover}
+            fallback={
+              <img
+                className="w-full rounded-lg shadow-lg"
+                src="/images/placeholder.png"
+                alt="placeholder"
+              />
+            }
+          >
+            {({ src }) => <img className="w-full rounded-lg" src={src} alt={music.title} />}
+          </ImageLoader>
         </div>
         <div className="w-4/5 pl-3">
           <div className="h-full border-b border-white/50 md:pl-2 flex items-center justify-between">
@@ -197,7 +203,7 @@ const ItemMusic: Component<ItemMusicProps> = ({ onPlay, music }) => {
               <Menu as="div" className="relative inline-block text-left">
                 <div>
                   <Menu.Button
-                    onClick={() => null}
+                    onClick={(event) => event.stopPropagation()}
                     className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
                   >
                     <FaEllipsisH

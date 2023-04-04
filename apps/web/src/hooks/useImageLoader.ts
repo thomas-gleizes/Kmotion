@@ -1,6 +1,14 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query"
 
-export function useImageLoader(src?: string): [string, UseQueryResult<string>] {
+interface useImageLoaderOptions {
+  fallback?: string
+  enabled?: boolean
+}
+
+export function useImageLoader(
+  src: string | undefined,
+  options?: useImageLoaderOptions
+): [string | undefined, UseQueryResult<string>] {
   const queryImage = useQuery<string>({
     queryKey: ["image-loader", src],
     queryFn: () =>
@@ -8,8 +16,8 @@ export function useImageLoader(src?: string): [string, UseQueryResult<string>] {
         .then((res) => res.blob())
         .then((blob) => URL.createObjectURL(blob)),
     staleTime: Infinity,
-    enabled: !!src,
+    enabled: !!src && !(options?.enabled === true),
   })
 
-  return [queryImage.data || "/images/placeholder.png", queryImage]
+  return [queryImage.data || options?.fallback, queryImage]
 }

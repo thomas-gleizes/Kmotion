@@ -193,7 +193,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
               <div
                 className={classnames(
                   "flex items-center lg:w-2/3",
-                  showQueue ? "lg:h-full" : "w-full h-min"
+                  showQueue ? "lg:h-full pt-4" : "w-full h-min"
                 )}
               >
                 {ImageBlock}

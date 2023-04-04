@@ -178,19 +178,19 @@ const GridItem: Component<ItemProps> = ({ music, onPlay }) => {
   return (
     <div ref={ref} className="cursor-pointer" onClick={handleStopPropagation(onPlay)}>
       <div className="w-full">
-        {isDisplay ? (
-          <ImageLoader src={music.links.cover}>
-            {({ src }) => (
-              <img className="rounded-xl shadow-lg w-full" src={src} alt={music.title} />
-            )}
-          </ImageLoader>
-        ) : (
-          <img
-            className="w-full rounded-lg shadow-lg"
-            src="/images/placeholder.png"
-            alt={music.title}
-          />
-        )}
+        <ImageLoader
+          src={music.links.cover}
+          enabled={isDisplay}
+          fallback={
+            <img
+              className="w-full rounded-lg shadow-lg"
+              src="/images/placeholder.png"
+              alt="placeholder"
+            />
+          }
+        >
+          {({ src }) => <img className="w-full rounded-lg shadow-lg" src={src} alt={music.title} />}
+        </ImageLoader>
       </div>
       <h2 className="text-white text-sm md:text-xl md:font-bold text-center overflow-y-hidden truncate w-full mt-2 px-1">
         <span className="text-white/80 text-xs md:text-lg">{music.artist}</span> - {music.title}
@@ -201,31 +201,29 @@ const GridItem: Component<ItemProps> = ({ music, onPlay }) => {
 
 const ListItem: Component<ItemProps> = ({ music, onPlay }) => {
   const authContext = useAuthContext()
+  const { actions } = usePlayerContext()
 
   const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.5)
-
-  const {
-    actions,
-    playlist: { set: setPlaylist },
-  } = usePlayerContext()
 
   return (
     <div ref={ref} className="cursor-pointer" onClick={handleStopPropagation(onPlay)}>
       <div className="flex w-full">
         <div className="w-1/5">
-          {isDisplay ? (
-            <ImageLoader src={music.links.cover}>
-              {({ src }) => (
-                <img className="w-full rounded-lg shadow-lg" src={src} alt={music.title} />
-              )}
-            </ImageLoader>
-          ) : (
-            <img
-              className="w-full rounded-lg shadow-lg"
-              src="/images/placeholder.png"
-              alt={music.title}
-            />
-          )}
+          <ImageLoader
+            src={music.links.cover}
+            enabled={isDisplay}
+            fallback={
+              <img
+                className="w-full rounded-lg shadow-lg"
+                src="/images/placeholder.png"
+                alt="placeholder"
+              />
+            }
+          >
+            {({ src }) => (
+              <img className="w-full rounded-lg shadow-lg" src={src} alt={music.title} />
+            )}
+          </ImageLoader>
         </div>
         <div className="w-4/5 pl-3">
           <div className="h-full border-b border-white/50 md:pl-2 flex items-center justify-between">
