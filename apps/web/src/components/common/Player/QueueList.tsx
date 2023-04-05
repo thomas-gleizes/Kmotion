@@ -16,7 +16,7 @@ const QueueList: Component = () => {
   }, [queue])
 
   return (
-    <div className="flex flex-col space-y-2 pr-2 pb-8">
+    <div className="flex flex-col space-y-2 pr-2">
       {nextMusics.map((music, index) => (
         <Item key={index} music={music} onGo={() => actions.go(index + 1)} />
       ))}
@@ -30,7 +30,7 @@ interface Props {
 }
 
 const Item: Component<Props> = ({ music, onGo }) => {
-  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.5)
+  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.8)
 
   return (
     <div ref={ref} key={music.id} onClick={onGo} className="flex cursor-pointer group px-1">

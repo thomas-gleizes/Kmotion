@@ -5,7 +5,7 @@ import { useToggle } from "react-use"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
-import { useImageLoader, useStorageQueue, useContextFactory } from "../hooks"
+import { useContextFactory, useImageLoader, useStorageQueue } from "../hooks"
 
 const PlayerContext = createContext<PlayerContextValues>(null as never)
 
@@ -20,7 +20,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
 
   const [currentPlaylist, setCurrentPlaylist] = useState<IPlaylist | null>(null)
 
-  const { queue, actions } = useStorageQueue<IMusic>()
+  const { queue, actions } = useStorageQueue()
 
   const currentMusic = queue.at(0) || null
   const nexMusic = queue.at(1) || null
@@ -52,11 +52,13 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
       )
   }, [currentMusic])
 
-  const [coverUrl, coverQuery] = useImageLoader(currentMusic?.links.cover)
+  const [coverUrl, coverQuery] = useImageLoader(currentMusic?.links.cover, {
+    fallback: "/images/placeholder.png",
+  })
   useImageLoader(nexMusic?.links.cover)
 
   useEffect(() => {
-    if ("mediaSession" in navigator && coverUrl && currentMusic)
+    if ("mediaSession" in navigator && coverUrl && currentMusic) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currentMusic.title,
         artist: currentMusic.artist || "Unknown",
@@ -65,6 +67,10 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
           { src: coverUrl, sizes: "248x248", type: "image/jpeg" },
         ],
       })
+
+      navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
+      navigator.mediaSession.setActionHandler("nexttrack", () => actions.next())
+    }
   }, [currentMusic, coverUrl])
 
   return (

@@ -143,14 +143,24 @@ const Playlist: Page = () => {
               {entries.length} morceaux, {time.hours} heure{time.hours > 1 && "s"} et {time.minutes}{" "}
               minute{time.minutes > 1 && "s"}
             </div>
-            <div className="grid grid-cols-1 border-t border-white/75">
-              {entries.map((entry, index) => (
-                <ItemMusic
-                  key={index}
-                  onPlay={() => handlePlayMusic(index)}
-                  music={entry.music as IMusic}
-                />
-              ))}
+            <div className="grid grid-cols-1 gap-y-2 border-t py-2 border-white/75">
+              {!entriesQuery.isLoading
+                ? entries.map((entry, index) => (
+                    <ItemMusic
+                      key={index}
+                      onPlay={() => handlePlayMusic(index)}
+                      music={entry.music as IMusic}
+                    />
+                  ))
+                : Array.from({ length: 20 }, (_, index) => (
+                    <div key={index} className="flex space-x-3">
+                      <div className="bg-gray-200 rounded-lg animate-pulse h-10 w-1/5"></div>
+                      <div className="w-4/5">
+                        <div className="bg-gray-200/50 rounded-lg animate-pulse w-3/5 h-2 mt-2"></div>
+                        <div className="bg-gray-200/20 rounded-lg animate-pulse w-3/5 h-2 mt-2"></div>
+                      </div>
+                    </div>
+                  ))}
             </div>
             <div className="px-3 pt-3">
               <p className="text-white text-sm text-opacity-80">
@@ -178,7 +188,7 @@ const ItemMusic: Component<ItemMusicProps> = ({ onPlay, music }) => {
   return (
     <div ref={ref} onClick={onPlay} className="cursor-pointer">
       <div className="flex h-full">
-        <div className="w-1/5 h-full py-2">
+        <div className="w-1/5 h-full">
           <ImageLoader
             enabled={isDisplay}
             src={music.links.cover}
