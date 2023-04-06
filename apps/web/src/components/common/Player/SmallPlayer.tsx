@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useRef } from "react"
+import React, { MouseEventHandler, useEffect, useRef } from "react"
 import classnames from "classnames"
 import { useAudio, useEvent, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
@@ -44,6 +44,21 @@ const SmallPlayer: Component = () => {
     },
     ref.current
   )
+
+  useEffect(() => {
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.setActionHandler("play", () => controls.play())
+      navigator.mediaSession.setActionHandler("pause", () => controls.pause())
+      navigator.mediaSession.setActionHandler("stop", (details) => console.log("stop", details))
+
+      navigator.mediaSession.setActionHandler("seekbackward", () => controls.seek(state.time + 10))
+      navigator.mediaSession.setActionHandler("seekbackward", () => controls.seek(state.time + 10))
+      navigator.mediaSession.setActionHandler("seekto", (details) => {
+        console.log("details")
+        details.seekTime && controls.seek(details.seekTime)
+      })
+    }
+  }, [navigator, controls, state])
 
   useTitle(currentMusic ? `${currentMusic?.artist} - ${currentMusic?.title}` : "Kmotion", {
     restoreOnUnmount: true,

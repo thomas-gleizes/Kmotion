@@ -208,7 +208,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
               </div>
               <div
                 className={classnames(
-                  "lg:w-1/3 xl:px-16 lg:px-10",
+                  "lg:w-1/3 xl:px-5 lg:px-5",
                   showQueue
                     ? "w-full flex flex-col justify-evenly"
                     : "flex flex-col justify-between lg:justify-center"
