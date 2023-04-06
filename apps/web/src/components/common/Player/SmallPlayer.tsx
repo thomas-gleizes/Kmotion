@@ -45,10 +45,6 @@ const SmallPlayer: Component = () => {
     ref.current
   )
 
-  const test = useRef(state)
-
-  console.log("Test", JSON.stringify(test))
-
   useEffect(() => {
     if ("mediaSession" in navigator) {
       navigator.mediaSession.setActionHandler("play", () => controls.play())

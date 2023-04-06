@@ -30,7 +30,7 @@ interface Props {
 }
 
 const Item: Component<Props> = ({ music, onGo }) => {
-  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.8)
+  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.3)
 
   return (
     <div ref={ref} key={music.id} onClick={onGo} className="flex cursor-pointer group px-1">

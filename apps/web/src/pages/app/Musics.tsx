@@ -203,7 +203,7 @@ const ListItem: Component<ItemProps> = ({ music, onPlay }) => {
   const authContext = useAuthContext()
   const { actions } = usePlayerContext()
 
-  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.5)
+  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.8)
 
   return (
     <div ref={ref} className="cursor-pointer" onClick={handleStopPropagation(onPlay)}>
