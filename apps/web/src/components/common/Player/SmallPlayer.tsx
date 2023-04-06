@@ -45,14 +45,18 @@ const SmallPlayer: Component = () => {
     ref.current
   )
 
+  const test = useRef(state)
+
+  console.log("Test", JSON.stringify(test))
+
   useEffect(() => {
     if ("mediaSession" in navigator) {
       navigator.mediaSession.setActionHandler("play", () => controls.play())
       navigator.mediaSession.setActionHandler("pause", () => controls.pause())
       navigator.mediaSession.setActionHandler("stop", (details) => console.log("stop", details))
 
-      navigator.mediaSession.setActionHandler("seekbackward", () => controls.seek(state.time + 10))
-      navigator.mediaSession.setActionHandler("seekbackward", () => controls.seek(state.time + 10))
+      navigator.mediaSession.setActionHandler("seekbackward", () => controls.seek(state.time - 10))
+      navigator.mediaSession.setActionHandler("seekforward", () => controls.seek(state.time + 10))
       navigator.mediaSession.setActionHandler("seekto", (details) => {
         console.log("details")
         details.seekTime && controls.seek(details.seekTime)
