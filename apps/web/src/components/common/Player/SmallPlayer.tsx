@@ -4,8 +4,8 @@ import { useAudio, useEvent, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
 
 import { usePlayerContext } from "../../../contexts/player"
-import FullscreenPlayer from "./FullscreenPlayer"
 import { roundMinMax } from "../../../utils/number"
+import FullscreenPlayer from "./FullscreenPlayer"
 
 const SmallPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen, assets } = usePlayerContext()
@@ -27,8 +27,10 @@ const SmallPlayer: Component = () => {
         case "ArrowDown":
           return controls.volume(state.volume - 0.05)
         case "m":
+        case "M":
           return state.muted ? controls.unmute() : controls.mute()
         case "f":
+        case "F":
           return fullscreen.toggle()
       }
   })
