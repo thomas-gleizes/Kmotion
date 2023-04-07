@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react"
+import React, { createContext, useEffect, useState } from "react"
 import { v4 as uuid } from "uuid"
 
 import { ModalsContextValues } from "../../types/contexts"
@@ -38,7 +38,11 @@ const ModalProvider: ComponentWithChild = ({ children }) => {
 const ModalContainer: Component<ModalType> = ({ uid, component: Component, resolve }) => {
   const context = useModalContext()
 
-  const [isOpen, setIsOpen] = useState<boolean>(true)
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (!isOpen) setTimeout(() => setIsOpen(true), 10)
+  }, [])
 
   const handleClose = (result: unknown) => {
     resolve(result)
