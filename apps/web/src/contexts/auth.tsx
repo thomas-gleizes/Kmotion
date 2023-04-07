@@ -16,6 +16,26 @@ export const useAuthContext = () => {
   else return context as UnauthenticatedValues
 }
 
+export const useAuthenticatedContext = () => {
+  const context = useContext(AuthContext)
+
+  if (!context) throw new Error("useAuthContext must be used within AuthProvider")
+  if (!context.authenticated)
+    throw new Error("useAuthenticatedContext muse be used when user is login")
+
+  return context as AuthenticatedValues
+}
+
+export const useUnAuthenticatedContext = () => {
+  const context = useContext(AuthContext)
+
+  if (!context) throw new Error("useAuthContext must be used within AuthProvider")
+  if (context.authenticated)
+    throw new Error("useAuthenticatedContext muse be used when user is login")
+
+  return context as UnauthenticatedValues
+}
+
 const AuthProvider: ComponentWithChild = ({ children }) => {
   const [authenticated, setAuthenticated] = useLocalStorageState<boolean>("authenticated", {
     defaultValue: false,

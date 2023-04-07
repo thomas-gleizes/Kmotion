@@ -2,11 +2,11 @@ import React from "react"
 import { useRouter } from "@tanstack/react-router"
 
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
-import { useAuthContext } from "../../contexts/auth"
+import { useAuthenticatedContext } from "../../contexts/auth"
 
 const Settings: Page = () => {
   const { history } = useRouter()
-  const authContext = useAuthContext()
+  const { user } = useAuthenticatedContext()
 
   return (
     <ScrollableLayout>
@@ -21,7 +21,7 @@ const Settings: Page = () => {
         >
           Disconnect
         </button>
-        {authContext.authenticated && authContext.user.isAdmin && (
+        {user.isAdmin && (
           <button
             className="btn bg-blue-400 text-black"
             onClick={() => {

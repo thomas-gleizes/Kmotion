@@ -5,35 +5,37 @@ import { FaChevronRight, FaPlus } from "react-icons/all"
 
 import { IPlaylist } from "@kmotion/types"
 import { api } from "../../utils/Api"
-import { useToggle } from "react-use"
-import EditPlaylist from "../../components/modals/EditPlaylist"
+import { QUERIES_KEY } from "../../utils/constants"
+import { useAuthenticatedContext } from "../../contexts/auth"
+import { useModalContext } from "../../contexts/modals"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
-import { QUERIES_KEY } from "../../utils/constants"
+import EditPlaylist from "../../components/modals/EditPlaylist"
 
 const PlaylistPage: Component = () => {
+  const { user } = useAuthenticatedContext()
+
   const { data: playlists, refetch } = useQuery<IPlaylist[]>({
-    queryKey: QUERIES_KEY.playlists,
+    queryKey: [...QUERIES_KEY.playlists, user.id],
     queryFn: () => api.fetchPlaylists(true).then((response) => response.playlists),
     refetchOnMount: true,
     staleTime: 1000 * 60,
   })
 
   const router = useRouter()
+  const modal = useModalContext()
 
-  const [isOpen, toggleOpen] = useToggle(false)
+  const handleEditPlaylist = async () => {
+    const result: any = await modal.open(<EditPlaylist musics={[]} />)
 
-  const handleValid = () => {
-    toggleOpen(false)
-    void refetch()
+    if (result.action === "success") void refetch()
   }
 
   return (
     <ScrollableLayout>
-      <EditPlaylist isOpen={isOpen} close={() => toggleOpen(false)} onValid={handleValid} />
       <h2 className="text-4xl mt-8 font-bold text-white/90">Playlists</h2>
       <div className="grid grid-cols-1 gap-y-5 mt-5">
-        <div className="w-full flex cursor-pointer" onClick={() => toggleOpen()}>
+        <div className="w-full flex cursor-pointer" onClick={handleEditPlaylist}>
           <div>
             <div className="h-[100px] w-[100px] lg:h-[200px] lg:w-[200px] flex items-center justify-center rounded-xl border border-neutral-800">
               <div className="text-4xl text-primary">

@@ -1,12 +1,10 @@
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { classValidatorResolver } from "@hookform/resolvers/class-validator"
-import { Navigate } from "@tanstack/react-router"
 import { RegisterDto } from "@kmotion/validations"
 import classnames from "classnames"
 
 import { api } from "../../utils/Api"
-import { useAuthContext } from "../../contexts/auth"
 
 const resolver = classValidatorResolver(RegisterDto)
 
@@ -21,9 +19,6 @@ const RegisterForm: Component = () => {
 
   const { register, handleSubmit } = useForm<RegisterDto>({ resolver, defaultValues })
 
-  const authContext = useAuthContext()
-
-  if (authContext.authenticated) return <Navigate to="/" />
   const onSubmit = async (data: RegisterDto) => {
     try {
       setIsSubmitting(true)

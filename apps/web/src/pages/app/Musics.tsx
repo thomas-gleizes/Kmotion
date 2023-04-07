@@ -20,7 +20,7 @@ import { IMusic } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { handleStopPropagation } from "../../utils/helpers"
 import { usePlayerContext } from "../../contexts/player"
-import { useAuthContext } from "../../contexts/auth"
+import { useAuthenticatedContext } from "../../contexts/auth"
 import { useIsDisplay } from "../../hooks"
 import ImageLoader from "../../components/common/ImageLoader"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
@@ -200,7 +200,7 @@ const GridItem: Component<ItemProps> = ({ music, onPlay }) => {
 }
 
 const ListItem: Component<ItemProps> = ({ music, onPlay }) => {
-  const authContext = useAuthContext()
+  const { user } = useAuthenticatedContext()
   const { actions } = usePlayerContext()
 
   const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.8)
@@ -252,7 +252,7 @@ const ListItem: Component<ItemProps> = ({ music, onPlay }) => {
                 >
                   <Menu.Items className="z-[100000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="py-1">
-                      {authContext.authenticated && authContext.user.isAdmin && (
+                      {user.isAdmin && (
                         <Menu.Item>
                           <button
                             onClick={handleStopPropagation(() => null)}
