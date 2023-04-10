@@ -24,6 +24,7 @@ import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import EditPlaylist from "../../components/modals/EditPlaylist"
 import ImageLoader from "../../components/common/ImageLoader"
+import FallbackImage from "../../components/common/FallbackImage"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
@@ -189,17 +190,7 @@ const ItemMusic: Component<ItemMusicProps> = ({ onPlay, music }) => {
     <div ref={ref} onClick={onPlay} className="cursor-pointer">
       <div className="flex h-full">
         <div className="w-1/5 h-full">
-          <ImageLoader
-            enabled={isDisplay}
-            src={music.links.cover}
-            fallback={
-              <img
-                className="w-full rounded-lg shadow-lg"
-                src="/images/placeholder.png"
-                alt="placeholder"
-              />
-            }
-          >
+          <ImageLoader enabled={isDisplay} src={music.links.cover} fallback={<FallbackImage />}>
             {({ src }) => <img className="w-full rounded-lg" src={src} alt={music.title} />}
           </ImageLoader>
         </div>

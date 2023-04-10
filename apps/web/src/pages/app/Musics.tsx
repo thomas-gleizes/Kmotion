@@ -24,6 +24,7 @@ import { useAuthenticatedContext } from "../../contexts/auth"
 import { useIsDisplay } from "../../hooks"
 import ImageLoader from "../../components/common/ImageLoader"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
+import FallbackImage from "../../components/common/FallbackImage"
 
 const DisplayMode: Record<string, string> = {
   GRID: "grid",
@@ -178,17 +179,7 @@ const GridItem: Component<ItemProps> = ({ music, onPlay }) => {
   return (
     <div ref={ref} className="cursor-pointer" onClick={handleStopPropagation(onPlay)}>
       <div className="w-full">
-        <ImageLoader
-          src={music.links.cover}
-          enabled={isDisplay}
-          fallback={
-            <img
-              className="w-full rounded-lg shadow-lg"
-              src="/images/placeholder.png"
-              alt="placeholder"
-            />
-          }
-        >
+        <ImageLoader src={music.links.cover} enabled={isDisplay} fallback={<FallbackImage />}>
           {({ src }) => <img className="w-full rounded-lg shadow-lg" src={src} alt={music.title} />}
         </ImageLoader>
       </div>
@@ -209,17 +200,7 @@ const ListItem: Component<ItemProps> = ({ music, onPlay }) => {
     <div ref={ref} className="cursor-pointer" onClick={handleStopPropagation(onPlay)}>
       <div className="flex w-full">
         <div className="w-1/5">
-          <ImageLoader
-            src={music.links.cover}
-            enabled={isDisplay}
-            fallback={
-              <img
-                className="w-full rounded-lg shadow-lg"
-                src="/images/placeholder.png"
-                alt="placeholder"
-              />
-            }
-          >
+          <ImageLoader src={music.links.cover} enabled={isDisplay} fallback={<FallbackImage />}>
             {({ src }) => (
               <img className="w-full rounded-lg shadow-lg" src={src} alt={music.title} />
             )}

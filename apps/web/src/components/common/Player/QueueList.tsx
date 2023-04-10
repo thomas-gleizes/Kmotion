@@ -5,6 +5,7 @@ import { IMusic } from "@kmotion/types"
 import { usePlayerContext } from "../../../contexts/player"
 import { useIsDisplay } from "../../../hooks"
 import ImageLoader from "../ImageLoader"
+import FallbackImage from "../FallbackImage"
 
 const QueueList: Component = () => {
   const { actions, queue } = usePlayerContext()
@@ -35,17 +36,7 @@ const Item: Component<Props> = ({ music, onGo }) => {
   return (
     <div ref={ref} key={music.id} onClick={onGo} className="flex cursor-pointer group px-1">
       <div className="w-[21%] h-full flex items-center">
-        <ImageLoader
-          src={music.links.cover}
-          enabled={isDisplay}
-          fallback={
-            <img
-              className="w-full rounded-lg shadow-lg"
-              src="/images/placeholder.png"
-              alt="placeholder"
-            />
-          }
-        >
+        <ImageLoader src={music.links.cover} enabled={isDisplay} fallback={<FallbackImage />}>
           {({ src }) => (
             <img
               src={src}
