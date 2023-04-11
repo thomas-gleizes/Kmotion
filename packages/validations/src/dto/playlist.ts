@@ -34,22 +34,12 @@ export class CreatePlaylistDto {
   musics?: number[]
 }
 
-export class UpdatePlaylistDto {
-  @IsString()
+export class UpdatePlaylistDto extends CreatePlaylistDto {
   @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(50)
-  title!: string
-
-  @IsString()
-  @MaxLength(255)
-  description!: string
-
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  @IsEnum(["public", "private"])
-  visibility!: "public" | "private"
+  @IsNumber()
+  @Type(() => Number)
+  @Min(1)
+  id!: number
 }
 
 export class GetPlaylistParamsDto {

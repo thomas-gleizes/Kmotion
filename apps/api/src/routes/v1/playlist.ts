@@ -8,6 +8,7 @@ import {
   GetPlaylistParamsDto,
   QueryGetPlaylist,
   SearchMusicQuery,
+  UpdatePlaylistDto,
 } from "@kmotion/validations"
 import { PlaylistEntriesResponse, PrismaEntry } from "@kmotion/types"
 import { entryMapper, playlistMapper } from "@kmotion/mappers"
@@ -75,6 +76,70 @@ export default async function playlistRoutes(instance: FastifyInstance) {
         throw new NotFoundException("Playlist not found")
 
       reply.send({ success: true, playlist: playlistMapper.one(playlist) })
+    }
+  )
+
+  instance.put<{
+    Params: GetPlaylistParamsDto
+    Body: UpdatePlaylistDto
+  }>(
+    "/:id",
+    {
+      preHandler: [
+        instance.validateParams(GetPlaylistParamsDto),
+        instance.validateBody(UpdatePlaylistDto),
+      ],
+    },
+    async (request, reply) => {
+      const editedPlaylist = await prisma.playlist.update({
+        data: {
+          title: request.body.title,
+          slug: request.body.title.toLowerCase().replace(/\s/g, "-"),
+          description: request.body.description,
+          authorId: request.session.user.id,
+          visibility: request.body.visibility,
+        },
+        where: { id: request.params.id },
+        include: { entries: { orderBy: { position: "asc" } } },
+      })
+
+      if (request.body.musics) {
+        await prisma.playlistEntry.deleteMany({
+          where: { musicId: { notIn: request.body.musics }, playlistId: request.params.id },
+        })
+
+        const acc = request.body.musics.reduce<{
+          i: { id: number; position: number }[]
+          u: { id: number; position: number }[]
+        }>(
+          (acc, current, index) => {
+            if (editedPlaylist.entries.findIndex((entry) => entry.musicId === current) === -1) {
+              acc.i.push({ id: current, position: index })
+            } else {
+              acc.u.push({ id: current, position: index })
+            }
+            return acc
+          },
+          { i: [], u: [] }
+        )
+
+        for (const { id, position } of acc.u) {
+          await prisma.playlistEntry.update({
+            where: { playlistId_musicId: { playlistId: request.params.id, musicId: id } },
+            data: { position },
+          })
+        }
+
+        await prisma.playlistEntry.createMany({
+          data: acc.i.map((entry) => ({
+            playlistId: request.params.id,
+            musicId: entry.id,
+            position: entry.position,
+          })),
+        })
+      }
+
+      reply.send({ success: true, playlist: playlistMapper.one(editedPlaylist) })
     }
   )
 

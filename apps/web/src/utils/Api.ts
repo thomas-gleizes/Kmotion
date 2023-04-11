@@ -49,6 +49,10 @@ class Api {
     return this.fetcher.post("playlists", { body: JSON.stringify(body) }).then(this.toJson)
   }
 
+  public updatePlaylist(id: number, body: CreatePlaylistDto): Promise<PlaylistResponse> {
+    return this.fetcher.put(`playlists/${id}`, { body: JSON.stringify(body) }).then(this.toJson)
+  }
+
   public fetchPlaylists(withEntries: boolean): Promise<PlaylistsResponse> {
     return this.fetcher
       .get("playlists" + this.fetcher.parseQueryString({ entries: withEntries }))

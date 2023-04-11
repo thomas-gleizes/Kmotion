@@ -71,7 +71,6 @@ model PlaylistEntry {
   music    Music    @relation(fields: [musicId], references: [id])
 
   @@id([playlistId, musicId])
-  @@unique([playlistId, position])
   @@map("playlist_entries")
 }
 

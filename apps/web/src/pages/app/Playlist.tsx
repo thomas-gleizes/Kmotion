@@ -1,7 +1,7 @@
 import React, { Fragment, useMemo } from "react"
 import { useParams, useRouter } from "@tanstack/react-router"
 import { Menu, Transition } from "@headlessui/react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   CgRowFirst,
   CgRowLast,
@@ -19,6 +19,7 @@ import { api } from "../../utils/Api"
 import { usePlayerContext } from "../../contexts/player"
 import { useModalContext } from "../../contexts/modals"
 import { handleStopPropagation } from "../../utils/helpers"
+import { QUERIES_KEY } from "../../utils/constants"
 import { useIsDisplay } from "../../hooks"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
@@ -35,9 +36,11 @@ const Playlist: Page = () => {
     playlist: { set: setPlaylist },
   } = usePlayerContext()
 
+  const queryClient = useQueryClient()
+
   const modal = useModalContext()
 
-  const { data: playlist } = useQuery<IPlaylist>({
+  const { data: playlist, refetch: refetchPlaylist } = useQuery<IPlaylist>({
     queryKey: ["playlist", id],
     queryFn: () => api.fetchPlaylist(+id, false).then((data) => data.playlist),
     staleTime: 1000 * 60 * 5,
@@ -75,8 +78,10 @@ const Playlist: Page = () => {
 
     const result = await modal.open(
       <EditPlaylist
+        isNew={false}
         musics={entries.map((entry) => entry.music as IMusic)}
         initialValues={{
+          id: playlist.id,
           title: playlist.title,
           description: playlist.description,
           musics: entries.map((entry) => entry.musicId),
@@ -84,7 +89,12 @@ const Playlist: Page = () => {
       />
     )
 
-    console.log("Result", result)
+    if (result.action !== "cancel")
+      await Promise.all([
+        refetchPlaylist(),
+        entriesQuery.refetch(),
+        queryClient.resetQueries(QUERIES_KEY.playlists),
+      ])
   }
 
   const time = useMemo<{ hours: number; minutes: number }>(() => {

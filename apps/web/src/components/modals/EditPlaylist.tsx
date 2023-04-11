@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import SimpleBar from "simplebar-react"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
-import { CreatePlaylistDto } from "@kmotion/validations"
+import { CreatePlaylistDto, UpdatePlaylistDto } from "@kmotion/validations"
 import { api } from "../../utils/Api"
 import { QUERIES_KEY } from "../../utils/constants"
 import { useModalContext } from "../../contexts/modals"
@@ -13,28 +13,36 @@ import Modal from "../common/Modal"
 import ImageLoader from "../common/ImageLoader"
 import PlaylistGridImage from "../common/PlaylistGridImage"
 
-interface Props {
-  initialValues?: CreatePlaylistDto
-  musics: IMusic[]
-}
+type Props =
+  | {
+      isNew: false
+      musics: IMusic[]
+      initialValues: CreatePlaylistDto
+    }
+  | {
+      isNew: true
+      initialValues: UpdatePlaylistDto
+      musics: IMusic[]
+    }
 
 type Result =
   | {
       action: "cancel"
     }
   | {
-      action: "success"
+      action: "success-new" | "success-edit"
       playlist: IPlaylist
     }
 
 const EditPlaylist: ModalComponent<Props, Result> = ({
   isOpen,
   close,
-  initialValues = { title: "", description: "", musics: [] },
+  isNew,
+  initialValues,
   musics: initMusics = [],
 }) => {
-  const { register, handleSubmit, setValue, getValues } = useForm<CreatePlaylistDto>({
-    defaultValues: initialValues,
+  const { register, handleSubmit, setValue, getValues } = useForm<typeof initialValues>({
+    defaultValues: isNew ? { title: "", description: "", musics: [] } : initialValues,
   })
 
   const [musics, setMusics] = useState<IMusic[]>(initMusics)
@@ -42,7 +50,7 @@ const EditPlaylist: ModalComponent<Props, Result> = ({
   const { open } = useModalContext()
 
   const handleSearchMusic = async () => {
-    const result = await open<SearchResult>(<SearchPlaylist title="string" />)
+    const result = await open<SearchResult>(<SearchPlaylist />)
 
     if (result.action === "success") {
       setValue("musics", [...(getValues().musics || []), ...result.data.map((m) => m.id)])
@@ -50,11 +58,21 @@ const EditPlaylist: ModalComponent<Props, Result> = ({
     }
   }
 
-  const onSubmit = async (values: CreatePlaylistDto) => {
+  const onSubmitNew = async (values: CreatePlaylistDto) => {
     try {
       const data = await api.createPlaylist(values)
       console.log("Data", data)
-      close(data)
+      close({ action: "success", playlist: data.playlist })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const onSubmitEdit = async (values: UpdatePlaylistDto) => {
+    try {
+      const data = await api.updatePlaylist(values.id, values)
+      console.log("Data", data)
+      close({ action: "success", playlist: data.playlist })
     } catch (err) {
       console.error(err)
     }
@@ -86,7 +104,7 @@ const EditPlaylist: ModalComponent<Props, Result> = ({
 
   return (
     <Modal isOpen={isOpen}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(isNew ? onSubmitNew : onSubmitEdit)}>
         <div className="absolute z-[50] w-full bg-secondary/80 backdrop-blur py-2">
           <div className="flex justify-between items-center py-1 px-3">
             <button
@@ -171,11 +189,7 @@ declare type SearchResult =
       data: IMusic[]
     }
 
-const SearchPlaylist: ModalComponent<{ title: string }, SearchResult> = ({
-  isOpen,
-  close,
-  title,
-}) => {
+const SearchPlaylist: ModalComponent<never, SearchResult> = ({ isOpen, close }) => {
   const [search, setSearch] = useState("")
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -224,7 +238,7 @@ const SearchPlaylist: ModalComponent<{ title: string }, SearchResult> = ({
           >
             Annuler
           </button>
-          <div className="text-white">Recherche des morceaux - {title}</div>
+          <div className="text-white">Recherche des morceaux</div>
           <button
             type="submit"
             className="text-red-600"

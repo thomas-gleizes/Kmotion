@@ -1,4 +1,3 @@
-import React from "react"
 import { IMusic, IPlaylist, IUser } from "@kmotion/types"
 
 // Auth
@@ -14,12 +13,6 @@ interface UnauthenticatedValues {
 }
 
 declare type AuthContextValues = AuthenticatedValues | UnauthenticatedValues
-
-declare type IsAuth = {
-  ["yes"]: AuthenticatedValues
-  ["no"]: UnauthenticatedValues
-  ["dont_know"]: AuthContextValues
-}
 
 // Player
 
