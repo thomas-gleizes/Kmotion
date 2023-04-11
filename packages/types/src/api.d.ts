@@ -4,6 +4,10 @@ export interface SuccessData {
   success: true
 }
 
+export interface MetaData {
+    total: number
+}
+
 export interface LoginResponse extends SuccessData {
   user: IUser
   token: string
@@ -27,6 +31,15 @@ interface PlaylistEntriesResponse extends SuccessData {
   entries: IPlaylistEntry[]
 }
 
+interface MusicSyncResponse extends SuccessData {
+    musics: IMusic[]
+}
+
+interface MusicSearchResponse extends SuccessData {
+    musics: IMusic[]
+}
+
 interface MusicResponse extends SuccessData {
   musics: IMusic[]
+  meta: MetaData
 }

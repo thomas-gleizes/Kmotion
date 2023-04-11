@@ -16,7 +16,7 @@ import {
   IoShuffleOutline,
 } from "react-icons/all"
 
-import { IMusic } from "@kmotion/types"
+import { IMusic, MusicResponse } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { handleStopPropagation } from "../../utils/helpers"
 import { usePlayerContext } from "../../contexts/player"
@@ -25,6 +25,7 @@ import { useIsDisplay } from "../../hooks"
 import ImageLoader from "../../components/common/ImageLoader"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import FallbackImage from "../../components/common/FallbackImage"
+import MusicSkeleton from "../../components/common/MusicSkeleton"
 
 const DisplayMode: Record<string, string> = {
   GRID: "grid",
@@ -42,16 +43,18 @@ const Musics: Page = () => {
     { defaultValue: DisplayMode.GRID }
   )
 
-  const { data, fetchNextPage, isFetching } = useInfiniteQuery<IMusic[]>({
+  const { data, fetchNextPage, isFetching } = useInfiniteQuery<MusicResponse>({
     queryKey: ["musics"],
-    queryFn: ({ pageParam = 0 }) =>
-      api.fetchMusics(pageParam).then((data) => data.musics as IMusic[]),
+    queryFn: ({ pageParam = 0 }) => api.fetchMusics(pageParam),
     getNextPageParam: (_, pages) => pages.length,
     staleTime: 0,
     refetchOnMount: true,
   })
 
-  const musics: IMusic[] = useMemo(() => (data ? data.pages.flat() : []), [data])
+  const musics: IMusic[] = useMemo(
+    () => (data ? data.pages.map((page) => page.musics).flat() : []),
+    [data]
+  )
 
   const [search, setSearch] = useState<string>("")
 
@@ -66,6 +69,14 @@ const Musics: Page = () => {
           ),
     [musics, search]
   )
+
+  const meta = useMemo(() => {
+    if (Array.isArray(data?.pages) && data.pages.at(-1)?.meta) {
+      return data.pages.at(-1).meta
+    }
+
+    return { total: 0 }
+  }, [data])
 
   const handlePlayRandom = () => {
     setPlaylist({
@@ -146,6 +157,17 @@ const Musics: Page = () => {
                 onPlay={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
               />
             ))}
+            {isFetching &&
+              Array.from({ length: 20 }).map((_, index) => (
+                <div key={index} className="cursor-pointer">
+                  <div className="w-full">
+                    <div className="w-full bg-neutral-200 animate-pulse rounded-lg">
+                      <img src="/images/placeholder.png" alt="cover" className="opacity-0" />
+                    </div>
+                  </div>
+                  <div className="bg-gray-300 animate-pulse h-3 lg:h-4 w-1/2 mx-auto mt-2 rounded-lg"></div>
+                </div>
+              ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-2 md:gap-y-10 md:gap-x-5 lg:gap-x-10">
@@ -156,12 +178,16 @@ const Musics: Page = () => {
                 onPlay={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
               />
             ))}
+            {isFetching &&
+              Array.from({ length: 20 }).map((_, index) => <MusicSkeleton key={index} />)}
           </div>
         )}
         <div className="flex justify-center mt-16">
-          <button disabled={isFetching} className="btn btn-sm" onClick={() => fetchNextPage()}>
-            Afficher plus
-          </button>
+          {meta.total !== musics.length && (
+            <button disabled={isFetching} className="btn btn-sm" onClick={() => fetchNextPage()}>
+              Afficher plus
+            </button>
+          )}
         </div>
       </div>
     </ScrollableLayout>

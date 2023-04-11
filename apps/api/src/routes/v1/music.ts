@@ -7,6 +7,7 @@ import {
   GetMusicQuery,
   SearchMusicQuery,
 } from "@kmotion/validations"
+import { MusicResponse, MusicSearchResponse, MusicSyncResponse } from "@kmotion/types"
 import { musicMapper } from "@kmotion/mappers"
 import YtConverter from "../../services/ytconverter"
 import prisma from "../../services/prisma"
@@ -14,7 +15,6 @@ import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
-import { MusicResponse } from "@kmotion/types"
 
 export default async function musicRoutes(instance: FastifyInstance) {
   instance.addHook("onRequest", isLogin)
@@ -32,12 +32,13 @@ export default async function musicRoutes(instance: FastifyInstance) {
         skip: +offset * 40,
         take: 40,
       })
+      const total = await prisma.music.count()
 
-      return reply.send({ success: true, musics: musicMapper.many(musics) })
+      return reply.send({ success: true, musics: musicMapper.many(musics), meta: { total } })
     }
   )
 
-  instance.get<{ Reply: MusicResponse }>(
+  instance.get<{ Reply: MusicSyncResponse }>(
     "/sync",
     { onRequest: [isAdmin] },
     async (request, reply) => {
@@ -187,7 +188,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.get<{ Querystring: SearchMusicQuery; Reply: MusicResponse }>(
+  instance.get<{ Querystring: SearchMusicQuery; Reply: MusicSearchResponse }>(
     "/search",
     { preHandler: instance.validateQuery(SearchMusicQuery) },
     async (request, reply) => {

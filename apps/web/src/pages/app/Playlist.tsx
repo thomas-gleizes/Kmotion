@@ -26,6 +26,7 @@ import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import EditPlaylist from "../../components/modals/EditPlaylist"
 import ImageLoader from "../../components/common/ImageLoader"
 import FallbackImage from "../../components/common/FallbackImage"
+import MusicSkeleton from "../../components/common/MusicSkeleton"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
@@ -163,15 +164,7 @@ const Playlist: Page = () => {
                       music={entry.music as IMusic}
                     />
                   ))
-                : Array.from({ length: 20 }, (_, index) => (
-                    <div key={index} className="flex space-x-3">
-                      <div className="bg-gray-200 rounded-lg animate-pulse h-10 w-1/5"></div>
-                      <div className="w-4/5">
-                        <div className="bg-gray-200/50 rounded-lg animate-pulse w-3/5 h-2 mt-2"></div>
-                        <div className="bg-gray-200/20 rounded-lg animate-pulse w-3/5 h-2 mt-2"></div>
-                      </div>
-                    </div>
-                  ))}
+                : Array.from({ length: 4 }, (_, index) => <MusicSkeleton key={index} />)}
             </div>
             <div className="px-3 pt-3">
               <p className="text-white text-sm text-opacity-80">
