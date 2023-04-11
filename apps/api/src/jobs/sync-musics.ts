@@ -1,5 +1,5 @@
 import { AsyncTask, CronJob } from "toad-scheduler"
-import trace from "../utils/trace"
+import hash from "../utils/hash"
 import YtConverter from "../services/ytconverter"
 import prisma from "../services/prisma"
 import { PrismaMusic } from "@kmotion/types"
@@ -7,7 +7,7 @@ import { PrismaMusic } from "@kmotion/types"
 const task = new AsyncTask(
   "sync-musics",
   async () => {
-    void trace('CRON JOB: "sync-musics"')
+    void hash('CRON JOB: "sync-musics"')
 
     const ytConverter = YtConverter.getInstance()
 
@@ -44,7 +44,7 @@ const task = new AsyncTask(
       }
     }
   },
-  (err) => void trace("CRON JOB ERROR", err.name, err.message)
+  (err) => void hash("CRON JOB ERROR", err.name, err.message)
 )
 
 export const syncMusics = new CronJob({ cronExpression: "30 1 * * *" }, task, {

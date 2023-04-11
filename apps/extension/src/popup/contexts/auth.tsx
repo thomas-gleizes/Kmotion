@@ -1,9 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
+
+import { IUser } from "@kmotion/types"
 import { STORAGE_KEY } from "../../resources/constants"
 
 interface Values {
   isReady: boolean
   isAuthenticated: boolean
+  login: (user: IUser, cookie: string) => Promise<void>
 }
 
 const AuthContext = createContext<Values>(null as never)
@@ -42,8 +45,14 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     })
   }, [])
 
+  const login = async (user: IUser, cookie: string) => {
+    await chrome.storage.local.set({ [STORAGE_KEY.SESSION]: { user, cookie } })
+  }
+
   return (
-    <AuthContext.Provider value={{ isReady, isAuthenticated }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ isReady, isAuthenticated, login }}>
+      {children}
+    </AuthContext.Provider>
   )
 }
 

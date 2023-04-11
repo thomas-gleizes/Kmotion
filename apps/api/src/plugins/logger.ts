@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from "fastify"
 
-import trace from "../utils/trace"
+import hash from "../utils/hash"
 
 export default function logger(
   request: FastifyRequest,
@@ -9,6 +9,6 @@ export default function logger(
 ) {
   const log = `(${request.ip}) ${request.method} ${request.url}`
 
-  void trace(log)
+  void hash(log)
   next()
 }

@@ -5,15 +5,20 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@hookform/resolvers": "^2.9.11",
+    "@kmotion/validations": "workspace:^",
     "@tanstack/react-query": "^4.28.0",
     "@tanstack/react-router": "0.0.1-beta.83",
     "classnames": "^2.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.8",
+    "reflect-metadata": "^0.1.13",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.14",
+    "@kmotion/types": "workspace:^",
     "@types/chrome": "^0.0.164",
     "@types/node": "^18.13.0",
     "@types/react": "^18.0.28",

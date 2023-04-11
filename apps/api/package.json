@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
+    "@fastify/cors": "^8.2.1",
     "@fastify/schedule": "^4.1.0",
     "@fastify/session": "^10.1.1",
     "@fastify/static": "^6.9.0",
@@ -22,12 +23,14 @@
     "croner": "^6.0.2",
     "dotenv": "^16.0.3",
     "fastify": "^4.15.0",
+    "jsonwebtoken": "^9.0.0",
     "reflect-metadata": "^0.1.13",
     "toad-scheduler": "^2.2.0"
   },
   "devDependencies": {
     "@kmotion/types": "workspace:*",
     "@types/bcrypt": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.15.3",
     "@types/validator": "^13.7.14",
     "ts-node": "^10.9.1",

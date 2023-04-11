@@ -7,6 +7,7 @@ import { userMapper } from "@kmotion/mappers"
 import prisma from "../../services/prisma"
 import { comparePassword, hashPassword } from "../../utils/security"
 import { UnauthorizedException } from "../../exceptions/http/UnauthorizedException"
+import { signToken } from "../../utils/token"
 
 export default async function authRoutes(instance: FastifyInstance) {
   instance.post<{ Body: LoginDto; Reply: LoginResponse }>(
@@ -30,7 +31,7 @@ export default async function authRoutes(instance: FastifyInstance) {
       request.session.user = mappedUser
       request.session.isLogin = true
 
-      reply.send({ success: true, user: mappedUser })
+      reply.send({ success: true, user: mappedUser, token: signToken(mappedUser) })
     }
   )
 

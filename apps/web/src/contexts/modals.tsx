@@ -13,7 +13,7 @@ const ModalProvider: ComponentWithChild = ({ children }) => {
   const [modals, setModals] = useState<ModalType[]>([])
 
   function open<Result>(
-    component: ReturnType<ModalComponent<Omit<any, "isOpen" | "close">, Result>>
+    component: ReturnType<ModalComponent<Omit<{}, "isOpen" | "close">, Result>>
   ): Promise<Result> {
     return new Promise<Result>((resolve) => {
       setModals((modals) => [...modals, { uid: uuid(), component, resolve }])

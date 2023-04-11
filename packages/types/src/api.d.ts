@@ -6,6 +6,7 @@ export interface SuccessData {
 
 export interface LoginResponse extends SuccessData {
   user: IUser
+  token: string
 }
 
 export interface RegisterResponse extends SuccessData {

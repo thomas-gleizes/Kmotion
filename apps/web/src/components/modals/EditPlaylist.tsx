@@ -189,7 +189,7 @@ declare type SearchResult =
       data: IMusic[]
     }
 
-const SearchPlaylist: ModalComponent<never, SearchResult> = ({ isOpen, close }) => {
+const SearchPlaylist: ModalComponent<{}, SearchResult> = ({ isOpen, close }) => {
   const [search, setSearch] = useState("")
 
   const inputRef = useRef<HTMLInputElement>(null)

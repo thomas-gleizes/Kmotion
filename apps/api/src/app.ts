@@ -1,16 +1,19 @@
 import fastify from "fastify"
 import fastifyCookie from "@fastify/cookie"
 import fastifySession from "@fastify/session"
+import fastifyCors from "@fastify/cors"
+
 import "reflect-metadata"
 
 import { APP_PORT } from "./utils/constants"
 import { clientPlugin } from "./plugins/client"
 import { jobsPlugins } from "./plugins/jobsPlugins"
-import trace from "./utils/trace"
+import hash from "./utils/hash"
 import apiRoutes from "./routes"
 
 const app = fastify()
 
+app.register(fastifyCors, { origin: "*" })
 app.register(fastifyCookie)
 app.register(fastifySession, {
   secret: process.env.SECRET_SESSION as string,
@@ -24,5 +27,5 @@ app.register(apiRoutes, { prefix: "/api" })
 
 app
   .listen({ port: APP_PORT })
-  .then((url) => trace(`Server listening on ${url}`))
-  .catch((err) => trace("server crash", err))
+  .then((url) => hash(`Server listening on ${url}`))
+  .catch((err) => hash("server crash", err))

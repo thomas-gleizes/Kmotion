@@ -1,7 +1,8 @@
-import React, { createContext, useMemo, useState } from "react"
+import React, { createContext, useState } from "react"
+import { routes } from "../routes"
 
 interface Values {
-  push: (route: string) => void
+  push: (route: Route) => void
 }
 
 const RouterContext = createContext<Values>(null as never)
@@ -14,19 +15,22 @@ export const useRouterContext = () => {
   return context
 }
 
-const RouterProvider: React.FC<{ routes: Array<any> }> = ({ routes }) => {
-  const [route, setRoute] = useState<string>(routes.find((route) => route.default).name)
+const RouterProvider: React.FC = () => {
+  const [currentRoute, setCurrentRoute] = useState<Route>(routes.login)
 
-  const Screen = useMemo(() => {
-    const route = routes.find((route) => route.name === route)
+  console.log("CurrentRoute", currentRoute)
 
-    if (route) return route.screen
-    else return routes.find((route) => route.default).screen
-  }, [routes, route])
+  const push = (route: Route) => {
+    setCurrentRoute(route)
+  }
 
-  console.log("Screen", route, Screen)
-
-  return <RouterContext.Provider value={{ push: setRoute }}>{<Screen />}</RouterContext.Provider>
+  return (
+    <RouterContext.Provider value={{ push }}>
+      <currentRoute.root>
+        <currentRoute.screen />
+      </currentRoute.root>
+    </RouterContext.Provider>
+  )
 }
 
 export default RouterProvider
