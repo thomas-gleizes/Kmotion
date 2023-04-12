@@ -13,7 +13,7 @@ const QueueList: Component = () => {
   const nextMusics = useMemo(() => {
     const nextMusics = [...queue]
     nextMusics.splice(0, 1)
-    return nextMusics
+    return nextMusics.slice(0, 50)
   }, [queue])
 
   return (
