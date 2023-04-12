@@ -5,7 +5,7 @@ import { LoginDto, RegisterDto } from "@kmotion/validations"
 import { LoginResponse } from "@kmotion/types"
 import { userMapper } from "@kmotion/mappers"
 import prisma from "../../services/prisma"
-import { comparePassword, hashPassword } from "../../utils/security"
+import { comparePassword, hashPassword } from "../../utils/hash"
 import { UnauthorizedException } from "../../exceptions/http/UnauthorizedException"
 import { signToken } from "../../utils/token"
 

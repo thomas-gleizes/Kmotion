@@ -1,14 +1,9 @@
-import * as fs from "node:fs/promises"
+import * as bcrypt from "bcrypt"
 
-const TRACE_PATH = `${process.cwd()}/trace.log`
-export default function hash(...args: Array<string | number | undefined>): Promise<void> {
-  const content = `${new Date().toLocaleString("fr-FR")}: ${args.join(" ")}`
+export function hashPassword(password: string) {
+  return bcrypt.genSalt(10).then((salt) => bcrypt.hash(password, salt))
+}
 
-  console.log(content)
-
-  return fs
-    .access(TRACE_PATH, fs.constants.F_OK)
-    .then(() => fs.appendFile(TRACE_PATH, content + "\n"))
-    .catch(() => fs.writeFile(TRACE_PATH, content + "\n"))
-    .catch((err) => console.log("log failed", err))
+export function comparePassword(password: string, hash: string) {
+  return bcrypt.compare(password, hash)
 }

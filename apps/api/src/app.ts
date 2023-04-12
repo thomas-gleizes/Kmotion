@@ -8,7 +8,7 @@ import "reflect-metadata"
 import { APP_PORT } from "./utils/constants"
 import { clientPlugin } from "./plugins/client"
 import { jobsPlugins } from "./plugins/jobsPlugins"
-import hash from "./utils/hash"
+import trace from "./utils/trace"
 import apiRoutes from "./routes"
 
 const app = fastify()
@@ -27,5 +27,5 @@ app.register(apiRoutes, { prefix: "/api" })
 
 app
   .listen({ port: APP_PORT })
-  .then((url) => hash(`Server listening on ${url}`))
-  .catch((err) => hash("server crash", err))
+  .then((url) => trace(`Server listening on ${url}`))
+  .catch((err) => trace("server crash", err))
