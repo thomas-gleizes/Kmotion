@@ -1,5 +1,6 @@
 import React, { createContext, useState } from "react"
 import { routes } from "../routes"
+import { useAuthContext } from "./auth"
 
 interface Values {
   push: (route: Route) => void
@@ -17,12 +18,13 @@ export const useRouterContext = () => {
 
 const RouterProvider: React.FC = () => {
   const [currentRoute, setCurrentRoute] = useState<Route>(routes.login)
-
-  console.log("CurrentRoute", currentRoute)
+  const { isAuthenticated } = useAuthContext()
 
   const push = (route: Route) => {
     setCurrentRoute(route)
   }
+
+  if (currentRoute.needAuth && !isAuthenticated) push(routes.login)
 
   return (
     <RouterContext.Provider value={{ push }}>

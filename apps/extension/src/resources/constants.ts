@@ -3,5 +3,6 @@ export const MESSAGE_TYPE = {
 }
 
 export const STORAGE_KEY = {
-  SESSION: "session",
+  AUTH_TOKEN: "auth_token",
+  USER: "user",
 }

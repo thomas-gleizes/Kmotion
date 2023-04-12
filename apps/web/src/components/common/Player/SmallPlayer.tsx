@@ -14,7 +14,7 @@ const SmallPlayer: Component = () => {
   const togglePlaying = () => (state.playing ? controls.pause() : controls.play())
 
   useEvent("keydown", (event) => {
-    if (event.target.tagName !== "INPUT")
+    if (!["INPUT", "TEXTAREA"].includes(event.target.tagName))
       switch (event.key) {
         case " ":
           return togglePlaying()
@@ -51,14 +51,17 @@ const SmallPlayer: Component = () => {
     if ("mediaSession" in navigator) {
       navigator.mediaSession.setActionHandler("play", () => controls.play())
       navigator.mediaSession.setActionHandler("pause", () => controls.pause())
-      navigator.mediaSession.setActionHandler("stop", (details) => console.log("stop", details))
+      navigator.mediaSession.setActionHandler(
+        "stop",
+        () => void [controls.seek(0), controls.pause()]
+      )
 
       navigator.mediaSession.setActionHandler("seekbackward", () => controls.seek(state.time - 10))
       navigator.mediaSession.setActionHandler("seekforward", () => controls.seek(state.time + 10))
-      navigator.mediaSession.setActionHandler("seekto", (details) => {
-        console.log("details")
-        details.seekTime && controls.seek(details.seekTime)
-      })
+      navigator.mediaSession.setActionHandler(
+        "seekto",
+        (details) => details.seekTime && controls.seek(details.seekTime)
+      )
     }
   }, [navigator, controls, state])
 

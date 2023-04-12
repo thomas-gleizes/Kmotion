@@ -62,10 +62,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currentMusic.title,
         artist: currentMusic.artist || "Unknown",
-        artwork: [
-          { src: coverUrl, sizes: "512x512", type: "image/jpeg" },
-          { src: coverUrl, sizes: "248x248", type: "image/jpeg" },
-        ],
+        artwork: [{ src: coverUrl, sizes: "512x512", type: "image/jpeg" }],
       })
 
       navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())

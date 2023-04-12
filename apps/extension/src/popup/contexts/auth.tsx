@@ -7,6 +7,7 @@ interface Values {
   isReady: boolean
   isAuthenticated: boolean
   login: (user: IUser, cookie: string) => Promise<void>
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<Values>(null as never)
@@ -36,7 +37,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   const [isReady, setIsReady] = useState<boolean>(false)
 
   useEffect(() => {
-    chrome.storage.local.get(STORAGE_KEY.SESSION, (result) => {
+    chrome.storage.local.get(STORAGE_KEY.AUTH_TOKEN, (result) => {
       if (result !== null) {
         setIsAuthenticated(true)
       }
@@ -45,12 +46,20 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     })
   }, [])
 
-  const login = async (user: IUser, cookie: string) => {
-    await chrome.storage.local.set({ [STORAGE_KEY.SESSION]: { user, cookie } })
+  const login = async (user: IUser, token: string) => {
+    setIsAuthenticated(true)
+    chrome.storage.local.set({ [STORAGE_KEY.AUTH_TOKEN]: token })
+    chrome.storage.local.set({ [STORAGE_KEY.USER]: user })
+  }
+
+  const logout = async () => {
+    chrome.storage.local.remove(STORAGE_KEY.AUTH_TOKEN)
+    chrome.storage.local.remove(STORAGE_KEY.USER)
+    setIsAuthenticated(false)
   }
 
   return (
-    <AuthContext.Provider value={{ isReady, isAuthenticated, login }}>
+    <AuthContext.Provider value={{ isReady, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

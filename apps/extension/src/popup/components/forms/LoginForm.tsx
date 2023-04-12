@@ -2,7 +2,10 @@ import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { classValidatorResolver } from "@hookform/resolvers/class-validator"
 import { LoginDto } from "@kmotion/validations"
+
+import { routes } from "../../routes"
 import { useAuthContext } from "../../contexts/auth"
+import { useRouterContext } from "../../contexts/router"
 
 const resolver = classValidatorResolver(LoginDto)
 
@@ -17,20 +20,19 @@ const LoginForm: React.FC = () => {
   const { register, handleSubmit } = useForm<LoginDto>({ resolver, defaultValues })
 
   const authContext = useAuthContext()
+  const router = useRouterContext()
 
-  const onSubmit = async (data: LoginDto) => {
+  const onSubmit = async (values: LoginDto) => {
     try {
       setIsSubmitting(true)
-      const response = await fetch("http://localhost:8000/api/v1/auth/login", {
+      const data = await fetch("http://localhost:8000/api/v1/auth/login", {
         method: "POST",
-        body: JSON.stringify(data),
-        credentials: "same-origin",
+        body: JSON.stringify(values),
         headers: { "Content-Type": "Application/json" },
-      })
+      }).then((response) => response.json())
 
-      console.log(response.headers)
-
-      console.log("Response", response)
+      await authContext.login(data.user, data.token)
+      router.push(routes.convert)
     } catch (err) {
       console.log("Error:", err)
     } finally {
@@ -59,13 +61,13 @@ const LoginForm: React.FC = () => {
           <label className="label">
             <span className="label-text">Mot de passe</span>
           </label>
-          <label className="input-group">
+          <label className="py-2 rounded-lg bg-white">
             <span>Password</span>
             <input
               {...register("password")}
               type="password"
               placeholder="info@site.com"
-              className="input input-bordered ring-0"
+              className="px-3 text-lg bg-transparent outline-none"
             />
           </label>
         </div>
@@ -77,7 +79,7 @@ const LoginForm: React.FC = () => {
               Chargement
             </button>
           ) : (
-            <button className="btn btn-block bg-gradient-to-bl from-blue-600 to-blue-900 shadow border-800 transition transform hover:scale-105">
+            <button className="py-2 px-5 text-xl text-white bg-gradient-to-bl from-blue-600 to-blue-900 shadow border-800 rounded-xl transition transform hover:scale-105">
               Connexion
             </button>
           )}
