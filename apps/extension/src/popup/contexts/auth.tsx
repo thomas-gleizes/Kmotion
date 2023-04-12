@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from "react"
+import React, { createContext, useContext, useState } from "react"
 
 import { IUser } from "@kmotion/types"
 import { STORAGE_KEY } from "../../resources/constants"
+import { useAsync } from "react-use"
 
 interface Values {
   isReady: boolean
@@ -20,12 +21,12 @@ export const useAuthContext = () => {
   return context
 }
 
-export const useAuthentificatedContext = () => {
+export const useAuthenticatedContext = () => {
   const context = useAuthContext()
 
   if (!context.isAuthenticated)
     throw new Error(
-      '"useAuthentificatedContext" must be used within a "AuthProvider" with "isAuthenticated" set to true'
+      '"useAuthenticatedContext" must be used within a "AuthProvider" with "isAuthenticated" set to true'
     )
 
   return context
@@ -34,16 +35,23 @@ export const useAuthentificatedContext = () => {
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
-  const [isReady, setIsReady] = useState<boolean>(false)
+  const state = useAsync(async () => {
+    const [user, token] = await Promise.all([
+      new Promise<IUser | null>((resolve) => {
+        chrome.storage.local.get([STORAGE_KEY.USER], (result) => {
+          resolve(result[STORAGE_KEY.USER])
+        })
+      }),
+      new Promise<string | null>((resolve) => {
+        chrome.storage.local.get([STORAGE_KEY.AUTH_TOKEN], (result) => {
+          resolve(result[STORAGE_KEY.AUTH_TOKEN])
+        })
+      }),
+    ])
 
-  useEffect(() => {
-    chrome.storage.local.get(STORAGE_KEY.AUTH_TOKEN, (result) => {
-      if (result !== null) {
-        setIsAuthenticated(true)
-      }
+    console.log("Storage", user, token)
 
-      setIsReady(true)
-    })
+    if (user && token) setIsAuthenticated(true)
   }, [])
 
   const login = async (user: IUser, token: string) => {
@@ -59,7 +67,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   }
 
   return (
-    <AuthContext.Provider value={{ isReady, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isReady: state.loading, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

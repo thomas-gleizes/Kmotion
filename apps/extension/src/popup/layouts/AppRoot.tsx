@@ -6,7 +6,11 @@ import AuthProvider, { useAuthContext } from "../contexts/auth"
 const AppRoot: React.FC = () => {
   const ctx = useAuthContext()
 
-  return <main>{!ctx.isReady ? <div>Loading...</div> : <Outlet />}</main>
+  return (
+    <div className="border-2 border-neutral-900">
+      {!ctx.isReady ? <div>Loading...</div> : <Outlet />}
+    </div>
+  )
 }
 
 export default AppRoot

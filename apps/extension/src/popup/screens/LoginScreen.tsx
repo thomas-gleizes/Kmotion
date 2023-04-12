@@ -8,11 +8,16 @@ const LoginScreen: React.FC = () => {
   const { isAuthenticated } = useAuthContext()
   const router = useRouterContext()
 
-  if (isAuthenticated) router.push(routes.convert)
+  if (isAuthenticated) router.push(routes.video)
 
   return (
     <div>
-      <h1 className="text-white">LOGIN</h1>
+      <div className="text-center">
+        <div>
+          <h1 className="text-white text-2xl font-bold">Kmotion</h1>
+          <h2 className="text-white/80 text-lg font-semibold">Connexion</h2>
+        </div>
+      </div>
       <LoginForm />
     </div>
   )

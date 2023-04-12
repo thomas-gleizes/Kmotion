@@ -4,11 +4,11 @@ import Footer from "../components/common/Footer"
 
 const AuthLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div>
+    <>
       <Header />
-      <main>{children}</main>
+      <main className="pt-header pb-footer bg-black h-full text-white">{children}</main>
       <Footer />
-    </div>
+    </>
   )
 }
 

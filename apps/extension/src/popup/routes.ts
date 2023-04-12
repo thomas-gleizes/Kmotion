@@ -11,11 +11,11 @@ export const routes: Record<string, Route> = {
     needAuth: false,
     default: true,
   },
-  convert: {
+  video: {
     name: "video",
     screen: VideoScreen,
     root: AuthLayout,
-    default: true,
     needAuth: true,
+    default: true,
   },
 }

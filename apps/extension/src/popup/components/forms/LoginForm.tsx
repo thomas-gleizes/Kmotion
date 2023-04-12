@@ -6,6 +6,7 @@ import { LoginDto } from "@kmotion/validations"
 import { routes } from "../../routes"
 import { useAuthContext } from "../../contexts/auth"
 import { useRouterContext } from "../../contexts/router"
+import { login } from "../../../utils/api"
 
 const resolver = classValidatorResolver(LoginDto)
 
@@ -25,14 +26,10 @@ const LoginForm: React.FC = () => {
   const onSubmit = async (values: LoginDto) => {
     try {
       setIsSubmitting(true)
-      const data = await fetch("http://localhost:8000/api/v1/auth/login", {
-        method: "POST",
-        body: JSON.stringify(values),
-        headers: { "Content-Type": "Application/json" },
-      }).then((response) => response.json())
+      const response = await login(values)
 
-      await authContext.login(data.user, data.token)
-      router.push(routes.convert)
+      await authContext.login(response.data.user, response.data.token)
+      router.push(routes.video)
     } catch (err) {
       console.log("Error:", err)
     } finally {
@@ -42,37 +39,30 @@ const LoginForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col space-y-2">
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Email</span>
-          </label>
-          <label className="input-group">
-            <span>Email</span>
-            <input
-              {...register("email")}
-              type="text"
-              placeholder="info@site.com"
-              className="input input-bordered ring-0"
-            />
-          </label>
+      <div className="flex flex-col space-y-2 w-11/12 mx-auto">
+        <div className="space-y-4">
+          <div className="">
+            <label className="text-white font-semibold text-xl mb-1 mx-2">Email</label>
+            <div className="bg-white rounded-lg px-3 py-1">
+              <input
+                type="email"
+                className="text-lg text-black bg-transparent outline-none px-2"
+                {...register("email")}
+              />
+            </div>
+          </div>
+          <div className="">
+            <label className="text-white font-semibold text-xl mb-1 mx-2">Email</label>
+            <div className="bg-white rounded-lg px-3 py-1">
+              <input
+                type="password"
+                className="text-lg text-black bg-transparent outline-none px-2"
+                {...register("password")}
+              />
+            </div>
+          </div>
         </div>
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Mot de passe</span>
-          </label>
-          <label className="py-2 rounded-lg bg-white">
-            <span>Password</span>
-            <input
-              {...register("password")}
-              type="password"
-              placeholder="info@site.com"
-              className="px-3 text-lg bg-transparent outline-none"
-            />
-          </label>
-        </div>
-      </div>
-      <div className="mt-5">
+
         <div className="">
           {isSubmitting ? (
             <button className="btn btn-block loading text-gray-800" disabled>

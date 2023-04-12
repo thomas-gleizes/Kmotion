@@ -1,10 +1,10 @@
 import React from "react"
 import Link from "./Link"
 import { routes } from "../../routes"
-import { useAuthentificatedContext } from "../../contexts/auth"
+import { useAuthenticatedContext } from "../../contexts/auth"
 
 const Footer: React.FC = () => {
-  const { logout } = useAuthentificatedContext()
+  const { logout } = useAuthenticatedContext()
 
   return (
     <footer className="h-footer absolute bottom-0 w-full bg-black/30 backdrop-blur-lg">
@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
         </Link>
         <Link
           className="text-lg text-white border-b border-transparent hover:border-gray-200"
-          to={routes.convert}
+          to={routes.video}
         >
           Convert
         </Link>

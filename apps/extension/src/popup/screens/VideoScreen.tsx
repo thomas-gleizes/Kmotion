@@ -1,5 +1,3 @@
-import Link from "../components/common/Link"
-import { routes } from "../routes"
 import React from "react"
 
 const VideoScreen = () => {
