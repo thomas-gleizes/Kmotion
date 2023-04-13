@@ -10,7 +10,7 @@ class MusicMapper extends Mapper<PrismaMusic, IMusic> {
       id: input.id,
       youtubeId: input.youtubeId,
       title: input.title,
-      artist: input.artist,
+      artist: input.artist || "",
       downloaderId: input.downloaderId,
       duration: input.duration,
       links: {

@@ -16,7 +16,7 @@ export type IUser = {
 export type IMusic = {
   id: number
   title: string
-  artist: string | null
+  artist: string
   youtubeId: string
   downloaderId: number
   duration: number

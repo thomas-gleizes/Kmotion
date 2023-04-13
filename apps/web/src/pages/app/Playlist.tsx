@@ -10,6 +10,7 @@ import {
   FaHeart,
   FaPlay,
   FaPlus,
+  FaSearch,
   FaTrash,
   IoShuffleOutline,
 } from "react-icons/all"
@@ -42,6 +43,8 @@ const Playlist: Page = () => {
 
   const modal = useModalContext()
 
+  const [querySearch, setQuerySearch] = useState("")
+
   const { data: playlist, refetch: refetchPlaylist } = useQuery<IPlaylist>({
     queryKey: ["playlist", id],
     queryFn: () => api.fetchPlaylist(+id, false).then((data) => data.playlist),
@@ -57,6 +60,19 @@ const Playlist: Page = () => {
   })
 
   const entries: IPlaylistEntry[] = entriesQuery.data || []
+
+  const filteredEntries = useMemo<IPlaylistEntry[]>(
+    () =>
+      querySearch.length > 0
+        ? entries.filter(
+            (entry) =>
+              entry.music &&
+              (entry.music.title.toLowerCase().includes(querySearch.toLowerCase()) ||
+                entry.music.artist.toLowerCase().includes(querySearch.toLowerCase()))
+          )
+        : [...entries],
+    [entries, querySearch]
+  )
 
   const handlePlayPlaylist = (random: boolean) => {
     setPlaylist(playlist as IPlaylist)
@@ -155,15 +171,27 @@ const Playlist: Page = () => {
                   </button>
                 </div>
               </div>
+              <div className="mt-3 px-2 flex justify-center w-full">
+                <div className="flex items-center space-x-3 bg-secondary-light py-1 px-2 rounded-lg w-full max-w-[500px]">
+                  <FaSearch className="text-white/70" />
+                  <input
+                    type="search"
+                    value={querySearch}
+                    onChange={(e) => setQuerySearch(e.target.value)}
+                    className="bg-transparent placeholder:text-white/70 text-white w-full"
+                    placeholder="Rechercher un morceau dans la playlist..."
+                  />
+                </div>
+              </div>
             </div>
-            <div className="lg:w-2/3 lg:px-5 py-1 mt-6">
+            <div className="lg:w-2/3 lg:px-5 py-1 mt-2">
               <div className="text-white/90">
                 {entries.length} morceaux, {time.hours} heure{time.hours > 1 && "s"} et{" "}
                 {time.minutes} minute{time.minutes > 1 && "s"}
               </div>
               <div className="grid grid-cols-1 gap-y-2 border-t py-2 border-white/75">
                 {!entriesQuery.isLoading
-                  ? entries.map((entry, index) => (
+                  ? filteredEntries.map((entry, index) => (
                       <ItemMusic
                         key={index}
                         onPlay={() => handlePlayMusic(index)}
