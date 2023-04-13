@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react"
+import React, { useRef } from "react"
 import SimpleBar from "simplebar-react"
 import classnames from "classnames"
 import { useToggle } from "react-use"
@@ -61,14 +61,24 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
         showQueue ? "pr-2 w-2/5 lg:w-full" : "w-full lg:flex-col lg:justify-center"
       )}
     >
-      <img
-        src={assets.cover.url}
-        alt={currentMusic.title}
-        className={classnames(
-          "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
-          { "scale-[75%] shadow-lg": state.paused }
-        )}
-      />
+      {assets.cover.isFetching ? (
+        <div className="rounded-md bg-gray-200 animate-pulse w-fit">
+          <img
+            className="rounded-lg w-full transform opacity-0 transition-all duration-300 lg:rounded-2xl shadow-2xl select-none"
+            src="/images/placeholder.png"
+            alt={`cover of ${currentMusic.title}`}
+          />
+        </div>
+      ) : (
+        <img
+          src={assets.cover.url}
+          alt={currentMusic.title}
+          className={classnames(
+            "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
+            { "scale-[75%] shadow-lg": state.paused }
+          )}
+        />
+      )}
     </div>
   )
 

@@ -99,11 +99,21 @@ const SmallPlayer: Component = () => {
         <div className="flex items-center py-2 lg:py-4 px-2 lg:px-16 justify-between">
           <div className="w-3/5 flex items-center">
             <div className="w-1/3 md:w-1/4 pr-1.5">
-              <img
-                className="shadow-xl max-h-20 rounded-md"
-                src={assets.cover.url}
-                alt={`cover of ${currentMusic.title}`}
-              />
+              {assets.cover.isFetching ? (
+                <div className="rounded-md bg-gray-200 animate-pulse w-fit">
+                  <img
+                    className="opacity-0 rounded-md max-h-20"
+                    src="/images/placeholder.png"
+                    alt={`cover of ${currentMusic.title}`}
+                  />
+                </div>
+              ) : (
+                <img
+                  className="shadow-xl max-h-20 rounded-md"
+                  src={assets.cover.url}
+                  alt={`cover of ${currentMusic.title}`}
+                />
+              )}
             </div>
             <div className="w-2/3 md:w-3/4 overflow-hidden lg:text-center px-4 lg:px-5">
               <span

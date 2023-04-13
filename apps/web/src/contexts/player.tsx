@@ -52,9 +52,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
       )
   }, [currentMusic])
 
-  const [coverUrl, coverQuery] = useImageLoader(currentMusic?.links.cover, {
-    fallback: "/images/placeholder.png",
-  })
+  const [coverUrl, coverQuery] = useImageLoader(currentMusic?.links.cover)
   useImageLoader(nexMusic?.links.cover)
 
   useEffect(() => {
@@ -76,7 +74,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         currentMusic,
         playlist: { value: currentPlaylist, set: (value) => setCurrentPlaylist(value) },
         assets: {
-          cover: { url: coverUrl, isFetching: coverQuery.isFetching },
+          cover: { url: coverUrl || "", isFetching: coverQuery.isFetching },
           stream: { url: streamQuery.data || "", isFetching: streamQuery.isFetching },
         },
         history: musicsHistory,
