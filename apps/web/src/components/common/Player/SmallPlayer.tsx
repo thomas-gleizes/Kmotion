@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useEffect, useRef } from "react"
+import React, { useEffect, useRef } from "react"
 import classnames from "classnames"
 import { useAudio, useEvent, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
@@ -52,10 +52,10 @@ const SmallPlayer: Component = () => {
     if ("mediaSession" in navigator) {
       navigator.mediaSession.setActionHandler("play", () => controls.play())
       navigator.mediaSession.setActionHandler("pause", () => controls.pause())
-      navigator.mediaSession.setActionHandler(
-        "stop",
-        () => void [controls.seek(0), controls.pause()]
-      )
+      navigator.mediaSession.setActionHandler("stop", () => {
+        controls.seek(0)
+        controls.pause()
+      })
 
       navigator.mediaSession.setActionHandler("seekbackward", () => controls.seek(state.time - 10))
       navigator.mediaSession.setActionHandler("seekforward", () => controls.seek(state.time + 10))

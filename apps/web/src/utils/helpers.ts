@@ -1,6 +1,6 @@
 import { EventHandler } from "react"
 
-export function elementIsDisplay(element: Element, marge: number = 1): boolean {
+export function elementIsDisplay(element: Element, marge: number): boolean {
   const rect = element.getBoundingClientRect()
   return (
     rect.top >= 0 &&
@@ -10,7 +10,7 @@ export function elementIsDisplay(element: Element, marge: number = 1): boolean {
   )
 }
 
-export function handleStopPropagation(callback: (event: MouseEvent) => void): EventHandler<any> {
+export function handleStopPropagation(callback: (event: MouseEvent) => void): EventHandler<never> {
   return (event: MouseEvent) => {
     event.stopPropagation()
     callback(event)
