@@ -7,11 +7,9 @@ interface Props {
 
 const ScrollableLayout: ComponentWithChild<Props> = ({ children, simpleBarRef }) => {
   return (
-    <div className="relative">
-      <SimpleBar ref={simpleBarRef} className="max-h-screen mt-header mx-4 pb-56">
-        {children}
-      </SimpleBar>
-    </div>
+    <SimpleBar ref={simpleBarRef} className="max-h-screen mt-header pb-56">
+      {children}
+    </SimpleBar>
   )
 }
 

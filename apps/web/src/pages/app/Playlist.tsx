@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo } from "react"
+import React, { Fragment, useMemo, useState } from "react"
 import { useParams, useRouter } from "@tanstack/react-router"
 import { Menu, Transition } from "@headlessui/react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
@@ -27,6 +27,7 @@ import EditPlaylist from "../../components/modals/EditPlaylist"
 import ImageLoader from "../../components/common/ImageLoader"
 import FallbackImage from "../../components/common/FallbackImage"
 import MusicSkeleton from "../../components/common/MusicSkeleton"
+import { randomMinMax } from "../../utils/number"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
@@ -107,6 +108,8 @@ const Playlist: Page = () => {
     }
   }, [entries])
 
+  const [randomLength] = useState(randomMinMax(3, 10))
+
   if (!playlist) return null
 
   return (
@@ -122,55 +125,61 @@ const Playlist: Page = () => {
         </div>
       </div>
       <ScrollableLayout>
-        <div className="relative top-8 flex flex-col lg:flex-row">
-          <div className="lg:sticky lg:h-full lg:top-10 lg:bottom-0 lg:w-1/3 flex flex-col lg:justify-center space-y-3">
-            <div className="h-[200px] w-[200px] lg:w-[300px] lg:h-[300px] xl:w-[420px] xl:h-[420px] mx-auto mt-10">
-              <PlaylistGridImage ids={entries.map((entry) => entry.musicId)} />
-            </div>
-            <div className="">
-              <h3 className="text-center font-semibold text-2xl text-white">{playlist.title}</h3>
-              <p className="text-white/50 mx-auto w-11/12 lg:text-center">{playlist.description}</p>
-            </div>
-            <div className="flex justify-center space-x-3">
-              <div>
-                <button
-                  onClick={() => handlePlayPlaylist(false)}
-                  className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-secondary rounded-lg"
-                >
-                  <FaPlay /> <span>Lecture</span>
-                </button>
+        <div className="px-3 mt-8">
+          <div className="flex flex-col lg:flex-row">
+            <div className="lg:sticky lg:h-full lg:top-10 lg:bottom-0 lg:w-1/3 flex flex-col lg:justify-center space-y-3">
+              <div className="h-[200px] w-[200px] lg:w-[300px] lg:h-[300px] xl:w-[420px] xl:h-[420px] mx-auto mt-10">
+                <PlaylistGridImage ids={entries.map((entry) => entry.musicId)} />
               </div>
-              <div>
-                <button
-                  onClick={() => handlePlayPlaylist(true)}
-                  className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-secondary rounded-lg"
-                >
-                  <IoShuffleOutline /> <span>Aléatoire</span>
-                </button>
+              <div className="">
+                <h3 className="text-center font-semibold text-2xl text-white">{playlist.title}</h3>
+                <p className="text-white/50 mx-auto w-11/12 lg:text-center">
+                  {playlist.description}
+                </p>
+              </div>
+              <div className="flex justify-center space-x-3">
+                <div>
+                  <button
+                    onClick={() => handlePlayPlaylist(false)}
+                    className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-secondary rounded-lg"
+                  >
+                    <FaPlay /> <span>Lecture</span>
+                  </button>
+                </div>
+                <div>
+                  <button
+                    onClick={() => handlePlayPlaylist(true)}
+                    className="px-8 py-2 font-semibold flex items-center space-x-3 text-red-800 bg-secondary rounded-lg"
+                  >
+                    <IoShuffleOutline /> <span>Aléatoire</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="lg:w-2/3 lg:px-5 py-1 mt-6">
-            <div className="text-white/90">
-              {entries.length} morceaux, {time.hours} heure{time.hours > 1 && "s"} et {time.minutes}{" "}
-              minute{time.minutes > 1 && "s"}
-            </div>
-            <div className="grid grid-cols-1 gap-y-2 border-t py-2 border-white/75">
-              {!entriesQuery.isLoading
-                ? entries.map((entry, index) => (
-                    <ItemMusic
-                      key={index}
-                      onPlay={() => handlePlayMusic(index)}
-                      music={entry.music as IMusic}
-                    />
-                  ))
-                : Array.from({ length: 4 }, (_, index) => <MusicSkeleton key={index} />)}
-            </div>
-            <div className="px-3 pt-3">
-              <p className="text-white text-sm text-opacity-80">
+            <div className="lg:w-2/3 lg:px-5 py-1 mt-6">
+              <div className="text-white/90">
                 {entries.length} morceaux, {time.hours} heure{time.hours > 1 && "s"} et{" "}
-                {time.minutes} minute{time.minutes > 1 && "s"}{" "}
-              </p>
+                {time.minutes} minute{time.minutes > 1 && "s"}
+              </div>
+              <div className="grid grid-cols-1 gap-y-2 border-t py-2 border-white/75">
+                {!entriesQuery.isLoading
+                  ? entries.map((entry, index) => (
+                      <ItemMusic
+                        key={index}
+                        onPlay={() => handlePlayMusic(index)}
+                        music={entry.music as IMusic}
+                      />
+                    ))
+                  : Array.from({ length: randomLength }, (_, index) => (
+                      <MusicSkeleton key={index} />
+                    ))}
+              </div>
+              <div className="pt-1">
+                <p className="text-white text-sm text-opacity-80">
+                  {entries.length} morceaux, {time.hours} heure{time.hours > 1 && "s"} et{" "}
+                  {time.minutes} minute{time.minutes > 1 && "s"}{" "}
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -108,86 +108,88 @@ const Musics: Page = () => {
 
   return (
     <ScrollableLayout>
-      <div className="pb-5 mt-6 lg:mx-16">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-semibold text-white">Morceaux</h1>
-          <div className="text-2xl text-red-600">
-            {displayMode === DisplayMode.GRID ? (
-              <button onClick={() => setDisplayMode(DisplayMode.LIST)}>
-                <FaThLarge />
-              </button>
-            ) : (
-              <button onClick={() => setDisplayMode(DisplayMode.GRID)}>
-                <FaList />
+      <div className="px-2 lg:px-10">
+        <div className="pb-5 mt-6 lg:mx-16">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-semibold text-white">Morceaux</h1>
+            <div className="text-2xl text-red-600">
+              {displayMode === DisplayMode.GRID ? (
+                <button onClick={() => setDisplayMode(DisplayMode.LIST)}>
+                  <FaThLarge />
+                </button>
+              ) : (
+                <button onClick={() => setDisplayMode(DisplayMode.GRID)}>
+                  <FaList />
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center space-x-2 py-1 text-white/90 group rounded-lg bg-secondary px-3 my-2 transition">
+            <FaSearch className="text-xl" />
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              className="bg-transparent w-full px-1 text-xl placeholder:text-white/70"
+              placeholder="Rechercher des Morceau"
+            />
+          </div>
+        </div>
+        <div className="flex justify-center space-x-3 mb-10">
+          <button
+            onClick={() => handlePlayMusic(0)}
+            className="px-8 py-2 font-semibold flex justify-center items-center space-x-3 text-red-800 bg-secondary rounded-lg"
+          >
+            <FaPlay /> <span>Lecture</span>
+          </button>
+          <button
+            onClick={() => handlePlayRandom()}
+            className="px-8 py-2 font-semibold flex justify-center items-center space-x-3 text-red-800 bg-secondary rounded-lg"
+          >
+            <IoShuffleOutline /> <span>Aléatoire</span>
+          </button>
+        </div>
+        <div className="mt-3">
+          {displayMode === DisplayMode.GRID ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-4 px-3 sm:px-5 md:gap-10 md:px-10 xl:gap-20 xl:px-16">
+              {filteredMusics.map((music) => (
+                <GridItem
+                  key={music.id}
+                  music={music}
+                  onPlay={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
+                />
+              ))}
+              {isFetching &&
+                Array.from({ length: 20 }).map((_, index) => (
+                  <div key={index} className="cursor-pointer">
+                    <div className="w-full">
+                      <div className="w-full bg-neutral-200 animate-pulse rounded-lg">
+                        <img src="/images/placeholder.png" alt="cover" className="opacity-0" />
+                      </div>
+                    </div>
+                    <div className="bg-gray-300 animate-pulse h-3 lg:h-4 w-1/2 mx-auto mt-2 rounded-lg"></div>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-2 md:gap-y-10 md:gap-x-5 lg:gap-x-10">
+              {filteredMusics.map((music) => (
+                <ListItem
+                  key={music.id}
+                  music={music}
+                  onPlay={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
+                />
+              ))}
+              {isFetching &&
+                Array.from({ length: 20 }).map((_, index) => <MusicSkeleton key={index} />)}
+            </div>
+          )}
+          <div className="flex justify-center mt-16">
+            {meta.total !== musics.length && (
+              <button disabled={isFetching} className="btn btn-sm" onClick={() => fetchNextPage()}>
+                Afficher plus
               </button>
             )}
           </div>
-        </div>
-        <div className="flex items-center space-x-2 py-1 text-white/90 group rounded-lg bg-secondary px-3 my-2 transition">
-          <FaSearch className="text-xl" />
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            className="bg-transparent w-full px-1 text-xl placeholder:text-white/70"
-            placeholder="Rechercher des Morceau"
-          />
-        </div>
-      </div>
-      <div className="flex justify-center space-x-3 mb-10">
-        <button
-          onClick={() => handlePlayMusic(0)}
-          className="px-8 py-2 font-semibold flex justify-center items-center space-x-3 text-red-800 bg-secondary rounded-lg"
-        >
-          <FaPlay /> <span>Lecture</span>
-        </button>
-        <button
-          onClick={() => handlePlayRandom()}
-          className="px-8 py-2 font-semibold flex justify-center items-center space-x-3 text-red-800 bg-secondary rounded-lg"
-        >
-          <IoShuffleOutline /> <span>Aléatoire</span>
-        </button>
-      </div>
-      <div className="mt-3">
-        {displayMode === DisplayMode.GRID ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-4 px-3 sm:px-5 md:gap-10 md:px-10 xl:gap-20 xl:px-16">
-            {filteredMusics.map((music) => (
-              <GridItem
-                key={music.id}
-                music={music}
-                onPlay={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
-              />
-            ))}
-            {isFetching &&
-              Array.from({ length: 20 }).map((_, index) => (
-                <div key={index} className="cursor-pointer">
-                  <div className="w-full">
-                    <div className="w-full bg-neutral-200 animate-pulse rounded-lg">
-                      <img src="/images/placeholder.png" alt="cover" className="opacity-0" />
-                    </div>
-                  </div>
-                  <div className="bg-gray-300 animate-pulse h-3 lg:h-4 w-1/2 mx-auto mt-2 rounded-lg"></div>
-                </div>
-              ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-2 md:gap-y-10 md:gap-x-5 lg:gap-x-10">
-            {filteredMusics.map((music) => (
-              <ListItem
-                key={music.id}
-                music={music}
-                onPlay={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
-              />
-            ))}
-            {isFetching &&
-              Array.from({ length: 20 }).map((_, index) => <MusicSkeleton key={index} />)}
-          </div>
-        )}
-        <div className="flex justify-center mt-16">
-          {meta.total !== musics.length && (
-            <button disabled={isFetching} className="btn btn-sm" onClick={() => fetchNextPage()}>
-              Afficher plus
-            </button>
-          )}
         </div>
       </div>
     </ScrollableLayout>
@@ -224,7 +226,7 @@ const ListItem: Component<ItemProps> = ({ music, onPlay }) => {
 
   return (
     <div ref={ref} className="cursor-pointer" onClick={handleStopPropagation(onPlay)}>
-      <div className="flex w-full">
+      <div className="flex">
         <div className="w-1/5">
           <ImageLoader src={music.links.cover} enabled={isDisplay} fallback={<FallbackImage />}>
             {({ src }) => (
