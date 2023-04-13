@@ -4,6 +4,7 @@ import { useAudio, useEvent, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
 
 import { usePlayerContext } from "../../../contexts/player"
+import { handleStopPropagation } from "../../../utils/helpers"
 import { roundMinMax } from "../../../utils/number"
 import FullscreenPlayer from "./FullscreenPlayer"
 
@@ -73,13 +74,6 @@ const SmallPlayer: Component = () => {
 
   if (!currentMusic) return null
 
-  const handleStopPropagation = (callback: () => void): MouseEventHandler => {
-    return (event) => {
-      event.stopPropagation()
-      callback()
-    }
-  }
-
   const isOverflow =
     (tRef.current?.offsetWidth || 0) >= (tRef.current?.parentElement?.offsetWidth || 2000)
 
@@ -93,7 +87,7 @@ const SmallPlayer: Component = () => {
         controls={controls}
       />
       <div
-        onClick={handleStopPropagation(fullscreen.toggle)}
+        onClick={handleStopPropagation(() => fullscreen.toggle())}
         className="relative z-[30] border-b border-neutral-800 bg-opacity-70 bg-secondary backdrop-blur cursor-default"
       >
         <div className="flex items-center py-2 lg:py-4 px-2 lg:px-16 justify-between">

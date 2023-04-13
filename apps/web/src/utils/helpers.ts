@@ -12,7 +12,7 @@ export function elementIsDisplay(element: Element, marge: number = 1): boolean {
 
 export function handleStopPropagation(callback: (event: MouseEvent) => void): EventHandler<any> {
   return (event: MouseEvent) => {
-    event.preventDefault()
+    event.stopPropagation()
     callback(event)
   }
 }
