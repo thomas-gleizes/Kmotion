@@ -3,7 +3,7 @@ import { MESSAGE_TYPE, STORAGE_KEY } from "./resources/constants"
 chrome.runtime.onInstalled.addListener(async () => {
   console.log("========= installed =========")
 
-  await chrome.storage.local.set({ [STORAGE_KEY.AUTH_TOKEN]: null })
+  // await chrome.storage.local.set({ [STORAGE_KEY.AUTH_TOKEN]: null })
 })
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {

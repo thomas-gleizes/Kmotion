@@ -36,38 +36,26 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
   const state = useAsync(async () => {
-    const [user, token] = await Promise.all([
-      new Promise<IUser | null>((resolve) => {
-        chrome.storage.local.get([STORAGE_KEY.USER], (result) => {
-          resolve(result[STORAGE_KEY.USER])
-        })
-      }),
-      new Promise<string | null>((resolve) => {
-        chrome.storage.local.get([STORAGE_KEY.AUTH_TOKEN], (result) => {
-          resolve(result[STORAGE_KEY.AUTH_TOKEN])
-        })
-      }),
-    ])
+    await new Promise((resolve) => setTimeout(resolve, 500))
 
-    console.log("Storage", user, token)
-
-    if (user && token) setIsAuthenticated(true)
+    const info = await chrome.storage.local.get([STORAGE_KEY.USER, STORAGE_KEY.AUTH_TOKEN])
+    if (info[STORAGE_KEY.USER] && info[STORAGE_KEY.AUTH_TOKEN]) {
+      setIsAuthenticated(true)
+    } else void logout()
   }, [])
 
   const login = async (user: IUser, token: string) => {
+    await chrome.storage.local.set({ [STORAGE_KEY.AUTH_TOKEN]: token, [STORAGE_KEY.USER]: user })
     setIsAuthenticated(true)
-    chrome.storage.local.set({ [STORAGE_KEY.AUTH_TOKEN]: token })
-    chrome.storage.local.set({ [STORAGE_KEY.USER]: user })
   }
 
   const logout = async () => {
-    chrome.storage.local.remove(STORAGE_KEY.AUTH_TOKEN)
-    chrome.storage.local.remove(STORAGE_KEY.USER)
+    await chrome.storage.local.remove([STORAGE_KEY.AUTH_TOKEN, STORAGE_KEY.USER])
     setIsAuthenticated(false)
   }
 
   return (
-    <AuthContext.Provider value={{ isReady: state.loading, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isReady: !state.loading, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

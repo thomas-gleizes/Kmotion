@@ -1,7 +1,7 @@
 import axios from "axios"
 import { STORAGE_KEY } from "../resources/constants"
-import { LoginDto } from "../../../../packages/validations"
-import { LoginResponse } from "../../../../packages/types"
+import { LoginDto } from "@kmotion/validations"
+import { LoginResponse } from "@kmotion/types"
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -15,4 +15,4 @@ instance.interceptors.request.use(async (config) => {
   return config
 })
 
-export const login = async (values: LoginDto) => instance.post<LoginResponse>("/login", values)
+export const login = async (values: LoginDto) => instance.post<LoginResponse>("/auth/login", values)

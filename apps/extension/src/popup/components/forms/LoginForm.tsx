@@ -28,6 +28,8 @@ const LoginForm: React.FC = () => {
       setIsSubmitting(true)
       const response = await login(values)
 
+      console.log("Response.data", response.data)
+
       await authContext.login(response.data.user, response.data.token)
       router.push(routes.video)
     } catch (err) {

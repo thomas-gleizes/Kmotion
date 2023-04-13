@@ -14,8 +14,8 @@ const LoginScreen: React.FC = () => {
     <div>
       <div className="text-center">
         <div>
-          <h1 className="text-white text-2xl font-bold">Kmotion</h1>
-          <h2 className="text-white/80 text-lg font-semibold">Connexion</h2>
+          <h1 className="text-2xl font-bold">Kmotion</h1>
+          <h2 className="text-black/70 text-lg font-semibold">Connexion</h2>
         </div>
       </div>
       <LoginForm />

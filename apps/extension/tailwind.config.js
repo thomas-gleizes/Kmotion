@@ -4,13 +4,13 @@ module.exports = {
   theme: {
     extend: {
       fontSize: {
-        md: ["18px", "22px"]
+        md: ["18px", "22px"],
       },
       spacing: {
-        header: "50px",
-        footer: "50px"
-      }
-    }
+        header: "35px",
+        footer: "40px",
+      },
+    },
   },
-  plugins: []
-};
+  plugins: [],
+}

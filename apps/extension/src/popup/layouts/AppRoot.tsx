@@ -1,14 +1,20 @@
 import React from "react"
-import { Outlet } from "@tanstack/react-router"
+import { ScaleLoader } from "react-spinners"
 
-import AuthProvider, { useAuthContext } from "../contexts/auth"
+import { useAuthContext } from "../contexts/auth"
 
-const AppRoot: React.FC = () => {
-  const ctx = useAuthContext()
+const AppRoot: React.FC<LayoutProps> = ({ children }) => {
+  const { isReady } = useAuthContext()
 
   return (
-    <div className="border-2 border-neutral-900">
-      {!ctx.isReady ? <div>Loading...</div> : <Outlet />}
+    <div className="relative h-full w-full bg-white">
+      {!isReady ? (
+        <div className="flex items-center justify-center h-24 w-full">
+          <ScaleLoader color="#3b82f6" />
+        </div>
+      ) : (
+        children
+      )}
     </div>
   )
 }

@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    @apply bg-black h-[600px] w-[430px];
+#root {
+    @apply bg-black p-0.5 w-[275px];
 }
