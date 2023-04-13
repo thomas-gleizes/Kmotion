@@ -21,6 +21,7 @@ import { usePlayerContext } from "../../contexts/player"
 import { useModalContext } from "../../contexts/modals"
 import { handleStopPropagation } from "../../utils/helpers"
 import { QUERIES_KEY } from "../../utils/constants"
+import { randomMinMax } from "../../utils/number"
 import { useIsDisplay } from "../../hooks"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
@@ -28,7 +29,6 @@ import EditPlaylist from "../../components/modals/EditPlaylist"
 import ImageLoader from "../../components/common/ImageLoader"
 import FallbackImage from "../../components/common/FallbackImage"
 import MusicSkeleton from "../../components/common/MusicSkeleton"
-import { randomMinMax } from "../../utils/number"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
@@ -194,7 +194,9 @@ const Playlist: Page = () => {
                   ? filteredEntries.map((entry, index) => (
                       <ItemMusic
                         key={index}
-                        onPlay={() => handlePlayMusic(index)}
+                        onPlay={() =>
+                          handlePlayMusic(entries.findIndex((e) => e.musicId === entry.musicId))
+                        }
                         music={entry.music as IMusic}
                       />
                     ))
