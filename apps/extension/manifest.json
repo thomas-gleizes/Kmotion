@@ -10,5 +10,21 @@
     "service_worker": "src/background.ts",
     "type": "module"
   },
-  "permissions": ["storage", "webNavigation", "activeTab", "tabs", "contextMenus"]
+  "content_scripts": [
+    {
+      "js": [
+        "src/content-scripts.ts"
+      ],
+      "matches": [
+        "https://www.youtube.com/watch*"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "webNavigation",
+    "activeTab",
+    "tabs",
+    "contextMenus"
+  ]
 }

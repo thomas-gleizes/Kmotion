@@ -1,4 +1,5 @@
-import { ConverterMusic } from "@kmotion/types"
+import { ConverterMusic, ConverterMusicInfo } from "@kmotion/types"
+import { YoutubeIdParamsDto } from "@kmotion/validations"
 
 export default class YtConverter {
   private static instance: YtConverter
@@ -32,7 +33,7 @@ export default class YtConverter {
       .then((data) => data.musics)
   }
 
-  public info(youtubeId: string): Promise<unknown> {
+  public info(youtubeId: string): Promise<ConverterMusicInfo> {
     return fetch(`${this._url}/info/${youtubeId}`, { method: "GET", headers: this.getHeaders() })
       .then((response) => response.json())
       .then((data) => data.details)

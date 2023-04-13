@@ -1,11 +1,12 @@
 import { IMusic, IPlaylist, IPlaylistEntry, IUser } from "./models"
+import { ConverterMusicInfo } from "./converter"
 
 export interface SuccessData {
   success: true
 }
 
 export interface MetaData {
-    total: number
+  total: number
 }
 
 export interface LoginResponse extends SuccessData {
@@ -32,14 +33,20 @@ interface PlaylistEntriesResponse extends SuccessData {
 }
 
 interface MusicSyncResponse extends SuccessData {
-    musics: IMusic[]
+  musics: IMusic[]
 }
 
 interface MusicSearchResponse extends SuccessData {
-    musics: IMusic[]
+  musics: IMusic[]
 }
 
 interface MusicResponse extends SuccessData {
   musics: IMusic[]
   meta: MetaData
+}
+
+interface MusicInfoResponse extends SuccessData {
+  music: IMusic | null
+  isReady: boolean
+  info: ConverterMusicInfo
 }

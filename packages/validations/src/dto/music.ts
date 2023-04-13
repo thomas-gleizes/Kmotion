@@ -9,7 +9,7 @@ export class GetMusicPramsDto {
   id!: number
 }
 
-export class DownloadMusicParamsDto {
+export class YoutubeIdParamsDto {
   @IsString()
   @IsNotEmpty()
   @Min(8)

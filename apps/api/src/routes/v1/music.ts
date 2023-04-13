@@ -2,12 +2,18 @@ import { FastifyInstance } from "fastify"
 import { Music } from "@prisma/client"
 
 import {
-  DownloadMusicParamsDto,
+  YoutubeIdParamsDto,
   GetMusicPramsDto,
   GetMusicQuery,
   SearchMusicQuery,
 } from "@kmotion/validations"
-import { MusicResponse, MusicSearchResponse, MusicSyncResponse } from "@kmotion/types"
+import {
+  ConverterMusicInfo,
+  MusicInfoResponse,
+  MusicResponse,
+  MusicSearchResponse,
+  MusicSyncResponse,
+} from "@kmotion/types"
 import { musicMapper } from "@kmotion/mappers"
 import YtConverter from "../../services/ytconverter"
 import prisma from "../../services/prisma"
@@ -80,9 +86,9 @@ export default async function musicRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.post<{ Params: DownloadMusicParamsDto }>(
+  instance.post<{ Params: YoutubeIdParamsDto }>(
     "/:youtubeId/add",
-    { preHandler: instance.validateParams(DownloadMusicParamsDto) },
+    { preHandler: instance.validateParams(YoutubeIdParamsDto) },
     async (request, reply) => {
       await prisma.music
         .findUniqueOrThrow({ where: { youtubeId: request.params.youtubeId } })
@@ -95,7 +101,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       if (response.status !== 200) throw new BadRequestException("request to converter failed")
 
-      const info: any = await ytConverter.info(request.params.youtubeId)
+      const info: ConverterMusicInfo = await ytConverter.info(request.params.youtubeId)
 
       console.log("Info", info)
 
@@ -145,6 +151,23 @@ export default async function musicRoutes(instance: FastifyInstance) {
           "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.mp3"`,
         })
         .send(stream)
+    }
+  )
+
+  instance.get<{ Params: YoutubeIdParamsDto; Reply: MusicInfoResponse }>(
+    "/:youtubeId/info",
+    { preHandler: instance.validateParams(YoutubeIdParamsDto) },
+    async (request, reply) => {
+      const music = await prisma.music.findUnique({
+        where: { youtubeId: request.params.youtubeId },
+      })
+
+      reply.send({
+        success: true,
+        music: music ? musicMapper.one(music) : null,
+        isReady: !!music,
+        info: await ytConverter.info(request.params.youtubeId),
+      })
     }
   )
 

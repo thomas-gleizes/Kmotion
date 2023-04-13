@@ -11,3 +11,5 @@ export interface ConverterMusic {
   }
   timestamp: string
 }
+
+export type ConverterMusicInfo = any

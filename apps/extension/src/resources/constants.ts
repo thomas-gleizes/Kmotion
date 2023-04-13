@@ -1,5 +1,6 @@
 export const MESSAGE_TYPE = {
-  ASK_SESSION: "ask_session",
+  ASK_VIDEO_ID: "ask_video_id",
+  ASK_FETCH_VIDEO_INFO: "ask_fetch_video_info",
 }
 
 export const STORAGE_KEY = {
