@@ -50,3 +50,14 @@ interface MusicInfoResponse extends SuccessData {
   isReady: boolean
   info: ConverterMusicInfo
 }
+
+interface MusicShareResponse extends SuccessData {
+  music: IMusic
+  link: string
+}
+
+interface MusicByPassResponse extends SuccessData {
+  music: IMusic
+  song: string
+  cover: string
+}

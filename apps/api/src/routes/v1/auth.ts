@@ -5,7 +5,7 @@ import { LoginDto, RegisterDto } from "@kmotion/validations"
 import { LoginResponse } from "@kmotion/types"
 import { userMapper } from "@kmotion/mappers"
 import prisma from "../../services/prisma"
-import { comparePassword, hashPassword } from "../../utils/hash"
+import { bcryptCompare, bcryptHash } from "../../utils/hash"
 import { UnauthorizedException } from "../../exceptions/http/UnauthorizedException"
 import { signToken } from "../../utils/token"
 
@@ -20,7 +20,7 @@ export default async function authRoutes(instance: FastifyInstance) {
         },
       })
 
-      if (!user || (user && (await comparePassword(user.password, request.body.password))))
+      if (!user || (user && (await bcryptCompare(user.password, request.body.password))))
         throw new UnauthorizedException("Email/Password combination is incorrect")
 
       if (!user.isActivate)
@@ -43,7 +43,7 @@ export default async function authRoutes(instance: FastifyInstance) {
         const user = await prisma.user.create({
           data: {
             email: request.body.email,
-            password: await hashPassword(request.body.password),
+            password: await bcryptHash(request.body.password),
             name: request.body.name,
             slug: request.body.name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
           },

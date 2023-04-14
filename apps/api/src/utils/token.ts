@@ -9,11 +9,7 @@ export const signToken = (user: IUser): string => {
 export const verifyToken = (request: FastifyRequest): boolean => {
   if (request.headers.authorization) {
     const token = request.headers.authorization.replace("Bearer ", "")
-    console.log("Token", token)
-
     const decoded = verify(token, process.env.SECRET_SESSION as string)
-
-    console.log("Decoded", decoded)
 
     // @ts-ignore
     request.session.user = decoded.user as IUser

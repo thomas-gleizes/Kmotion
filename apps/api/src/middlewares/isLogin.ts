@@ -7,7 +7,7 @@ import { UnauthorizedException } from "../exceptions/http/UnauthorizedException"
 import { verifyToken } from "../utils/token"
 
 export default async function isLogin(request: FastifyRequest) {
-  if (!request.session.isLogin || verifyToken(request))
+  if (!request.session.isLogin && !verifyToken(request))
     throw new UnauthorizedException("Access denied 08")
 
   const user = await prisma.user.findUnique({ where: { id: request.session.user.id } })

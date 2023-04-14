@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import { FastifyInstance } from "fastify"
 import { Music } from "@prisma/client"
 
@@ -6,30 +7,32 @@ import {
   GetMusicPramsDto,
   GetMusicQuery,
   SearchMusicQuery,
+  BypassMusicParamsDto,
 } from "@kmotion/validations"
 import {
   ConverterMusicInfo,
+  MusicByPassResponse,
   MusicInfoResponse,
   MusicResponse,
   MusicSearchResponse,
+  MusicShareResponse,
   MusicSyncResponse,
 } from "@kmotion/types"
 import { musicMapper } from "@kmotion/mappers"
 import YtConverter from "../../services/ytconverter"
 import prisma from "../../services/prisma"
+import { sha256 } from "../../utils/hash"
 import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
 
 export default async function musicRoutes(instance: FastifyInstance) {
-  instance.addHook("onRequest", isLogin)
-
   const ytConverter = YtConverter.getInstance()
 
   instance.get<{ Reply: MusicResponse; Querystring: GetMusicQuery }>(
     "/",
-    { onRequest: instance.validateQuery(GetMusicQuery) },
+    { onRequest: isLogin, preHandler: instance.validateQuery(GetMusicQuery) },
     async (request, reply) => {
       const offset: number = request.query.offset || 0
 
@@ -46,7 +49,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
   instance.get<{ Reply: MusicSyncResponse }>(
     "/sync",
-    { onRequest: [isAdmin] },
+    { onRequest: isAdmin },
     async (request, reply) => {
       const musics = await ytConverter.musics()
 
@@ -78,7 +81,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
   instance.post<{ Params: YoutubeIdParamsDto }>(
     "/:youtubeId/add",
-    { preHandler: instance.validateParams(YoutubeIdParamsDto) },
+    { onRequest: isLogin, preHandler: instance.validateParams(YoutubeIdParamsDto) },
     async (request, reply) => {
       await prisma.music
         .findUniqueOrThrow({ where: { youtubeId: request.params.youtubeId } })
@@ -92,8 +95,6 @@ export default async function musicRoutes(instance: FastifyInstance) {
       if (response.status !== 200) throw new BadRequestException("request to converter failed")
 
       const info: ConverterMusicInfo = await ytConverter.info(request.params.youtubeId)
-
-      console.log("Info", info)
 
       const music = await prisma.music.create({
         data: {
@@ -111,7 +112,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
   instance.get<{ Params: GetMusicPramsDto }>(
     "/:id",
-    { preHandler: instance.validateParams(GetMusicPramsDto) },
+    { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
         where: { id: +request.params.id },
@@ -125,7 +126,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
   instance.get<{ Params: GetMusicPramsDto }>(
     "/:id/stream",
-    { preHandler: instance.validateParams(GetMusicPramsDto) },
+    { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
         where: { id: request.params.id },
@@ -146,7 +147,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
   instance.get<{ Params: YoutubeIdParamsDto; Reply: MusicInfoResponse }>(
     "/:youtubeId/info",
-    { preHandler: instance.validateParams(YoutubeIdParamsDto) },
+    { onRequest: isLogin, preHandler: instance.validateParams(YoutubeIdParamsDto) },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
         where: { youtubeId: request.params.youtubeId },
@@ -163,7 +164,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
   instance.get<{ Params: GetMusicPramsDto }>(
     "/:id/cover",
-    { preHandler: instance.validateParams(GetMusicPramsDto) },
+    { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
         where: { id: request.params.id },
@@ -184,7 +185,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
   instance.delete<{ Params: GetMusicPramsDto }>(
     "/:id",
-    { preHandler: instance.validateParams(GetMusicPramsDto) },
+    { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
         where: { id: +request.params.id },
@@ -203,7 +204,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
   instance.get<{ Querystring: SearchMusicQuery; Reply: MusicSearchResponse }>(
     "/search",
-    { preHandler: instance.validateQuery(SearchMusicQuery) },
+    { onRequest: isLogin, preHandler: instance.validateQuery(SearchMusicQuery) },
     async (request, reply) => {
       const musics = await prisma.music.findMany({
         where: {
@@ -215,6 +216,58 @@ export default async function musicRoutes(instance: FastifyInstance) {
       })
 
       reply.send({ success: true, musics: musicMapper.many(musics) })
+    }
+  )
+
+  instance.post<{ Params: GetMusicPramsDto; Reply: MusicShareResponse }>(
+    "/:id/share",
+    { onRequest: isAdmin, preHandler: instance.validateParams(GetMusicPramsDto) },
+    async (request, reply) => {
+      const music = await prisma.music.findUnique({ where: { id: +request.params.id } })
+
+      if (!music) throw new NotFoundException("Music not found")
+
+      const bypassCode = await prisma.bypassCode.create({
+        data: {
+          code: await sha256(randomUUID()),
+          targetId: music.id.toString(),
+          type: "music",
+          valid: true,
+          expireAt: new Date(Date.now() + 1000 * 60 * 60 * 4),
+        },
+      })
+
+      const link = `${process.env.API_URL}/api/v1/musics/${music.id}/bypass/${bypassCode.code}`
+
+      reply.send({ success: true, link: link, music: musicMapper.one(music) })
+    }
+  )
+
+  instance.get<{ Params: BypassMusicParamsDto; Reply: MusicByPassResponse }>(
+    "/:id/bypass/:code",
+    async (request, reply) => {
+      const code = await prisma.bypassCode.findFirst({
+        where: {
+          code: request.params.code,
+          valid: true,
+          type: "music",
+          targetId: request.params.id.toString(),
+        },
+      })
+
+      if (!code || new Date(code.expireAt).getTime() < Date.now())
+        throw new NotFoundException("Bypass code not found")
+
+      const music = await prisma.music.findUnique({ where: { id: +request.params.id } })
+
+      if (!music) throw new NotFoundException("Music not found")
+
+      reply.send({
+        success: true,
+        music: music,
+        song: (await ytConverter.stream(music.youtubeId)).toString("base64"),
+        cover: (await ytConverter.cover(music.youtubeId)).toString("base64"),
+      })
     }
   )
 }
