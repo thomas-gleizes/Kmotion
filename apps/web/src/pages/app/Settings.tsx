@@ -3,7 +3,6 @@ import { useRouter } from "@tanstack/react-router"
 
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import { useAuthenticatedContext } from "../../contexts/auth"
-import { api } from "../../utils/Api"
 
 const Settings: Page = () => {
   const { history } = useRouter()
@@ -35,10 +34,6 @@ const Settings: Page = () => {
             sync
           </button>
         )}
-        <button
-          className="btn bg-blue-400 text-black"
-          onClick={() => api.deleteMusic(1200)}
-        ></button>
       </div>
     </ScrollableLayout>
   )
