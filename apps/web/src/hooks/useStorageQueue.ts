@@ -67,12 +67,18 @@ export function useStorageQueue(): UseStorageQueueResult<IMusic> {
       setStorageQueue([...newList])
       savePlaylistRef.current = [...newList]
     },
+    remove: function (i: number) {
+      const newList = [...list]
+      newList.splice(i, 1)
+      listActions.set([...newList])
+      setStorageQueue([...newList])
+      savePlaylistRef.current = [...newList]
+    },
+    findIndex: function (item: IMusic): number {
+      return queue.findIndex((i) => i.id === item.id)
+    },
     shuffle: function (i: number = index) {
       if (isShuffled) {
-        const current = queue.at(0) as IMusic
-
-        const t = savePlaylistRef.current.findIndex((s) => s.id === current.id)
-
         setStorageQueue([...savePlaylistRef.current])
         listActions.set([...savePlaylistRef.current])
       } else {

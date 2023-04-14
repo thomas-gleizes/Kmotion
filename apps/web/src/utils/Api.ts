@@ -78,6 +78,10 @@ class Api {
   public searchMusics(query: string): Promise<MusicResponse> {
     return this.fetcher.get(`musics/search?q=${query}`).then(this.toJson)
   }
+
+  public deleteMusic(id: number): Promise<MusicResponse> {
+    return this.fetcher.delete(`musics/${id}`).then(this.toJson)
+  }
 }
 
 export const api = new Api()

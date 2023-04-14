@@ -1,15 +1,11 @@
-import React, { Fragment, useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { useParams, useRouter } from "@tanstack/react-router"
-import { Menu, Transition } from "@headlessui/react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   CgRowFirst,
-  CgRowLast,
   FaChevronLeft,
-  FaEllipsisH,
-  FaHeart,
+  FaList,
   FaPlay,
-  FaPlus,
   FaSearch,
   FaTrash,
   IoShuffleOutline,
@@ -17,22 +13,19 @@ import {
 
 import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
+import { useAuthenticatedContext } from "../../contexts/auth"
 import { usePlayerContext } from "../../contexts/player"
 import { useModalContext } from "../../contexts/modals"
-import { handleStopPropagation } from "../../utils/helpers"
 import { QUERIES_KEY } from "../../utils/constants"
-import { randomMinMax } from "../../utils/number"
-import { useIsDisplay } from "../../hooks"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import EditPlaylist from "../../components/modals/EditPlaylist"
-import ImageLoader from "../../components/common/ImageLoader"
-import FallbackImage from "../../components/common/FallbackImage"
-import MusicSkeleton from "../../components/common/MusicSkeleton"
+import { MusicsList } from "../../components/common/Music/List"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
   const { history } = useRouter()
+  const { user } = useAuthenticatedContext()
 
   const {
     actions,
@@ -124,9 +117,46 @@ const Playlist: Page = () => {
     }
   }, [entries])
 
-  const [randomLength] = useState(randomMinMax(3, 10))
-
   if (!playlist) return null
+
+  const listActions = [
+    [
+      {
+        label: "Supprimer de la playlist",
+        icon: <FaTrash />,
+        className: "text-primary hover:bg-primary/30",
+        onClick: (music: IMusic) => null,
+      },
+      {
+        label: "Ajouter à une playlist",
+        icon: <FaList />,
+        className: "hover:bg-white/30",
+        onClick: (music: IMusic) => null,
+      },
+    ],
+    [
+      {
+        label: "Lire ensuite",
+        icon: <CgRowFirst />,
+        className: "text-white/80 hover:bg-white/30",
+        onClick: (music: IMusic) => actions.addNext(music),
+      },
+      {
+        label: "Lire en dernier",
+        icon: <CgRowFirst />,
+        className: "text-white/80 hover:bg-white/30",
+        onClick: (music: IMusic) => actions.addNext(music),
+      },
+    ],
+  ]
+
+  if (user.isAdmin)
+    listActions[0].unshift({
+      label: "Supprimer",
+      icon: <FaTrash />,
+      className: "text-red-500 hover:bg-red-500/30",
+      onClick: (music: IMusic) => console.log("delete", music),
+    })
 
   return (
     <div className="relative">
@@ -189,20 +219,15 @@ const Playlist: Page = () => {
                 {entries.length} morceaux, {time.hours} heure{time.hours > 1 && "s"} et{" "}
                 {time.minutes} minute{time.minutes > 1 && "s"}
               </div>
-              <div className="grid grid-cols-1 gap-y-2 border-t py-2 border-white/75">
-                {!entriesQuery.isLoading
-                  ? filteredEntries.map((entry, index) => (
-                      <ItemMusic
-                        key={index}
-                        onPlay={() =>
-                          handlePlayMusic(entries.findIndex((e) => e.musicId === entry.musicId))
-                        }
-                        music={entry.music as IMusic}
-                      />
-                    ))
-                  : Array.from({ length: randomLength }, (_, index) => (
-                      <MusicSkeleton key={index} />
-                    ))}
+              <div className="border-t py-2 border-white/75">
+                <MusicsList
+                  musics={filteredEntries.map((entry) => entry.music as IMusic)}
+                  loading={entriesQuery.isLoading}
+                  actions={listActions}
+                  onClick={(music) =>
+                    handlePlayMusic(entries.findIndex((e) => e.musicId === music.id))
+                  }
+                />
               </div>
               <div className="pt-1">
                 <p className="text-white text-sm text-opacity-80">
@@ -214,111 +239,6 @@ const Playlist: Page = () => {
           </div>
         </div>
       </ScrollableLayout>
-    </div>
-  )
-}
-
-interface ItemMusicProps {
-  onPlay: () => void
-  music: IMusic
-}
-
-const ItemMusic: Component<ItemMusicProps> = ({ onPlay, music }) => {
-  const { actions } = usePlayerContext()
-
-  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.5)
-
-  return (
-    <div ref={ref} onClick={onPlay} className="cursor-pointer">
-      <div className="flex h-full">
-        <div className="w-1/5 h-full">
-          <ImageLoader enabled={isDisplay} src={music.links.cover} fallback={<FallbackImage />}>
-            {({ src }) => <img className="w-full rounded-lg" src={src} alt={music.title} />}
-          </ImageLoader>
-        </div>
-        <div className="w-4/5 pl-3">
-          <div className="h-full border-b border-white/50 md:pl-2 flex items-center justify-between">
-            <div className="w-[85%] h-full flex flex-col justify-center">
-              <p className="truncate xl:text-3xl text-white">{music.title}</p>
-              <p className="text-sm text-white/70">{music.artist}</p>
-            </div>
-            <div className="w-[15%] text-center">
-              <Menu as="div" className="relative inline-block text-left">
-                <div>
-                  <Menu.Button
-                    onClick={(event) => event.stopPropagation()}
-                    className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
-                  >
-                    <FaEllipsisH
-                      className="sm:text-xl md:text-2xl lg:text-4xl"
-                      aria-hidden="true"
-                    />
-                  </Menu.Button>
-                </div>
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items className="z-[100000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="py-1">
-                      <Menu.Item>
-                        <button className="w-full px-2 py-1 text-primary hover:bg-primary/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg">
-                          <span>Supprimer</span>
-                          <FaTrash />
-                        </button>
-                      </Menu.Item>
-
-                      <Menu.Item>
-                        <button
-                          onClick={() => null}
-                          className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                        >
-                          <span className="truncate">Ajouter à une playlist... </span>
-                          <FaPlus />
-                        </button>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <button
-                          onClick={() => null}
-                          className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                        >
-                          <span className="truncate">J'aime </span>
-                          <FaHeart />
-                        </button>
-                      </Menu.Item>
-                    </div>
-                    <div className="py-1">
-                      <Menu.Item>
-                        <button
-                          className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                          onClick={handleStopPropagation(() => actions.addNext(music))}
-                        >
-                          <span>Lire ensuite</span>
-                          <CgRowFirst />
-                        </button>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <button
-                          className="w-full px-2 py-1 text-white hover:bg-white/10 text-xl font-semibold flex items-center justify-between space-x-2 rounded-lg"
-                          onClick={handleStopPropagation(() => actions.addLast(music))}
-                        >
-                          <span>Lire en dernier</span>
-                          <CgRowLast />
-                        </button>
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

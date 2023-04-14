@@ -26,7 +26,7 @@ const PlaylistPage: Component = () => {
   const modal = useModalContext()
 
   const handleEditPlaylist = async () => {
-    const result: any = await modal.open(<EditPlaylist isNew={true} musics={[]} />)
+    const result = await modal.open(<EditPlaylist isNew={true} musics={[]} />)
 
     if (result.action === "success") void refetch()
   }

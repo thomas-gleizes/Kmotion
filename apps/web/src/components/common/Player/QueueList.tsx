@@ -1,14 +1,14 @@
 import React, { useMemo } from "react"
-import { FaBars } from "react-icons/all"
+import { CgRowFirst, FaList, FaTimes, FaTrash } from "react-icons/all"
 
 import { IMusic } from "@kmotion/types"
 import { usePlayerContext } from "../../../contexts/player"
-import { useIsDisplay } from "../../../hooks"
-import ImageLoader from "../ImageLoader"
-import FallbackImage from "../FallbackImage"
+import { useAuthenticatedContext } from "../../../contexts/auth"
+import { MusicsList } from "../Music/List"
 
 const QueueList: Component = () => {
   const { actions, queue } = usePlayerContext()
+  const { user } = useAuthenticatedContext()
 
   const nextMusics = useMemo(() => {
     const nextMusics = [...queue]
@@ -16,52 +16,59 @@ const QueueList: Component = () => {
     return nextMusics.slice(0, 50)
   }, [queue])
 
+  const listActions = useMemo(() => {
+    const listActions = [
+      [
+        {
+          label: "Supprimer de la queue",
+          icon: <FaTimes />,
+          className: "text-primary hover:bg-primary/30",
+          onClick: (music: IMusic) => null,
+        },
+        {
+          label: "Ajouter à une playlist",
+          icon: <FaList />,
+          className: "hover:bg-white/30",
+          onClick: (music: IMusic) => null,
+        },
+      ],
+      [
+        {
+          label: "Lire ensuite",
+          icon: <CgRowFirst />,
+          className: "text-white/80 hover:bg-white/30",
+          onClick: (music: IMusic) => actions.addNext(music),
+        },
+        {
+          label: "Lire en dernier",
+          icon: <CgRowFirst />,
+          className: "text-white/80 hover:bg-white/30",
+          onClick: (music: IMusic) => {
+            actions.addNext(music)
+          },
+        },
+      ],
+    ]
+
+    if (user.isAdmin) {
+      listActions[0].push({
+        label: "Supprimer",
+        icon: <FaTrash />,
+        className: "text-primary hover:bg-primary/30",
+        onClick: (music: IMusic) => null,
+      })
+    }
+
+    return listActions
+  }, [user])
+
   return (
-    <div className="flex flex-col space-y-2 pr-2">
-      {nextMusics.map((music, index) => (
-        <Item key={index} music={music} onGo={() => actions.go(index + 1)} />
-      ))}
-    </div>
-  )
-}
-
-interface Props {
-  music: IMusic
-  onGo: () => void
-}
-
-const Item: Component<Props> = ({ music, onGo }) => {
-  const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.3)
-
-  return (
-    <div ref={ref} key={music.id} onClick={onGo} className="flex cursor-pointer group px-1">
-      <div className="w-[21%] h-full flex items-center">
-        <ImageLoader src={music.links.cover} enabled={isDisplay} fallback={<FallbackImage />}>
-          {({ src }) => (
-            <img
-              src={src}
-              alt={`cover ${music.title}`}
-              className="rounded-lg w-full group-hover:scale-105 transform transition duration-50"
-            />
-          )}
-        </ImageLoader>
-      </div>
-      <div className="w-[79%] flex justify-between items-center">
-        <div className="w-full truncate overflow-hidden px-3">
-          <h6 className="text-white truncate text-sm lg:text-xl text-opacity-90 group-hover:text-opacity-100 group-hover:font-semibold">
-            {music.title}
-          </h6>
-          <p className="text-white text-xs lg:text-sm text-opacity-75 group-hover:text-opacity-90">
-            {music.artist}
-          </p>
-        </div>
-        <div className="w-min">
-          <span className="text-white/70">
-            <FaBars />
-          </span>
-        </div>
-      </div>
-    </div>
+    <MusicsList
+      musics={nextMusics}
+      loading={false}
+      onClick={(_, index) => actions.go(index + 1)}
+      actions={[]}
+    />
   )
 }
 
