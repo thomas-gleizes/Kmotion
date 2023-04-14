@@ -7,7 +7,7 @@ const MusicSkeleton: Component = () => {
 
   return (
     <div className="flex space-x-3 w-full">
-      <div className="bg-gray-200 rounded-lg animate-pulse h-10 w-1/5">
+      <div className="bg-gray-200 rounded-lg animate-pulse h-fit w-1/5">
         <img src="/images/placeholder.png" alt="placeholder" className="w-full opacity-0" />
       </div>
       <div className="w-4/5 border-b border-white/50">
