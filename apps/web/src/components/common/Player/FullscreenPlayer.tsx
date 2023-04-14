@@ -22,6 +22,7 @@ import { formatTime } from "../../../utils/time"
 import { roundMinMax } from "../../../utils/number"
 import Modal from "../Modal"
 import Slider from "../Slider"
+import MusicList from "../Music/List"
 import QueueList from "./QueueList"
 
 interface Props {
@@ -42,7 +43,7 @@ interface Props {
 }
 
 const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) => {
-  const { currentMusic, playlist, actions, loop, assets } = usePlayerContext()
+  const { currentMusic, playlist, actions, loop, assets, queue } = usePlayerContext()
 
   const tRef = useRef<HTMLHeadingElement>(null)
 

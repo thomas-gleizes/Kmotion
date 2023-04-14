@@ -13,6 +13,8 @@ declare type UseStorageQueueActions<T> = {
   next: () => void
   addNext: (item: T) => void
   addLast: (item: T) => void
+  remove: (index: number) => void
   shuffle: () => void
+  findIndex: (item: T) => number
   go: (destIndex: number) => void
 }

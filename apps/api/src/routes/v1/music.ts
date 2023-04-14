@@ -26,6 +26,7 @@ import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
+import * as process from "process"
 
 export default async function musicRoutes(instance: FastifyInstance) {
   const ytConverter = YtConverter.getInstance()
@@ -193,10 +194,12 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       if (!music) throw new NotFoundException("Music not found")
 
-      await Promise.all([
-        prisma.music.delete({ where: { id: music.id } }),
-        ytConverter.delete(music.youtubeId),
-      ])
+      await prisma.playlistEntry.deleteMany({ where: { musicId: music.id } })
+      await prisma.music.delete({ where: { id: music.id } })
+
+      if (process.env.NODE_ENV === "production") {
+        await ytConverter.delete(music.youtubeId)
+      }
 
       reply.status(202).send({ success: true })
     }

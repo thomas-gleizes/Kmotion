@@ -4,7 +4,7 @@ export class Fetcher {
   private readonly responseInterceptor: ResponseInterceptor[]
 
   private readonly DEFAULT_HEADERS = {
-    "Content-Type": "application/json",
+    Accept: "application/json",
   }
 
   constructor(version: string) {
@@ -21,16 +21,21 @@ export class Fetcher {
     this.responseInterceptor.push(interceptorCallback)
   }
 
-  private async fetch(path: string, init?: RequestInit) {
+  private async fetch(path: string, init?: RequestInit): Promise<Response> {
     for (const interceptor of this.requestInterceptor) {
       const { path: newPath, init: newInit } = interceptor({ path, init })
       path = newPath
       init = newInit
     }
 
+    const headers: Headers = new Headers({ ...this.DEFAULT_HEADERS, ...init?.headers })
+    if (init?.body) {
+      headers.set("content-type", "application/json")
+    }
+
     const response = await fetch(`/api/${this.version}/${path}`, {
       ...init,
-      headers: { ...this.DEFAULT_HEADERS, ...init?.headers },
+      headers,
     })
 
     for (const interceptor of this.responseInterceptor) interceptor(response, { path, init })
