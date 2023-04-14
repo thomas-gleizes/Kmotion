@@ -61,24 +61,14 @@ export default async function musicRoutes(instance: FastifyInstance) {
           await prisma.music
             .create({
               data: {
-                title: music.title,
-                artist: music.author,
+                title: music.title.trim(),
+                artist: music.author.trim(),
                 youtubeId: music.id,
                 downloaderId: request.session.user.id,
                 duration: music.duration,
               },
             })
             .then((music) => newMusics.push(music))
-        } else {
-          await prisma.music.update({
-            data: {
-              title: music.title,
-              artist: music.author,
-              youtubeId: music.id,
-              duration: music.duration,
-            },
-            where: { id: find.id },
-          })
         }
       }
 

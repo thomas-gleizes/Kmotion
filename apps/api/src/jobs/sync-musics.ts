@@ -21,8 +21,8 @@ const task = new AsyncTask(
         await prisma.music
           .create({
             data: {
-              title: music.title,
-              artist: music.author,
+              title: music.title.trim(),
+              artist: music.author.trim(),
               youtubeId: music.id,
               downloaderId: 1,
               duration: music.duration,
@@ -33,9 +33,8 @@ const task = new AsyncTask(
       } else {
         await prisma.music.update({
           data: {
-            title: music.title,
-            artist: music.author,
-            youtubeId: music.id,
+            title: music.title.trim(),
+            artist: music.author.trim(),
             duration: music.duration,
           },
           where: { id: find.id },
