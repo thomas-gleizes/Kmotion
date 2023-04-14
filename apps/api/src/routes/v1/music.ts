@@ -264,7 +264,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       reply.send({
         success: true,
-        music: music,
+        music: musicMapper.one(music),
         song: (await ytConverter.stream(music.youtubeId)).toString("base64"),
         cover: (await ytConverter.cover(music.youtubeId)).toString("base64"),
       })
