@@ -88,7 +88,7 @@ export const MusicItem: Component<MusicItemProps> = ({ music, onClick, actions }
             </div>
             {actions.length && (
               <div className="w-fit">
-                <MusicActions actions={actions} music={music} />
+                <MusicItemActions actions={actions} music={music} />
               </div>
             )}
           </div>
@@ -98,21 +98,21 @@ export const MusicItem: Component<MusicItemProps> = ({ music, onClick, actions }
   )
 }
 
-interface MusicActionsProps {
+interface MusicItemActionsProps {
   actions: Action[][]
   music: IMusic
 }
 
-export const MusicActions: Component<MusicActionsProps> = ({ music, actions }) => {
+export const MusicItemActions: Component<MusicItemActionsProps> = ({ music, actions }) => {
   return (
     <div className="text-center">
       <Menu as="div" className="relative inline-block text-left">
         <div>
           <Menu.Button
             onClick={(event) => event.stopPropagation()}
-            className="w-full flex items-center text-white"
+            className="w-full text-xl md:text-2xl lg:text-4xl text-white/80 hover:text-white/100 hover:bg-white/10 rounded-full p-1 lg:p-2 transition"
           >
-            <FaEllipsisH className="text-xl md:text-2xl lg:text-4xl" aria-hidden="true" />
+            <FaEllipsisH aria-hidden="true" />
           </Menu.Button>
         </div>
         <Transition
@@ -124,7 +124,7 @@ export const MusicActions: Component<MusicActionsProps> = ({ music, actions }) =
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="z-[100000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <Menu.Items className="z-[100000000000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary/50 backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             {actions.map((group, index) =>
               group.length ? (
                 <div key={index} className="py-1">
