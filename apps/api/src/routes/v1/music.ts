@@ -240,28 +240,27 @@ export default async function musicRoutes(instance: FastifyInstance) {
         },
       })
 
-      const link = `${process.env.API_URL}/api/v1/musics/${music.id}/bypass/${bypassCode.code}`
+      const link = `${process.env.CLIENT_URL}/out/test/${bypassCode.code}`
 
       reply.send({ success: true, link: link, music: musicMapper.one(music) })
     }
   )
 
   instance.get<{ Params: BypassMusicParamsDto; Reply: MusicByPassResponse }>(
-    "/:id/bypass/:code",
+    "/bypass/:code",
     async (request, reply) => {
       const code = await prisma.bypassCode.findFirst({
         where: {
           code: request.params.code,
           valid: true,
           type: "music",
-          targetId: request.params.id.toString(),
         },
       })
 
       if (!code || new Date(code.expireAt).getTime() < Date.now())
         throw new NotFoundException("Bypass code not found")
 
-      const music = await prisma.music.findUnique({ where: { id: +request.params.id } })
+      const music = await prisma.music.findUnique({ where: { id: +code.targetId } })
 
       if (!music) throw new NotFoundException("Music not found")
 

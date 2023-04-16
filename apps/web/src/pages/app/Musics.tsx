@@ -6,6 +6,7 @@ import {
   FaList,
   FaPlay,
   FaSearch,
+  FaShare,
   FaThLarge,
   FaTrash,
   IoShuffleOutline,
@@ -21,7 +22,7 @@ import ImageLoader from "../../components/common/ImageLoader"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import FallbackImage from "../../components/common/FallbackImage"
 import MusicSkeleton from "../../components/common/Music/MusicSkeleton"
-import { MusicItemActions, MusicItem } from "../../components/common/Music/List"
+import { MusicItem, MusicItemActions } from "../../components/common/Music/List"
 
 const DisplayMode: Record<string, string> = {
   GRID: "grid",
@@ -125,7 +126,7 @@ const Musics: Page = () => {
     ],
   ]
 
-  if (user.isAdmin)
+  if (user.isAdmin) {
     listActions[0].unshift({
       label: "Supprimer",
       icon: <FaTrash />,
@@ -136,6 +137,17 @@ const Musics: Page = () => {
           .then(() => refetch())
           .catch((err) => console.log("delete failed", err)),
     })
+    listActions[1].unshift({
+      label: "Partager",
+      icon: <FaShare />,
+      className: "text-white/90 hover:bg-white/20",
+      onClick: (music: IMusic) =>
+        api
+          .shareMusic(music.id)
+          .then((data) => console.log(data.link))
+          .catch(console.error),
+    })
+  }
 
   return (
     <ScrollableLayout>
@@ -168,13 +180,13 @@ const Musics: Page = () => {
         <div className="flex justify-center space-x-3 mb-10">
           <button
             onClick={() => handlePlayMusic(0)}
-            className="px-8 py-2 font-semibold flex justify-center items-center space-x-3 text-red-800 bg-secondary rounded-lg"
+            className="px-8 py-2 font-bold flex justify-center items-center space-x-3 text-primary bg-secondary rounded-lg"
           >
             <FaPlay /> <span>Lecture</span>
           </button>
           <button
             onClick={() => handlePlayRandom()}
-            className="px-8 py-2 font-semibold flex justify-center items-center space-x-3 text-red-800 bg-secondary rounded-lg"
+            className="px-8 py-2 font-bold flex justify-center items-center space-x-3 text-primary bg-secondary rounded-lg"
           >
             <IoShuffleOutline /> <span>Aléatoire</span>
           </button>

@@ -24,7 +24,7 @@ export class GetMusicQuery {
   offset?: number
 }
 
-export class BypassMusicParamsDto extends GetMusicPramsDto {
+export class BypassMusicParamsDto {
   @IsString()
   @IsNotEmpty()
   @Min(8)
