@@ -22,7 +22,6 @@ import { formatTime } from "../../../utils/time"
 import { roundMinMax } from "../../../utils/number"
 import Modal from "../Modal"
 import Slider from "../Slider"
-import MusicList from "../Music/List"
 import QueueList from "./QueueList"
 
 interface Props {
@@ -100,8 +99,8 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
         </p>
       </div>
       <div className="flex justify-end items-center pl-3">
-        <div className="flex items-center justify-center cursor-pointer bg-white/50 backdrop-blur rounded-full h-7 w-7">
-          <FaEllipsisH className="text-white text-lg" />
+        <div className="cursor-pointer bg-white/40 rounded-full p-2">
+          <FaEllipsisH className="text-white text-lg lg:text-2xl" />
         </div>
       </div>
     </div>

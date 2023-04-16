@@ -21,7 +21,7 @@ import ImageLoader from "../../components/common/ImageLoader"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import FallbackImage from "../../components/common/FallbackImage"
 import MusicSkeleton from "../../components/common/Music/MusicSkeleton"
-import { MusicActions, MusicItem } from "../../components/common/Music/List"
+import { MusicItemActions, MusicItem } from "../../components/common/Music/List"
 
 const DisplayMode: Record<string, string> = {
   GRID: "grid",
@@ -232,7 +232,7 @@ const Musics: Page = () => {
 interface ItemProps {
   music: IMusic
   onPlay: () => void
-  actions: unknown[][]
+  actions: any[][]
 }
 
 const GridItem: Component<ItemProps> = ({ music, onPlay, actions }) => {
@@ -245,15 +245,16 @@ const GridItem: Component<ItemProps> = ({ music, onPlay, actions }) => {
           {({ src }) => <img className="w-full rounded-lg shadow-lg" src={src} alt={music.title} />}
         </ImageLoader>
       </div>
-      <div className="w-full mt-2 lg:mt-4 px-1 flex justify-between space-x-2">
+      <div className="w-full mt-1 px-1 flex justify-between items-center space-x-2">
         <h2 className="text-white text-sm md:text-xl md:font-bold truncate w-full">
           {music.title}
           <span className="hidden lg:inline text-white/80 text-xs md:text-lg">
+            {" "}
             - {music.artist}
           </span>
         </h2>
         <div>
-          <MusicActions actions={actions} music={music} />
+          <MusicItemActions actions={actions} music={music} />
         </div>
       </div>
     </div>
