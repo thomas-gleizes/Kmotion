@@ -7,7 +7,7 @@ import Header from "../components/common/Header"
 const Root: SyncRouteComponent = () => {
   return (
     <ContextsProvider>
-      <div className="flex items-center justify-center h-screen bg-gray-900">
+      <div className="flex items-center justify-center h-screen text-white/80">
         <div className="relative w-screen h-screen bg-black overflow-hidden">
           <Header />
           <div className="block h-full w-full">

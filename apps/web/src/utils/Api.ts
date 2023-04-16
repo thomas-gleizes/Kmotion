@@ -1,7 +1,9 @@
 import {
   LoginResponse,
   LogoutResponse,
+  MusicByPassResponse,
   MusicResponse,
+  MusicShareResponse,
   PlaylistEntriesResponse,
   PlaylistResponse,
   PlaylistsResponse,
@@ -79,8 +81,16 @@ class Api {
     return this.fetcher.get(`musics/search?q=${query}`).then(this.toJson)
   }
 
-  public deleteMusic(id: number): Promise<MusicResponse> {
+  public deleteMusic(id: number): Promise<MusicShareResponse> {
     return this.fetcher.delete(`musics/${id}`).then(this.toJson)
+  }
+
+  public shareMusic(id: number): Promise<MusicShareResponse> {
+    return this.fetcher.post(`musics/${id}/share`).then(this.toJson)
+  }
+
+  public bypassMusic(code: string): Promise<MusicByPassResponse> {
+    return this.fetcher.get(`musics/bypass/${code}`).then(this.toJson)
   }
 }
 

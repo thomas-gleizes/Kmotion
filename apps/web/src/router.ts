@@ -3,6 +3,7 @@ import { lazy, ReactRouter, RootRoute, Route } from "@tanstack/react-router"
 import Root from "./pages/Root"
 import AppRoot from "./pages/app/Root"
 import AuthRoot from "./pages/auth/Root"
+import OtherRoot from "./pages/others/Root"
 import NotFound from "./pages/NotFound"
 
 const rootRoute = new RootRoute({
@@ -75,6 +76,26 @@ const appRoutes = [
   }),
 ]
 
+// Others => /out/*
+const otherRootRoute = new Route({
+  path: "out",
+  component: OtherRoot,
+  getParentRoute: () => rootRoute,
+})
+
+const otherRoutes = [
+  new Route({
+    path: "test/$token",
+    component: lazy(() => import("./pages/others/Music")),
+    getParentRoute: () => otherRootRoute,
+  }),
+  new Route({
+    path: "*",
+    component: NotFound,
+    getParentRoute: () => otherRootRoute,
+  }),
+]
+
 const notFoundRoute = new Route({
   path: "*",
   component: NotFound,
@@ -85,6 +106,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   appRootRoute.addChildren(appRoutes),
   authRootRoute.addChildren(authRoutes),
+  otherRootRoute.addChildren(otherRoutes),
   notFoundRoute,
 ])
 
