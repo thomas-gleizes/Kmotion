@@ -21,7 +21,7 @@ import ImageLoader from "../../components/common/ImageLoader"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import FallbackImage from "../../components/common/FallbackImage"
 import MusicSkeleton from "../../components/common/Music/MusicSkeleton"
-import { MusicItem } from "../../components/common/Music/List"
+import { MusicActions, MusicItem } from "../../components/common/Music/List"
 
 const DisplayMode: Record<string, string> = {
   GRID: "grid",
@@ -139,9 +139,9 @@ const Musics: Page = () => {
 
   return (
     <ScrollableLayout>
-      <div className="px-2 lg:px-10">
-        <div className="pb-5 mt-6 lg:mx-16">
-          <div className="flex justify-between items-center">
+      <div className="mx-4 mt-5 lg:mt-10 lg:mx-20">
+        <div className="pb-5">
+          <div className="flex px-3 justify-between items-center">
             <h1 className="text-3xl font-semibold text-white">Morceaux</h1>
             <div className="text-2xl text-red-600">
               {displayMode === DisplayMode.GRID ? (
@@ -181,12 +181,13 @@ const Musics: Page = () => {
         </div>
         <div className="mt-3">
           {displayMode === DisplayMode.GRID ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-4 px-3 sm:px-5 md:gap-10 md:px-10 xl:gap-20 xl:px-16">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-3 lg:gap-x-10 lg:gap-y-8">
               {filteredMusics.map((music) => (
                 <GridItem
                   key={music.id}
                   music={music}
                   onPlay={() => handlePlayMusic(musics.findIndex((m) => m.id === music.id))}
+                  actions={listActions}
                 />
               ))}
               {isFetching &&
@@ -197,12 +198,12 @@ const Musics: Page = () => {
                         <img src="/images/placeholder.png" alt="cover" className="opacity-0" />
                       </div>
                     </div>
-                    <div className="bg-gray-300 animate-pulse h-3 lg:h-4 w-1/2 mx-auto mt-2 rounded-lg"></div>
+                    <div className="bg-gray-300 animate-pulse h-3 lg:h-4 w-1/2 mt-2 rounded-lg"></div>
                   </div>
                 ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-2 md:gap-y-10 md:gap-x-5 lg:gap-x-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-2 lg:gap-x-5 lg:gap-y-3">
               {filteredMusics.map((music) => (
                 <MusicItem
                   key={music.id}
@@ -231,9 +232,10 @@ const Musics: Page = () => {
 interface ItemProps {
   music: IMusic
   onPlay: () => void
+  actions: unknown[][]
 }
 
-const GridItem: Component<ItemProps> = ({ music, onPlay }) => {
+const GridItem: Component<ItemProps> = ({ music, onPlay, actions }) => {
   const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.5)
 
   return (
@@ -243,10 +245,16 @@ const GridItem: Component<ItemProps> = ({ music, onPlay }) => {
           {({ src }) => <img className="w-full rounded-lg shadow-lg" src={src} alt={music.title} />}
         </ImageLoader>
       </div>
-      <div>
-        <h2 className="text-white text-sm md:text-xl md:font-bold text-center overflow-y-hidden truncate w-full mt-2 px-1">
-          <span className="text-white/80 text-xs md:text-lg">{music.artist}</span> - {music.title}
+      <div className="w-full mt-2 lg:mt-4 px-1 flex justify-between space-x-2">
+        <h2 className="text-white text-sm md:text-xl md:font-bold truncate w-full">
+          {music.title}
+          <span className="hidden lg:inline text-white/80 text-xs md:text-lg">
+            - {music.artist}
+          </span>
         </h2>
+        <div>
+          <MusicActions actions={actions} music={music} />
+        </div>
       </div>
     </div>
   )

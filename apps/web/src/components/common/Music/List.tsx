@@ -1,7 +1,7 @@
 import React, { Fragment, MouseEventHandler, useMemo } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import classnames from "classnames"
-import { FaEllipsisH, FaTrash } from "react-icons/all"
+import { FaEllipsisH } from "react-icons/all"
 
 import { IMusic } from "@kmotion/types"
 import { useIsDisplay } from "../../../hooks"
@@ -86,61 +86,71 @@ export const MusicItem: Component<MusicItemProps> = ({ music, onClick, actions }
               <p className="truncate xl:text-3xl text-white">{music.title}</p>
               <p className="truncate text-sm text-white/70">{music.artist}</p>
             </div>
-            {actions.length ? (
-              <div className="w-[15%] text-center">
-                <Menu as="div" className="relative inline-block text-left">
-                  <div>
-                    <Menu.Button
-                      onClick={(event) => event.stopPropagation()}
-                      className="text-white p-3 lg:p-5 xl:p-7"
-                    >
-                      <FaEllipsisH
-                        className="sm:text-xl md:text-2xl lg:text-4xl"
-                        aria-hidden="true"
-                      />
-                    </Menu.Button>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="z-[100000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      {actions.map((group, index) =>
-                        group.length ? (
-                          <div key={index} className="py-1">
-                            {group.map((action, index) => (
-                              <Menu.Item key={index}>
-                                <button
-                                  onClick={(event) => {
-                                    event.stopPropagation()
-                                    action.onClick(music, 0, event)
-                                  }}
-                                  className={classnames(
-                                    "w-full px-2 py-1 text-lg font-semibold flex items-center justify-between space-x-2 rounded",
-                                    action.className
-                                  )}
-                                >
-                                  <span className="truncate">{action.label}</span>
-                                  {action.icon}
-                                </button>
-                              </Menu.Item>
-                            ))}
-                          </div>
-                        ) : null
-                      )}
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
+            {actions.length && (
+              <div className="w-fit">
+                <MusicActions actions={actions} music={music} />
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+interface MusicActionsProps {
+  actions: Action[][]
+  music: IMusic
+}
+
+export const MusicActions: Component<MusicActionsProps> = ({ music, actions }) => {
+  return (
+    <div className="text-center">
+      <Menu as="div" className="relative inline-block text-left">
+        <div>
+          <Menu.Button
+            onClick={(event) => event.stopPropagation()}
+            className="w-full flex items-center text-white"
+          >
+            <FaEllipsisH className="text-xl md:text-2xl lg:text-4xl" aria-hidden="true" />
+          </Menu.Button>
+        </div>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="z-[100000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            {actions.map((group, index) =>
+              group.length ? (
+                <div key={index} className="py-1">
+                  {group.map((action, index) => (
+                    <Menu.Item key={index}>
+                      <button
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          action.onClick(music, 0, event)
+                        }}
+                        className={classnames(
+                          "w-full px-2 py-1 text-lg font-semibold flex items-center justify-between space-x-2 rounded",
+                          action.className
+                        )}
+                      >
+                        <span className="truncate">{action.label}</span>
+                        {action.icon}
+                      </button>
+                    </Menu.Item>
+                  ))}
+                </div>
+              ) : null
+            )}
+          </Menu.Items>
+        </Transition>
+      </Menu>
     </div>
   )
 }
