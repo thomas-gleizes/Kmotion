@@ -1,13 +1,14 @@
 import React from "react"
+import { DialogProvider } from "react-dialog-promise"
+
 import AuthProvider from "./auth"
 import LayoutProvider from "./layout"
-import ModalProvider from "./modals"
 
 const ContextsProvider: ComponentWithChild = ({ children }) => {
   return (
     <AuthProvider>
       <LayoutProvider>
-        <ModalProvider>{children}</ModalProvider>
+        <DialogProvider>{children}</DialogProvider>
       </LayoutProvider>
     </AuthProvider>
   )

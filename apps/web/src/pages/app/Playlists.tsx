@@ -2,18 +2,20 @@ import React from "react"
 import { useRouter } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { FaChevronRight, FaPlus } from "react-icons/all"
+import { useDialog } from "react-dialog-promise"
 
 import { IPlaylist } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { QUERIES_KEY } from "../../utils/constants"
 import { useAuthenticatedContext } from "../../contexts/auth"
-import { useModalContext } from "../../contexts/modals"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import EditPlaylist from "../../components/modals/EditPlaylist"
 
 const PlaylistPage: Component = () => {
   const { user } = useAuthenticatedContext()
+
+  const editPlaylist = useDialog(EditPlaylist)
 
   const { data: playlists, refetch } = useQuery<IPlaylist[]>({
     queryKey: [...QUERIES_KEY.playlists, user.id],
@@ -23,12 +25,11 @@ const PlaylistPage: Component = () => {
   })
 
   const router = useRouter()
-  const modal = useModalContext()
 
   const handleEditPlaylist = async () => {
-    const result = await modal.open(<EditPlaylist isNew={true} musics={[]} />)
+    const result = await editPlaylist.open({ isNew: true, musics: [] })
 
-    if (result.action === "success") void refetch()
+    if (result.action === "success-new") void refetch()
   }
 
   return (
