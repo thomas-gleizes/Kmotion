@@ -3,24 +3,24 @@ import { FaCheckCircle, FaMinusCircle, FaPlusCircle, FaSearch } from "react-icon
 import { useQuery } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import SimpleBar from "simplebar-react"
+import { DialogComponent, useDialog } from "react-dialog-promise"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { CreatePlaylistDto, UpdatePlaylistDto } from "@kmotion/validations"
 import { api } from "../../utils/Api"
 import { QUERIES_KEY } from "../../utils/constants"
-import { useModalContext } from "../../contexts/modals"
 import Modal from "../common/Modal"
 import ImageLoader from "../common/ImageLoader"
 import PlaylistGridImage from "../common/PlaylistGridImage"
 
 type Props =
   | {
-      isNew: false
+      isNew: true
       musics: IMusic[]
-      initialValues: CreatePlaylistDto
+      initialValues?: CreatePlaylistDto
     }
   | {
-      isNew: true
+      isNew: false
       initialValues: UpdatePlaylistDto
       musics: IMusic[]
     }
@@ -34,7 +34,7 @@ type Result =
       playlist: IPlaylist
     }
 
-const EditPlaylist: ModalComponent<Props, Result> = ({
+const EditPlaylist: DialogComponent<Props, Result> = ({
   isOpen,
   close,
   isNew,
@@ -47,13 +47,13 @@ const EditPlaylist: ModalComponent<Props, Result> = ({
 
   const [musics, setMusics] = useState<IMusic[]>(initMusics)
 
-  const { open } = useModalContext()
+  const searchPlaylist = useDialog(SearchPlaylist)
 
   const handleSearchMusic = async () => {
-    const result = await open<SearchResult>(<SearchPlaylist />)
+    const result = await searchPlaylist.open({})
 
     if (result.action === "success") {
-      setValue("musics", [...(getValues().musics || []), ...result.data.map((m) => m.id)])
+      setValue("musics", [...(getValues()?.musics || []), ...result.data.map((m) => m.id)])
       setMusics([...musics, ...result.data])
     }
   }
@@ -62,7 +62,7 @@ const EditPlaylist: ModalComponent<Props, Result> = ({
     try {
       const data = await api.createPlaylist(values)
       console.log("Data", data)
-      close({ action: "success", playlist: data.playlist })
+      close({ action: "success-new", playlist: data.playlist })
     } catch (err) {
       console.error(err)
     }
@@ -72,7 +72,7 @@ const EditPlaylist: ModalComponent<Props, Result> = ({
     try {
       const data = await api.updatePlaylist(values.id, values)
       console.log("Data", data)
-      close({ action: "success", playlist: data.playlist })
+      close({ action: "success-edit", playlist: data.playlist })
     } catch (err) {
       console.error(err)
     }
@@ -85,7 +85,7 @@ const EditPlaylist: ModalComponent<Props, Result> = ({
       setMusics([...musics])
     }
 
-    const idsMusic = getValues().musics || []
+    const idsMusic = getValues()?.musics || []
     const index2 = idsMusic.findIndex((id) => id === music.id)
     if (index2 >= 0) {
       idsMusic.splice(index2, 1)
@@ -189,7 +189,7 @@ declare type SearchResult =
       data: IMusic[]
     }
 
-const SearchPlaylist: ModalComponent<{}, SearchResult> = ({ isOpen, close }) => {
+const SearchPlaylist: DialogComponent<{}, SearchResult> = ({ isOpen, close }) => {
   const [search, setSearch] = useState("")
 
   const inputRef = useRef<HTMLInputElement>(null)

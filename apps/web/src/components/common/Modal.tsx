@@ -1,4 +1,4 @@
-import React, { memo } from "react"
+import React, { memo, useEffect, useState } from "react"
 import ReactDom from "react-dom"
 import { Transition } from "@headlessui/react"
 
@@ -14,7 +14,14 @@ const Modal: ComponentWithChild<Props> = memo(
   ({ isOpen, children, afterOpen, beforeOpen, beforeClose, afterClose }) => {
     const container = document.getElementById("portal") as Element
 
-    if (!container) return null
+    const [isRender, setIsRender] = useState(false)
+
+    useEffect(() => {
+      if (isOpen) setIsRender(true)
+      else setTimeout(() => setIsRender(false), 200)
+    }, [isOpen])
+
+    if (!isRender) return null
 
     const element = (
       <div className="absolute top-header left-0 w-full z-90">

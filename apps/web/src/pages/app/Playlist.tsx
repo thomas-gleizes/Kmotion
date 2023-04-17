@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react"
 import { useParams, useRouter } from "@tanstack/react-router"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useDialog } from "react-dialog-promise"
 import {
   CgRowFirst,
   FaChevronLeft,
@@ -15,7 +16,6 @@ import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { useAuthenticatedContext } from "../../contexts/auth"
 import { usePlayerContext } from "../../contexts/player"
-import { useModalContext } from "../../contexts/modals"
 import { QUERIES_KEY } from "../../utils/constants"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
@@ -34,7 +34,7 @@ const Playlist: Page = () => {
 
   const queryClient = useQueryClient()
 
-  const modal = useModalContext()
+  const editPlaylist = useDialog(EditPlaylist)
 
   const [querySearch, setQuerySearch] = useState("")
 
@@ -87,18 +87,16 @@ const Playlist: Page = () => {
   const handleEditPlaylist = async () => {
     if (!playlist) return null
 
-    const result = await modal.open(
-      <EditPlaylist
-        isNew={false}
-        musics={entries.map((entry) => entry.music as IMusic)}
-        initialValues={{
-          id: playlist.id,
-          title: playlist.title,
-          description: playlist.description,
-          musics: entries.map((entry) => entry.musicId),
-        }}
-      />
-    )
+    const result = await editPlaylist.open({
+      isNew: false,
+      musics: entries.map((entry) => entry.music as IMusic),
+      initialValues: {
+        id: playlist.id,
+        title: playlist.title,
+        description: playlist.description,
+        musics: entries.map((entry) => entry.musicId),
+      },
+    })
 
     if (result.action !== "cancel")
       await Promise.all([
