@@ -9,7 +9,7 @@ import { IMusic, IPlaylist } from "@kmotion/types"
 import { CreatePlaylistDto, UpdatePlaylistDto } from "@kmotion/validations"
 import { api } from "../../utils/Api"
 import { QUERIES_KEY } from "../../utils/constants"
-import Modal from "../common/Modal"
+import DynamicDialog from "../common/DynamicDialog"
 import ImageLoader from "../common/ImageLoader"
 import PlaylistGridImage from "../common/PlaylistGridImage"
 
@@ -103,7 +103,7 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
   }, [musics])
 
   return (
-    <Modal isOpen={isOpen}>
+    <DynamicDialog isOpen={isOpen}>
       <form onSubmit={handleSubmit(isNew ? onSubmitNew : onSubmitEdit)}>
         <div className="absolute z-[50] w-full bg-secondary/80 backdrop-blur py-2">
           <div className="flex justify-between items-center py-1 px-3">
@@ -176,7 +176,7 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
           </div>
         </SimpleBar>
       </form>
-    </Modal>
+    </DynamicDialog>
   )
 }
 
@@ -223,7 +223,7 @@ const SearchPlaylist: DialogComponent<{}, SearchResult> = ({ isOpen, close }) =>
   const musicsChecked = useMemo<number[]>(() => selectedMusics.map((m) => m.id), [selectedMusics])
 
   return (
-    <Modal isOpen={isOpen} afterOpen={() => inputRef.current?.focus()}>
+    <DynamicDialog isOpen={isOpen} afterOpen={() => inputRef.current?.focus()}>
       <div className="bg-secondary-dark">
         <p className="text-white/90 text-sm text-center py-0.5">
           {musicsChecked.length} morceaux ajoutés a "nouvelle playlist"
@@ -288,7 +288,7 @@ const SearchPlaylist: DialogComponent<{}, SearchResult> = ({ isOpen, close }) =>
           </div>
         </SimpleBar>
       </div>
-    </Modal>
+    </DynamicDialog>
   )
 }
 
