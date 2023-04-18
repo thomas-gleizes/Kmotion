@@ -20,7 +20,7 @@ import {
 import { usePlayerContext } from "../../../contexts/player"
 import { formatTime } from "../../../utils/time"
 import { roundMinMax } from "../../../utils/number"
-import Modal from "../Modal"
+import DynamicDialog from "../DynamicDialog"
 import Slider from "../Slider"
 import QueueList from "./QueueList"
 
@@ -192,7 +192,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
   )
 
   return (
-    <Modal isOpen={isOpen}>
+    <DynamicDialog isOpen={isOpen}>
       <div className="relative z-[100] h-screen -top-header w-full">
         <div className="absolute top-0 left-0 w-full h-full">
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
@@ -256,7 +256,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
           </div>
         </div>
       </div>
-    </Modal>
+    </DynamicDialog>
   )
 }
 

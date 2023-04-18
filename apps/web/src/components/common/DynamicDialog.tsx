@@ -10,15 +10,21 @@ interface Props {
   afterClose?: () => void
 }
 
-const Modal: ComponentWithChild<Props> = memo(
+const DynamicDialog: ComponentWithChild<Props> = memo(
   ({ isOpen, children, afterOpen, beforeOpen, beforeClose, afterClose }) => {
     const container = document.getElementById("portal") as Element
 
     const [isRender, setIsRender] = useState(false)
+    const [isShow, setIsShow] = useState(false)
 
     useEffect(() => {
-      if (isOpen) setIsRender(true)
-      else setTimeout(() => setIsRender(false), 200)
+      if (isOpen) {
+        setIsRender(true)
+        setTimeout(() => setIsShow(true), 10)
+      } else {
+        setIsShow(false)
+        setTimeout(() => setIsRender(false), 200)
+      }
     }, [isOpen])
 
     if (!isRender) return null
@@ -26,7 +32,7 @@ const Modal: ComponentWithChild<Props> = memo(
     const element = (
       <div className="absolute top-header left-0 w-full z-90">
         <Transition
-          show={isOpen}
+          show={isShow}
           enter="transition-all transform duration-200"
           enterFrom="translate-y-full"
           enterTo="translate-y-0"
@@ -47,4 +53,4 @@ const Modal: ComponentWithChild<Props> = memo(
   }
 )
 
-export default Modal
+export default DynamicDialog
