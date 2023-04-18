@@ -28,7 +28,6 @@ const task = new AsyncTask(
               duration: music.duration,
             },
           })
-          .then((music) => console.log("CRON JOB: new music ", music.title))
           .catch(() => void null)
       } else {
         await prisma.music.update({

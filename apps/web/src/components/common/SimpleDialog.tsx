@@ -22,7 +22,7 @@ const SimpleDialog: Component<Props> = ({ isOpen, onClose, children }) => {
 
   return createPortal(
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+      <Dialog as="div" className="relative z-100" onClose={onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -46,7 +46,7 @@ const SimpleDialog: Component<Props> = ({ isOpen, onClose, children }) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full transform overflow-hidden rounded-2xl bg-secondary-dark/80 backdrop-blur-3xl p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-fit transform rounded-2xl bg-secondary-dark/80 backdrop-blur-3xl p-6 text-left align-middle shadow-xl transition-all">
                 {children}
               </Dialog.Panel>
             </Transition.Child>
