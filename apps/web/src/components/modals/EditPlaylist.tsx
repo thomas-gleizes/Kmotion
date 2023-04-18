@@ -17,7 +17,7 @@ type Props =
   | {
       isNew: true
       musics: IMusic[]
-      initialValues?: CreatePlaylistDto
+      initialValues: CreatePlaylistDto
     }
   | {
       isNew: false

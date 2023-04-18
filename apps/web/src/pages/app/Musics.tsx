@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import useLocalStorageState from "use-local-storage-state"
+import { useDialog } from "react-dialog-promise"
 import {
   CgRowFirst,
   FaList,
@@ -22,6 +23,7 @@ import ImageLoader from "../../components/common/ImageLoader"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import FallbackImage from "../../components/common/FallbackImage"
 import MusicSkeleton from "../../components/common/Music/MusicSkeleton"
+import SharedMusic from "../../components/modals/SharedMusic"
 import { MusicItem, MusicItemActions } from "../../components/common/Music/List"
 
 const DisplayMode: Record<string, string> = {
@@ -36,6 +38,8 @@ const Musics: Page = () => {
   } = usePlayerContext()
 
   const { user } = useAuthenticatedContext()
+
+  const shareDialog = useDialog(SharedMusic)
 
   const [displayMode, setDisplayMode] = useLocalStorageState<keyof typeof DisplayMode>(
     "displayMode",
@@ -141,11 +145,12 @@ const Musics: Page = () => {
       label: "Partager",
       icon: <FaShare />,
       className: "text-white/90 hover:bg-white/20",
-      onClick: (music: IMusic) =>
-        api
-          .shareMusic(music.id)
-          .then((data) => console.log(data.link))
-          .catch(console.error),
+      onClick: async (music: IMusic) => {
+        const response = await api.shareMusic(music.id)
+        const result = await shareDialog.open({ link: response.link })
+
+        result.copy && navigator.clipboard.writeText(response.link)
+      },
     })
   }
 

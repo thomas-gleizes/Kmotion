@@ -27,7 +27,11 @@ const PlaylistPage: Component = () => {
   const router = useRouter()
 
   const handleEditPlaylist = async () => {
-    const result = await editPlaylist.open({ isNew: true, musics: [] })
+    const result = await editPlaylist.open({
+      isNew: true,
+      musics: [],
+      initialValues: { title: "", description: "", musics: [] },
+    })
 
     if (result.action === "success-new") void refetch()
   }
