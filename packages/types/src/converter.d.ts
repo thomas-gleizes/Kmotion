@@ -12,4 +12,17 @@ export interface ConverterMusic {
   timestamp: string
 }
 
-export type ConverterMusicInfo = any
+export type ConverterMusicInfo = {
+  videoId: string
+  title: string
+  lengthSeconds: string
+  media?: {
+    artist: string
+    album: string
+    song: string
+  }
+  author: {
+    name: string
+  }
+  thumbnails: any[]
+}

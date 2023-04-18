@@ -8,9 +8,10 @@ const instance = axios.create({
 })
 
 instance.interceptors.request.use(async (config) => {
-  const token = await chrome.storage.local.get(STORAGE_KEY.AUTH_TOKEN)
+  const storage = await chrome.storage.local.get([STORAGE_KEY.AUTH_TOKEN])
 
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  if (storage[STORAGE_KEY.AUTH_TOKEN])
+    config.headers.Authorization = `Bearer ${storage[STORAGE_KEY.AUTH_TOKEN]}`
 
   return config
 })

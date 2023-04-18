@@ -2,9 +2,11 @@
   "name": "@kmotion/extension",
   "license": "ISC",
   "scripts": {
-    "build": "vite build"
+    "clean": "rm -r -f dist/*",
+    "build": "pnpm clean && vite build"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.14",
     "@hookform/resolvers": "^2.9.11",
     "@kmotion/validations": "workspace:^",
     "@tanstack/react-query": "^4.28.0",
@@ -13,6 +15,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.8",
+    "react-icons": "^4.8.0",
     "react-spinners": "^0.13.8",
     "react-use": "^17.4.0",
     "reflect-metadata": "^0.1.13",
