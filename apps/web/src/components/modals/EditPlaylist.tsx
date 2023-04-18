@@ -46,7 +46,6 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
   })
 
   const [musics, setMusics] = useState<IMusic[]>(initMusics)
-
   const searchPlaylist = useDialog(SearchPlaylist)
 
   const handleSearchMusic = async () => {
@@ -61,7 +60,7 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
   const onSubmitNew = async (values: CreatePlaylistDto) => {
     try {
       const data = await api.createPlaylist(values)
-      console.log("Data", data)
+      console.log("NEW", data)
       close({ action: "success-new", playlist: data.playlist })
     } catch (err) {
       console.error(err)
@@ -71,11 +70,16 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
   const onSubmitEdit = async (values: UpdatePlaylistDto) => {
     try {
       const data = await api.updatePlaylist(values.id, values)
-      console.log("Data", data)
+      console.log("EDIT", data)
       close({ action: "success-edit", playlist: data.playlist })
     } catch (err) {
       console.error(err)
     }
+  }
+
+  const submit = async (values: typeof initialValues) => {
+    if (isNew) void onSubmitNew(values as CreatePlaylistDto)
+    else void onSubmitEdit(values as UpdatePlaylistDto)
   }
 
   const handleDeleteMusic = (music: IMusic) => {
@@ -104,7 +108,7 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
 
   return (
     <DynamicDialog isOpen={isOpen}>
-      <form onSubmit={handleSubmit(isNew ? onSubmitNew : onSubmitEdit)}>
+      <form onSubmit={handleSubmit(submit)}>
         <div className="absolute z-[50] w-full bg-secondary/80 backdrop-blur py-2">
           <div className="flex justify-between items-center py-1 px-3">
             <button
@@ -199,7 +203,7 @@ const SearchPlaylist: DialogComponent<{}, SearchResult> = ({ isOpen, close }) =>
     queryFn: () => api.searchMusics(search).then((data) => data.musics),
     enabled: search.length >= 3,
     initialData: [],
-    staleTime: 0,
+    staleTime: 1000 * 30,
   })
 
   useEffect(() => {
