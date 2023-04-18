@@ -1,21 +1,22 @@
 import { useMemo, useRef, useState } from "react"
 import { useList } from "react-use"
 import useLocalStorageState from "use-local-storage-state"
-import { IMusic } from "@kmotion/types"
 
-export function useStorageQueue(): UseStorageQueueResult<IMusic> {
+export function useStorageQueue<
+  Item extends { id: number | string }
+>(): UseStorageQueueResult<Item> {
   const [index, setIndex] = useLocalStorageState<number>("iindex", {
     defaultValue: 0,
   })
-  const [storageQueue, setStorageQueue] = useLocalStorageState<IMusic[]>("iqueue", {
+  const [storageQueue, setStorageQueue] = useLocalStorageState<Item[]>("iqueue", {
     defaultValue: [],
   })
 
-  const savePlaylistRef = useRef<IMusic[]>([...storageQueue])
+  const savePlaylistRef = useRef<Item[]>([...storageQueue])
 
   const [isShuffled, setIsShuffled] = useState<boolean>(false)
 
-  const [list, listActions] = useList<IMusic>([...storageQueue])
+  const [list, listActions] = useList<Item>([...storageQueue])
 
   const queue = useMemo(() => {
     const queue = [...list]
@@ -23,7 +24,7 @@ export function useStorageQueue(): UseStorageQueueResult<IMusic> {
     return queue
   }, [list, index])
 
-  function insertAt(item: IMusic, index: number): IMusic[] {
+  function insertAt(item: Item, index: number): Item[] {
     // Si l'index est inférieur à 0, on l'ajuste à 0.
     if (index < 0) index = 0
     // Si l'index est supérieur ou égal à la longueur du tableau, on l'ajuste à la fin du tableau.
@@ -34,8 +35,8 @@ export function useStorageQueue(): UseStorageQueueResult<IMusic> {
     return list
   }
 
-  const actions: UseStorageQueueActions<IMusic> = {
-    set: function (items: IMusic[], initIndex?: number) {
+  const actions: UseStorageQueueActions<Item> = {
+    set: function (items: Item[], initIndex?: number) {
       listActions.set([...items])
       setStorageQueue([...items])
       savePlaylistRef.current = [...items]
@@ -55,13 +56,13 @@ export function useStorageQueue(): UseStorageQueueResult<IMusic> {
       if (index < list.length - 1) setIndex(index + 1)
       else setIndex(0)
     },
-    addNext: function (item: IMusic) {
+    addNext: function (item: Item) {
       const newList = insertAt(item, index + 1)
       listActions.set([...newList])
       setStorageQueue([...newList])
       savePlaylistRef.current = [...newList]
     },
-    addLast: function (item: IMusic) {
+    addLast: function (item: Item) {
       const newList = [...list, item]
       listActions.set([...newList])
       setStorageQueue([...newList])
@@ -74,17 +75,17 @@ export function useStorageQueue(): UseStorageQueueResult<IMusic> {
       setStorageQueue([...newList])
       savePlaylistRef.current = [...newList]
     },
-    findIndex: function (item: IMusic): number {
-      return queue.findIndex((i) => i.id === item.id)
+    findIndex: function (item: Item): number {
+      return list.findIndex((i) => i.id === item.id)
     },
     shuffle: function (i: number = index) {
       if (isShuffled) {
         setStorageQueue([...savePlaylistRef.current])
         listActions.set([...savePlaylistRef.current])
       } else {
-        const begin = [...list].slice(0, i) as IMusic[]
-        const current = list.at(i) as IMusic
-        const end = [...list].slice(i + 1).sort(() => Math.random() - 0.5) as IMusic[]
+        const begin = [...list].slice(0, i) as Item[]
+        const current = list.at(i) as Item
+        const end = [...list].slice(i + 1).sort(() => Math.random() - 0.5) as Item[]
 
         setStorageQueue([current, ...end.sort(() => Math.random() - 0.5)])
         listActions.set([...begin, current, ...end])

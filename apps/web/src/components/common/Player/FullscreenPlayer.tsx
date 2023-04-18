@@ -116,7 +116,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
           />
         </div>
         <div className="flex justify-between">
-          <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
+          <div className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
             <span>{formatTime(state.time)}</span>
           </div>
           <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
@@ -193,7 +193,7 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
 
   return (
     <DynamicDialog isOpen={isOpen}>
-      <div className="relative z-[100] h-screen -top-header w-full">
+      <div className="relative z-[90] h-screen -top-header w-full">
         <div className="absolute top-0 left-0 w-full h-full">
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
         </div>

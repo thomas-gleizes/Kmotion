@@ -86,7 +86,7 @@ export const MusicItem: Component<MusicItemProps> = ({ music, onClick, actions }
               <p className="truncate xl:text-3xl text-white">{music.title}</p>
               <p className="truncate text-sm text-white/70">{music.artist}</p>
             </div>
-            {actions.length && (
+            {actions.length > 0 && (
               <div className="w-fit">
                 <MusicItemActions actions={actions} music={music} />
               </div>
@@ -124,7 +124,7 @@ export const MusicItemActions: Component<MusicItemActionsProps> = ({ music, acti
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="z-[100000000000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary/50 backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <Menu.Items className="z-[100000000000] absolute right-0 mt-2 w-56 p-1 origin-top-right divide-y divide-gray-100 rounded-lg bg-secondary/90 backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             {actions.map((group, index) =>
               group.length ? (
                 <div key={index} className="py-1">

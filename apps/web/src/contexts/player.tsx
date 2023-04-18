@@ -20,7 +20,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
 
   const [currentPlaylist, setCurrentPlaylist] = useState<IPlaylist | null>(null)
 
-  const { queue, actions } = useStorageQueue()
+  const { queue, actions } = useStorageQueue<IMusic>()
 
   const currentMusic = queue.at(0) || null
   const nexMusic = queue.at(1) || null
