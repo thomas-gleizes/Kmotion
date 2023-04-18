@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator"
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min, MinLength } from "class-validator"
 import { Type } from "class-transformer"
 
 export class GetMusicPramsDto {
@@ -12,7 +12,7 @@ export class GetMusicPramsDto {
 export class YoutubeIdParamsDto {
   @IsString()
   @IsNotEmpty()
-  @Min(8)
+  @MinLength(8)
   youtubeId!: string
 }
 
