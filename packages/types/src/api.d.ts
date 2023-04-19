@@ -1,7 +1,7 @@
 import { IMusic, IPlaylist, IPlaylistEntry, IUser } from "./models"
 import { ConverterMusicInfo } from "./converter"
 
-export interface SuccessData {
+export interface SuccessResponseData {
   success: true
 }
 
@@ -9,54 +9,54 @@ export interface MetaData {
   total: number
 }
 
-export interface LoginResponse extends SuccessData {
+export interface LoginResponse extends SuccessResponseData {
   user: IUser
   token: string
 }
 
-export interface RegisterResponse extends SuccessData {
+export interface RegisterResponse extends SuccessResponseData {
   message: string
 }
 
-export type LogoutResponse = SuccessData
+export type LogoutResponse = SuccessResponseData
 
-interface PlaylistsResponse extends SuccessData {
+interface PlaylistsResponse extends SuccessResponseData {
   playlists: IPlaylist[]
 }
 
-interface PlaylistResponse extends SuccessData {
+interface PlaylistResponse extends SuccessResponseData {
   playlist: IPlaylist
 }
 
-interface PlaylistEntriesResponse extends SuccessData {
+interface PlaylistEntriesResponse extends SuccessResponseData {
   entries: IPlaylistEntry[]
 }
 
-interface MusicSyncResponse extends SuccessData {
+interface MusicSyncResponse extends SuccessResponseData {
   musics: IMusic[]
 }
 
-interface MusicSearchResponse extends SuccessData {
+interface MusicSearchResponse extends SuccessResponseData {
   musics: IMusic[]
 }
 
-interface MusicResponse extends SuccessData {
+interface MusicResponse extends SuccessResponseData {
   musics: IMusic[]
   meta: MetaData
 }
 
-interface MusicInfoResponse extends SuccessData {
+interface MusicInfoResponse extends SuccessResponseData {
   music: IMusic | null
   isReady: boolean
   info: ConverterMusicInfo
 }
 
-interface MusicShareResponse extends SuccessData {
+interface MusicShareResponse extends SuccessResponseData {
   music: IMusic
   link: string
 }
 
-interface MusicByPassResponse extends SuccessData {
+interface MusicByPassResponse extends SuccessResponseData {
   music: IMusic
   song: string
   cover: string

@@ -8,8 +8,14 @@ import {
   PlaylistResponse,
   PlaylistsResponse,
   RegisterResponse,
+  SuccessResponseData,
 } from "@kmotion/types"
-import { CreatePlaylistDto, LoginDto, RegisterDto } from "@kmotion/validations"
+import {
+  AddMusicToPlaylistDto,
+  CreatePlaylistDto,
+  LoginDto,
+  RegisterDto,
+} from "@kmotion/validations"
 import { Fetcher } from "./Fetcher"
 import { WINDOW_MESSAGE } from "./constants"
 
@@ -65,6 +71,14 @@ class Api {
     return this.fetcher
       .get(`playlists/${id}` + this.fetcher.parseQueryString({ entries: withEntries }))
       .then(this.toJson)
+  }
+
+  public addMusicToPlaylist(params: AddMusicToPlaylistDto): Promise<PlaylistResponse> {
+    return this.fetcher.post(`playlists/${params.id}/musics/${params.musicId}`).then(this.toJson)
+  }
+
+  public removeMusicFromPlaylist(params: AddMusicToPlaylistDto): Promise<SuccessResponseData> {
+    return this.fetcher.delete(`playlists/${params.id}/musics/${params.musicId}`).then(this.toJson)
   }
 
   public fetchEntries(id: number, withMusic: boolean): Promise<PlaylistEntriesResponse> {
