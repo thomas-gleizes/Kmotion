@@ -191,9 +191,13 @@ export default async function playlistRoutes(instance: FastifyInstance) {
     "/:id/musics/:musicId",
     { preHandler: instance.validateParams(AddMusicToPlaylistDto) },
     async (request, reply) => {
-      const [music, playlist] = await Promise.all([
+      const [music, playlist, lastEntry] = await Promise.all([
         prisma.music.findUnique({ where: { id: +request.params.musicId } }),
         prisma.playlist.findUnique({ where: { id: +request.params.id } }),
+        prisma.playlistEntry.findFirst({
+          where: { playlistId: +request.params.id },
+          orderBy: { position: "desc" },
+        }),
       ])
 
       if (!music) throw new NotFoundException("Music not found")
@@ -206,11 +210,33 @@ export default async function playlistRoutes(instance: FastifyInstance) {
         data: {
           playlistId: playlist.id,
           musicId: music.id,
-          position: 0,
+          position: lastEntry ? lastEntry.position + 1 : 0,
         },
       })
 
       reply.send({ success: true, entry: entryMapper.one(entry) })
+    }
+  )
+
+  instance.delete(
+    "/:id/musics/:musicId",
+    { preHandler: instance.validateParams(AddMusicToPlaylistDto) },
+    async (request, reply) => {
+      const [music, playlist] = await Promise.all([
+        prisma.music.findUnique({ where: { id: +request.params.musicId } }),
+        prisma.playlist.findUnique({ where: { id: +request.params.id } }),
+      ])
+
+      if (!music) throw new NotFoundException("Music not found")
+      if (!playlist) throw new NotFoundException("Playlist not found - 01")
+      if (!(playlist.authorId === request.session.user.id) && !request.session.user.isAdmin)
+        throw new NotFoundException("Playlist not found - 02")
+
+      await prisma.playlistEntry.delete({
+        where: { playlistId_musicId: { playlistId: playlist.id, musicId: music.id } },
+      })
+
+      reply.status(202).send({ success: true })
     }
   )
 

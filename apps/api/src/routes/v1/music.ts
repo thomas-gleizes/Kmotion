@@ -26,7 +26,6 @@ import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
-import * as process from "process"
 
 export default async function musicRoutes(instance: FastifyInstance) {
   const ytConverter = YtConverter.getInstance()

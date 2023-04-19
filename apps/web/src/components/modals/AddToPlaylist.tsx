@@ -1,21 +1,26 @@
-import React, { Fragment, useState } from "react"
+import React, { Fragment, useMemo } from "react"
 import { DialogComponent } from "react-dialog-promise"
 import { useQuery } from "@tanstack/react-query"
 import { Dialog, Listbox, Transition } from "@headlessui/react"
+import classnames from "classnames"
+import { FaCheck, FaChevronUp, FaSpinner } from "react-icons/all"
+import { useForm } from "react-hook-form"
+import { classValidatorResolver } from "@hookform/resolvers/class-validator"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
+import { AddMusicToPlaylistDto } from "@kmotion/validations"
 import { QUERIES_KEY } from "../../utils/constants"
 import { useAuthenticatedContext } from "../../contexts/auth"
 import SimpleDialog from "../common/SimpleDialog"
 import { api } from "../../utils/Api"
-import { FaCheck, FaChevronUp, FaSpinner } from "react-icons/all"
-import classnames from "classnames"
 
 interface Props {
   music: IMusic
 }
 
-interface Result {}
+type Result = "success" | "cancel" | "create-playlist"
+
+const resolver = classValidatorResolver(AddMusicToPlaylistDto)
 
 const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music }) => {
   const { user } = useAuthenticatedContext()
@@ -23,13 +28,36 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
   const { data: playlists, isLoading } = useQuery<IPlaylist[]>({
     queryKey: [...QUERIES_KEY.playlists, user.id],
     queryFn: () => api.fetchPlaylists(false).then((response) => response.playlists),
-    initialData: [],
   })
 
-  const [selected, setSelected] = useState<IPlaylist>()
+  const {
+    watch,
+    handleSubmit,
+    setValue,
+    formState: { isSubmitting },
+  } = useForm<AddMusicToPlaylistDto>({
+    resolver,
+    defaultValues: { musicId: music.id },
+  })
+
+  const selectedId = watch("id")
+
+  const selected = useMemo<IPlaylist | null>(() => {
+    if (!selectedId || !playlists) return null
+    return playlists.find((playlist) => playlist.id === selectedId) || null
+  }, [selectedId, playlists])
+
+  const submit = async (values: AddMusicToPlaylistDto) => {
+    try {
+      await api.addMusicToPlaylist(values)
+      close("success")
+    } catch (e) {
+      console.log("submit Err", e)
+    }
+  }
 
   return (
-    <SimpleDialog isOpen={isOpen} onClose={() => close({})}>
+    <SimpleDialog isOpen={isOpen} onClose={() => !isSubmitting && close("cancel")}>
       <div className="max-w-[400px]">
         <Dialog.Title className="text-white text-xl font-semibold">
           Ajouter {music.title} a une playlist
@@ -38,9 +66,9 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
           <div>
             <FaSpinner className="text-primary text-xl animate-spin" />
           </div>
-        ) : (
-          <div>
-            <Listbox value={selected} onChange={setSelected}>
+        ) : playlists?.length ? (
+          <form onSubmit={handleSubmit(submit)}>
+            <Listbox value={selectedId} onChange={(value) => setValue("id", value)}>
               <div className="relative mt-1">
                 <Listbox.Button className="relative text-white bg-secondary-dark w-full cursor-default rounded-lg py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
                   <span className="block truncate">
@@ -56,26 +84,25 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
                 >
-                  <Listbox.Options className="absolute bg-secondary-light/80 text-white mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  <Listbox.Options className="absolute bg-secondary-light text-white mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                     {playlists.map((playlist, index) => (
                       <Listbox.Option
                         key={index}
+                        value={playlist.id}
                         className={({ active }) =>
                           classnames(
                             "relative cursor-default select-none py-2 pl-10 pr-4 text-white",
-                            active
-                              ? "bg-primary/70"
-                              : "bg-transparent hover:bg-primary-light/90 transition"
+                            active ? "bg-primary/50" : "hover:bg-primary-light/90 transition"
                           )
                         }
-                        value={playlist}
                       >
                         {({ selected }) => (
                           <>
                             <span
-                              className={`block truncate ${
+                              className={classnames(
+                                "block truncate",
                                 selected ? "font-medium" : "font-normal"
-                              }`}
+                              )}
                             >
                               {playlist.title}
                             </span>
@@ -93,8 +120,45 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
               </div>
             </Listbox>
             <div className="flex justify-between items-center mt-8">
-              <button>Cancel</button>
-              <button>Ajouter</button>
+              <button
+                type="button"
+                className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                onClick={() => close("cancel")}
+                disabled={isSubmitting}
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                disabled={selected === undefined || isSubmitting}
+              >
+                Ajouter
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="mt-2">
+            <Dialog.Description className="text-white text-center">
+              Vous n'avez pas de playlist
+            </Dialog.Description>
+            <div className="flex justify-between items-center mt-8">
+              <button
+                type="button"
+                className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                onClick={() => close("cancel")}
+                disabled={isSubmitting}
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                disabled={selected === undefined || isSubmitting}
+                onClick={() => close("create-playlist")}
+              >
+                Créer une playlist
+              </button>
             </div>
           </div>
         )}
