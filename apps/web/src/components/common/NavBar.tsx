@@ -30,8 +30,12 @@ const NavBar: Component = () => {
   return (
     <div
       className={classnames(
-        "z-[1000] h-footer",
-        isLaggedBlur ? "bg-secondary" : fullscreen.value ? "background-blur-xl bg-opacity-90" : "background-blur-xl bg-opacity-40"
+        "z-[1000] h-footer transition",
+        isLaggedBlur
+          ? "bg-secondary"
+          : fullscreen.value
+          ? "backdrop-blur-lg bg-secondary/70"
+          : "backdrop-blur-xl bg-secondary/40"
       )}
     >
       <div className="h-full flex justify-evenly items-center">
