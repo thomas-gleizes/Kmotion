@@ -16,3 +16,7 @@ export function handleStopPropagation(callback: (event: MouseEvent) => void): Ev
     callback(event)
   }
 }
+
+export function isMobileOrTablet(): boolean {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+}

@@ -1,15 +1,13 @@
 import React, { Ref } from "react"
-import SimpleBar from "simplebar-react"
+import ScrollableContainer from "./ScrollableContainer"
 
 interface Props {
   simpleBarRef?: Ref<any> | undefined
 }
 
-const ScrollableLayout: ComponentWithChild<Props> = ({ children, simpleBarRef }) => {
+const ScrollableLayout: ComponentWithChild<Props> = ({ children }) => {
   return (
-    <SimpleBar ref={simpleBarRef} className="max-h-screen mt-header pb-56">
-      {children}
-    </SimpleBar>
+    <ScrollableContainer className="max-h-screen mt-header pb-56">{children}</ScrollableContainer>
   )
 }
 

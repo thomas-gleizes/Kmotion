@@ -1,17 +1,24 @@
-import React, { HTMLAttributes, useRef } from "react"
+import React, { HTMLAttributes } from "react"
 import SimpleBar from "simplebar-react"
+
+import { useLayoutContext } from "../../contexts/layout"
+import classnames from "classnames"
 
 const ScrollableContainer: ComponentWithChild<HTMLAttributes<HTMLDivElement>> = ({
   children,
   ...props
 }) => {
-  const ref = useRef<HTMLDivElement>(null)
+  const { isMobile } = useLayoutContext()
 
-  return (
-    <div ref={ref} {...props}>
-      <SimpleBar className="h-[10%]">{children}</SimpleBar>
-    </div>
-  )
+  if (isMobile) {
+    return (
+      <div {...props} className={classnames(props.className, "overflow-y-auto")}>
+        {children}
+      </div>
+    )
+  }
+
+  return <SimpleBar className={props.className}>{children}</SimpleBar>
 }
 
 export default ScrollableContainer

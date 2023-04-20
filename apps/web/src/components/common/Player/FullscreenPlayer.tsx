@@ -1,5 +1,4 @@
 import React, { useRef } from "react"
-import SimpleBar from "simplebar-react"
 import classnames from "classnames"
 import { useToggle } from "react-use"
 import {
@@ -14,7 +13,7 @@ import {
   FaSync,
   FaSyncAlt,
   FaVolumeDown,
-  FaVolumeUp
+  FaVolumeUp,
 } from "react-icons/all"
 
 import { usePlayerContext } from "../../../contexts/player"
@@ -24,6 +23,7 @@ import DynamicDialog from "../DynamicDialog"
 import Slider from "../Slider"
 import QueueList from "./QueueList"
 import { useLayoutContext } from "../../../contexts/layout"
+import ScrollableContainer from "../../layouts/ScrollableContainer"
 
 interface Props {
   isOpen: boolean
@@ -119,8 +119,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           />
         </div>
         <div className="flex justify-between">
-          <div
-            className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
+          <div className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
             <span>{formatTime(state.time)}</span>
           </div>
           <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
@@ -202,8 +201,11 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
         </div>
         <div
-          className={classnames("h-full pt-header pb-footer", !isLaggedBlur ?
-            "bg-black/20 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]" : "background-blur"
+          className={classnames(
+            "h-full pt-header pb-footer",
+            !isLaggedBlur
+              ? "bg-black/20 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]"
+              : "background-blur"
           )}
         >
           <div className={classnames("h-full px-6 lg:px-10 py-4")}>
@@ -253,9 +255,9 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                     </div>
                   )}
                   {showQueue && (
-                    <SimpleBar className="h-[calc(100vh-420px)] lg:h-[calc(75vh-450px)]">
+                    <ScrollableContainer className="h-[calc(100vh-420px)] lg:h-[calc(75vh-450px)]">
                       <QueueList />
-                    </SimpleBar>
+                    </ScrollableContainer>
                   )}
                   <div className="h-min py-2">{ControlsBlock}</div>
                 </div>
