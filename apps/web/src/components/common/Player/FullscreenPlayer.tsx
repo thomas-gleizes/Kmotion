@@ -14,7 +14,7 @@ import {
   FaSync,
   FaSyncAlt,
   FaVolumeDown,
-  FaVolumeUp,
+  FaVolumeUp
 } from "react-icons/all"
 
 import { usePlayerContext } from "../../../contexts/player"
@@ -119,7 +119,8 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           />
         </div>
         <div className="flex justify-between">
-          <div className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
+          <div
+            className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
             <span>{formatTime(state.time)}</span>
           </div>
           <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
@@ -198,13 +199,13 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
     <DynamicDialog isOpen={isOpen}>
       <div className="relative z-[90] h-screen -top-header w-full">
         <div className="absolute top-0 left-0 w-full h-full">
-          <img src={assets.cover.url} alt="cover" className="h-full w-full" />
+          <img src={assets.cover.url} alt="cover"
+               className={classnames("h-full w-full", isLaggedBlur && "blur-[100px] brightness-[80%]")} />
         </div>
         <div
-          className={classnames("h-full pt-header pb-footer", {
-            "bg-black/20 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]":
-              !isLaggedBlur,
-          })}
+          className={classnames("h-full pt-header pb-footer", !isLaggedBlur &&
+            "bg-black/20 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]"
+          )}
         >
           <div className={classnames("h-full px-6 lg:px-10 py-4")}>
             <div className="h-full flex flex-col lg:flex-row justify-evenly lg:items-center">

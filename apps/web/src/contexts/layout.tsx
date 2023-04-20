@@ -9,7 +9,6 @@ export const useLayoutContext = useContextFactory(LayoutContext)
 
 const LayoutProvider: ComponentWithChild = ({ children }) => {
   const isLaggedBlur =
-    window.navigator.userAgent.includes("Chrome") &&
     (window.navigator.userAgent.includes("Win32") || window.navigator.userAgent.includes("Win64"))
 
   return <LayoutContext.Provider value={{ isLaggedBlur }}>{children}</LayoutContext.Provider>
