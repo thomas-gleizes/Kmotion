@@ -24,7 +24,6 @@ const NavLink: ComponentWithChild<{ to: string }> = ({ to, children }) => {
 }
 
 const NavBar: Component = () => {
-  const { fullscreen } = usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
 
   return (
