@@ -8,7 +8,11 @@ const LayoutContext = createContext<LayoutContextValues>(null as never)
 export const useLayoutContext = useContextFactory(LayoutContext)
 
 const LayoutProvider: ComponentWithChild = ({ children }) => {
-  return <LayoutContext.Provider value={{}}>{children}</LayoutContext.Provider>
+  const isLaggedBlur =
+    window.navigator.userAgent.includes("Chrome") &&
+    (window.navigator.userAgent.includes("Win32") || window.navigator.userAgent.includes("Win64"))
+
+  return <LayoutContext.Provider value={{ isLaggedBlur }}>{children}</LayoutContext.Provider>
 }
 
 export default LayoutProvider

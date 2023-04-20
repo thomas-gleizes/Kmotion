@@ -36,11 +36,6 @@ interface PlayerContextValues {
 
 // Layout
 
-interface LayoutContextValues {}
-
-// Modals
-
-interface ModalsContextValues {
-  open: <Result>(component: ReturnType<ModalComponent>) => Promise<Result>
-  close: (uid: string) => void
+interface LayoutContextValues {
+  isLaggedBlur: boolean
 }
