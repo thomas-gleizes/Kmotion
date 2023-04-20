@@ -23,8 +23,10 @@ import { roundMinMax } from "../../../utils/number"
 import DynamicDialog from "../DynamicDialog"
 import Slider from "../Slider"
 import QueueList from "./QueueList"
+import { useLayoutContext } from "../../../contexts/layout"
 
 interface Props {
+  isOpen: boolean
   state: {
     paused: boolean
     time: number
@@ -41,8 +43,9 @@ interface Props {
   }
 }
 
-const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) => {
-  const { currentMusic, playlist, actions, loop, assets, queue } = usePlayerContext()
+const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
+  const { currentMusic, playlist, actions, loop, assets } = usePlayerContext()
+  const { isLaggedBlur } = useLayoutContext()
 
   const tRef = useRef<HTMLHeadingElement>(null)
 
@@ -197,7 +200,12 @@ const FullscreenPlayer: ModalComponent<Props> = ({ isOpen, state, controls }) =>
         <div className="absolute top-0 left-0 w-full h-full">
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
         </div>
-        <div className="h-full pt-header pb-footer bg-black/20 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]">
+        <div
+          className={classnames("h-full pt-header pb-footer", {
+            "bg-black/20 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]":
+              !isLaggedBlur,
+          })}
+        >
           <div className={classnames("h-full px-6 lg:px-10 py-4")}>
             <div className="h-full flex flex-col lg:flex-row justify-evenly lg:items-center">
               <div
