@@ -33,9 +33,7 @@ const NavBar: Component = () => {
         "z-[1000] h-footer transition",
         isLaggedBlur
           ? "bg-secondary"
-          : fullscreen.value
-          ? "backdrop-blur-lg bg-secondary/70"
-          : "backdrop-blur-xl bg-secondary/40"
+          : "backdrop-blur-xl bg-secondary/50"
       )}
     >
       <div className="h-full flex justify-evenly items-center">
