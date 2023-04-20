@@ -4,12 +4,14 @@ import { useAudio, useEvent, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
 
 import { usePlayerContext } from "../../../contexts/player"
+import { useLayoutContext } from "../../../contexts/layout"
 import { handleStopPropagation } from "../../../utils/helpers"
 import { roundMinMax } from "../../../utils/number"
 import FullscreenPlayer from "./FullscreenPlayer"
 
 const SmallPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen, assets } = usePlayerContext()
+  const { isLaggedBlur } = useLayoutContext()
 
   const [audio, state, controls, ref] = useAudio(<audio src={assets.stream.url} autoPlay={true} />)
   const togglePlaying = () => (state.playing ? controls.pause() : controls.play())
@@ -67,7 +69,7 @@ const SmallPlayer: Component = () => {
   }, [navigator, controls, state])
 
   useTitle(currentMusic ? `${currentMusic?.artist} - ${currentMusic?.title}` : "Kmotion", {
-    restoreOnUnmount: true,
+    restoreOnUnmount: true
   })
 
   const tRef = useRef<HTMLElement>(null)
@@ -82,13 +84,12 @@ const SmallPlayer: Component = () => {
       {audio}
       <FullscreenPlayer
         isOpen={fullscreen.value}
-        close={() => fullscreen.toggle()}
         state={state}
         controls={controls}
       />
       <div
         onClick={handleStopPropagation(() => fullscreen.toggle())}
-        className="relative z-[30] border-b border-neutral-800 bg-opacity-70 bg-secondary backdrop-blur cursor-default"
+        className={classnames("relative z-[30] border-b border-neutral-800 cursor-default", isLaggedBlur ? "bg-secondary-dark/90" : "bg-secondary-dark/70 backdrop-blur")}
       >
         <div className="flex items-center py-2 lg:py-4 px-2 lg:px-16 justify-between">
           <div className="w-3/5 flex items-center">
