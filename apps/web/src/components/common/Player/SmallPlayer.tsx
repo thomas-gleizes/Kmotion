@@ -8,6 +8,7 @@ import { useLayoutContext } from "../../../contexts/layout"
 import { handleStopPropagation } from "../../../utils/helpers"
 import { roundMinMax } from "../../../utils/number"
 import FullscreenPlayer from "./FullscreenPlayer"
+import music from "../../../pages/others/Music"
 
 const SmallPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen, assets } = usePlayerContext()
@@ -69,7 +70,7 @@ const SmallPlayer: Component = () => {
   }, [navigator, controls, state])
 
   useTitle(currentMusic ? `${currentMusic?.artist} - ${currentMusic?.title}` : "Kmotion", {
-    restoreOnUnmount: true
+    restoreOnUnmount: true,
   })
 
   const tRef = useRef<HTMLElement>(null)
@@ -82,14 +83,13 @@ const SmallPlayer: Component = () => {
   return (
     <>
       {audio}
-      <FullscreenPlayer
-        isOpen={fullscreen.value}
-        state={state}
-        controls={controls}
-      />
+      <FullscreenPlayer isOpen={fullscreen.value} state={state} controls={controls} />
       <div
         onClick={handleStopPropagation(() => fullscreen.toggle())}
-        className={classnames("relative z-[30] border-b border-neutral-800 cursor-default", isLaggedBlur ? "bg-secondary-dark/90" : "bg-secondary-dark/70 backdrop-blur")}
+        className={classnames(
+          "relative z-[30] border-b border-neutral-800 cursor-default",
+          isLaggedBlur ? "bg-secondary-dark/90" : "bg-secondary-dark/70 backdrop-blur"
+        )}
       >
         <div className="flex items-center py-2 lg:py-4 px-2 lg:px-16 justify-between">
           <div className="w-3/5 flex items-center">
@@ -114,12 +114,13 @@ const SmallPlayer: Component = () => {
               <span
                 ref={tRef}
                 className={classnames(
-                  "text-sm lg:text-2xl text-white inline-block whitespace-nowrap",
+                  "text-sm lg:text-3xl lg:font-semibold text-white inline-block whitespace-nowrap",
                   { "overflow-defilement": isOverflow }
                 )}
               >
                 {currentMusic.title}
               </span>
+              <span className="hidden lg:block text-lg text-white/70">{currentMusic.artist}</span>
             </div>
           </div>
           <div className="w-2/5 flex justify-center items-center space-x-5 md:space-x-16">
