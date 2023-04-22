@@ -27,6 +27,7 @@ import SharedMusic from "../../components/modals/SharedMusic"
 import { MusicItem, MusicItemActions } from "../../components/common/Music/List"
 import AddToPlaylist from "../../components/modals/AddToPlaylist"
 import EditPlaylist from "../../components/modals/EditPlaylist"
+import ConfirmDialog from "../../components/modals/ConfirmDialog"
 
 const DisplayMode: Record<string, string> = {
   GRID: "grid",
@@ -44,6 +45,7 @@ const Musics: Page = () => {
   const shareDialog = useDialog(SharedMusic)
   const addToPlaylist = useDialog(AddToPlaylist)
   const editPlaylist = useDialog(EditPlaylist)
+  const confirmDialog = useDialog(ConfirmDialog)
 
   const [displayMode, setDisplayMode] = useLocalStorageState<keyof typeof DisplayMode>(
     "displayMode",
@@ -112,15 +114,12 @@ const Musics: Page = () => {
     const result = await addToPlaylist.open({ music })
 
     if (result === "create-playlist") {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
       const result = await editPlaylist.open({
         isNew: true,
         musics: [],
         initialValues: { title: "", description: "", musics: [] },
       })
 
-      await new Promise((resolve) => setTimeout(resolve, 500))
       if (result.action === "success-new") {
         await handleAddToPlaylist(music)
       }
@@ -158,10 +157,22 @@ const Musics: Page = () => {
       icon: <FaTrash />,
       className: "text-red-500 hover:bg-red-500/20",
       onClick: (music: IMusic) =>
-        api
-          .deleteMusic(music.id)
-          .then(() => refetch())
-          .catch((err) => console.log("delete failed", err)),
+        confirmDialog
+          .open({
+            message: (
+              <span>
+                Voulez vous supprimer la music "{music.title}" de {music.artist} <br /> Cette action
+                est définitive
+              </span>
+            ),
+          })
+          .then((result) => {
+            if (result)
+              api
+                .deleteMusic(music.id)
+                .then(() => refetch())
+                .catch((err) => console.log("delete failed", err))
+          }),
     })
     listActions[1].unshift({
       label: "Partager",
