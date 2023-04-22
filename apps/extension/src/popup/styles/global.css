@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 #root {
-    @apply bg-black p-0.5 w-[275px];
+  @apply bg-black p-0.5 w-[275px];
 }
