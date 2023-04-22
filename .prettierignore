@@ -3,3 +3,5 @@ dist
 public
 .idea
 .vscode
+pnpm-lock.yaml
+LICENSE
