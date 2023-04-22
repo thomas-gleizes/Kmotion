@@ -19,7 +19,7 @@
     "classnames": "^2.3.2",
     "daisyui": "^2.51.5",
     "react": "^18.2.0",
-    "react-dialog-promise": "^0.3.4",
+    "react-dialog-promise": "^0.3.9",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
     "react-icons": "^4.8.0",

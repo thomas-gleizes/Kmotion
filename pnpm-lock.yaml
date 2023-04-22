@@ -227,8 +227,8 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       react-dialog-promise:
-        specifier: ^0.3.4
-        version: 0.3.4(react@18.2.0)
+        specifier: ^0.3.9
+        version: 0.3.9(react@18.2.0)
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
@@ -3752,8 +3752,8 @@ packages:
     resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
     engines: {node: '>=10'}
 
-  /react-dialog-promise@0.3.4(react@18.2.0):
-    resolution: {integrity: sha512-VVpPzhpoHUZwfIYkeeLvA2nz/jMFQFV07oSKDwf1UG26PI72KH+QGJ0glhCdDNkq4PRZvyGNch44F5JgYavAEw==}
+  /react-dialog-promise@0.3.9(react@18.2.0):
+    resolution: {integrity: sha512-XYEM4WEeW4Xqe/AkSeYQJGVdXk5xqj4BLrTjyIArs5kx39JvCKhoSmFnx2GshrxQhKBrs5WWPQLXx9eYPr5o6w==}
     engines: {npm: '>=5.0.0'}
     peerDependencies:
       react: '>=16'
