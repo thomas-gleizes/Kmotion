@@ -198,13 +198,14 @@ const SearchPlaylist: DialogComponent<{}, SearchResult> = ({ isOpen, close }) =>
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { data: musics } = useQuery<IMusic[]>({
+  const { data } = useQuery<IMusic[]>({
     queryKey: [...QUERIES_KEY.musics_search, search],
     queryFn: () => api.searchMusics(search).then((data) => data.musics),
     enabled: search.length >= 3,
-    initialData: [],
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 10,
   })
+
+  const musics: IMusic[] = data || [];
 
   useEffect(() => {
     if (!isOpen) {
