@@ -1,9 +1,10 @@
 import LoginScreen from "./screens/LoginScreen"
-import VideoScreen from "./screens/VideoScreen"
+import VideoScreen from "./screens/authed/VideoScreen"
+import SettingsScreen from "./screens/authed/SettingsScreen"
 import UnAuthLayout from "./layouts/UnAuthLayout"
 import AuthLayout from "./layouts/AuthLayout"
 
-export const routes: Record<string, Route> = {
+export const routes = {
   login: {
     name: "login",
     screen: LoginScreen,
@@ -17,5 +18,19 @@ export const routes: Record<string, Route> = {
     root: AuthLayout,
     needAuth: true,
     default: true,
+  },
+  test: {
+    name: "test",
+    screen: SettingsScreen,
+    root: AuthLayout,
+    needAuth: true,
+    default: false,
+  },
+  settings: {
+    name: "settings",
+    screen: SettingsScreen,
+    root: AuthLayout,
+    needAuth: true,
+    default: false,
   },
 }

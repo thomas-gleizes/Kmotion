@@ -19,8 +19,11 @@ async function run() {
 
     fetchVideoInfo(videoId)
       .then((response) => {
-        videoInfo = response.data
-        status = "success"
+        if (response.data) {
+          console.log("FETCH SUCCESS", response.data.info.title)
+          videoInfo = response.data
+          status = "success"
+        }
       })
       .catch(() => (status = "error"))
   }

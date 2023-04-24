@@ -13,7 +13,7 @@ import {
   FaSync,
   FaSyncAlt,
   FaVolumeDown,
-  FaVolumeUp
+  FaVolumeUp,
 } from "react-icons/all"
 
 import { usePlayerContext } from "../../../contexts/player"
@@ -51,13 +51,12 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
 
   const [showQueue, toggleShowQueue] = useToggle(false)
 
-
   const isOverflow =
     (tRef.current?.offsetWidth || 0) >= (tRef.current?.parentElement?.offsetWidth || 2000)
 
   const ImageBlock = (
     <div
-      onClick={() => showQueue ? toggleShowQueue() : null}
+      onClick={() => (showQueue ? toggleShowQueue() : null)}
       className={classnames(
         "flex items-center transition-all duration-300 h-full lg:px-16",
         showQueue ? "pr-2 w-2/5 lg:w-full" : "w-full lg:flex-col lg:justify-center"
@@ -118,8 +117,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           />
         </div>
         <div className="flex justify-between">
-          <div
-            className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
+          <div className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
             <span>{formatTime(state.time)}</span>
           </div>
           <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
