@@ -46,7 +46,7 @@ const SimpleDialog: Component<Props> = ({ isOpen, onClose, children }) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-fit transform rounded-2xl bg-secondary-dark/80 backdrop-blur-3xl p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-fit transform rounded-2xl bg-secondary-dark/90 backdrop-blur-3xl p-6 text-left align-middle shadow-xl transition-all">
                 {children}
               </Dialog.Panel>
             </Transition.Child>

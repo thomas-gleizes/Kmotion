@@ -7,7 +7,5 @@
     "jsx": "react-jsx",
     "strict": true
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
