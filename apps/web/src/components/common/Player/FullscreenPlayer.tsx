@@ -13,7 +13,7 @@ import {
   FaSync,
   FaSyncAlt,
   FaVolumeDown,
-  FaVolumeUp,
+  FaVolumeUp
 } from "react-icons/all"
 
 import { usePlayerContext } from "../../../contexts/player"
@@ -47,18 +47,17 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
   const { currentMusic, playlist, actions, loop, assets } = usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
 
-  const tRef = useRef<HTMLHeadingElement>(null)
+  const tRef = useRef<HTMLHeadingElement>()
 
   const [showQueue, toggleShowQueue] = useToggle(false)
 
-  if (!currentMusic) return null
 
   const isOverflow =
     (tRef.current?.offsetWidth || 0) >= (tRef.current?.parentElement?.offsetWidth || 2000)
 
   const ImageBlock = (
     <div
-      onClick={showQueue ? toggleShowQueue : undefined}
+      onClick={() => showQueue ? toggleShowQueue() : null}
       className={classnames(
         "flex items-center transition-all duration-300 h-full lg:px-16",
         showQueue ? "pr-2 w-2/5 lg:w-full" : "w-full lg:flex-col lg:justify-center"
@@ -119,7 +118,8 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           />
         </div>
         <div className="flex justify-between">
-          <div className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
+          <div
+            className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
             <span>{formatTime(state.time)}</span>
           </div>
           <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
@@ -205,7 +205,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
             "h-full pt-header pb-footer",
             !isLaggedBlur
               ? "bg-black/20 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]"
-              : "background-blur"
+              : "backdrop-blur-[0px] bg-secondary/80"
           )}
         >
           <div className={classnames("h-full px-6 lg:px-10 py-4")}>
