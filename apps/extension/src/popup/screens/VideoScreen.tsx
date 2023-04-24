@@ -11,7 +11,7 @@ const VideoScreen = () => {
   const { loading, error, value } = useAsync(async () => {
     return new Promise<{ info: ConverterMusicInfo; music: IMusic; isReady: boolean }>(
       (resolve, reject) => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
           const targetTab = tabs[0]
           if (!targetTab || !targetTab?.url) return reject(new Error("No URL"))
 
@@ -22,10 +22,31 @@ const VideoScreen = () => {
           if (url.pathname !== "/watch") return reject(new Error("Not a video"))
           if (url.searchParams.get("v") === null) return reject(new Error("No video ID"))
 
-          chrome.runtime.onMessage.addListener((message) => {
-            if (message.type === MESSAGE_TYPE.REPLY_VIDEO_INFO) resolve(message.data)
-          })
-          chrome.tabs.sendMessage(targetTab.id, { type: MESSAGE_TYPE.ASK_VIDEO_INFO })
+          let loop = true
+          while (loop) {
+            console.log("loop")
+            chrome.tabs.sendMessage(
+              targetTab.id,
+              { type: MESSAGE_TYPE.ASK_VIDEO_INFO },
+              (message) => {
+                switch (message.status) {
+                  case "success":
+                    loop = false
+                    return resolve(message.videoInfo)
+                  case "error":
+                    loop = false
+                    return reject(new Error(message.error))
+                  case "loading":
+                    return
+                  case "no-video":
+                    loop = false
+                    return reject(new Error("No video"))
+                }
+              }
+            )
+
+            await new Promise((resolve) => setTimeout(resolve, 200))
+          }
         })
       }
     )
