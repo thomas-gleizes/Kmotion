@@ -12,19 +12,9 @@
   },
   "content_scripts": [
     {
-      "js": [
-        "src/content-scripts.ts"
-      ],
-      "matches": [
-        "https://www.youtube.com/watch*"
-      ]
+      "js": ["src/content-scripts.ts"],
+      "matches": ["https://www.youtube.com/watch*"]
     }
   ],
-  "permissions": [
-    "storage",
-    "webNavigation",
-    "activeTab",
-    "tabs",
-    "contextMenus"
-  ]
+  "permissions": ["storage", "webNavigation", "activeTab", "tabs", "contextMenus"]
 }

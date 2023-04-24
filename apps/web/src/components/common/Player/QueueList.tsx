@@ -3,11 +3,13 @@ import { useDialog } from "react-dialog-promise"
 import { CgRowFirst, FaList, FaTimes, FaTrash } from "react-icons/all"
 
 import { IMusic } from "@kmotion/types"
+import { api } from "../../../utils/Api"
 import { usePlayerContext } from "../../../contexts/player"
 import { useAuthenticatedContext } from "../../../contexts/auth"
 import { MusicsList } from "../Music/List"
 import AddToPlaylist from "../../modals/AddToPlaylist"
 import EditPlaylist from "../../modals/EditPlaylist"
+import ConfirmDialog from "../../modals/ConfirmDialog"
 
 const QueueList: Component = () => {
   const { actions, queue } = usePlayerContext()
@@ -21,6 +23,7 @@ const QueueList: Component = () => {
 
   const addToPlaylist = useDialog(AddToPlaylist)
   const editPlaylist = useDialog(EditPlaylist)
+  const confirmDialog = useDialog(ConfirmDialog)
 
   const handleAddToPlaylist = async (music: IMusic) => {
     const result = await addToPlaylist.open({ music })
@@ -48,7 +51,7 @@ const QueueList: Component = () => {
           label: "Supprimer de la queue",
           icon: <FaTimes />,
           className: "text-primary hover:bg-primary/30",
-          onClick: (music: IMusic) => null,
+          onClick: (music: IMusic) => actions.remove(actions.findIndex(music)),
         },
         {
           label: "Ajouter à une playlist",
@@ -80,7 +83,23 @@ const QueueList: Component = () => {
         label: "Supprimer",
         icon: <FaTrash />,
         className: "text-primary hover:bg-primary/30",
-        onClick: (music: IMusic) => null,
+        onClick: (music: IMusic) =>
+          confirmDialog
+            .open({
+              message: (
+                <span>
+                  Voulez vous supprimer la music "{music.title}" de {music.artist} <br /> Cette
+                  action est définitive
+                </span>
+              ),
+            })
+            .then((result) => {
+              if (result)
+                api
+                  .deleteMusic(music.id)
+                  .then(() => actions.remove(actions.findIndex(music)))
+                  .catch((err) => console.log("delete failed", err))
+            }),
       })
     }
 

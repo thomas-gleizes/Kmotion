@@ -65,9 +65,9 @@ export default class YtConverter {
   }
 
   public delete(youtubeId: string): Promise<unknown> {
-    return fetch(`${this._url}/delete/${youtubeId}`, {
+    return fetch(`${this._url}/${youtubeId}`, {
       method: "DELETE",
       headers: this.getHeaders(),
-    }).then((response) => response.json())
+    })
   }
 }

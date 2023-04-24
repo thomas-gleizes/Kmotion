@@ -22,6 +22,7 @@ import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import EditPlaylist from "../../components/modals/EditPlaylist"
 import { MusicsList } from "../../components/common/Music/List"
 import AddToPlaylist from "../../components/modals/AddToPlaylist"
+import ConfirmDialog from "../../components/modals/ConfirmDialog"
 
 const Playlist: Page = () => {
   const { id } = useParams() as { id: string }
@@ -37,6 +38,7 @@ const Playlist: Page = () => {
 
   const editPlaylist = useDialog(EditPlaylist)
   const addToPlaylist = useDialog(AddToPlaylist)
+  const confirmDialog = useDialog(ConfirmDialog)
 
   const [querySearch, setQuerySearch] = useState("")
 
@@ -123,15 +125,12 @@ const Playlist: Page = () => {
     const result = await addToPlaylist.open({ music })
 
     if (result === "create-playlist") {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
       const result = await editPlaylist.open({
         isNew: true,
         musics: [],
         initialValues: { title: "", description: "", musics: [] },
       })
 
-      await new Promise((resolve) => setTimeout(resolve, 500))
       if (result.action === "success-new") {
         await handleAddToPlaylist(music)
       }
@@ -177,7 +176,23 @@ const Playlist: Page = () => {
       label: "Supprimer",
       icon: <FaTrash />,
       className: "text-red-500 hover:bg-red-500/30",
-      onClick: (music: IMusic) => console.log("delete", music),
+      onClick: (music: IMusic) =>
+        confirmDialog
+          .open({
+            message: (
+              <span>
+                Voulez vous supprimer la music "{music.title}" de {music.artist} <br /> Cette action
+                est définitive
+              </span>
+            ),
+          })
+          .then((result) => {
+            if (result)
+              api
+                .deleteMusic(music.id)
+                .then(() => entriesQuery.refetch())
+                .catch((err) => console.log("delete failed", err))
+          }),
     })
 
   return (
