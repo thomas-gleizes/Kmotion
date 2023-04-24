@@ -5,7 +5,13 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "strict": true
+    "strict": true,
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2015.promise"
+    ]
   },
   "exclude": ["node_modules"]
 }

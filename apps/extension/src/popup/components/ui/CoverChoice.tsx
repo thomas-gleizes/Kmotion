@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 
 import { ConverterMusicInfo } from "@kmotion/types"
 import CardCollapse from "../common/CardCollapse"
@@ -9,6 +9,14 @@ interface Props {
 
 const CoverChoice: React.FC<Props> = ({ info }) => {
   const [selected, setSelected] = useState(info.thumbnails.at(-1))
+
+  const inputFileRef = useRef<HTMLInputElement>()
+
+  const handleChangeUploadFile = async () => {
+    if (inputFileRef.current) inputFileRef.current.click()
+  }
+
+  console.log("selected", selected)
 
   return (
     <CardCollapse title="Couverture" defaultOpen={true}>
@@ -38,6 +46,17 @@ const CoverChoice: React.FC<Props> = ({ info }) => {
               </button>
             </div>
           ))}
+          <div className="my-0.5 w-11/12 mx-auto">
+            <input ref={inputFileRef} type="file" className="hidden" />
+            <button
+              onClick={handleChangeUploadFile}
+              className={
+                "border w-full rounded text-sm shadow-sm transform hover:scale-105 hover:shadow-md duration-75 bg-gray-100"
+              }
+            >
+              Importer
+            </button>
+          </div>
         </div>
       </>
     </CardCollapse>

@@ -205,7 +205,7 @@ const SearchPlaylist: DialogComponent<{}, SearchResult> = ({ isOpen, close }) =>
     staleTime: 1000 * 10,
   })
 
-  const musics: IMusic[] = data || [];
+  const musics: IMusic[] = data || []
 
   useEffect(() => {
     if (!isOpen) {

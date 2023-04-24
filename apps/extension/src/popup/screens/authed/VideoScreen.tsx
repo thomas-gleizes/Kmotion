@@ -3,11 +3,11 @@ import { useAsync } from "react-use"
 import { FaSpinner } from "react-icons/all"
 
 import { ConverterMusicInfo, IMusic } from "@kmotion/types"
-import { MESSAGE_TYPE } from "../../resources/constants"
-import MetaData from "../components/ui/MetaData"
-import CoverChoice from "../components/ui/CoverChoice"
+import { MESSAGE_TYPE } from "../../../resources/constants"
+import MetaData from "../../components/ui/MetaData"
+import CoverChoice from "../../components/ui/CoverChoice"
 
-const VideoScreen = () => {
+const VideoScreen: React.FC = () => {
   const { loading, error, value } = useAsync(async () => {
     return new Promise<{ info: ConverterMusicInfo; music: IMusic; isReady: boolean }>(
       (resolve, reject) => {
