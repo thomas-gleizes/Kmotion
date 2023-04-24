@@ -10,29 +10,39 @@ async function run() {
 
   if (!storage[STORAGE_KEY.AUTH_TOKEN]) throw new Error("Content script: no auth token found")
 
-  const videoId = new URL(document.location.href).searchParams.get("v")
-  let requestVideoInfo: Promise<MusicInfoResponse> | null = null
+  let videoId: string | null = new URL(document.location.href).searchParams.get("v")
+  let videoInfo: MusicInfoResponse | null = null
+  let status = videoId ? "stand-by" : "no-video"
 
-  if (videoId) {
-    requestVideoInfo = fetchVideoInfo(videoId).then((response) => response.data)
+  function fetchInfo(videoId: string) {
+    status = "loading"
+
+    fetchVideoInfo(videoId)
+      .then((response) => {
+        videoInfo = response.data
+        status = "success"
+      })
+      .catch(() => (status = "error"))
   }
+
+  if (status === "stand-by") fetchInfo(videoId as string)
 
   chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     switch (message.type) {
       case MESSAGE_TYPE.ASK_VIDEO_INFO: {
-        if (requestVideoInfo === null) {
-          return sendResponse({ music: null, isReady: false, info: null })
+        switch (status) {
+          case "loading":
+            return sendResponse({ status, videoId })
+          case "success":
+            return sendResponse({ status, videoId, videoInfo })
+          case "error":
+            return sendResponse({ status, videoId })
+          case "no-video":
+            return sendResponse({ status })
         }
-        const response = await requestVideoInfo
-
-        chrome.runtime.sendMessage({
-          type: MESSAGE_TYPE.REPLY_VIDEO_INFO,
-          data: {
-            music: response.music,
-            isReady: response.isReady,
-            info: response.info,
-          },
-        })
+      }
+      case MESSAGE_TYPE.SET_VIDEO_ID: {
+        if (typeof videoId === "string") fetchInfo(message.videoId)
       }
     }
   })
