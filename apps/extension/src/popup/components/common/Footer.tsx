@@ -2,8 +2,8 @@ import React from "react"
 import classnames from "classnames"
 
 import { routes } from "../../routes"
-import Link from "./Link"
 import { useRouterContext } from "../../contexts/router"
+import Link from "./Link"
 
 const NavLink: React.FC<{ route: Route }> = ({ route }) => {
   const { current } = useRouterContext()
@@ -14,13 +14,16 @@ const NavLink: React.FC<{ route: Route }> = ({ route }) => {
     <div className="">
       <Link
         tag="div"
-        route={route}
+        to={route}
         className={classnames("cursor-pointer text-white/80 text-center", active && "text-white")}
       >
         {route.name}
       </Link>
       <div
-        className={classnames("mx-auto h-1 bg-white rounded-full", active ? "w-11/12" : "w-0")}
+        className={classnames(
+          "mx-auto h-0.5 bg-white rounded-full transition transform",
+          active ? "scale-x-100" : "scale-x-0"
+        )}
       ></div>
     </div>
   )

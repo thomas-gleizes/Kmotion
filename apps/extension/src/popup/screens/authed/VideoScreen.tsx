@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { useAsync } from "react-use"
 import { FaSpinner } from "react-icons/all"
 
@@ -6,8 +6,11 @@ import { ConverterMusicInfo, IMusic } from "@kmotion/types"
 import { MESSAGE_TYPE } from "../../../resources/constants"
 import MetaData from "../../components/ui/MetaData"
 import CoverChoice from "../../components/ui/CoverChoice"
+import { downloadMusic } from "../../../utils/api"
 
 const VideoScreen: React.FC = () => {
+  const [isDownloading, setIsDownloading] = useState(false)
+
   const { loading, error, value } = useAsync(async () => {
     return new Promise<{ info: ConverterMusicInfo; music: IMusic; isReady: boolean }>(
       (resolve, reject) => {
@@ -61,13 +64,27 @@ const VideoScreen: React.FC = () => {
 
   if (error || !value) return <div className="text-xl py-5 text-center">Video id not found</div>
 
+  const handleFetch = async () => {
+    setIsDownloading(false)
+    try {
+      const response = await downloadMusic(value.music.youtubeId)
+    } catch (e) {
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+
   return (
     <div className="flex flex-col space-y-5">
       <MetaData info={value.info} isReady={value.isReady} />
       <CoverChoice info={value.info} />
 
       <div className="w-full px-2">
-        <button className="bg-gradient-to-bl py-2 from-blue-600 to-blue-900 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 active:hover:shadow-md active:scale-95 transform transition text-white w-full text-xl font-semibold">
+        <button
+          onClick={() => handleFetch()}
+          className="py-1.5 bg-gradient-to-bl rounded-md from-blue-700 to-gray-700 shadow-lg hover:shadow-xl hover:scale-105 active:hover:shadow-md active:scale-95 transform transition text-white w-full text-xl font-semibold"
+          disabled={isDownloading}
+        >
           {value.isReady ? "Télécharger" : "Convertir"}
         </button>
       </div>

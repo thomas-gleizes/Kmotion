@@ -36,8 +36,6 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
   const state = useAsync(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
     const info = await chrome.storage.local.get([STORAGE_KEY.USER, STORAGE_KEY.AUTH_TOKEN])
     if (info[STORAGE_KEY.USER] && info[STORAGE_KEY.AUTH_TOKEN]) {
       setIsAuthenticated(true)
