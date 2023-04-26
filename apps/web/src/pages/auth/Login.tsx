@@ -6,8 +6,8 @@ import LoginForm from "../../components/forms/LoginForm"
 const LoginPage: Page = () => {
   return (
     <div className="flex flex-col space-y-10">
-      <div className="mb-4">
-        <p className="text-gray-600">Connexion</p>
+      <div className="">
+        <p className="text-white/70">Connexion</p>
         <h2 className="text-xl font-bold">
           Rejoignez <span className="">Kmotion</span>
         </h2>

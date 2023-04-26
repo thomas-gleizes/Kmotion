@@ -9,8 +9,8 @@ import { useUnAuthenticatedContext } from "../../contexts/auth"
 const resolver = classValidatorResolver(LoginDto)
 
 const defaultValues: LoginDto = {
-  email: "invite@kmotion.fr",
-  password: "invite123",
+  email: "",
+  password: "",
 }
 
 const LoginForm: Component = () => {
@@ -35,37 +35,37 @@ const LoginForm: Component = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col space-y-2">
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Email</span>
-          </label>
-          <label className="input-group">
-            <span>Email</span>
-            <input
-              {...register("email")}
-              type="text"
-              placeholder="info@site.com"
-              className="input input-bordered ring-0"
-            />
-          </label>
+      <div className="flex flex-col space-y-5">
+        <div className="flex items-center h-auto">
+          <div className="py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
+            <label htmlFor="email" className="font-semibold font-semibold text-lg">
+              Email
+            </label>
+          </div>
+          <input
+            {...register("email")}
+            id="email"
+            type="email"
+            placeholder="example@kmotion.fr"
+            className="text-black w-full px-4 py-2 rounded-r-md bg-gray-200 text-lg"
+          />
         </div>
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Mot de passe</span>
-          </label>
-          <label className="input-group">
-            <span>Password</span>
-            <input
-              {...register("password")}
-              type="password"
-              placeholder="info@site.com"
-              className="input input-bordered ring-0"
-            />
-          </label>
+        <div className="flex items-center h-auto">
+          <div className="h-full py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
+            <label htmlFor="password" className="font-semibold font-semibold text-lg">
+              Password
+            </label>
+          </div>
+          <input
+            {...register("password")}
+            id="password"
+            type="password"
+            placeholder="*****"
+            className="text-black w-full px-4 py-2 rounded-r-md bg-gray-200 text-lg"
+          />
         </div>
       </div>
-      <div className="mt-5">
+      <div className="mt-8">
         <div className="">
           {isSubmitting ? (
             <button className="btn btn-block loading text-gray-800" disabled>
