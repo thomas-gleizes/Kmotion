@@ -6,8 +6,8 @@ import RegisterForm from "../../components/forms/RegisterForm"
 const RegisterPage: Page = () => {
   return (
     <div className="flex flex-col space-y-10">
-      <div className="mb-4">
-        <p className="text-gray-600">Inscription</p>
+      <div className="">
+        <p className="text-white/70">Inscription</p>
         <h2 className="text-xl font-bold">
           Rejoignez <span className="">Kmotion</span>
         </h2>

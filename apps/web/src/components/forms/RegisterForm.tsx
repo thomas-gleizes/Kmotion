@@ -32,48 +32,50 @@ const RegisterForm: Component = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col space-y-2">
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Email</span>
-          </label>
-          <label className="input-group">
-            <span>Email</span>
-            <input
-              {...register("email")}
-              type="text"
-              placeholder="info@site.com"
-              className="input input-bordered"
-            />
-          </label>
+      <div className="flex flex-col space-y-5">
+        <div className="flex items-center h-auto">
+          <div className="h-full py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
+            <label htmlFor="email" className="font-semibold font-semibold text-lg">
+              Email
+            </label>
+          </div>
+          <input
+            {...register("email")}
+            id="email"
+            type="email"
+            placeholder="example@kmotion.fr"
+            className="text-black w-full px-4 py-2 rounded-r-md bg-gray-200 text-lg"
+          />
         </div>
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Pseudo</span>
-          </label>
-          <label className="input-group">
-            <span>Pseudo</span>
-            <input
-              {...register("name")}
-              type="text"
-              placeholder="kalat"
-              className="input input-bordered"
-            />
-          </label>
+
+        <div className="flex items-center h-auto">
+          <div className="h-full py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
+            <label htmlFor="pseudo" className="font-semibold font-semibold text-lg">
+              username
+            </label>
+          </div>
+          <input
+            {...register("name")}
+            id="name"
+            type="text"
+            placeholder="Kalat"
+            className="text-black w-full px-4 py-2 rounded-r-md bg-gray-200 text-lg"
+          />
         </div>
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Mot de passe</span>
-          </label>
-          <label className="input-group">
-            <span>Password</span>
-            <input
-              {...register("password")}
-              type="password"
-              placeholder="info@site.com"
-              className="input input-bordered"
-            />
-          </label>
+
+        <div className="flex items-center h-auto">
+          <div className="h-full py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
+            <label htmlFor="password" className="font-semibold font-semibold text-lg">
+              Password
+            </label>
+          </div>
+          <input
+            {...register("password")}
+            id="password"
+            type="password"
+            placeholder="*****"
+            className="text-black w-full px-4 py-2 rounded-r-md bg-gray-200 text-lg"
+          />
         </div>
       </div>
       <div className="mt-5">
