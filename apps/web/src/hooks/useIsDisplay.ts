@@ -11,7 +11,10 @@ export function useIsDisplay<E extends Element>(marge: number = 1): [boolean, Re
   )
 
   function handler(): void {
-    if (ref.current && !isDisplay) setIsDisplay(elementIsDisplay(ref.current, marge))
+    if (ref.current) {
+      const display = elementIsDisplay(ref.current, marge)
+      if (display !== isDisplay) setIsDisplay(display)
+    }
   }
 
   useEffect(() => void setTimeout(handler, 100), [])
