@@ -86,6 +86,8 @@ const Musics: Page = () => {
     return { total: 0 }
   }, [data])
 
+  const [isDisplay, buttonRef] = useIsDisplay<HTMLButtonElement>(0.5)
+
   const handlePlayRandom = () => {
     setPlaylist({
       title: "tous les morceaux",
@@ -125,6 +127,12 @@ const Musics: Page = () => {
       }
     }
   }
+
+  useEffect(() => {
+    if (isDisplay) {
+      void fetchNextPage()
+    }
+  }, [isDisplay])
 
   const listActions = [
     [
@@ -267,11 +275,16 @@ const Musics: Page = () => {
             </div>
           )}
           <div className="flex justify-center mt-16">
-            {meta.total !== musics.length && (
-              <button disabled={isFetching} className="btn btn-sm" onClick={() => fetchNextPage()}>
+            {meta.total !== musics.length && !isFetching ? (
+              <button
+                ref={buttonRef}
+                disabled={isFetching}
+                className="btn btn-sm disabled:opacity-0"
+                onClick={() => fetchNextPage()}
+              >
                 Afficher plus
               </button>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
