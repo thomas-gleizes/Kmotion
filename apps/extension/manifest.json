@@ -13,7 +13,7 @@
   "content_scripts": [
     {
       "js": ["src/content-scripts.ts"],
-      "matches": ["https://www.youtube.com/watch*"]
+      "matches": ["<all_urls>"]
     }
   ],
   "permissions": ["storage", "webNavigation", "activeTab", "tabs", "contextMenus"]
