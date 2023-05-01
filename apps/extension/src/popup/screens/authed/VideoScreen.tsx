@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useAsync } from "react-use"
 import { FaSpinner } from "react-icons/all"
 
@@ -6,10 +6,11 @@ import { ConverterMusicInfo, IMusic } from "@kmotion/types"
 import { MESSAGE_TYPE } from "../../../resources/constants"
 import MetaData from "../../components/ui/MetaData"
 import CoverChoice from "../../components/ui/CoverChoice"
-import { downloadMusic } from "../../../utils/api"
+import Timeline from "../../components/ui/Timeline"
+import { sleep } from "../../../utils/helpers"
 
 const VideoScreen: React.FC = () => {
-  const [isDownloading, setIsDownloading] = useState(false)
+  const [status, setStatus] = useState<ConvertVideoStatus>("stand-by")
 
   const { loading, error, value } = useAsync(async () => {
     return new Promise<{ info: ConverterMusicInfo; music: IMusic; isReady: boolean }>(
@@ -17,13 +18,7 @@ const VideoScreen: React.FC = () => {
         chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
           const targetTab = tabs[0]
           if (!targetTab || !targetTab?.url) return reject(new Error("No URL"))
-
-          const url = new URL(targetTab.url)
-
           if (!targetTab.id) return reject(new Error("No tab ID"))
-          if (url.hostname !== "www.youtube.com") return reject(new Error("Not youtube.com"))
-          if (url.pathname !== "/watch") return reject(new Error("Not a video"))
-          if (url.searchParams.get("v") === null) return reject(new Error("No video ID"))
 
           let loop = true
           while (loop) {
@@ -35,6 +30,8 @@ const VideoScreen: React.FC = () => {
                 switch (message.status) {
                   case "success":
                     loop = false
+                    console.log("Message", message)
+                    if (message.convert) setStatus(message.convert.status)
                     return resolve(message.videoInfo)
                   case "error":
                     loop = false
@@ -53,7 +50,35 @@ const VideoScreen: React.FC = () => {
         })
       }
     )
-  })
+  }, [])
+
+  useEffect(() => {
+    let loop = true
+    if (status === "loading" && !loading) {
+      ;(async () => {
+        while (loop) {
+          await sleep(200)
+          chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+            const [targetTab] = tabs
+
+            if (!targetTab?.id) return console.error("No tab ID")
+
+            chrome.tabs.sendMessage(
+              targetTab.id,
+              { type: MESSAGE_TYPE.CONVERT_VIDEO, videoId: value?.info.videoId },
+              (message) => {
+                setStatus(message.status)
+              }
+            )
+          })
+        }
+      })()
+    }
+
+    return () => {
+      loop = false
+    }
+  }, [status, loading])
 
   if (loading)
     return (
@@ -64,28 +89,41 @@ const VideoScreen: React.FC = () => {
 
   if (error || !value) return <div className="text-xl py-5 text-center">Video id not found</div>
 
-  const handleFetch = async () => {
-    setIsDownloading(false)
-    try {
-      const response = await downloadMusic(value.music.youtubeId)
-    } catch (e) {
-    } finally {
-      setIsDownloading(false)
-    }
+  const handleFetch = () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+      const [targetTab] = tabs
+
+      if (!targetTab?.id) return console.error("No tab ID")
+
+      chrome.tabs.sendMessage(
+        targetTab.id,
+        { type: MESSAGE_TYPE.CONVERT_VIDEO, videoId: value.info.videoId },
+        (message) => {
+          setStatus(message.status)
+        }
+      )
+    })
   }
 
   return (
-    <div className="flex flex-col space-y-5">
+    <div className="flex flex-col space-y-2 px-2">
       <MetaData info={value.info} isReady={value.isReady} />
       <CoverChoice info={value.info} />
-
-      <div className="w-full px-2">
+      <Timeline info={value.info} />
+      <div className="w-full">
         <button
-          onClick={() => handleFetch()}
-          className="py-1.5 bg-gradient-to-bl rounded-md from-blue-700 to-gray-700 shadow-lg hover:shadow-xl hover:scale-105 active:hover:shadow-md active:scale-95 transform transition text-white w-full text-xl font-semibold"
-          disabled={isDownloading}
+          onClick={handleFetch}
+          className="py-1.5 flex items-center justify-center bg-gradient-to-bl rounded-md from-blue-800 to-gray-800 shadow-lg hover:shadow-xl hover:scale-105 active:hover:shadow-md active:scale-95 disabled:from-gray-500 disabled:to-gray-600 transform transition text-white w-full text-xl font-medium"
+          disabled={status === "loading"}
         >
-          {value.isReady ? "Télécharger" : "Convertir"}
+          {status === "loading" ? (
+            <FaSpinner className="animate-spin" />
+          ) : value.isReady ? (
+            "Télécharger"
+          ) : (
+            "Convertir"
+          )}{" "}
+          {status}
         </button>
       </div>
     </div>

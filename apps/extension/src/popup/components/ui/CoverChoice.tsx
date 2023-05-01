@@ -10,7 +10,7 @@ interface Props {
 const CoverChoice: React.FC<Props> = ({ info }) => {
   const [selected, setSelected] = useState(info.thumbnails.at(-1))
 
-  const inputFileRef = useRef<HTMLInputElement>()
+  const inputFileRef = useRef<HTMLInputElement>(null)
 
   const handleChangeUploadFile = async () => {
     if (inputFileRef.current) inputFileRef.current.click()

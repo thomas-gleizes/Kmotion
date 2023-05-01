@@ -21,5 +21,4 @@ export const login = async (values: LoginDto) => instance.post<LoginResponse>("/
 export const fetchVideoInfo = async (youtubeId: string) =>
   instance.get<MusicInfoResponse>(`/musics/${youtubeId}/info`)
 
-export const downloadMusic = async (youtubeId: string) =>
-  instance.get(`/musics/${youtubeId}/download`)
+export const downloadMusic = async (youtubeId: string) => instance.post(`/musics/${youtubeId}/add`)
