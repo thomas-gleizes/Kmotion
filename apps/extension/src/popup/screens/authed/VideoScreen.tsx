@@ -4,10 +4,8 @@ import { FaSpinner } from "react-icons/all"
 
 import { ConverterMusicInfo, IMusic } from "@kmotion/types"
 import { MESSAGE_TYPE } from "../../../resources/constants"
-import MetaData from "../../components/ui/MetaData"
-import CoverChoice from "../../components/ui/CoverChoice"
-import Timeline from "../../components/ui/Timeline"
 import { sleep } from "../../../utils/helpers"
+import ConvertForm from "../../components/ui/ConvertForm"
 
 const VideoScreen: React.FC = () => {
   const [status, setStatus] = useState<ConvertVideoStatus>("stand-by")
@@ -82,51 +80,13 @@ const VideoScreen: React.FC = () => {
 
   if (loading)
     return (
-      <div className="animate-spin text-3xl flex items-center justify-center w-full h-24">
+      <div className="animate-spin text-3xl flex items-center justify-center w-full h-16">
         <FaSpinner />
       </div>
     )
 
   if (error || !value) return <div className="text-xl py-5 text-center">Video id not found</div>
 
-  const handleFetch = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-      const [targetTab] = tabs
-
-      if (!targetTab?.id) return console.error("No tab ID")
-
-      chrome.tabs.sendMessage(
-        targetTab.id,
-        { type: MESSAGE_TYPE.CONVERT_VIDEO, videoId: value.info.videoId },
-        (message) => {
-          setStatus(message.status)
-        }
-      )
-    })
-  }
-
-  return (
-    <div className="flex flex-col space-y-2 px-2">
-      <MetaData info={value.info} isReady={value.isReady} />
-      <CoverChoice info={value.info} />
-      <Timeline info={value.info} />
-      <div className="w-full">
-        <button
-          onClick={handleFetch}
-          className="py-1.5 flex items-center justify-center bg-gradient-to-bl rounded-md from-blue-800 to-gray-800 shadow-lg hover:shadow-xl hover:scale-105 active:hover:shadow-md active:scale-95 disabled:from-gray-500 disabled:to-gray-600 transform transition text-white w-full text-xl font-medium"
-          disabled={status === "loading"}
-        >
-          {status === "loading" ? (
-            <FaSpinner className="animate-spin" />
-          ) : value.isReady ? (
-            "Télécharger"
-          ) : (
-            "Convertir"
-          )}{" "}
-          {status}
-        </button>
-      </div>
-    </div>
-  )
+  return <ConvertForm info={value.info} ready={value.isReady} />
 }
 export default VideoScreen

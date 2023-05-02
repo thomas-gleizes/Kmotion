@@ -1,4 +1,4 @@
-import React, { useImperativeHandle } from "react"
+import React from "react"
 import { FaMinus, FaPlus } from "react-icons/all"
 import { useToggle } from "react-use"
 import { Transition } from "@headlessui/react"

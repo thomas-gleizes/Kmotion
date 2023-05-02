@@ -1,6 +1,9 @@
-import React, { useState, useRef } from "react"
+import React, { useRef, useEffect } from "react"
+import { useFormContext } from "react-hook-form"
+import classnames from "classnames"
 
 import { ConverterMusicInfo } from "@kmotion/types"
+import { ConvertMusicBodyDto } from "@kmotion/validations"
 import CardCollapse from "../common/CardCollapse"
 
 interface Props {
@@ -8,7 +11,7 @@ interface Props {
 }
 
 const CoverChoice: React.FC<Props> = ({ info }) => {
-  const [selected, setSelected] = useState(info.thumbnails.at(-1))
+  const methods = useFormContext<ConvertMusicBodyDto>()
 
   const inputFileRef = useRef<HTMLInputElement>(null)
 
@@ -16,31 +19,42 @@ const CoverChoice: React.FC<Props> = ({ info }) => {
     if (inputFileRef.current) inputFileRef.current.click()
   }
 
-  console.log("selected", selected)
+  useEffect(() => {
+    if (inputFileRef.current) {
+      inputFileRef.current.addEventListener("change", (event) => {
+        const file = (event.target as HTMLInputElement).files?.[0]
+        if (file) {
+          const reader = new FileReader()
+          reader.readAsDataURL(file)
+          reader.onload = () => {
+            methods.setValue("cover", { type: "custom", value: reader.result as string })
+          }
+        }
+      })
+    }
+  }, [])
+
+  const field = methods.getValues()?.cover
 
   return (
     <CardCollapse title="Couverture" defaultOpen={true}>
       <>
         <div className="py-1">
           {info.thumbnails && (
-            <img
-              width={130}
-              className="mx-auto shadow"
-              src={info.thumbnails.at(-1)?.url}
-              alt="cover"
-            />
+            <img width={130} className="mx-auto shadow" src={field.value} alt="cover" />
           )}
         </div>
         <div className="grid grid-cols-2 px-0.5 py-1">
           {info.thumbnails?.map((cover, index) => (
             <div key={index} className="my-0.5 w-11/12 mx-auto">
               <button
-                onClick={() => setSelected(cover)}
-                className={`border w-full rounded text-sm shadow-sm transform hover:scale-105 hover:shadow-md duration-75 ${
-                  selected === cover
+                onClick={() => methods.setValue("cover", { type: "classic", value: cover.url })}
+                className={classnames(
+                  "border w-full rounded text-sm shadow-sm transform hover:scale-105 hover:shadow-md duration-75",
+                  field?.value === cover.url
                     ? "text-white bg-gradient-to-bl from-blue-600 to-blue-800"
                     : "bg-gray-100"
-                }`}
+                )}
               >
                 {cover?.width}x{cover?.height}
               </button>
@@ -50,9 +64,12 @@ const CoverChoice: React.FC<Props> = ({ info }) => {
             <input ref={inputFileRef} type="file" className="hidden" />
             <button
               onClick={handleChangeUploadFile}
-              className={
-                "border w-full rounded text-sm shadow-sm transform hover:scale-105 hover:shadow-md duration-75 bg-gray-100"
-              }
+              className={classnames(
+                "border w-full rounded text-sm shadow-sm transform hover:scale-105 hover:shadow-md duration-75 bg-gray-100",
+                field?.type === "custom"
+                  ? "text-white bg-gradient-to-bl from-blue-600 to-blue-800"
+                  : "bg-gray-100"
+              )}
             >
               Importer
             </button>

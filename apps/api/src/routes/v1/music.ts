@@ -8,6 +8,7 @@ import {
   GetMusicQuery,
   SearchMusicQuery,
   BypassMusicParamsDto,
+  ConvertMusicBodyDto,
 } from "@kmotion/validations"
 import {
   ConverterMusicInfo,
@@ -79,9 +80,15 @@ export default async function musicRoutes(instance: FastifyInstance) {
     }
   )
 
-  instance.post<{ Params: YoutubeIdParamsDto }>(
+  instance.post<{ Params: YoutubeIdParamsDto; Body: ConvertMusicBodyDto }>(
     "/:youtubeId/add",
-    { onRequest: isLogin, preHandler: instance.validateParams(YoutubeIdParamsDto) },
+    {
+      onRequest: isLogin,
+      preHandler: [
+        instance.validateParams(YoutubeIdParamsDto),
+        instance.validateBody(ConvertMusicBodyDto),
+      ],
+    },
     async (request, reply) => {
       await prisma.music
         .findUniqueOrThrow({ where: { youtubeId: request.params.youtubeId } })

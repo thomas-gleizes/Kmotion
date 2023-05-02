@@ -12,6 +12,12 @@ export interface ConverterMusic {
   timestamp: string
 }
 
+export type Thumbnail = {
+  url: string
+  width: number
+  height: number
+}
+
 export type ConverterMusicInfo = {
   videoId: string
   title: string
@@ -24,5 +30,5 @@ export type ConverterMusicInfo = {
   author: {
     name: string
   }
-  thumbnails: any[]
+  thumbnails: Thumbnail[]
 }
