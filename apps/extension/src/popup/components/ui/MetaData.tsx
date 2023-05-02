@@ -1,8 +1,10 @@
 import React from "react"
+import { useFormContext } from "react-hook-form"
+import { FaCheck } from "react-icons/all"
 
 import { ConverterMusicInfo } from "@kmotion/types"
+import { ConvertMusicBodyDto } from "@kmotion/validations"
 import CardCollapse from "../common/CardCollapse"
-import { FaCheck } from "react-icons/all"
 
 interface Props {
   info: ConverterMusicInfo
@@ -10,6 +12,8 @@ interface Props {
 }
 
 const MetaData: React.FC<Props> = ({ info, isReady }) => {
+  const methods = useFormContext<ConvertMusicBodyDto>()
+
   return (
     <CardCollapse title="MetaData">
       <div className="flex flex-col space-y-1 divide-y divide-blue-950">
@@ -25,12 +29,12 @@ const MetaData: React.FC<Props> = ({ info, isReady }) => {
         </div>
         <div className="text-xs">
           <p>
-            Titre: <input value={info.media?.song || info.title} />
+            Titre: <input {...methods.register("metadata.title")} />
           </p>
         </div>
         <div className="text-xs">
           <p>
-            Artist: <input value={info.media?.artist || info.author?.name} />
+            Artist: <input {...methods.register("metadata.artist")} />
           </p>
         </div>
         <div>
