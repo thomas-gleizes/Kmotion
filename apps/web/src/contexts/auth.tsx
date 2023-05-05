@@ -3,7 +3,7 @@ import useLocalStorageState from "use-local-storage-state"
 
 import { IUser } from "@kmotion/types"
 import { AuthContextValues, AuthenticatedValues, UnauthenticatedValues } from "../../types/contexts"
-import { WINDOW_MESSAGE } from "../utils/constants"
+import { LOCAL_STORAGE_KEYS, WINDOW_MESSAGE } from "../utils/constants"
 
 const AuthContext = createContext<AuthContextValues>({ authenticated: false } as AuthContextValues)
 
@@ -42,9 +42,11 @@ const AuthProvider: ComponentWithChild = ({ children }) => {
   })
   const [user, setUser] = useLocalStorageState<IUser | null>("user", { defaultValue: null })
 
-  const login = (user: IUser) => {
+  const login = (user: IUser, token: string) => {
     setUser(user)
     setAuthenticated(true)
+
+    localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_TOKEN, token)
   }
 
   const logout = () => {
