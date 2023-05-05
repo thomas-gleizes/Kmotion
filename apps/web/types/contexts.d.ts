@@ -9,7 +9,7 @@ interface AuthenticatedValues {
 
 interface UnauthenticatedValues {
   authenticated: false
-  login: (user: IUser) => void
+  login: (user: IUser, token: string) => void
 }
 
 declare type AuthContextValues = AuthenticatedValues | UnauthenticatedValues

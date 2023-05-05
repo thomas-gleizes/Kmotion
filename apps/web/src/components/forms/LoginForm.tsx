@@ -25,7 +25,7 @@ const LoginForm: Component = () => {
       setIsSubmitting(true)
       const response = await api.login(data)
 
-      authContext.login(response.user)
+      authContext.login(response.user, response.token)
     } catch (err) {
       console.log("Error:", err)
     } finally {

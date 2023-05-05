@@ -7,6 +7,6 @@ export const QUERIES_KEY = {
   musics_search: ["musics", "search"],
 }
 
-export const MODAL = {
-  defaultTimeout: 300,
+export const LOCAL_STORAGE_KEYS = {
+  AUTH_TOKEN: "auth_token",
 }

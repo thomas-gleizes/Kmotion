@@ -1,3 +1,6 @@
+import ky from "ky"
+import { KyInstance } from "ky/distribution/types/ky"
+
 import {
   LoginResponse,
   LogoutResponse,
@@ -16,96 +19,126 @@ import {
   LoginDto,
   RegisterDto,
 } from "@kmotion/validations"
-import { Fetcher } from "./Fetcher"
-import { WINDOW_MESSAGE } from "./constants"
+import { LOCAL_STORAGE_KEYS, WINDOW_MESSAGE } from "./constants"
 
-class Api {
-  private fetcher: Fetcher
+class jsonClient {
+  private client: KyInstance
 
   constructor() {
-    this.fetcher = new Fetcher("v1")
+    this.client = ky.create({
+      prefixUrl: "/api/v1",
+      hooks: {
+        beforeRequest: [
+          (request) => {
+            const token = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_TOKEN)
+            if (token) request.headers.set("authorization", `Bearer ${token}`)
 
-    this.fetcher.interceptResponse((response) => {
-      if (!response.ok && response.status === 401)
-        window.postMessage({ type: WINDOW_MESSAGE.logout })
-
-      return response
+            if (["POST", "PUT", "PATCH"].includes(request.method))
+              request.headers.set("content-type", "application/json")
+          },
+        ],
+        afterResponse: [
+          async (request, options, response) => {
+            if (!response.ok && response.status === 401)
+              window.postMessage({ type: WINDOW_MESSAGE.logout })
+          },
+        ],
+      },
+      onDownloadProgress: (progress) => {
+        console.log("progress", progress)
+      },
     })
   }
 
-  private toJson(response: Response) {
-    return response.json()
+  private toSearchParams(params: Record<string, any>): URLSearchParams {
+    return new URLSearchParams(params)
   }
 
-  public login(input: LoginDto): Promise<LoginResponse> {
-    return this.fetcher.post("auth/login", { body: JSON.stringify(input) }).then(this.toJson)
+  public async login(input: LoginDto) {
+    return this.client.post("auth/login", { body: JSON.stringify(input) }).json<LoginResponse>()
   }
 
-  public register(input: RegisterDto): Promise<RegisterResponse> {
-    return this.fetcher.post("auth/register", { body: JSON.stringify(input) }).then(this.toJson)
+  public register(input: RegisterDto) {
+    return this.client
+      .post("auth/register", { body: JSON.stringify(input) })
+      .json<RegisterResponse>()
   }
 
-  public logout(): Promise<LogoutResponse> {
-    return this.fetcher.post("auth/logout").then(this.toJson)
+  public logout() {
+    return this.client.post("auth/logout").json<LogoutResponse>()
   }
 
-  public profile(): Promise<LoginResponse> {
-    return this.fetcher.get("users/me").then(this.toJson)
+  public profile() {
+    return this.client.get("users/me").json<LoginResponse>()
   }
 
-  public createPlaylist(body: CreatePlaylistDto): Promise<PlaylistResponse> {
-    return this.fetcher.post("playlists", { body: JSON.stringify(body) }).then(this.toJson)
+  public createPlaylist(body: CreatePlaylistDto) {
+    return this.client.post("playlists", { body: JSON.stringify(body) }).json<PlaylistResponse>()
   }
 
-  public updatePlaylist(id: number, body: CreatePlaylistDto): Promise<PlaylistResponse> {
-    return this.fetcher.put(`playlists/${id}`, { body: JSON.stringify(body) }).then(this.toJson)
+  public updatePlaylist(id: number, body: CreatePlaylistDto) {
+    return this.client
+      .put(`playlists/${id}`, { body: JSON.stringify(body) })
+      .json<PlaylistResponse>()
   }
 
-  public fetchPlaylists(withEntries: boolean): Promise<PlaylistsResponse> {
-    return this.fetcher
-      .get("playlists" + this.fetcher.parseQueryString({ entries: withEntries }))
-      .then(this.toJson)
+  public fetchPlaylists(withEntries: boolean) {
+    return this.client
+      .get("playlists", { searchParams: this.toSearchParams({ entries: withEntries }) })
+      .json<PlaylistsResponse>()
   }
 
-  public fetchPlaylist(id: number, withEntries: boolean): Promise<PlaylistResponse> {
-    return this.fetcher
-      .get(`playlists/${id}` + this.fetcher.parseQueryString({ entries: withEntries }))
-      .then(this.toJson)
+  public fetchPlaylist(id: number, withEntries: boolean) {
+    return this.client
+      .get(`playlists/${id}`, { searchParams: this.toSearchParams({ entries: withEntries }) })
+      .json<PlaylistResponse>()
   }
 
-  public addMusicToPlaylist(params: AddMusicToPlaylistDto): Promise<PlaylistResponse> {
-    return this.fetcher.post(`playlists/${params.id}/musics/${params.musicId}`).then(this.toJson)
+  public addMusicToPlaylist(params: AddMusicToPlaylistDto) {
+    return this.client
+      .post(`playlists/${params.id}/musics/${params.musicId}`)
+      .json<PlaylistResponse>()
   }
 
-  public removeMusicFromPlaylist(params: AddMusicToPlaylistDto): Promise<SuccessResponseData> {
-    return this.fetcher.delete(`playlists/${params.id}/musics/${params.musicId}`).then(this.toJson)
+  public removeMusicFromPlaylist(params: AddMusicToPlaylistDto) {
+    return this.client
+      .delete(`playlists/${params.id}/musics/${params.musicId}`)
+      .json<SuccessResponseData>()
   }
 
-  public fetchEntries(id: number, withMusic: boolean): Promise<PlaylistEntriesResponse> {
-    return this.fetcher
-      .get(`playlists/${id}/entries${this.fetcher.parseQueryString({ music: withMusic })}`)
-      .then(this.toJson)
+  public fetchEntries(id: number, withMusic: boolean) {
+    return this.client
+      .get(`playlists/${id}/entries`, { searchParams: this.toSearchParams({ music: withMusic }) })
+      .json<PlaylistEntriesResponse>()
   }
 
-  public fetchMusics(offset: number): Promise<MusicResponse> {
-    return this.fetcher.get(`musics?offset=${offset}`).then(this.toJson)
+  public fetchMusics(offset: number) {
+    return this.client.get(`musics?offset=${offset}`).json<MusicResponse>()
   }
 
-  public searchMusics(query: string): Promise<MusicResponse> {
-    return this.fetcher.get(`musics/search?q=${query}`).then(this.toJson)
+  public searchMusics(query: string) {
+    return this.client.get(`musics/search?q=${query}`).json<MusicResponse>()
   }
 
-  public deleteMusic(id: number): Promise<MusicShareResponse> {
-    return this.fetcher.delete(`musics/${id}`).then(this.toJson)
+  public deleteMusic(id: number) {
+    return this.client.delete(`musics/${id}`).json()
   }
 
-  public shareMusic(id: number): Promise<MusicShareResponse> {
-    return this.fetcher.post(`musics/${id}/share`).then(this.toJson)
+  public shareMusic(id: number) {
+    return this.client.post(`musics/${id}/share`).json<MusicShareResponse>()
   }
 
-  public bypassMusic(code: string): Promise<MusicByPassResponse> {
-    return this.fetcher.get(`musics/bypass/${code}`).then(this.toJson)
+  public bypassMusic(code: string) {
+    return this.client.get(`musics/bypass/${code}`).json<MusicByPassResponse>()
+  }
+
+  public fetchMusic(id: number) {
+    return this.client(`musics/${id}/stream`).blob()
+  }
+
+  public fetchCover(id: number) {
+    return this.client(`musics/${id}/cover`).blob()
   }
 }
 
-export const api = new Api()
+export const api = new jsonClient()
