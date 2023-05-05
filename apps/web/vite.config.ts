@@ -17,7 +17,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ["/react-dialog-promise"],
+      external: ["/react-dialog-promise", "/ky"],
     },
   },
 })
