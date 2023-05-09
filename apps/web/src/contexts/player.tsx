@@ -5,7 +5,7 @@ import { useToggle } from "react-use"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
-import { useContextFactory, useImageLoader, useStorageQueue } from "../hooks"
+import { useContextFactory, useImageLoader, useStorageQueue, useStreamLoader } from "../hooks"
 
 const PlayerContext = createContext<PlayerContextValues>(null as never)
 
@@ -25,25 +25,13 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
   const currentMusic = queue.at(0) || null
   const nexMusic = queue.at(1) || null
 
-  const streamQuery = useQuery({
-    queryKey: ["music-stream", currentMusic?.id],
-    queryFn: () =>
-      fetch(currentMusic?.links.stream as string)
-        .then((res) => res.blob())
-        .then((blob) => URL.createObjectURL(blob)),
-    enabled: !!currentMusic?.links.stream,
-    staleTime: Infinity,
+  const [streamUrl, streamQuery] = useStreamLoader(currentMusic?.id, {
+    enabled: currentMusic !== null,
   })
+  const [coverUrl, coverQuery] = useImageLoader(currentMusic?.id)
 
-  useQuery({
-    queryKey: ["music-stream", nexMusic?.id],
-    queryFn: () =>
-      fetch(nexMusic?.links.stream as string)
-        .then((res) => res.blob())
-        .then((blob) => URL.createObjectURL(blob)),
-    enabled: !!nexMusic?.links.stream,
-    staleTime: Infinity,
-  })
+  useImageLoader(nexMusic?.id)
+  useStreamLoader(nexMusic?.id, { enabled: currentMusic !== null })
 
   useEffect(() => {
     if (currentMusic)
@@ -51,9 +39,6 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         state.at(-1)?.id === currentMusic.id ? state : [...state, currentMusic]
       )
   }, [currentMusic])
-
-  const [coverUrl, coverQuery] = useImageLoader(currentMusic?.links.cover)
-  useImageLoader(nexMusic?.links.cover)
 
   useEffect(() => {
     if ("mediaSession" in navigator && coverUrl && currentMusic) {
@@ -75,7 +60,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         playlist: { value: currentPlaylist, set: (value) => setCurrentPlaylist(value) },
         assets: {
           cover: { url: coverUrl || "", isFetching: coverQuery.isFetching },
-          stream: { url: streamQuery.data || "", isFetching: streamQuery.isFetching },
+          stream: { url: streamUrl || "", isFetching: streamQuery.isFetching },
         },
         history: musicsHistory,
         queue,

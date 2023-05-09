@@ -9,14 +9,14 @@ interface LoaderChildProps {
 }
 
 interface Props {
-  src?: string
+  id: number
   children: (props: LoaderChildProps) => ReactElement
   fallback?: ReactElement
   enabled?: boolean
 }
 
-const ImageLoader: Component<Props> = ({ src, children, fallback, enabled }: Props) => {
-  const [querySrc, query] = useImageLoader(src, { enabled })
+const ImageLoader: Component<Props> = ({ id, children, fallback, enabled }: Props) => {
+  const [querySrc, query] = useImageLoader(id, { enabled })
 
   if (query.isLoading && fallback) return fallback
 

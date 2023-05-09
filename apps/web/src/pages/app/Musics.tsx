@@ -13,7 +13,7 @@ import {
   IoShuffleOutline,
 } from "react-icons/all"
 
-import { IMusic, MusicResponse } from "@kmotion/types"
+import { IMusic, MetaData, MusicResponse } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { handleStopPropagation } from "../../utils/helpers"
 import { usePlayerContext } from "../../contexts/player"
@@ -79,9 +79,12 @@ const Musics: Page = () => {
     [musics, search]
   )
 
-  const meta = useMemo(() => {
-    if (Array.isArray(data?.pages) && data && data.pages.at(-1)?.meta)
-      return data.pages.at(-1)?.meta
+  const meta = useMemo<MetaData>(() => {
+    if (typeof data?.pages !== "undefined") {
+      const page = data.pages.at(-1)
+
+      if (typeof page?.meta !== "undefined") return page.meta
+    }
 
     return { total: 0 }
   }, [data])
@@ -304,7 +307,7 @@ const GridItem: Component<ItemProps> = ({ music, onPlay, actions }) => {
   return (
     <div ref={ref} className="cursor-pointer" onClick={handleStopPropagation(onPlay)}>
       <div className="w-full">
-        <ImageLoader src={music.links.cover} enabled={isDisplay} fallback={<FallbackImage />}>
+        <ImageLoader id={music.id} enabled={isDisplay} fallback={<FallbackImage />}>
           {({ src }) => <img className="w-full rounded-lg shadow-lg" src={src} alt={music.title} />}
         </ImageLoader>
       </div>

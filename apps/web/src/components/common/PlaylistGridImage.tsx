@@ -20,7 +20,7 @@ const PlaylistGridImage: Component<Props> = ({ ids, className }) => {
         className
       )}
     >
-      <ImageLoader src={backgroundImgUrl(ids[0])}>
+      <ImageLoader id={ids[0]}>
         {({ src }) => (
           <div
             className="h-[1/2] w-[1/2] bg-cover bg-center rounded-tl-xl"
@@ -28,7 +28,7 @@ const PlaylistGridImage: Component<Props> = ({ ids, className }) => {
           />
         )}
       </ImageLoader>
-      <ImageLoader src={backgroundImgUrl(ids[1])}>
+      <ImageLoader id={ids[1]}>
         {({ src }) => (
           <div
             className="h-[1/2] w-[1/2] bg-cover bg-center rounded-tr-xl"
@@ -36,7 +36,7 @@ const PlaylistGridImage: Component<Props> = ({ ids, className }) => {
           />
         )}
       </ImageLoader>
-      <ImageLoader src={backgroundImgUrl(ids[2])}>
+      <ImageLoader id={ids[2]}>
         {({ src }) => (
           <div
             className="h-[1/2] w-[1/2] bg-cover bg-center rounded-bl-xl"
@@ -44,7 +44,7 @@ const PlaylistGridImage: Component<Props> = ({ ids, className }) => {
           />
         )}
       </ImageLoader>
-      <ImageLoader src={backgroundImgUrl(ids[3])}>
+      <ImageLoader id={ids[3]}>
         {({ src }) => (
           <div
             className="h-[1/2] w-[1/2] bg-cover bg-center rounded-br-xl"
