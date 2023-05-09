@@ -71,7 +71,7 @@ export const MusicItem: Component<MusicItemProps> = ({ music, onClick, actions }
     <div ref={ref} onClick={onClick} className="cursor-pointer">
       <div className="flex h-full">
         <div className="w-1/5 h-full">
-          <ImageLoader enabled={isDisplay} src={music.links.cover} fallback={<FallbackImage />}>
+          <ImageLoader enabled={isDisplay} id={music.id} fallback={<FallbackImage />}>
             {({ src }) => <img className="w-full rounded-lg" src={src} alt={music.title} />}
           </ImageLoader>
         </div>

@@ -159,7 +159,7 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
               {(musics || []).map((music, index) => (
                 <div key={index} className="flex items-center">
                   <div className="w-[23%]">
-                    <ImageLoader src={music.links.cover}>
+                    <ImageLoader id={music.id}>
                       {({ src }) => <img alt={music.title} src={src} className="rounded-lg" />}
                     </ImageLoader>
                   </div>
@@ -269,7 +269,7 @@ const SearchPlaylist: DialogComponent<{}, SearchResult> = ({ isOpen, close }) =>
             {musics.map((music, index) => (
               <div key={index} className="w-full py-0.5 flex" onClick={() => toggleCheck(music)}>
                 <div className="w-1/5">
-                  <ImageLoader src={music.links.cover}>
+                  <ImageLoader id={music.id}>
                     {({ src }) => <img src={src} alt={music.title} className="rounded-lg w-full" />}
                   </ImageLoader>
                 </div>
