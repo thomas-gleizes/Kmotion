@@ -40,7 +40,7 @@ export const useUnAuthenticatedContext = () => {
 }
 
 const AuthProvider: ComponentWithChild = ({ children }) => {
-  const [authenticated, setAuthenticated] = useLocalStorageState<boolean>("authenticated", {
+  const [authenticated, setAuthenticated] = useLocalStorageState<boolean>(LOCAL_STORAGE_KEYS.AUTH, {
     defaultValue: false,
   })
 
@@ -68,9 +68,13 @@ const AuthProvider: ComponentWithChild = ({ children }) => {
   }
 
   useEffect(() => {
-    window.addEventListener("message", (event) => {
+    const listener = (event: MessageEvent) => {
       if (event.data.type === WINDOW_MESSAGE.logout) logout()
-    })
+    }
+
+    window.addEventListener("message", listener)
+
+    return () => window.removeEventListener("message", listener)
   }, [])
 
   if (queryAuth.isFetching) return <GeneraLoading />
