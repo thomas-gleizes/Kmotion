@@ -1,8 +1,10 @@
-import React, { useState } from "react"
+import React from "react"
+import { useMutation } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { classValidatorResolver } from "@hookform/resolvers/class-validator"
-import { LoginDto } from "@kmotion/validations"
 
+import { LoginDto } from "@kmotion/validations"
+import { LoginResponse } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { useUnAuthenticatedContext } from "../../contexts/auth"
 
@@ -14,31 +16,21 @@ const defaultValues: LoginDto = {
 }
 
 const LoginForm: Component = () => {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-
   const { register, handleSubmit } = useForm<LoginDto>({ resolver, defaultValues })
 
   const authContext = useUnAuthenticatedContext()
 
-  const onSubmit = async (data: LoginDto) => {
-    try {
-      setIsSubmitting(true)
-      const response = await api.login(data)
-
-      authContext.login(response.user, response.token)
-    } catch (err) {
-      console.log("Error:", err)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+  const mutation = useMutation<LoginResponse, unknown, LoginDto>({
+    mutationFn: (data) => api.login(data),
+    onSuccess: (resp) => authContext.login(resp.user, resp.token),
+  })
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit((data) => mutation.mutate(data))}>
       <div className="flex flex-col space-y-5">
         <div className="flex items-center h-auto">
           <div className="py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
-            <label htmlFor="email" className="font-semibold font-semibold text-lg">
+            <label htmlFor="email" className="font-semibold text-lg">
               Email
             </label>
           </div>
@@ -52,7 +44,7 @@ const LoginForm: Component = () => {
         </div>
         <div className="flex items-center h-auto">
           <div className="h-full py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
-            <label htmlFor="password" className="font-semibold font-semibold text-lg">
+            <label htmlFor="password" className="font-semibold text-lg">
               Password
             </label>
           </div>
@@ -67,7 +59,7 @@ const LoginForm: Component = () => {
       </div>
       <div className="mt-8">
         <div className="">
-          {isSubmitting ? (
+          {mutation.isLoading ? (
             <button className="btn btn-block loading text-gray-800" disabled>
               Chargement
             </button>

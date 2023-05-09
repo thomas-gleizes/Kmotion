@@ -6,19 +6,18 @@ import { useAuthenticatedContext } from "../../contexts/auth"
 
 const Settings: Page = () => {
   const { history } = useRouter()
-  const { user } = useAuthenticatedContext()
+  const { user, logout } = useAuthenticatedContext()
+
+  const handleDisconnect = () => {
+    history.push("/", null)
+    logout()
+  }
 
   return (
     <ScrollableLayout>
       <h1 className="text-center text-white pt-3">Settings</h1>
       <div className="flex flex-wrap space-x-2 my-5">
-        <button
-          className="btn bg-blue-400 text-black"
-          onClick={() => {
-            localStorage.clear()
-            history.push("/", null)
-          }}
-        >
+        <button className="btn bg-blue-400 text-black" onClick={handleDisconnect}>
           Disconnect
         </button>
         {user.isAdmin && (

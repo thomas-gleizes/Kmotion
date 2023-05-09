@@ -1,9 +1,12 @@
-import { createContext, useContext, useEffect, useMemo } from "react"
+import React, { createContext, useContext, useEffect } from "react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import useLocalStorageState from "use-local-storage-state"
 
 import { IUser } from "@kmotion/types"
 import { AuthContextValues, AuthenticatedValues, UnauthenticatedValues } from "../../types/contexts"
 import { LOCAL_STORAGE_KEYS, WINDOW_MESSAGE } from "../utils/constants"
+import { api } from "../utils/Api"
+import GeneraLoading from "../components/layouts/GeneraLoading"
 
 const AuthContext = createContext<AuthContextValues>({ authenticated: false } as AuthContextValues)
 
@@ -40,18 +43,27 @@ const AuthProvider: ComponentWithChild = ({ children }) => {
   const [authenticated, setAuthenticated] = useLocalStorageState<boolean>("authenticated", {
     defaultValue: false,
   })
-  const [user, setUser] = useLocalStorageState<IUser | null>("user", { defaultValue: null })
 
-  const login = (user: IUser, token: string) => {
-    setUser(user)
-    setAuthenticated(true)
+  const queryClient = useQueryClient()
 
+  const queryAuth = useQuery({
+    queryKey: ["auth-user"],
+    queryFn: () => api.profile(),
+    enabled: authenticated,
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.token)
+    },
+  })
+
+  const login = async (user: IUser, token: string) => {
     localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_TOKEN, token)
+    setAuthenticated(true)
+    queryClient.setQueryData(["auth-user"], { user, token })
   }
 
   const logout = () => {
-    setUser(null)
     setAuthenticated(false)
+    queryClient.setQueryData(["auth-user"], null)
     localStorage.clear()
   }
 
@@ -61,11 +73,13 @@ const AuthProvider: ComponentWithChild = ({ children }) => {
     })
   }, [])
 
-  const value = useMemo<AuthContextValues>(() => {
-    if (authenticated) {
+  if (queryAuth.isFetching) return <GeneraLoading />
+
+  const values: AuthContextValues = (() => {
+    if (authenticated && queryAuth.data) {
       return {
         authenticated: true,
-        user: user as IUser,
+        user: queryAuth.data.user as IUser,
         logout,
       }
     } else {
@@ -74,9 +88,9 @@ const AuthProvider: ComponentWithChild = ({ children }) => {
         login,
       }
     }
-  }, [authenticated, user])
+  })()
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>
 }
 
 export default AuthProvider
