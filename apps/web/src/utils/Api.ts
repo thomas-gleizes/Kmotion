@@ -64,10 +64,6 @@ class jsonClient {
       .json<RegisterResponse>()
   }
 
-  public logout() {
-    return this.client.post("auth/logout").json<LogoutResponse>()
-  }
-
   public profile() {
     return this.client.get("users/me").json<LoginResponse>()
   }
@@ -96,7 +92,7 @@ class jsonClient {
 
   public addMusicToPlaylist(params: AddMusicToPlaylistDto) {
     return this.client
-      .post(`playlists/${params.id}/musics/${params.musicId}`)
+      .post(`playlists/${params.id}/musics/${params.musicId}`, { body: "{}" })
       .json<PlaylistResponse>()
   }
 
@@ -125,7 +121,7 @@ class jsonClient {
   }
 
   public shareMusic(id: number) {
-    return this.client.post(`musics/${id}/share`).json<MusicShareResponse>()
+    return this.client.post(`musics/${id}/share`, { body: "{}" }).json<MusicShareResponse>()
   }
 
   public bypassMusic(code: string) {
@@ -133,11 +129,11 @@ class jsonClient {
   }
 
   public fetchMusic(id: number) {
-    return this.client(`musics/${id}/stream`).blob()
+    return this.client.get(`musics/${id}/stream`).blob()
   }
 
   public fetchCover(id: number) {
-    return this.client(`musics/${id}/cover`).blob()
+    return this.client.get(`musics/${id}/cover`).blob()
   }
 }
 
