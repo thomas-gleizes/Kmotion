@@ -3,7 +3,6 @@ import { KyInstance } from "ky/distribution/types/ky"
 
 import {
   LoginResponse,
-  LogoutResponse,
   MusicByPassResponse,
   MusicResponse,
   MusicShareResponse,
