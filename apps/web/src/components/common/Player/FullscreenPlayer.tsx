@@ -47,12 +47,14 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
   const { currentMusic, playlist, actions, loop, assets } = usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
 
-  const tRef = useRef<HTMLHeadingElement>()
+  const tRef = useRef<HTMLHeadingElement>(null)
 
   const [showQueue, toggleShowQueue] = useToggle(false)
 
   const isOverflow =
     (tRef.current?.offsetWidth || 0) >= (tRef.current?.parentElement?.offsetWidth || 2000)
+
+  if (!currentMusic) return null
 
   const ImageBlock = (
     <div
@@ -182,7 +184,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
         <i
           onClick={toggleShowQueue}
           className={classnames(
-            "text-white text-opacity-50 duration-200 rounded-full text-xl lg:text-2xl transition transform duration-200",
+            "text-white text-opacity-50 rounded-full text-xl lg:text-2xl transition transform duration-200",
             { "text-opacity-90": showQueue }
           )}
         >
@@ -202,7 +204,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           className={classnames(
             "h-full pt-header pb-footer",
             !isLaggedBlur
-              ? "bg-black/20 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]"
+              ? "bg-black/10 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]"
               : "backdrop-blur-[0px] bg-secondary/80"
           )}
         >
