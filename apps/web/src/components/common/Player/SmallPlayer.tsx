@@ -5,10 +5,10 @@ import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
 
 import { usePlayerContext } from "../../../contexts/player"
 import { useLayoutContext } from "../../../contexts/layout"
+import { LOCAL_STORAGE_KEYS } from "../../../utils/constants"
 import { handleStopPropagation } from "../../../utils/helpers"
 import { roundMinMax } from "../../../utils/number"
 import FullscreenPlayer from "./FullscreenPlayer"
-import music from "../../../pages/others/Music"
 
 const SmallPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen, assets } = usePlayerContext()
@@ -72,6 +72,23 @@ const SmallPlayer: Component = () => {
   useTitle(currentMusic ? `${currentMusic?.artist} - ${currentMusic?.title}` : "Kmotion", {
     restoreOnUnmount: true,
   })
+
+  const initializedTime = useRef(false)
+
+  useEffect(() => {
+    if (!initializedTime.current && state.playing) {
+      const time = localStorage.getItem(LOCAL_STORAGE_KEYS.TIME)
+      if (time) controls.seek(Number(time))
+      initializedTime.current = true
+    }
+  }, [state.playing])
+
+  if (assets.stream.url && state.playing && state.time > 1)
+    localStorage.setItem(LOCAL_STORAGE_KEYS.TIME, state.time.toString())
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.VOLUME, state.volume.toString())
+  }, [state?.volume])
 
   const tRef = useRef<HTMLElement>(null)
 
