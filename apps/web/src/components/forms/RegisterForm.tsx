@@ -1,9 +1,11 @@
-import React, { useState } from "react"
+import React from "react"
+import { useMutation } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
-import { classValidatorResolver } from "@hookform/resolvers/class-validator"
-import { RegisterDto } from "@kmotion/validations"
 import classnames from "classnames"
+import { classValidatorResolver } from "@hookform/resolvers/class-validator"
 
+import { RegisterDto } from "@kmotion/validations"
+import { RegisterResponse } from "@kmotion/types"
 import { api } from "../../utils/Api"
 
 const resolver = classValidatorResolver(RegisterDto)
@@ -15,27 +17,21 @@ const defaultValues: RegisterDto = {
 }
 
 const RegisterForm: Component = () => {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-
   const { register, handleSubmit } = useForm<RegisterDto>({ resolver, defaultValues })
 
-  const onSubmit = async (data: RegisterDto) => {
-    try {
-      setIsSubmitting(true)
-      await api.register(data)
-    } catch (err) {
-      console.log("Error:", err)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+  const registerMutation = useMutation<RegisterResponse, unknown, RegisterDto>({
+    mutationFn: (payload) => api.register(payload),
+    onSuccess: (response) => {
+      console.log("Success:", response)
+    },
+  })
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit((data) => registerMutation.mutateAsync(data))}>
       <div className="flex flex-col space-y-5">
         <div className="flex items-center h-auto">
           <div className="h-full py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
-            <label htmlFor="email" className="font-semibold font-semibold text-lg">
+            <label htmlFor="email" className="font-semibold text-lg">
               Email
             </label>
           </div>
@@ -50,7 +46,7 @@ const RegisterForm: Component = () => {
 
         <div className="flex items-center h-auto">
           <div className="h-full py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
-            <label htmlFor="pseudo" className="font-semibold font-semibold text-lg">
+            <label htmlFor="pseudo" className="font-semibold text-lg">
               username
             </label>
           </div>
@@ -80,7 +76,7 @@ const RegisterForm: Component = () => {
       </div>
       <div className="mt-5">
         <div className="">
-          {isSubmitting ? (
+          {registerMutation.isLoading ? (
             <button className="btn btn-block loading text-gray-800" disabled>
               Chargement
             </button>
@@ -89,7 +85,7 @@ const RegisterForm: Component = () => {
               type="submit"
               className={classnames(
                 "btn btn-block shadow border-800 transition transform hover:scale-105",
-                isSubmitting
+                registerMutation.isLoading
                   ? "loading text-gray-800"
                   : " bg-gradient-to-bl from-blue-600 to-blue-900 border-800"
               )}
