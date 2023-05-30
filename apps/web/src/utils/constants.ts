@@ -12,4 +12,5 @@ export const LOCAL_STORAGE_KEYS = {
   AUTH: "authenticated",
   TIME: "time",
   VOLUME: "volume",
+  DEFAULT_PLAYING: "default_playing",
 } as const
