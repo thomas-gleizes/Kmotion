@@ -43,9 +43,6 @@ class jsonClient {
           },
         ],
       },
-      onDownloadProgress: (progress) => {
-        console.log("progress", progress)
-      },
     })
   }
 
