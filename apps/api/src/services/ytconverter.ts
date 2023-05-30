@@ -1,5 +1,4 @@
 import { ConverterMusic, ConverterMusicInfo } from "@kmotion/types"
-import { YoutubeIdParamsDto } from "@kmotion/validations"
 
 export default class YtConverter {
   private static instance: YtConverter

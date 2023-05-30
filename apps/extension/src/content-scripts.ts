@@ -53,6 +53,7 @@ async function run() {
           case "no-video":
             return sendResponse({ status })
         }
+        break
       }
       case MESSAGE_TYPE.SET_VIDEO_ID: {
         if (typeof message.videoId === "string" && videoId !== message.videoId) {

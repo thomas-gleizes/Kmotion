@@ -20,7 +20,6 @@ const VideoScreen: React.FC = () => {
 
           let loop = true
           while (loop) {
-            console.log("loop")
             chrome.tabs.sendMessage(
               targetTab.id,
               { type: MESSAGE_TYPE.ASK_VIDEO_INFO },
@@ -28,7 +27,6 @@ const VideoScreen: React.FC = () => {
                 switch (message.status) {
                   case "success":
                     loop = false
-                    console.log("Message", message)
                     if (message.convert) setStatus(message.convert.status)
                     return resolve(message.videoInfo)
                   case "error":
@@ -39,6 +37,8 @@ const VideoScreen: React.FC = () => {
                   case "no-video":
                     loop = false
                     return reject(new Error("No video"))
+                  default:
+                    break
                 }
               }
             )
