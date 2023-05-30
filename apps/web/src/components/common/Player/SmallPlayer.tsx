@@ -10,11 +10,20 @@ import { handleStopPropagation } from "../../../utils/helpers"
 import { roundMinMax } from "../../../utils/number"
 import FullscreenPlayer from "./FullscreenPlayer"
 
+const defaultPlay = localStorage.getItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING) !== "false"
+
 const SmallPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen, assets } = usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
 
-  const [audio, state, controls, ref] = useAudio(<audio src={assets.stream.url} autoPlay={true} />)
+  const [audio, state, controls, ref] = useAudio(
+    <audio src={assets.stream.url} autoPlay={defaultPlay} />
+  )
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING, state.playing ? "true" : "false")
+  }, [state.playing])
+
   const togglePlaying = () => (state.playing ? controls.pause() : controls.play())
 
   useEvent("keydown", (event) => {
