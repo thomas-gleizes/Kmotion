@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react"
 import classnames from "classnames"
-import { useAudio, useEvent, useTitle } from "react-use"
+import { useAudio, useEvent, useMount, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
 
 import { usePlayerContext } from "../../../contexts/player"
@@ -94,6 +94,12 @@ const SmallPlayer: Component = () => {
 
   if (assets.stream.url && state.playing && state.time > 1)
     localStorage.setItem(LOCAL_STORAGE_KEYS.TIME, state.time.toString())
+
+  useMount(() => {
+    const volume = localStorage.getItem(LOCAL_STORAGE_KEYS.VOLUME)
+
+    if (volume && !isNaN(+volume)) controls.volume(+volume)
+  })
 
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEYS.VOLUME, state.volume.toString())
