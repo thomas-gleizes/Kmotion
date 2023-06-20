@@ -1,0 +1,16 @@
+{
+  "name": "@kmotion/database",
+  "version": "1.0.0",
+  "scripts": {
+    "migrate": "ts-node src/migrate.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "kysely": "^0.25.0",
+    "mysql2": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.15.3"
+  },
+  "types": ""
+}

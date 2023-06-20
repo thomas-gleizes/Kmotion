@@ -1,4 +1,4 @@
-import { Visibility } from "@prisma/client"
+import { Visibility } from "@kmotion/database/prisma/enums"
 
 export type IUser = {
   id: number

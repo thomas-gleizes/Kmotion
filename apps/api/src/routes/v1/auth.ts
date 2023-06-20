@@ -1,24 +1,22 @@
 import { FastifyInstance } from "fastify"
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
 import { LoginDto, RegisterDto } from "@kmotion/validations"
 import { LoginResponse } from "@kmotion/types"
 import { userMapper } from "@kmotion/mappers"
-import prisma from "../../services/prisma"
 import { bcryptCompare, bcryptHash } from "../../utils/hash"
 import { UnauthorizedException } from "../../exceptions/http/UnauthorizedException"
 import { signToken } from "../../utils/token"
+import { connexion } from "../../services/database"
 
 export default async function authRoutes(instance: FastifyInstance) {
   instance.post<{ Body: LoginDto; Reply: LoginResponse }>(
     "/login",
     { preHandler: instance.validateBody(LoginDto) },
     async (request, reply) => {
-      const user = await prisma.user.findUnique({
-        where: {
-          email: request.body.email,
-        },
-      })
+      const user = await connexion
+        .selectFrom("users")
+        .where("email", "=", request.body.email)
+        .executeTakeFirst()
 
       if (!user || (user && (await bcryptCompare(user.password, request.body.password))))
         throw new UnauthorizedException("Email/Password combination is incorrect")

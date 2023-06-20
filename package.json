@@ -23,11 +23,11 @@
     "eslint": "^8.36.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.5",
-    "prisma": "^4.11.0",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.2",
+    "prisma": "^4.15.0",
+    "prisma-kysely": "^1.4.2"
   },
   "dependencies": {
-    "@prisma/client": "^4.11.0",
     "concurrently": "^7.6.0"
   }
 }
