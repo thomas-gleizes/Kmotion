@@ -203,7 +203,10 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
       </div>
       <div className="flex justify-between w-10/12 mx-auto">
         <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
-          <i onClick={actions.previous} className="rounded-full">
+          <i
+            onClick={state.time <= 5 ? actions.previous : () => controls.seek(0)}
+            className="rounded-full"
+          >
             <FaBackward />
           </i>
         </div>

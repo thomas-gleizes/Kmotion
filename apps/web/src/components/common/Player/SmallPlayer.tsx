@@ -158,7 +158,11 @@ const SmallPlayer: Component = () => {
           <div className="w-2/5 flex justify-center items-center space-x-5 md:space-x-16">
             <div>
               <i className="text-2xl md:text-3xl lg:text-5xl text-white cursor-pointer">
-                <FaBackward onClick={handleStopPropagation(actions.previous)} />
+                <FaBackward
+                  onClick={handleStopPropagation(
+                    state.time <= 5 ? actions.previous : () => controls.seek(0)
+                  )}
+                />
               </i>
             </div>
             <div>
