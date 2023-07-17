@@ -1,11 +1,11 @@
 import { createContext, useEffect, useState } from "react"
 import useLocalStorageState from "use-local-storage-state"
-import { useQuery } from "@tanstack/react-query"
 import { useToggle } from "react-use"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
 import { useContextFactory, useImageLoader, useStorageQueue, useStreamLoader } from "../hooks"
+import { getImageResolution } from "../utils/helpers"
 
 const PlayerContext = createContext<PlayerContextValues>(null as never)
 
@@ -36,16 +36,24 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
   useEffect(() => {
     if (currentMusic)
       setMusicsHistory((state) =>
-        state.at(-1)?.id === currentMusic.id ? state : [...state, currentMusic]
+        state.at(-1)?.id === currentMusic.id ? state : [...state, currentMusic],
       )
   }, [currentMusic])
 
   useEffect(() => {
     if ("mediaSession" in navigator && coverUrl && currentMusic) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: currentMusic.title,
-        artist: currentMusic.artist || "Unknown",
-        artwork: [{ src: coverUrl, sizes: "512x512", type: "image/jpeg" }],
+      getImageResolution(coverUrl).then((resolution) => {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: currentMusic.title,
+          artist: currentMusic.artist || "Unknown",
+          artwork: [
+            {
+              src: coverUrl,
+              sizes: `${resolution.width}x${resolution.height}`,
+              type: "image/jpeg",
+            },
+          ],
+        })
       })
 
       navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
