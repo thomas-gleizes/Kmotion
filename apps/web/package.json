@@ -25,6 +25,7 @@
     "react-hook-form": "^7.45.1",
     "react-icons": "^4.10.1",
     "react-use": "^17.4.0",
+    "redaxios": "^0.5.1",
     "reflect-metadata": "^0.1.13",
     "simplebar-react": "^3.2.4",
     "use-local-storage-state": "^18.3.3",

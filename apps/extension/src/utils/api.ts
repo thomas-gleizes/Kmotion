@@ -1,7 +1,8 @@
 import axios from "axios"
-import { STORAGE_KEY } from "../resources/constants"
+
 import { LoginDto } from "@kmotion/validations"
-import { LoginResponse, MusicInfoResponse } from "@kmotion/types"
+import { ConverterMusicInfo, LoginResponse, MusicInfoResponse } from "@kmotion/types"
+import { STORAGE_KEY } from "../resources/constants"
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -22,3 +23,6 @@ export const fetchVideoInfo = async (youtubeId: string) =>
   instance.get<MusicInfoResponse>(`/musics/${youtubeId}/info`)
 
 export const downloadMusic = async (youtubeId: string) => instance.post(`/musics/${youtubeId}/add`)
+
+export const convertMusic = async (youtubeId: string, payload: ConverterMusicInfo) =>
+  instance.post(`/musics/${youtubeId}/add`, payload)

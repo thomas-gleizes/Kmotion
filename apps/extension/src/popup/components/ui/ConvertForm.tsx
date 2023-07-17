@@ -6,6 +6,7 @@ import { ConverterMusicInfo } from "@kmotion/types"
 import CoverChoice from "./CoverChoice"
 import Timeline from "./Timeline"
 import MetaData from "./MetaData"
+import { MESSAGE_TYPE } from "../../../resources/constants"
 
 interface Props {
   info: ConverterMusicInfo
@@ -30,16 +31,26 @@ const ConvertForm: React.FC<Props> = ({ info, ready }) => {
     },
   })
 
-  const onSubmlit = () => {
+  const onSubmit = (values: ConvertMusicBodyDto) => {
+    console.log("Values", values)
+
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
       const [targetTab] = tabs
 
       if (!targetTab?.id) return console.error("No tab ID")
+
+      chrome.tabs.sendMessage(
+        targetTab.id,
+        { type: MESSAGE_TYPE.CONVERT_VIDEO, data: values },
+        (message) => {
+          console.log("submit response", message)
+        },
+      )
     })
   }
 
   return (
-    <form className="flex flex-col space-y-2 px-2">
+    <form onSubmit={formMethods.handleSubmit(onSubmit)} className="flex flex-col space-y-2 px-2">
       <FormProvider {...formMethods}>
         <MetaData info={info} isReady={ready} />
         <CoverChoice info={info} />

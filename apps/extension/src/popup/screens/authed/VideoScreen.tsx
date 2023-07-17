@@ -63,7 +63,7 @@ const VideoScreen: React.FC = () => {
 
             chrome.tabs.sendMessage(
               targetTab.id,
-              { type: MESSAGE_TYPE.CONVERT_VIDEO, videoId: value?.info.videoId },
+              { type: MESSAGE_TYPE.DOWNLOAD_VIDEO, videoId: value?.info.videoId },
               (message) => {
                 setStatus(message.status)
               },
