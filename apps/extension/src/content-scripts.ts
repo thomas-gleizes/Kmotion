@@ -1,7 +1,7 @@
 import { MusicInfoResponse } from "@kmotion/types"
 
 import { MESSAGE_TYPE, STORAGE_KEY } from "./resources/constants"
-import { downloadMusic, fetchVideoInfo } from "./utils/api"
+import { convertMusic, downloadMusic, fetchVideoInfo } from "./utils/api"
 
 let videoId: string | null = new URL(document.location.href).searchParams.get("v")
 let videoInfo: MusicInfoResponse | null = null
@@ -65,6 +65,29 @@ async function run() {
         break
       }
       case MESSAGE_TYPE.CONVERT_VIDEO: {
+        if (convertVideos[message.videoId].status === "stand-by") {
+          convertVideos[message.videoId].status = "loading"
+
+          convertMusic(message.videoId, message.data)
+            .then(
+              (response) =>
+                (convertVideos[message.videoId] = {
+                  status: "success",
+                  data: response.data,
+                }),
+            )
+            .catch(
+              (err) =>
+                (convertVideos[message.videoId] = {
+                  status: "error",
+                  data: err,
+                }),
+            )
+        }
+
+        return "ok"
+      }
+      case MESSAGE_TYPE.DOWNLOAD_VIDEO: {
         if (convertVideos[message.videoId].status === "stand-by") {
           convertVideos[message.videoId].status = "loading"
 
