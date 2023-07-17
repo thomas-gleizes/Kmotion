@@ -87,7 +87,7 @@ const RegisterForm: Component = () => {
                 "btn btn-block shadow border-800 transition transform hover:scale-105",
                 registerMutation.isLoading
                   ? "loading text-gray-800"
-                  : " bg-gradient-to-bl from-blue-600 to-blue-900 border-800"
+                  : " bg-gradient-to-bl from-blue-600 to-blue-900 border-800",
               )}
             >
               S'inscrire

@@ -54,7 +54,7 @@ const SimpleDialog: Component<Props> = ({ isOpen, onClose, children }) => {
         </div>
       </Dialog>
     </Transition>,
-    container
+    container,
   )
 }
 

@@ -70,7 +70,7 @@ export default async function userRoutes(instance: FastifyInstance) {
       })
 
       reply.status(200).send({ success: true, user: userMapper.one(user) })
-    }
+    },
   )
 
   instance.patch<{ Params: IdNumberDto }>(
@@ -83,7 +83,7 @@ export default async function userRoutes(instance: FastifyInstance) {
       })
 
       reply.status(200).send({ success: true, user: userMapper.one(user) })
-    }
+    },
   )
 
   instance.get<{ Params: { id: string } }>("/:id/playlists", async (request, reply) => {

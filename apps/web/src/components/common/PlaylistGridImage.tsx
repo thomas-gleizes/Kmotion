@@ -17,7 +17,7 @@ const PlaylistGridImage: Component<Props> = ({ ids, className }) => {
     <div
       className={classnames(
         "grid grid-cols-2 h-full bg-neutral-800 rounded-xl grid-rows-2",
-        className
+        className,
       )}
     >
       <ImageLoader id={ids[0]}>

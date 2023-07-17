@@ -41,7 +41,7 @@ const task = new AsyncTask(
       }
     }
   },
-  (err) => void trace("CRON JOB ERROR", err.name, err.message)
+  (err) => void trace("CRON JOB ERROR", err.name, err.message),
 )
 
 export const syncMusics = new CronJob({ cronExpression: "30 1 * * *" }, task, {

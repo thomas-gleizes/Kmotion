@@ -45,7 +45,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
       const total = await prisma.music.count()
 
       return reply.send({ success: true, musics: musicMapper.many(musics), meta: { total } })
-    }
+    },
   )
 
   instance.get<{ Reply: MusicSyncResponse }>(
@@ -77,7 +77,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
       }
 
       reply.send({ success: true, musics: musicMapper.many(newMusics) })
-    }
+    },
   )
 
   instance.post<{ Params: YoutubeIdParamsDto; Body: ConvertMusicBodyDto }>(
@@ -114,7 +114,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
       })
 
       reply.send({ success: "true", music: musicMapper.one(music), info })
-    }
+    },
   )
 
   instance.get<{ Params: GetMusicPramsDto }>(
@@ -128,7 +128,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
       if (!music) throw new NotFoundException("Music not found")
 
       reply.send({ success: true, music: musicMapper.one(music) })
-    }
+    },
   )
 
   instance.get<{ Params: GetMusicPramsDto }>(
@@ -149,7 +149,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
           "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.mp3"`,
         })
         .send(stream)
-    }
+    },
   )
 
   instance.get<{ Params: YoutubeIdParamsDto; Reply: MusicInfoResponse }>(
@@ -166,7 +166,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
         isReady: !!music,
         info: await ytConverter.info(request.params.youtubeId),
       })
-    }
+    },
   )
 
   instance.get<{ Params: GetMusicPramsDto }>(
@@ -187,7 +187,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
           "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.jpg"`,
         })
         .send(stream)
-    }
+    },
   )
 
   instance.delete<{ Params: GetMusicPramsDto }>(
@@ -208,7 +208,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
       }
 
       reply.status(202).send({ success: true })
-    }
+    },
   )
 
   instance.get<{ Querystring: SearchMusicQuery; Reply: MusicSearchResponse }>(
@@ -225,7 +225,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
       })
 
       reply.send({ success: true, musics: musicMapper.many(musics) })
-    }
+    },
   )
 
   instance.post<{ Params: GetMusicPramsDto; Reply: MusicShareResponse }>(
@@ -249,7 +249,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
       const link = `${process.env.CLIENT_URL}/out/test/${bypassCode.code}`
 
       reply.send({ success: true, link: link, music: musicMapper.one(music) })
-    }
+    },
   )
 
   instance.get<{ Params: BypassMusicParamsDto; Reply: MusicByPassResponse }>(
@@ -276,6 +276,6 @@ export default async function musicRoutes(instance: FastifyInstance) {
         song: (await ytConverter.stream(music.youtubeId)).toString("base64"),
         cover: (await ytConverter.cover(music.youtubeId)).toString("base64"),
       })
-    }
+    },
   )
 }

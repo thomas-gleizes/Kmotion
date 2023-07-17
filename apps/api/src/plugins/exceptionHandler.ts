@@ -7,7 +7,7 @@ export default function exceptionHandler(
   this: FastifyInstance,
   exception: Error,
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   if (exception instanceof HttpException) {
     void trace("http exception", exception.status.toString(), exception.message)

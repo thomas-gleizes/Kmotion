@@ -13,5 +13,5 @@ declare type FetcherResponse = Response
 declare type RequestInterceptor = (request: FetcherRequest) => FetcherRequest
 declare type ResponseInterceptor = (
   response: FetcherResponse,
-  request: FetcherRequest
+  request: FetcherRequest,
 ) => FetcherResponse

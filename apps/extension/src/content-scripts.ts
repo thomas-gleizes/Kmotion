@@ -74,14 +74,14 @@ async function run() {
                 (convertVideos[message.videoId] = {
                   status: "success",
                   data: response.data,
-                })
+                }),
             )
             .catch(
               (err) =>
                 (convertVideos[message.videoId] = {
                   status: "error",
                   data: err,
-                })
+                }),
             )
         }
 

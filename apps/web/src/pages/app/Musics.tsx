@@ -2,16 +2,9 @@ import React, { useEffect, useMemo, useState } from "react"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import useLocalStorageState from "use-local-storage-state"
 import { useDialog } from "react-dialog-promise"
-import {
-  CgRowFirst,
-  FaList,
-  FaPlay,
-  FaSearch,
-  FaShare,
-  FaThLarge,
-  FaTrash,
-  IoShuffleOutline,
-} from "react-icons/all"
+import { FaList, FaPlay, FaSearch, FaShare, FaThLarge, FaTrash } from "react-icons/fa"
+import { IoShuffleOutline } from "react-icons/io5"
+import { CgRowFirst } from "react-icons/cg"
 
 import { IMusic, MetaData, MusicResponse } from "@kmotion/types"
 import { api } from "../../utils/Api"
@@ -49,7 +42,7 @@ const Musics: Page = () => {
 
   const [displayMode, setDisplayMode] = useLocalStorageState<keyof typeof DisplayMode>(
     "displayMode",
-    { defaultValue: DisplayMode.GRID }
+    { defaultValue: DisplayMode.GRID },
   )
 
   const { data, fetchNextPage, isFetching, refetch } = useInfiniteQuery<MusicResponse>({
@@ -62,7 +55,7 @@ const Musics: Page = () => {
 
   const musics: IMusic[] = useMemo(
     () => (data ? data.pages.map((page) => page.musics).flat() : []),
-    [data]
+    [data],
   )
 
   const [search, setSearch] = useState<string>("")
@@ -74,9 +67,9 @@ const Musics: Page = () => {
         : [...musics].filter(
             (music) =>
               music.title.toLowerCase().includes(search.toLowerCase()) ||
-              (music.artist && music.artist.toLowerCase().includes(search.toLowerCase()))
+              (music.artist && music.artist.toLowerCase().includes(search.toLowerCase())),
           ),
-    [musics, search]
+    [musics, search],
   )
 
   const meta = useMemo<MetaData>(() => {

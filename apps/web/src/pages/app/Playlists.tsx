@@ -1,7 +1,7 @@
 import React from "react"
 import { useRouter } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
-import { FaChevronRight, FaPlus } from "react-icons/all"
+import { FaChevronRight, FaPlus } from "react-icons/fa"
 import { useDialog } from "react-dialog-promise"
 
 import { IPlaylist } from "@kmotion/types"

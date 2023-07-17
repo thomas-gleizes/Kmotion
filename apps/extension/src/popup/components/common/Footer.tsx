@@ -22,7 +22,7 @@ const NavLink: React.FC<{ route: Route }> = ({ route }) => {
       <div
         className={classnames(
           "mx-auto h-0.5 bg-white rounded-full transition transform",
-          active ? "scale-x-100" : "scale-x-0"
+          active ? "scale-x-100" : "scale-x-0",
         )}
       ></div>
     </div>
