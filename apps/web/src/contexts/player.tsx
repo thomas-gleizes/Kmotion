@@ -50,11 +50,9 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
             title: currentMusic.title,
             artist: currentMusic.artist || "Unknown",
             artwork: [
-              {
-                src: src,
-                sizes: `${resolution.width}x${resolution.height}`,
-                type: "image/jpeg",
-              },
+              { src, sizes: `${resolution.width}x${resolution.height}`, type: "image/jpeg" },
+              { src, sizes: `512x512`, type: "image/jpeg" },
+              { src: coverUrl, sizes: `512x512`, type: "image/jpeg" },
             ],
           })
         })
