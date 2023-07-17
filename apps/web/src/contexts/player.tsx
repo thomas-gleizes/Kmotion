@@ -5,7 +5,7 @@ import { useToggle } from "react-use"
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
 import { useContextFactory, useImageLoader, useStorageQueue, useStreamLoader } from "../hooks"
-import { getImageResolution } from "../utils/helpers"
+import { getImageResolution, resizeImage } from "../utils/helpers"
 
 const PlayerContext = createContext<PlayerContextValues>(null as never)
 
@@ -42,17 +42,21 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
 
   useEffect(() => {
     if ("mediaSession" in navigator && coverUrl && currentMusic) {
-      getImageResolution(coverUrl).then((resolution) => {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: currentMusic.title,
-          artist: currentMusic.artist || "Unknown",
-          artwork: [
-            {
-              src: coverUrl,
-              sizes: `${resolution.width}x${resolution.height}`,
-              type: "image/jpeg",
-            },
-          ],
+      resizeImage(coverUrl, 336, 188).then((blob) => {
+        const src = URL.createObjectURL(blob)
+
+        getImageResolution(src).then((resolution) => {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: currentMusic.title,
+            artist: currentMusic.artist || "Unknown",
+            artwork: [
+              {
+                src: src,
+                sizes: `${resolution.width}x${resolution.height}`,
+                type: "image/jpeg",
+              },
+            ],
+          })
         })
       })
 
