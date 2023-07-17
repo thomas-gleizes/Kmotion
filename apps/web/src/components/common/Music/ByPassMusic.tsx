@@ -3,6 +3,7 @@ import { Navigate } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { api } from "../../../utils/Api"
 import classnames from "classnames"
+import { useAudio } from "react-use"
 import {
   FaBackward,
   FaEllipsisH,
@@ -14,12 +15,12 @@ import {
   FaSpinner,
   FaVolumeDown,
   FaVolumeUp,
-} from "react-icons/all"
+} from "react-icons/fa"
+
+import { IMusic } from "@kmotion/types"
 import Slider from "../Slider"
 import { roundMinMax } from "../../../utils/number"
 import { formatTime } from "../../../utils/time"
-import { IMusic } from "../../../../../../packages/types"
-import { useAudio } from "react-use"
 
 interface Props {
   token: string
@@ -64,7 +65,7 @@ const Player: Component<PlayerProps> = ({ music, assets }) => {
         <h3
           className={classnames(
             "text-white text-lg lg:text-xl xl:text-3xl font-semibold capitalize py-1.5 inline-block whitespace-nowrap",
-            { "overflow-defilement": false }
+            { "overflow-defilement": false },
           )}
         >
           {music.title}
@@ -101,7 +102,7 @@ const Player: Component<PlayerProps> = ({ music, assets }) => {
           alt={music.title}
           className={classnames(
             "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
-            { "scale-[75%] shadow-lg": state.paused }
+            { "scale-[75%] shadow-lg": state.paused },
           )}
         />
       )}

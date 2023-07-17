@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react"
 import classnames from "classnames"
 import { useAudio, useEvent, useMount, useTitle } from "react-use"
-import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/all"
+import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/fa"
 
 import { usePlayerContext } from "../../../contexts/player"
 import { useLayoutContext } from "../../../contexts/layout"
@@ -17,7 +17,7 @@ const SmallPlayer: Component = () => {
   const { isLaggedBlur } = useLayoutContext()
 
   const [audio, state, controls, ref] = useAudio(
-    <audio src={assets.stream.url} autoPlay={defaultPlay} />
+    <audio src={assets.stream.url} autoPlay={defaultPlay} />,
   )
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const SmallPlayer: Component = () => {
         void controls.play()
       } else actions.next()
     },
-    ref.current
+    ref.current,
   )
 
   useEffect(() => {
@@ -73,7 +73,7 @@ const SmallPlayer: Component = () => {
       navigator.mediaSession.setActionHandler("seekforward", () => controls.seek(state.time + 10))
       navigator.mediaSession.setActionHandler(
         "seekto",
-        (details) => details.seekTime && controls.seek(details.seekTime)
+        (details) => details.seekTime && controls.seek(details.seekTime),
       )
     }
   }, [navigator, controls, state])
@@ -120,7 +120,7 @@ const SmallPlayer: Component = () => {
         onClick={handleStopPropagation(() => fullscreen.toggle())}
         className={classnames(
           "relative z-[30] border-b border-neutral-800 cursor-default",
-          isLaggedBlur ? "bg-secondary-dark/90" : "bg-secondary-dark/70 backdrop-blur"
+          isLaggedBlur ? "bg-secondary-dark/90" : "bg-secondary-dark/70 backdrop-blur",
         )}
       >
         <div className="flex items-center py-2 lg:py-4 px-2 lg:px-16 justify-between">
@@ -147,7 +147,7 @@ const SmallPlayer: Component = () => {
                 ref={tRef}
                 className={classnames(
                   "text-sm lg:text-3xl lg:font-semibold text-white inline-block whitespace-nowrap",
-                  { "overflow-defilement": isOverflow }
+                  { "overflow-defilement": isOverflow },
                 )}
               >
                 {currentMusic.title}
@@ -160,7 +160,7 @@ const SmallPlayer: Component = () => {
               <i className="text-2xl md:text-3xl lg:text-5xl text-white cursor-pointer">
                 <FaBackward
                   onClick={handleStopPropagation(
-                    state.time <= 5 ? actions.previous : () => controls.seek(0)
+                    state.time <= 5 ? actions.previous : () => controls.seek(0),
                   )}
                 />
               </i>

@@ -4,7 +4,7 @@ import { ConverterMusicInfo } from "@kmotion/types"
 import CardCollapse from "../common/CardCollapse"
 import { useFormContext } from "react-hook-form"
 import { ConvertMusicBodyDto } from "@kmotion/validations"
-import { FaMinus, FaPlus } from "react-icons/all"
+import { FaMinus, FaPlus } from "react-icons/fa"
 
 interface Props {
   info: ConverterMusicInfo

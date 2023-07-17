@@ -2,10 +2,8 @@ import React, { useMemo, useRef } from "react"
 import classnames from "classnames"
 import { useToggle } from "react-use"
 import {
-  CgRowFirst,
   FaBackward,
   FaBars,
-  FaEllipsisH,
   FaForward,
   FaList,
   FaListUl,
@@ -14,11 +12,10 @@ import {
   FaRandom,
   FaSync,
   FaSyncAlt,
-  FaTimes,
   FaTrash,
   FaVolumeDown,
   FaVolumeUp,
-} from "react-icons/all"
+} from "react-icons/fa"
 
 import { usePlayerContext } from "../../../contexts/player"
 import { formatTime } from "../../../utils/time"
@@ -137,7 +134,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
       onClick={() => (showQueue ? toggleShowQueue() : null)}
       className={classnames(
         "flex items-center transition-all duration-300 h-full lg:px-16",
-        showQueue ? "pr-2 w-2/5 lg:w-full" : "w-full lg:flex-col lg:justify-center"
+        showQueue ? "pr-2 w-2/5 lg:w-full" : "w-full lg:flex-col lg:justify-center",
       )}
     >
       {assets.cover.isFetching ? (
@@ -154,7 +151,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           alt={currentMusic.title}
           className={classnames(
             "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
-            { "scale-[75%] shadow-lg": state.paused }
+            { "scale-[75%] shadow-lg": state.paused },
           )}
         />
       )}
@@ -168,7 +165,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           ref={tRef}
           className={classnames(
             "text-white text-lg lg:text-xl xl:text-3xl font-semibold capitalize py-1.5 inline-block whitespace-nowrap",
-            { "overflow-defilement": isOverflow }
+            { "overflow-defilement": isOverflow },
           )}
         >
           {currentMusic.title}
@@ -244,7 +241,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           onClick={() => loop.set("all")}
           className={classnames(
             "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
-            loop.value !== "none" ? "text-opacity-90 scale-110" : "text-opacity-50"
+            loop.value !== "none" ? "text-opacity-90 scale-110" : "text-opacity-50",
           )}
         >
           {loop.value === "all" ? <FaSync /> : <FaSyncAlt />}
@@ -253,7 +250,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           onClick={() => actions.shuffle()}
           className={classnames(
             "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
-            currentMusic.title.length & 1 ? "text-opacity-90 scale-110" : "text-opacity-50"
+            currentMusic.title.length & 1 ? "text-opacity-90 scale-110" : "text-opacity-50",
           )}
         >
           <FaRandom />
@@ -262,7 +259,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           onClick={toggleShowQueue}
           className={classnames(
             "text-white text-opacity-50 rounded-full text-xl lg:text-2xl transition transform duration-200",
-            { "text-opacity-90": showQueue }
+            { "text-opacity-90": showQueue },
           )}
         >
           <FaListUl />
@@ -282,7 +279,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
             "h-full pt-header pb-footer",
             !isLaggedBlur
               ? "bg-black/10 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]"
-              : "backdrop-blur-[0px] bg-secondary/80"
+              : "backdrop-blur-[0px] bg-secondary/80",
           )}
         >
           <div className={classnames("h-full px-6 lg:px-10 py-4")}>
@@ -290,14 +287,14 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
               <div
                 className={classnames(
                   "flex items-center lg:w-2/3",
-                  showQueue ? "lg:h-full pt-4" : "w-full h-min"
+                  showQueue ? "lg:h-full pt-4" : "w-full h-min",
                 )}
               >
                 {ImageBlock}
                 <div
                   className={classnames(
                     showQueue ? "w-3/5" : "w-0 hidden",
-                    "transition-all transform-gpu lg:w-0 lg:hidden"
+                    "transition-all transform-gpu lg:w-0 lg:hidden",
                   )}
                 >
                   {TitleBlock}
@@ -308,7 +305,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                   "lg:w-1/3 xl:px-5 lg:px-5",
                   showQueue
                     ? "w-full flex flex-col justify-evenly"
-                    : "flex flex-col justify-between lg:justify-center"
+                    : "flex flex-col justify-between lg:justify-center",
                 )}
               >
                 <div className={classnames(showQueue ? "hidden lg:block" : "")}>{TitleBlock}</div>

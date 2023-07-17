@@ -3,7 +3,7 @@ import { useList } from "react-use"
 import useLocalStorageState from "use-local-storage-state"
 
 export function useStorageQueue<
-  Item extends { id: number | string }
+  Item extends { id: number | string },
 >(): UseStorageQueueResult<Item> {
   const [index, setIndex] = useLocalStorageState<number>("iindex", {
     defaultValue: 0,

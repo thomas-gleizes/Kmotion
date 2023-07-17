@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
-import { FaCheckCircle, FaMinusCircle, FaPlusCircle, FaSearch } from "react-icons/all"
+import { FaCheckCircle, FaMinusCircle, FaPlusCircle, FaSearch } from "react-icons/fa"
 import { useQuery } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import SimpleBar from "simplebar-react"

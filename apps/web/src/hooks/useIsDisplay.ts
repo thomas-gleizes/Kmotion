@@ -7,7 +7,7 @@ export function useIsDisplay<E extends Element>(marge: number = 1): [boolean, Re
   const ref = useRef<E>(null)
 
   const [isDisplay, setIsDisplay] = useState<boolean>(
-    ref.current ? elementIsDisplay(ref.current, marge) : false
+    ref.current ? elementIsDisplay(ref.current, marge) : false,
   )
 
   function handler(): void {

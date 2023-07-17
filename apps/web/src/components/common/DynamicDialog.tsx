@@ -50,7 +50,7 @@ const DynamicDialog: ComponentWithChild<Props> = memo(
     )
 
     return ReactDom.createPortal(element, container)
-  }
+  },
 )
 
 export default DynamicDialog

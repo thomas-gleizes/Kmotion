@@ -1,6 +1,6 @@
 import React from "react"
 import { useFormContext } from "react-hook-form"
-import { FaCheck } from "react-icons/all"
+import { FaCheck } from "react-icons/fa"
 
 import { ConverterMusicInfo } from "@kmotion/types"
 import { ConvertMusicBodyDto } from "@kmotion/validations"

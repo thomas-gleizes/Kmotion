@@ -53,7 +53,7 @@ const CoverChoice: React.FC<Props> = ({ info }) => {
                   "border w-full rounded text-sm shadow-sm transform hover:scale-105 hover:shadow-md duration-75",
                   field?.value === cover.url
                     ? "text-white bg-gradient-to-bl from-blue-600 to-blue-800"
-                    : "bg-gray-100"
+                    : "bg-gray-100",
                 )}
               >
                 {cover?.width}x{cover?.height}
@@ -68,7 +68,7 @@ const CoverChoice: React.FC<Props> = ({ info }) => {
                 "border w-full rounded text-sm shadow-sm transform hover:scale-105 hover:shadow-md duration-75 bg-gray-100",
                 field?.type === "custom"
                   ? "text-white bg-gradient-to-bl from-blue-600 to-blue-800"
-                  : "bg-gray-100"
+                  : "bg-gray-100",
               )}
             >
               Importer

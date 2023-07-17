@@ -11,7 +11,7 @@ export const useLayoutContext = useContextFactory(LayoutContext)
 const LayoutProvider: ComponentWithChild = ({ children }) => {
   const [isMobile] = useState(isMobileOrTablet)
   const [isLaggedBlur] = useState(
-    window.navigator.userAgent.includes("Win32") || window.navigator.userAgent.includes("Win64")
+    window.navigator.userAgent.includes("Win32") || window.navigator.userAgent.includes("Win64"),
   )
 
   return (

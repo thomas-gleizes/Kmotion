@@ -8,7 +8,7 @@ interface useImageLoaderOptions {
 
 export function useImageLoader(
   id: number | undefined,
-  options?: useImageLoaderOptions
+  options?: useImageLoaderOptions,
 ): [string | undefined, UseQueryResult<string>] {
   const enabled = typeof options?.enabled === "boolean" ? options.enabled : true
 

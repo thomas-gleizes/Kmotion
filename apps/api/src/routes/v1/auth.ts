@@ -32,7 +32,7 @@ export default async function authRoutes(instance: FastifyInstance) {
       request.session.isLogin = true
 
       reply.send({ success: true, user: mappedUser, token: signToken(mappedUser) })
-    }
+    },
   )
 
   instance.post<{ Body: RegisterDto }>(
@@ -61,7 +61,7 @@ export default async function authRoutes(instance: FastifyInstance) {
 
         throw error
       }
-    }
+    },
   )
 
   instance.post("/logout", async (request, reply) => {

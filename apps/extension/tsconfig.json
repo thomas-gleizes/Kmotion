@@ -6,12 +6,7 @@
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "strict": true,
-    "lib": [
-      "dom",
-      "es5",
-      "scripthost",
-      "es2015.promise"
-    ]
+    "lib": ["dom", "es5", "scripthost", "es2015.promise"]
   },
   "exclude": ["node_modules"]
 }

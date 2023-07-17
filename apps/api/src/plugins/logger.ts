@@ -5,7 +5,7 @@ import trace from "../utils/trace"
 export default function logger(
   request: FastifyRequest,
   reply: FastifyReply,
-  next: HookHandlerDoneFunction
+  next: HookHandlerDoneFunction,
 ) {
   const log = `(${request.ip}) ${request.method} ${request.url}`
 

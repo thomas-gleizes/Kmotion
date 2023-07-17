@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useAsync } from "react-use"
-import { FaSpinner } from "react-icons/all"
+import { FaSpinner } from "react-icons/fa"
 
 import { ConverterMusicInfo, IMusic } from "@kmotion/types"
 import { MESSAGE_TYPE } from "../../../resources/constants"
@@ -40,13 +40,13 @@ const VideoScreen: React.FC = () => {
                   default:
                     break
                 }
-              }
+              },
             )
 
             await new Promise((resolve) => setTimeout(resolve, 200))
           }
         })
-      }
+      },
     )
   }, [])
 
@@ -66,7 +66,7 @@ const VideoScreen: React.FC = () => {
               { type: MESSAGE_TYPE.CONVERT_VIDEO, videoId: value?.info.videoId },
               (message) => {
                 setStatus(message.status)
-              }
+              },
             )
           })
         }

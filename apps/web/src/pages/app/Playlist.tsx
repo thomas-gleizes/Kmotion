@@ -2,15 +2,9 @@ import React, { useMemo, useState } from "react"
 import { useParams, useRouter } from "@tanstack/react-router"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useDialog } from "react-dialog-promise"
-import {
-  CgRowFirst,
-  FaChevronLeft,
-  FaList,
-  FaPlay,
-  FaSearch,
-  FaTrash,
-  IoShuffleOutline,
-} from "react-icons/all"
+import { FaChevronLeft, FaList, FaPlay, FaSearch, FaTrash } from "react-icons/fa"
+import { CgRowFirst } from "react-icons/cg"
+import { IoShuffleOutline } from "react-icons/io5"
 
 import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
@@ -65,27 +59,24 @@ const Playlist: Page = () => {
             (entry) =>
               entry.music &&
               (entry.music.title.toLowerCase().includes(querySearch.toLowerCase()) ||
-                entry.music.artist.toLowerCase().includes(querySearch.toLowerCase()))
+                entry.music.artist.toLowerCase().includes(querySearch.toLowerCase())),
           )
         : [...entries],
-    [entries, querySearch]
+    [entries, querySearch],
   )
 
   const handlePlayPlaylist = (random: boolean) => {
     setPlaylist(playlist as IPlaylist)
     if (random)
       actions.set(
-        [...entries]?.sort(() => Math.random() - 0.5).map((entry) => entry.music as IMusic)
+        [...entries]?.sort(() => Math.random() - 0.5).map((entry) => entry.music as IMusic),
       )
     else actions.set(entries?.map((entry) => entry.music as IMusic))
   }
 
   const handlePlayMusic = (index: number) => {
     setPlaylist(playlist as IPlaylist)
-    actions.set(
-      entries?.map((entry) => entry.music as IMusic),
-      index
-    )
+    actions.set(entries?.map((entry) => entry.music as IMusic), index)
   }
 
   const handleEditPlaylist = async () => {
@@ -111,7 +102,10 @@ const Playlist: Page = () => {
   }
 
   const time = useMemo<{ hours: number; minutes: number }>(() => {
-    const seconds = entries.reduce((acc, entry) => acc + (entry.music as IMusic).duration, 0)
+    const seconds = entries.reduce(
+      (acc, entry) => (entry.music ? acc + (entry.music as IMusic).duration : 0),
+      0,
+    )
 
     return {
       hours: Math.floor(seconds / 3600),

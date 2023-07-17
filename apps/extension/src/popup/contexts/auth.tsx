@@ -26,7 +26,7 @@ export const useAuthenticatedContext = () => {
 
   if (!context.isAuthenticated)
     throw new Error(
-      '"useAuthenticatedContext" must be used within a "AuthProvider" with "isAuthenticated" set to true'
+      '"useAuthenticatedContext" must be used within a "AuthProvider" with "isAuthenticated" set to true',
     )
 
   return context

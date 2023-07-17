@@ -1,6 +1,7 @@
 import React, { useMemo } from "react"
 import { useDialog } from "react-dialog-promise"
-import { CgRowFirst, FaList, FaTimes, FaTrash } from "react-icons/all"
+import { FaList, FaTimes, FaTrash } from "react-icons/fa"
+import { CgRowFirst } from "react-icons/cg"
 
 import { IMusic } from "@kmotion/types"
 import { api } from "../../../utils/Api"

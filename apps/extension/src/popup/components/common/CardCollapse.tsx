@@ -1,5 +1,5 @@
 import React from "react"
-import { FaMinus, FaPlus } from "react-icons/all"
+import { FaMinus, FaPlus } from "react-icons/fa"
 import { useToggle } from "react-use"
 import { Transition } from "@headlessui/react"
 

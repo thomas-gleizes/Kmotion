@@ -1,7 +1,7 @@
 import React, { Fragment, MouseEventHandler, useMemo } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import classnames from "classnames"
-import { FaEllipsisH } from "react-icons/all"
+import { FaEllipsisH } from "react-icons/fa"
 
 import { IMusic } from "@kmotion/types"
 import { useIsDisplay } from "../../../hooks"
@@ -13,7 +13,7 @@ import MusicSkeleton from "./MusicSkeleton"
 type ClickFunction = (
   music: IMusic,
   index: number,
-  event: React.MouseEvent<Element, MouseEvent>
+  event: React.MouseEvent<Element, MouseEvent>,
 ) => void
 
 type Action = {
@@ -80,7 +80,7 @@ export const MusicItem: Component<MusicItemProps> = ({ music, onClick, actions }
             <div
               className={classnames(
                 actions.length ? "w-[85%]" : "w-full",
-                "h-full flex flex-col justify-center"
+                "h-full flex flex-col justify-center",
               )}
             >
               <p className="truncate xl:text-3xl text-white">{music.title}</p>
@@ -137,7 +137,7 @@ export const MusicItemActions: Component<MusicItemActionsProps> = ({ music, acti
                         }}
                         className={classnames(
                           "w-full px-2 py-1 text-lg font-semibold flex items-center justify-between space-x-2 rounded",
-                          action.className
+                          action.className,
                         )}
                       >
                         <span className="truncate">{action.label}</span>
@@ -146,7 +146,7 @@ export const MusicItemActions: Component<MusicItemActionsProps> = ({ music, acti
                     </Menu.Item>
                   ))}
                 </div>
-              ) : null
+              ) : null,
             )}
           </Menu.Items>
         </Transition>

@@ -83,5 +83,5 @@
 }
 
 .simplebar-track.simplebar-vertical .simplebar-scrollbar:before {
-  @apply bg-gradient-to-b from-white to-neutral-100 w-2
+  @apply bg-gradient-to-b from-white to-neutral-100 w-2;
 }

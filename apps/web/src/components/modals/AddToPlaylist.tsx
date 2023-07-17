@@ -3,7 +3,7 @@ import { DialogComponent } from "react-dialog-promise"
 import { useQuery } from "@tanstack/react-query"
 import { Dialog, Listbox, Transition } from "@headlessui/react"
 import classnames from "classnames"
-import { FaCheck, FaChevronUp, FaSpinner } from "react-icons/all"
+import { FaCheck, FaChevronUp, FaSpinner } from "react-icons/fa"
 import { useForm } from "react-hook-form"
 import { classValidatorResolver } from "@hookform/resolvers/class-validator"
 
@@ -79,7 +79,6 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
                   </span>
                 </Listbox.Button>
                 <Transition
-                  as={Fragment}
                   leave="transition ease-in duration-100"
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
@@ -92,7 +91,7 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
                         className={({ active }) =>
                           classnames(
                             "relative cursor-default select-none py-2 pl-10 pr-4 text-white",
-                            active ? "bg-primary/50" : "hover:bg-primary-light/90 transition"
+                            active ? "bg-primary/50" : "hover:bg-primary-light/90 transition",
                           )
                         }
                       >
@@ -101,7 +100,7 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
                             <span
                               className={classnames(
                                 "block truncate",
-                                selected ? "font-medium" : "font-normal"
+                                selected ? "font-medium" : "font-normal",
                               )}
                             >
                               {playlist.title}

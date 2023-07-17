@@ -1,7 +1,8 @@
 import React from "react"
 import classnames from "classnames"
 import { Link, useRouter } from "@tanstack/react-router"
-import { FaMusic, FaSlidersH, RiPlayList2Fill } from "react-icons/all"
+import { FaMusic, FaSlidersH } from "react-icons/fa"
+import { RiPlayList2Fill } from "react-icons/ri"
 
 import { usePlayerContext } from "../../contexts/player"
 import { useLayoutContext } from "../../contexts/layout"
@@ -30,7 +31,7 @@ const NavBar: Component = () => {
     <div
       className={classnames(
         "z-[1000] h-footer transition",
-        isLaggedBlur ? "bg-secondary" : "backdrop-blur-xl bg-secondary/50"
+        isLaggedBlur ? "bg-secondary" : "backdrop-blur-xl bg-secondary/50",
       )}
     >
       <div className="h-full flex justify-evenly items-center">

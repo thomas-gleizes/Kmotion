@@ -40,7 +40,7 @@ export default async function playlistRoutes(instance: FastifyInstance) {
       })
 
       reply.status(201).send({ success: true, playlist: playlistMapper.one(playlist) })
-    }
+    },
   )
 
   instance.get<{ Querystring: QueryGetPlaylist }>("/", async (request, reply) => {
@@ -76,7 +76,7 @@ export default async function playlistRoutes(instance: FastifyInstance) {
         throw new NotFoundException("Playlist not found")
 
       reply.send({ success: true, playlist: playlistMapper.one(playlist) })
-    }
+    },
   )
 
   instance.put<{
@@ -120,7 +120,7 @@ export default async function playlistRoutes(instance: FastifyInstance) {
             }
             return acc
           },
-          { i: [], u: [] }
+          { i: [], u: [] },
         )
 
         for (const { id, position } of acc.u) {
@@ -140,7 +140,7 @@ export default async function playlistRoutes(instance: FastifyInstance) {
       }
 
       reply.send({ success: true, playlist: playlistMapper.one(editedPlaylist) })
-    }
+    },
   )
 
   instance.delete<{ Params: GetPlaylistParamsDto }>(
@@ -166,7 +166,7 @@ export default async function playlistRoutes(instance: FastifyInstance) {
 
         throw err
       }
-    }
+    },
   )
 
   instance.get<{
@@ -181,7 +181,7 @@ export default async function playlistRoutes(instance: FastifyInstance) {
     const entries: PrismaEntry[] = await prisma.playlistEntry.findMany({
       where: { playlistId: playlist.id },
       orderBy: { position: "asc" },
-      include: request.query,
+      include: { music: true },
     })
 
     return reply.send({ success: true, entries: entryMapper.many(entries) })
@@ -215,7 +215,7 @@ export default async function playlistRoutes(instance: FastifyInstance) {
       })
 
       reply.send({ success: true, entry: entryMapper.one(entry) })
-    }
+    },
   )
 
   instance.delete(
@@ -237,7 +237,7 @@ export default async function playlistRoutes(instance: FastifyInstance) {
       })
 
       reply.status(202).send({ success: true })
-    }
+    },
   )
 
   instance.get<{ Querystring: SearchMusicQuery }>(
@@ -251,6 +251,6 @@ export default async function playlistRoutes(instance: FastifyInstance) {
       })
 
       reply.send({ success: true, playlists: playlistMapper.many(playlists) })
-    }
+    },
   )
 }
