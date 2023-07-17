@@ -7,6 +7,7 @@ import { LoginDto } from "@kmotion/validations"
 import { LoginResponse } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { useUnAuthenticatedContext } from "../../contexts/auth"
+import { css } from "../../../styled-system/css"
 
 const resolver = classValidatorResolver(LoginDto)
 
@@ -25,12 +26,32 @@ const LoginForm: Component = () => {
     onSuccess: (resp) => authContext.login(resp.user, resp.token),
   })
 
+  const inputClass = css({
+    color: "black",
+    w: "full",
+    px: 4,
+    py: 2,
+    roundedRight: "md",
+    bg: "gray.200",
+    fontSize: "lg",
+  })
+
   return (
     <form onSubmit={handleSubmit((data) => mutation.mutate(data))}>
-      <div className="flex flex-col space-y-5">
-        <div className="flex items-center h-auto">
-          <div className="py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
-            <label htmlFor="email" className="font-semibold text-lg">
+      <div className={css({ display: "flex", flexDirection: "column", rowGap: "5" })}>
+        <div className={css({ display: "flex", alignItems: "center", h: "auto" })}>
+          <div
+            className={css({
+              w: "fit",
+              py: 2,
+              px: 3,
+              roundedLeft: "md",
+              backgroundGradient: "to-bl",
+              gradientFrom: "blue.600",
+              gradientTo: "blue.900",
+            })}
+          >
+            <label htmlFor="email" className={css({ fontWeight: "semibold", fontSize: "lg" })}>
               Email
             </label>
           </div>
@@ -39,12 +60,22 @@ const LoginForm: Component = () => {
             id="email"
             type="email"
             placeholder="example@kmotion.fr"
-            className="text-black w-full px-4 py-2 rounded-r-md bg-gray-200 text-lg"
+            className={inputClass}
           />
         </div>
-        <div className="flex items-center h-auto">
-          <div className="h-full py-2 bg-gradient-to-bl from-blue-600 to-blue-900 rounded-l-md px-3 w-fit">
-            <label htmlFor="password" className="font-semibold text-lg">
+        <div className={css({ display: "flex", alignItems: "center", h: "auto" })}>
+          <div
+            className={css({
+              w: "fit",
+              py: 2,
+              px: 3,
+              roundedLeft: "md",
+              backgroundGradient: "to-bl",
+              gradientFrom: "blue.600",
+              gradientTo: "blue.900",
+            })}
+          >
+            <label htmlFor="password" className={css({ fontWeight: "semibold", fontSize: "lg" })}>
               Password
             </label>
           </div>
@@ -53,19 +84,49 @@ const LoginForm: Component = () => {
             id="password"
             type="password"
             placeholder="*****"
-            className="text-black w-full px-4 py-2 rounded-r-md bg-gray-200 text-lg"
+            className={inputClass}
           />
         </div>
       </div>
-      <div className="mt-8">
-        <div className="">
+      <div className={css({ mt: 8 })}>
+        <div>
           {mutation.isLoading ? (
-            <button className="btn btn-block loading text-gray-800" disabled>
-              Chargement
+            <button
+              className={css({
+                rounded: "lg",
+                backgroundGradient: "to-bl",
+                gradientFrom: "gray.600",
+                gradientTo: "blue.900",
+                color: "black",
+                px: 3,
+                py: 2,
+              })}
+            >
+              Chargement ...
             </button>
           ) : (
-            <button className="btn btn-block bg-gradient-to-bl from-blue-600 to-blue-900 shadow border-800 transition transform hover:scale-105">
-              Connexion
+            <button
+              className={css({
+                backgroundGradient: "to-bl",
+                gradientFrom: "blue.600",
+                gradientTo: "blue.900",
+                color: "white",
+                shadow: "md",
+                w: "full",
+                textAlign: "center",
+                py: "2",
+                rounded: "lg",
+                _hover: {
+                  scale: "1.05",
+                },
+                _disabled: {
+                  gradientFrom: "gray.200",
+                  gradientTo: "gray.500",
+                },
+              })}
+              disabled={mutation.isLoading}
+            >
+              {mutation.isLoading ? "Chargement" : "Connexion"}
             </button>
           )}
         </div>

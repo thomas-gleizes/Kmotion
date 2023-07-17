@@ -4,7 +4,7 @@ import "reflect-metadata"
 import "simplebar-react/dist/simplebar.min.css"
 
 import App from "./App"
-import "./styles/global.css"
+import "./index.css"
 
 const root = document.getElementById("root") as Element
 

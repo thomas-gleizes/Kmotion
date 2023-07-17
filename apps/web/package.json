@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "prepare": "panda codegen",
     "dev": "vite dev --host",
     "build": "vite build",
     "preview": "vite preview"
@@ -20,7 +21,7 @@
     "daisyui": "^2.51.5",
     "ky": "^0.33.3",
     "react": "^18.2.0",
-    "react-dialog-promise": "^0.3.9",
+    "react-dialog-promise": "^0.4.1",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
     "react-icons": "^4.8.0",
@@ -32,13 +33,11 @@
   },
   "devDependencies": {
     "@kmotion/types": "workspace:*",
+    "@pandacss/dev": "^0.5.0",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
     "@types/uuid": "^9.0.1",
     "@vitejs/plugin-react": "^4.0.0",
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.23",
-    "tailwindcss": "^3.3.1",
     "typescript": "^5.0.4",
     "vite": "^4.3.1"
   }

@@ -6,3 +6,4 @@ apps/api/public
 .env
 
 *.log
+styled-system/
