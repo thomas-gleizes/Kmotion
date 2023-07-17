@@ -21,10 +21,9 @@ const SimpleDialog: Component<Props> = ({ isOpen, onClose, children }) => {
   if (!isRender) return null
 
   return createPortal(
-    <Transition appear show={isOpen} as={Fragment}>
+    <Transition appear show={isOpen}>
       <Dialog as="div" className="relative z-100" onClose={onClose}>
         <Transition.Child
-          as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -38,7 +37,6 @@ const SimpleDialog: Component<Props> = ({ isOpen, onClose, children }) => {
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <Transition.Child
-              as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
               enterTo="opacity-100 scale-100"
@@ -47,7 +45,7 @@ const SimpleDialog: Component<Props> = ({ isOpen, onClose, children }) => {
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-fit transform rounded-2xl bg-secondary-dark/90 backdrop-blur-3xl p-6 text-left align-middle shadow-xl transition-all">
-                {children}
+                <>{children}</>
               </Dialog.Panel>
             </Transition.Child>
           </div>

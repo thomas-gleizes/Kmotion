@@ -5,7 +5,7 @@ import { useAsync, useToggle } from "react-use"
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
 import { useContextFactory, useImageLoader, useStorageQueue, useStreamLoader } from "../hooks"
-import { getImageResolution, resizeImage } from "../utils/helpers"
+import { getImageResolution, isIos, resizeImage } from "../utils/helpers"
 
 const PlayerContext = createContext<PlayerContextValues>(null as never)
 
@@ -24,6 +24,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
 
   const currentMusic = queue.at(0) || null
   const nexMusic = queue.at(1) || null
+  const prevMusic = queue.at(-1) || null
 
   const [streamUrl, streamQuery] = useStreamLoader(currentMusic?.id, {
     enabled: currentMusic !== null,
@@ -68,11 +69,25 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
           ],
         })
       })()
-
-      navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
-      navigator.mediaSession.setActionHandler("nexttrack", () => actions.next())
     }
   }, [currentMusic, coverUrl])
+
+  useEffect(() => {
+    if ("mediaSession" in navigator && currentMusic) {
+      if (isIos()) {
+        if (prevMusic) {
+          navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
+        }
+
+        if (nexMusic) {
+          navigator.mediaSession.setActionHandler("nexttrack", () => actions.previous())
+        }
+      } else {
+        navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
+        navigator.mediaSession.setActionHandler("nexttrack", () => actions.previous())
+      }
+    }
+  }, [prevMusic, nexMusic, currentMusic])
 
   return (
     <PlayerContext.Provider
