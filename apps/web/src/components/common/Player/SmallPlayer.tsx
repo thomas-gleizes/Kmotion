@@ -69,7 +69,7 @@ const SmallPlayer: Component = () => {
         controls.pause()
       })
 
-      if (isIos()) {
+      if (!isIos()) {
         navigator.mediaSession.setActionHandler("seekbackward", () =>
           controls.seek(state.time - 10),
         )
