@@ -6,7 +6,7 @@ import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/fa"
 import { usePlayerContext } from "../../../contexts/player"
 import { useLayoutContext } from "../../../contexts/layout"
 import { LOCAL_STORAGE_KEYS } from "../../../utils/constants"
-import { handleStopPropagation } from "../../../utils/helpers"
+import { handleStopPropagation, isIos } from "../../../utils/helpers"
 import { roundMinMax } from "../../../utils/number"
 import FullscreenPlayer from "./FullscreenPlayer"
 
@@ -69,8 +69,13 @@ const SmallPlayer: Component = () => {
         controls.pause()
       })
 
-      navigator.mediaSession.setActionHandler("seekbackward", () => controls.seek(state.time - 10))
-      navigator.mediaSession.setActionHandler("seekforward", () => controls.seek(state.time + 10))
+      if (isIos()) {
+        navigator.mediaSession.setActionHandler("seekbackward", () =>
+          controls.seek(state.time - 10),
+        )
+        navigator.mediaSession.setActionHandler("seekforward", () => controls.seek(state.time + 10))
+      }
+
       navigator.mediaSession.setActionHandler(
         "seekto",
         (details) => details.seekTime && controls.seek(details.seekTime),
