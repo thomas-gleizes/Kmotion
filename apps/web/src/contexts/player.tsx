@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react"
 import useLocalStorageState from "use-local-storage-state"
-import { useToggle } from "react-use"
+import { useAsync, useToggle } from "react-use"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
@@ -42,21 +42,32 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
 
   useEffect(() => {
     if ("mediaSession" in navigator && coverUrl && currentMusic) {
-      resizeImage(coverUrl, 336, 188).then((blob) => {
-        const src = URL.createObjectURL(blob)
+      ;(async () => {
+        const resolution = await getImageResolution(coverUrl)
 
-        getImageResolution(src).then((resolution) => {
-          navigator.mediaSession.metadata = new MediaMetadata({
-            title: currentMusic.title,
-            artist: currentMusic.artist || "Unknown",
-            artwork: [
-              { src, sizes: `${resolution.width}x${resolution.height}`, type: "image/jpeg" },
-              { src, sizes: `512x512`, type: "image/jpeg" },
-              { src: coverUrl, sizes: `512x512`, type: "image/jpeg" },
-            ],
-          })
+        const imageResized = await resizeImage(coverUrl, 336, 188).then((blob) =>
+          URL.createObjectURL(blob),
+        )
+        const resolutionResised = await getImageResolution(imageResized)
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: currentMusic.title,
+          artist: currentMusic.artist || "Unknown",
+          artwork: [
+            {
+              src: imageResized,
+              sizes: `${resolutionResised.width}x${resolutionResised.height}`,
+              type: "image/jpeg",
+            },
+            {
+              src: coverUrl,
+              sizes: `${resolution.width}x${resolution.height}`,
+              type: "image/jpeg",
+            },
+            { src: imageResized, sizes: `512x512`, type: "image/jpeg" },
+          ],
         })
-      })
+      })()
 
       navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
       navigator.mediaSession.setActionHandler("nexttrack", () => actions.next())
