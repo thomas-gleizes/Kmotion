@@ -1,10 +1,10 @@
 import React, { useMemo } from "react"
 import { useRouter } from "@tanstack/react-router"
 
-import ScrollableLayout from "../../components/layouts/ScrollableLayout"
-import { useAuthenticatedContext } from "../../contexts/auth"
 import { api } from "../../utils/Api"
 import { isChromeDesktop, saveBlob } from "../../utils/helpers"
+import { useAuthenticatedContext } from "../../contexts/auth"
+import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 
 const Settings: Page = () => {
   const { history } = useRouter()
@@ -27,17 +27,20 @@ const Settings: Page = () => {
     <ScrollableLayout>
       <h1 className="text-center text-white pt-3">Settings</h1>
       <div className="flex flex-wrap space-x-2 my-5">
-        <button className="btn bg-blue-400 text-black" onClick={handleDisconnect}>
+        <button className="btn bg-blue-400 text-black hover:bg-blue-600" onClick={handleDisconnect}>
           Disconnect
         </button>
         {displayDownloadExtensionButton && (
-          <button className="btn bg-blue-400 text-black" onClick={handleDownloadExtension}>
+          <button
+            className="btn bg-blue-400 text-black hover:bg-blue-600"
+            onClick={handleDownloadExtension}
+          >
             Télécharger l'extension
           </button>
         )}
         {user.isAdmin && (
           <button
-            className="btn bg-blue-400 text-black"
+            className="btn bg-blue-400 text-black hover:bg-blue-600"
             onClick={() => {
               fetch("/api/v1/musics/sync")
                 .then((response) => response.json())
