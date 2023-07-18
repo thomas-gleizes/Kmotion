@@ -80,11 +80,11 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         }
 
         if (nexMusic) {
-          navigator.mediaSession.setActionHandler("nexttrack", () => actions.previous())
+          navigator.mediaSession.setActionHandler("nexttrack", () => actions.next())
         }
       } else {
         navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
-        navigator.mediaSession.setActionHandler("nexttrack", () => actions.previous())
+        navigator.mediaSession.setActionHandler("nexttrack", () => actions.next())
       }
     }
   }, [prevMusic, nexMusic, currentMusic])
