@@ -25,6 +25,10 @@ export function isIos(): boolean {
   return /iPhone|iPad|iPod/i.test(navigator.userAgent)
 }
 
+export function isChromeDesktop(): boolean {
+  return /Chrome/i.test(navigator.userAgent) && !isMobileOrTablet()
+}
+
 export function resizeImage(src: string, width: number, height: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -71,4 +75,11 @@ export function getImageResolution(src: string): Promise<{ width: number; height
 
     img.src = src
   })
+}
+
+export function saveBlob(blob: Blob, filename: string) {
+  const link = document.createElement("a")
+  link.href = window.URL.createObjectURL(blob)
+  link.download = filename
+  link.click()
 }

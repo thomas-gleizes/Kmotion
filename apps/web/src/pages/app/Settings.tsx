@@ -1,8 +1,10 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { useRouter } from "@tanstack/react-router"
 
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import { useAuthenticatedContext } from "../../contexts/auth"
+import { api } from "../../utils/Api"
+import { isChromeDesktop, saveBlob } from "../../utils/helpers"
 
 const Settings: Page = () => {
   const { history } = useRouter()
@@ -13,6 +15,14 @@ const Settings: Page = () => {
     logout()
   }
 
+  const handleDownloadExtension = async () => {
+    const blob = await api.downloadExtension().blob()
+
+    saveBlob(blob, "kmotion.zip")
+  }
+
+  const displayDownloadExtensionButton = useMemo(() => isChromeDesktop(), [])
+
   return (
     <ScrollableLayout>
       <h1 className="text-center text-white pt-3">Settings</h1>
@@ -20,6 +30,11 @@ const Settings: Page = () => {
         <button className="btn bg-blue-400 text-black" onClick={handleDisconnect}>
           Disconnect
         </button>
+        {displayDownloadExtensionButton && (
+          <button className="btn bg-blue-400 text-black" onClick={handleDownloadExtension}>
+            Télécharger l'extension
+          </button>
+        )}
         {user.isAdmin && (
           <button
             className="btn bg-blue-400 text-black"
