@@ -1,4 +1,4 @@
-export interface ConverterMusic {
+export interface ConvertedMusic {
   id: string
   title: string
   author: string

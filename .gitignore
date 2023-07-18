@@ -1,8 +1,10 @@
 node_modules
 dist
 apps/api/public
-
+/apps/api/extension/
+!apps/api/extention/.gitkeep
 .idea
 .env
 
 *.log
+

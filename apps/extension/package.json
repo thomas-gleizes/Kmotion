@@ -2,8 +2,9 @@
   "name": "@kmotion/extension",
   "license": "ISC",
   "scripts": {
-    "clean": "rm -r -f dist/*",
-    "build": "pnpm clean && vite build"
+    "clean": "rm -r -f dist/* && rm -r -f api/extension/kmotion.zip",
+    "archive": "cd dist && zip -r ../../api/extension/kmotion.zip . && cd ..",
+    "build": "pnpm clean && vite build && pnpm archive"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.15",

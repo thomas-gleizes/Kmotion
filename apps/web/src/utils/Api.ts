@@ -131,6 +131,10 @@ class jsonClient {
   public fetchCover(id: number) {
     return this.client.get(`musics/${id}/cover`).blob()
   }
+
+  public downloadExtension() {
+    return this.client.get(`extension`)
+  }
 }
 
 export const api = new jsonClient()
