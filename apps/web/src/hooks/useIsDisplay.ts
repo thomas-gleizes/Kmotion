@@ -1,10 +1,15 @@
-import { RefObject, useEffect, useRef, useState } from "react"
+import { RefObject, useEffect, useState, useRef } from "react"
 import { useEvent } from "react-use"
 
 import { elementIsDisplay } from "../utils/helpers"
 
-export function useIsDisplay<E extends Element>(marge: number = 1): [boolean, RefObject<E>] {
-  const ref = useRef<E>(null)
+export function useIsDisplay<E extends Element>(
+  marge: number = 1,
+  elementRef?: RefObject<E>,
+): [boolean, RefObject<E>] {
+  const internalRef = useRef<E>(null)
+
+  const ref = elementRef ?? internalRef
 
   const [isDisplay, setIsDisplay] = useState<boolean>(
     ref.current ? elementIsDisplay(ref.current, marge) : false,
