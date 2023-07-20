@@ -26,6 +26,7 @@ interface PlayerContextValues {
   assets: {
     stream: AssetType
     cover: AssetType
+    next: Omit<AssetType, "url">
   }
   queue: IMusic[]
   actions: UseStorageQueueActions<IMusic>

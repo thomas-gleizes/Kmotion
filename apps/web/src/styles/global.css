@@ -3,85 +3,101 @@
 @tailwind utilities;
 
 * {
-  outline: none;
+    outline: none;
 }
 
 .overflow-defilement {
-  animation: defilement 10s infinite linear;
+    animation: defilement 10s infinite linear;
 }
 
 .overflow-defilement:hover {
-  animation-play-state: paused;
+    animation-play-state: paused;
 }
 
 @keyframes defilement {
-  0% {
-    transform: translateX(0%);
-  }
-  60% {
-    transform: translateX(-100%);
-  }
-  70% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(0%);
-  }
+    0% {
+        transform: translateX(0%);
+    }
+    60% {
+        transform: translateX(-100%);
+    }
+    70% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(0%);
+    }
 }
 
 .input-slider {
-  -webkit-appearance: none;
-  background-color: transparent;
+    -webkit-appearance: none;
+    background-color: transparent;
 }
 
 .input-slider::-webkit-slider-runnable-track {
-  background-color: transparent;
-  height: 100%;
+    background-color: transparent;
+    height: 100%;
 }
 
 .input-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  border: none;
-  width: 10px;
-  height: 100%;
-  border-radius: 0;
-  background-color: transparent;
+    -webkit-appearance: none;
+    border: none;
+    width: 10px;
+    height: 100%;
+    border-radius: 0;
+    background-color: transparent;
 }
 
 .animate-delay {
-  animation-delay: 75ms;
+    animation-delay: 75ms;
 }
 
 @keyframes backAndForth {
-  0% {
-    transform: translateX(0);
-  }
-  10% {
-    transform: translateX(0);
-  }
-  45% {
-    transform: translateX(calc(100% - 340px));
-  }
-  55% {
-    transform: translateX(calc(100% - 340px));
-  }
-  90% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(0);
-  }
+    0% {
+        transform: translateX(0);
+    }
+    10% {
+        transform: translateX(0);
+    }
+    45% {
+        transform: translateX(calc(100% - 340px));
+    }
+    55% {
+        transform: translateX(calc(100% - 340px));
+    }
+    90% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(0);
+    }
 }
 
 .modal-content {
-  height: calc(100vh - 0px - 56px);
+    height: calc(100vh - 0px - 56px);
 }
 
 .background-blur {
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 }
 
 .simplebar-track.simplebar-vertical .simplebar-scrollbar:before {
-  @apply bg-gradient-to-b from-white to-neutral-100 w-2;
+    @apply bg-gradient-to-b from-white to-neutral-100 w-2;
+}
+
+@keyframes slide {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 100% 0;
+    }
+}
+
+.stripped {
+    background-image: linear-gradient(45deg, rgba(201, 201, 201, 0.5) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .5) 50%, rgba(255, 255, 255, .5) 75%, transparent 75%, transparent);
+    background-size: 1rem 1rem;
+    animation: slide 20s linear infinite;
 }

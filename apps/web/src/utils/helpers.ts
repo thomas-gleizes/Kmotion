@@ -33,10 +33,7 @@ export function resizeImage(src: string, width: number, height: number): Promise
   return new Promise((resolve, reject) => {
     const img = new Image()
 
-    console.log("Img", img)
-
     img.onload = function () {
-      console.log("Onload")
       const canvas = document.createElement("canvas")
       const context = canvas.getContext("2d")
 
@@ -51,8 +48,6 @@ export function resizeImage(src: string, width: number, height: number): Promise
 
       canvas.toBlob(
         (blob) => {
-          console.log("Blob", blob)
-
           if (blob) resolve(blob)
           else reject(new Error("Blob is null"))
         },

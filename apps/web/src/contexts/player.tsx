@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react"
 import useLocalStorageState from "use-local-storage-state"
-import { useAsync, useToggle } from "react-use"
+import { useToggle } from "react-use"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
@@ -32,7 +32,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
   const [coverUrl, coverQuery] = useImageLoader(currentMusic?.id)
 
   useImageLoader(nexMusic?.id)
-  useStreamLoader(nexMusic?.id, { enabled: currentMusic !== null })
+  const [, nextStreamQuery] = useStreamLoader(nexMusic?.id, { enabled: currentMusic !== null })
 
   useEffect(() => {
     if (currentMusic)
@@ -97,6 +97,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         assets: {
           cover: { url: coverUrl || "", isFetching: coverQuery.isFetching },
           stream: { url: streamUrl || "", isFetching: streamQuery.isFetching },
+          next: { isFetching: nextStreamQuery.isFetching },
         },
         history: musicsHistory,
         queue,

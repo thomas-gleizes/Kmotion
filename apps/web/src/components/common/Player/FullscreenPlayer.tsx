@@ -68,6 +68,8 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
   const editPlaylist = useDialog(EditPlaylist)
   const confirmDialog = useDialog(ConfirmDialog)
 
+  const togglePlay = () => (state.paused ? controls.play() : controls.pause())
+
   const handleAddToPlaylist = async (music: IMusic) => {
     const result = await addToPlaylist.open({ music })
 
@@ -131,7 +133,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
 
   const ImageBlock = (
     <div
-      onClick={() => (showQueue ? toggleShowQueue() : null)}
+      onClick={() => (showQueue ? toggleShowQueue() : togglePlay())}
       className={classnames(
         "flex items-center transition-all duration-300 h-full lg:px-16",
         showQueue ? "pr-2 w-2/5 lg:w-full" : "w-full lg:flex-col lg:justify-center",
@@ -184,17 +186,23 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
     <div className={classnames("h-full flex flex-col space-y-5", showQueue ? "" : "")}>
       <div className="flex flex-col group">
         <div className="h-2 w-full transform group-active:scale-y-150 transition duration-200 mb-3">
-          <Slider
-            value={roundMinMax((state.time / state.duration) * 100, 0, 100, 1)}
-            onChange={(value) => controls.seek((value * state.duration) / 100)}
-          />
+          {!assets.stream.isFetching ? (
+            <Slider
+              value={roundMinMax((state.time / state.duration) * 100, 0, 100, 1)}
+              onChange={(value) => controls.seek((value * state.duration) / 100)}
+            />
+          ) : (
+            <div className="stripped h-full rounded-full w-full bg-white/30" />
+          )}
         </div>
         <div className="flex justify-between">
           <div className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
-            <span>{formatTime(state.time)}</span>
+            <span>{!assets.stream.isFetching ? formatTime(state.time) : "∞"}</span>
           </div>
           <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
-            <span>-{formatTime(state.duration - state.time)}</span>
+            <span>
+              {!assets.stream.isFetching ? "-" + formatTime(state.duration - state.time) : "∞"}
+            </span>
           </div>
         </div>
       </div>
@@ -208,7 +216,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           </i>
         </div>
         <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
-          <i onClick={state.paused ? controls.play : controls.pause} className="rounded-full">
+          <i onClick={togglePlay} className="rounded-full">
             {state.paused ? <FaPlay /> : <FaPause />}
           </i>
         </div>
