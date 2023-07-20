@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "@tanstack/react-router"
 
 import SmallPlayer from "../../components/common/Player/SmallPlayer"
 import NavBar from "../../components/common/NavBar"
-import PlayerProvider from "../../contexts/player"
+import PlayerProvider, { usePlayerContext } from "../../contexts/player"
 import { useAuthContext } from "../../contexts/auth"
 
 const AppRoot: Component = () => {
@@ -14,14 +14,25 @@ const AppRoot: Component = () => {
   return (
     <PlayerProvider>
       <div id="portal" className="z-[100]" />
-      <div className="absolute z-[50] w-full bottom-footer">
-        <SmallPlayer />
-      </div>
+      <Player />
+
       <div className="absolute z-[1000] w-full bottom-0">
         <NavBar />
       </div>
       <Outlet />
     </PlayerProvider>
+  )
+}
+
+const Player: Component = () => {
+  const playerContext = usePlayerContext()
+
+  if (!playerContext.currentMusic) return null
+
+  return (
+    <div className="absolute z-[50] w-full bottom-footer">
+      <SmallPlayer />
+    </div>
   )
 }
 

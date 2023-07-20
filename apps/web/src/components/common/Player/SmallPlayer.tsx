@@ -21,6 +21,10 @@ const SmallPlayer: Component = () => {
   )
 
   useEffect(() => {
+    if (!assets.stream.isFetching && state.paused) controls.play()
+  }, [assets.stream])
+
+  useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING, state.playing ? "true" : "false")
   }, [state.playing])
 
