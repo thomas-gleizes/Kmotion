@@ -1,18 +1,18 @@
-import React, { useMemo, useRef } from "react"
+import React, { MouseEventHandler, useState } from "react"
 import classnames from "classnames"
 import { useToggle } from "react-use"
 import {
   FaBackward,
   FaBars,
+  FaCheck,
   FaForward,
-  FaList,
   FaListUl,
   FaPause,
   FaPlay,
   FaRandom,
+  FaSpinner,
   FaSync,
   FaSyncAlt,
-  FaTrash,
   FaVolumeDown,
   FaVolumeUp,
 } from "react-icons/fa"
@@ -20,19 +20,12 @@ import {
 import { usePlayerContext } from "../../../contexts/player"
 import { formatTime } from "../../../utils/time"
 import { roundMinMax } from "../../../utils/number"
-import DynamicDialog from "../DynamicDialog"
 import Slider from "../Slider"
 import QueueList from "./QueueList"
 import { useLayoutContext } from "../../../contexts/layout"
+import DynamicDialog from "../DynamicDialog"
 import ScrollableContainer from "../../layouts/ScrollableContainer"
-import { MusicItemActions } from "../Music/List"
-import { IMusic } from "@kmotion/types"
-import { api } from "../../../utils/Api"
-import { useDialog } from "react-dialog-promise"
-import AddToPlaylist from "../../modals/AddToPlaylist"
-import EditPlaylist from "../../modals/EditPlaylist"
-import ConfirmDialog from "../../modals/ConfirmDialog"
-import { useAuthenticatedContext } from "../../../contexts/auth"
+import TitlePlayer from "./TitlePlayer"
 
 interface Props {
   isOpen: boolean
@@ -55,233 +48,59 @@ interface Props {
 const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
   const { currentMusic, playlist, actions, loop, assets } = usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
-  const { user } = useAuthenticatedContext()
-
-  const tRef = useRef<HTMLHeadingElement>(null)
 
   const [showQueue, toggleShowQueue] = useToggle(false)
 
-  const isOverflow =
-    (tRef.current?.offsetWidth || 0) >= (tRef.current?.parentElement?.offsetWidth || 2000)
-
-  const addToPlaylist = useDialog(AddToPlaylist)
-  const editPlaylist = useDialog(EditPlaylist)
-  const confirmDialog = useDialog(ConfirmDialog)
-
   const togglePlay = () => (state.paused ? controls.play() : controls.pause())
 
-  const handleAddToPlaylist = async (music: IMusic) => {
-    const result = await addToPlaylist.open({ music })
+  const [tap, setTap] = useState<"left" | "right">()
+  const handleDoubleTapScreen: MouseEventHandler<HTMLDivElement> = (event) => {
+    const limit = event.currentTarget.offsetWidth * 0.2
 
-    if (result === "create-playlist") {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      const result = await editPlaylist.open({
-        isNew: true,
-        musics: [],
-        initialValues: { title: "", description: "", musics: [] },
-      })
-
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      if (result.action === "success-new") {
-        await handleAddToPlaylist(music)
-      }
+    if (event.clientX < limit) {
+      setTap("left")
+      controls.seek(state.time - 10)
+    } else if (event.clientX > event.currentTarget.offsetWidth - limit) {
+      setTap("right")
+      controls.seek(state.time + 10)
     }
+
+    setTimeout(() => setTap(undefined), 800)
   }
-
-  const listActions = useMemo(() => {
-    const listActions = [
-      [
-        {
-          label: "Ajouter à une playlist",
-          icon: <FaList />,
-          className: "hover:bg-white/30",
-          onClick: handleAddToPlaylist,
-        },
-      ],
-    ]
-
-    if (user.isAdmin) {
-      listActions[0].unshift({
-        label: "Supprimer",
-        icon: <FaTrash />,
-        className: "text-primary hover:bg-primary/30",
-        onClick: (music: IMusic) =>
-          confirmDialog
-            .open({
-              message: (
-                <span>
-                  Voulez vous supprimer la music "{music.title}" de {music.artist} <br /> Cette
-                  action est définitive
-                </span>
-              ),
-            })
-            .then((result) => {
-              if (result)
-                api
-                  .deleteMusic(music.id)
-                  .then(() => actions.remove(actions.findIndex(music)))
-                  .catch((err) => console.log("delete failed", err))
-            }),
-      })
-    }
-
-    return listActions
-  }, [user])
 
   if (!currentMusic) return null
 
-  const ImageBlock = (
-    <div
-      onClick={() => (showQueue ? toggleShowQueue() : togglePlay())}
-      className={classnames(
-        "flex items-center transition-all duration-300 h-full lg:px-16",
-        showQueue ? "pr-2 w-2/5 lg:w-full" : "w-full lg:flex-col lg:justify-center",
-      )}
-    >
-      {assets.cover.isFetching ? (
-        <div className="rounded-md bg-gray-200 animate-pulse w-fit">
-          <img
-            className="rounded-lg w-full transform opacity-0 transition-all duration-300 lg:rounded-2xl shadow-2xl select-none"
-            src="/images/placeholder.png"
-            alt={`cover of ${currentMusic.title}`}
-          />
-        </div>
-      ) : (
-        <img
-          src={assets.cover.url}
-          alt={currentMusic.title}
-          className={classnames(
-            "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
-            { "scale-[75%] shadow-lg": state.paused },
-          )}
-        />
-      )}
-    </div>
-  )
-
-  const TitleBlock = (
-    <div className="flex justify-between items-center">
-      <div className="w-full overflow-hidden whitespace-nowrap">
-        <h3
-          ref={tRef}
-          className={classnames(
-            "text-white text-lg lg:text-xl xl:text-3xl font-semibold capitalize py-1.5 inline-block whitespace-nowrap",
-            { "overflow-defilement": isOverflow },
-          )}
-        >
-          {currentMusic.title}
-        </h3>
-        <p className="text-white/80 text-base lg:text-lg xl:text-xl py-1.5 leading-[0.5rem]">
-          {currentMusic.artist}
-        </p>
-      </div>
-      <div>
-        <MusicItemActions actions={listActions} music={currentMusic} />
-      </div>
-    </div>
-  )
-
-  const ControlsBlock = (
-    <div className={classnames("h-full flex flex-col space-y-5", showQueue ? "" : "")}>
-      <div className="flex flex-col group">
-        <div className="h-2 w-full transform group-active:scale-y-150 transition duration-200 mb-3">
-          {!assets.stream.isFetching ? (
-            <Slider
-              value={roundMinMax((state.time / state.duration) * 100, 0, 100, 1)}
-              onChange={(value) => controls.seek((value * state.duration) / 100)}
-            />
-          ) : (
-            <div className="stripped h-full rounded-full w-full bg-white/30" />
-          )}
-        </div>
-        <div className="flex justify-between">
-          <div className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
-            <span>{!assets.stream.isFetching ? formatTime(state.time) : "∞"}</span>
-          </div>
-          <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
-            <span>
-              {!assets.stream.isFetching ? "-" + formatTime(state.duration - state.time) : "∞"}
-            </span>
-          </div>
-        </div>
-      </div>
-      <div className="flex justify-between w-10/12 mx-auto">
-        <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
-          <i
-            onClick={state.time <= 5 ? actions.previous : () => controls.seek(0)}
-            className="rounded-full"
-          >
-            <FaBackward />
-          </i>
-        </div>
-        <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
-          <i onClick={togglePlay} className="rounded-full">
-            {state.paused ? <FaPlay /> : <FaPause />}
-          </i>
-        </div>
-        <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
-          <i onClick={actions.next} className="rounded-full">
-            <FaForward />
-          </i>
-        </div>
-      </div>
-      <div className="flex justify-between items-center space-x-4 group">
-        <div className="text-lg text-white/70 group:active:text-white group-active:scale-125 transition duration-200">
-          <i>
-            <FaVolumeDown />
-          </i>
-        </div>
-        <div className="h-2 w-full rounded-full group-active:scale-y-150 transition duration-200">
-          <Slider
-            value={roundMinMax(state.volume * 100, 0, 100, 2)}
-            onChange={(value) => controls.volume(value / 100)}
-          />
-        </div>
-        <div className="text-lg text-white/70 group:active:text-white group-active:scale-125 transition duration-200">
-          <i>
-            <FaVolumeUp />
-          </i>
-        </div>
-      </div>
-      <div className="flex justify-between items-center w-9/12 mx-auto">
-        <i
-          onClick={() => loop.set("all")}
-          className={classnames(
-            "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
-            loop.value !== "none" ? "text-opacity-90 scale-110" : "text-opacity-50",
-          )}
-        >
-          {loop.value === "all" ? <FaSync /> : <FaSyncAlt />}
-        </i>
-        <i
-          onClick={() => actions.shuffle()}
-          className={classnames(
-            "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
-            currentMusic.title.length & 1 ? "text-opacity-90 scale-110" : "text-opacity-50",
-          )}
-        >
-          <FaRandom />
-        </i>
-        <i
-          onClick={toggleShowQueue}
-          className={classnames(
-            "text-white text-opacity-50 rounded-full text-xl lg:text-2xl transition transform duration-200",
-            { "text-opacity-90": showQueue },
-          )}
-        >
-          <FaListUl />
-        </i>
-      </div>
-    </div>
-  )
-
   return (
     <DynamicDialog isOpen={isOpen}>
-      <div className="relative z-[90] h-screen -top-header w-full">
+      <div
+        className="relative z-[90] h-full -top-header w-full"
+        onDoubleClick={handleDoubleTapScreen}
+      >
         <div className="absolute top-0 left-0 w-full h-full">
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
         </div>
+
+        <div className="absolute top-3 right-3">
+          {assets.next.isFetching ? (
+            <FaSpinner className="text-white animate-spin" />
+          ) : (
+            <FaCheck className="text-white" />
+          )}
+        </div>
+
+        {tap === "left" && (
+          <div className="absolute top-[-50%] left-[-125%] h-[200%] w-[120%] z-100">
+            <div className="absolute top-0 left-0 animate-ping-border delay-[200ms] h-full w-full rounded-r-[100%] bg-black/30" />
+            <div className="absolute top-0 left-0 animate-ping-border h-full w-full rounded-r-[100%] bg-black/30" />
+          </div>
+        )}
+        {tap === "right" && (
+          <div className="absolute top-[-50%] right-[-125%] h-[200%] w-[120%] z-100">
+            <div className="absolute top-0 right-[-25%] animate-ping-border h-full w-full rounded-l-[100%] bg-black/30" />
+            <div className="absolute top-0 right-0 animate-ping-border h-full w-full rounded-l-[120%] bg-black/30" />
+          </div>
+        )}
+
         <div
           className={classnames(
             "h-full pt-header pb-footer",
@@ -298,14 +117,39 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                   showQueue ? "lg:h-full pt-4" : "w-full h-min",
                 )}
               >
-                {ImageBlock}
+                <div
+                  onClick={() => (showQueue ? toggleShowQueue() : togglePlay())}
+                  className={classnames(
+                    "flex items-center transition-all duration-300 h-full lg:px-16",
+                    showQueue ? "pr-2 w-2/5 lg:w-full" : "w-full lg:flex-col lg:justify-center",
+                  )}
+                >
+                  {assets.cover.isFetching ? (
+                    <div className="rounded-md bg-gray-200 animate-pulse w-fit">
+                      <img
+                        className="rounded-lg w-full transform opacity-0 transition-all duration-300 lg:rounded-2xl shadow-2xl select-none"
+                        src="/images/placeholder.png"
+                        alt={`cover of ${currentMusic.title}`}
+                      />
+                    </div>
+                  ) : (
+                    <img
+                      src={assets.cover.url}
+                      alt={currentMusic.title}
+                      className={classnames(
+                        "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
+                        { "scale-[75%] shadow-lg": state.paused },
+                      )}
+                    />
+                  )}
+                </div>
                 <div
                   className={classnames(
                     showQueue ? "w-3/5" : "w-0 hidden",
                     "transition-all transform-gpu lg:w-0 lg:hidden",
                   )}
                 >
-                  {TitleBlock}
+                  <TitlePlayer music={currentMusic} />
                 </div>
               </div>
               <div
@@ -316,7 +160,9 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                     : "flex flex-col justify-between lg:justify-center",
                 )}
               >
-                <div className={classnames(showQueue ? "hidden lg:block" : "")}>{TitleBlock}</div>
+                <div className={classnames(showQueue ? "hidden lg:block" : "")}>
+                  <TitlePlayer music={currentMusic} />
+                </div>
                 <div className="flex flex-col justify-center h-full py-3">
                   {showQueue && (
                     <div className="flex justify-between items-center pb-3">
@@ -341,7 +187,105 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                       <QueueList />
                     </ScrollableContainer>
                   )}
-                  <div className="h-min py-2">{ControlsBlock}</div>
+                  <div className="h-min py-2">
+                    <div
+                      className={classnames("h-full flex flex-col space-y-5", showQueue ? "" : "")}
+                    >
+                      <div className="flex flex-col group">
+                        <div className="h-2 w-full transform group-active:scale-y-150 transition duration-200 mb-3">
+                          {!assets.stream.isFetching ? (
+                            <Slider
+                              value={roundMinMax((state.time / state.duration) * 100, 0, 100, 1)}
+                              onChange={(value) => controls.seek((value * state.duration) / 100)}
+                            />
+                          ) : (
+                            <div className="stripped h-full rounded-full w-full bg-white/30" />
+                          )}
+                        </div>
+                        <div className="flex justify-between">
+                          <div className="text-sm lg:text-base text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
+                            <span>{!assets.stream.isFetching ? formatTime(state.time) : "∞"}</span>
+                          </div>
+                          <div className="text-sm text-white/80 group-active:text-white group-active:scale-110 transition duration-200">
+                            <span>
+                              {!assets.stream.isFetching
+                                ? "-" + formatTime(state.duration - state.time)
+                                : "∞"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between w-10/12 mx-auto">
+                        <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
+                          <i
+                            onClick={state.time <= 5 ? actions.previous : () => controls.seek(0)}
+                            className="rounded-full"
+                          >
+                            <FaBackward />
+                          </i>
+                        </div>
+                        <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
+                          <i onClick={togglePlay} className="rounded-full">
+                            {state.paused ? <FaPlay /> : <FaPause />}
+                          </i>
+                        </div>
+                        <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
+                          <i onClick={actions.next} className="rounded-full">
+                            <FaForward />
+                          </i>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center space-x-4 group">
+                        <div className="text-lg text-white/70 group:active:text-white group-active:scale-125 transition duration-200">
+                          <i>
+                            <FaVolumeDown />
+                          </i>
+                        </div>
+                        <div className="h-2 w-full rounded-full group-active:scale-y-150 transition duration-200">
+                          <Slider
+                            value={roundMinMax(state.volume * 100, 0, 100, 2)}
+                            onChange={(value) => controls.volume(value / 100)}
+                          />
+                        </div>
+                        <div className="text-lg text-white/70 group:active:text-white group-active:scale-125 transition duration-200">
+                          <i>
+                            <FaVolumeUp />
+                          </i>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center w-9/12 mx-auto">
+                        <i
+                          onClick={() => loop.set("all")}
+                          className={classnames(
+                            "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
+                            loop.value !== "none" ? "text-opacity-90 scale-110" : "text-opacity-50",
+                          )}
+                        >
+                          {loop.value === "all" ? <FaSync /> : <FaSyncAlt />}
+                        </i>
+                        <i
+                          onClick={() => actions.shuffle()}
+                          className={classnames(
+                            "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
+                            currentMusic.title.length & 1
+                              ? "text-opacity-90 scale-110"
+                              : "text-opacity-50",
+                          )}
+                        >
+                          <FaRandom />
+                        </i>
+                        <i
+                          onClick={toggleShowQueue}
+                          className={classnames(
+                            "text-white text-opacity-50 rounded-full text-xl lg:text-2xl transition transform duration-200",
+                            { "text-opacity-90": showQueue },
+                          )}
+                        >
+                          <FaListUl />
+                        </i>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

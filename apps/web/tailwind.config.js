@@ -21,6 +21,11 @@ module.exports = {
           dark: "#0d0d0d",
         },
       },
+      animation: {
+        "spin-background": "spin 60s linear infinite",
+        "ping-border": "ping 500ms cubic-bezier(0.4, 0.4, 0.4, 1) 1",
+        "text-scroll": "backAndForth 5s linear infinite;",
+      },
       zIndex: {
         "-10": "-10",
         0: "0",

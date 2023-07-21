@@ -45,14 +45,16 @@ export default class YtConverter {
     })
   }
 
-  public convert(youtubeId: string, data: ConverterMusicInfo): Promise<Response> {
-    return fetch(`${this._url}/convert/${youtubeId}` + new URLSearchParams(), {
+  public convert(youtubeId: string, data: Record<string, string>): Promise<Response> {
+    return fetch(`${this._url}/convert/${youtubeId}` + new URLSearchParams(data), {
       method: "POST",
       headers: this.getHeaders(),
     })
   }
 
   public stream(youtubeId: string): Promise<Buffer> {
+    console.log("this._url", this._url)
+
     return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.mp3`, {
       method: "GET",
       headers: this.getHeaders(),
