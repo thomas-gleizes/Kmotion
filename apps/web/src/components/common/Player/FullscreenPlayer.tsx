@@ -73,7 +73,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
   return (
     <DynamicDialog isOpen={isOpen}>
       <div
-        className="relative z-[90] h-full -top-header w-full"
+        className="relative z-[90] h-screen -top-header w-full"
         onDoubleClick={handleDoubleTapScreen}
       >
         <div className="absolute top-0 left-0 w-full h-full">
