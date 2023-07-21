@@ -90,13 +90,13 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
 
         {tap === "left" && (
           <div className="absolute top-[-50%] left-[-125%] h-[200%] w-[120%] z-100">
-            <div className="absolute top-0 left-0 animate-ping-border delay-[200ms] h-full w-full rounded-r-[100%] bg-black/30" />
+            <div className="absolute top-0 left-[-25%] animate-ping-border h-full w-full rounded-r-[100%] bg-black/50fix" />
             <div className="absolute top-0 left-0 animate-ping-border h-full w-full rounded-r-[100%] bg-black/30" />
           </div>
         )}
         {tap === "right" && (
           <div className="absolute top-[-50%] right-[-125%] h-[200%] w-[120%] z-100">
-            <div className="absolute top-0 right-[-25%] animate-ping-border h-full w-full rounded-l-[100%] bg-black/30" />
+            <div className="absolute top-0 right-[-25%] animate-ping-border h-full w-full rounded-l-[100%] bg-black/50" />
             <div className="absolute top-0 right-0 animate-ping-border h-full w-full rounded-l-[120%] bg-black/30" />
           </div>
         )}
