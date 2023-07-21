@@ -28,14 +28,12 @@
     "redaxios": "^0.5.1",
     "reflect-metadata": "^0.1.13",
     "simplebar-react": "^3.2.4",
-    "use-local-storage-state": "^18.3.3",
-    "uuid": "^9.0.0"
+    "use-local-storage-state": "^18.3.3"
   },
   "devDependencies": {
     "@kmotion/types": "workspace:*",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
-    "@types/uuid": "^9.0.2",
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.26",
