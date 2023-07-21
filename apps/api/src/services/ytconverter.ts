@@ -53,8 +53,6 @@ export default class YtConverter {
   }
 
   public stream(youtubeId: string): Promise<Buffer> {
-    console.log("this._url", this._url)
-
     return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.mp3`, {
       method: "GET",
       headers: this.getHeaders(),
