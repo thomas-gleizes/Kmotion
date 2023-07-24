@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useState } from "react"
+import React, { MouseEventHandler, useMemo, useState } from "react"
 import classnames from "classnames"
 import { useToggle } from "react-use"
 import {
@@ -26,6 +26,7 @@ import { useLayoutContext } from "../../../contexts/layout"
 import DynamicDialog from "../DynamicDialog"
 import ScrollableContainer from "../../layouts/ScrollableContainer"
 import TitlePlayer from "./TitlePlayer"
+import { isMobileOrTablet } from "../../../utils/helpers"
 
 interface Props {
   isOpen: boolean
@@ -68,6 +69,8 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
     setTimeout(() => setTap(undefined), 800)
   }
 
+  const isMobile = useMemo<boolean>(() => isMobileOrTablet(), [])
+
   if (!currentMusic) return null
 
   return (
@@ -90,7 +93,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
 
         {tap === "left" && (
           <div className="absolute top-[-50%] left-[-125%] h-[200%] w-[120%] z-100">
-            <div className="absolute top-0 left-[-25%] animate-ping-border h-full w-full rounded-r-[100%] bg-black/50fix" />
+            <div className="absolute top-0 left-[-25%] animate-ping-border h-full w-full rounded-r-[100%] bg-black/50" />
             <div className="absolute top-0 left-0 animate-ping-border h-full w-full rounded-r-[100%] bg-black/30" />
           </div>
         )}
@@ -118,7 +121,6 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                 )}
               >
                 <div
-                  onClick={() => (showQueue ? toggleShowQueue() : togglePlay())}
                   className={classnames(
                     "flex items-center transition-all duration-300 h-full lg:px-16",
                     showQueue ? "pr-2 w-2/5 lg:w-full" : "w-full lg:flex-col lg:justify-center",
@@ -136,6 +138,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                     <img
                       src={assets.cover.url}
                       alt={currentMusic.title}
+                      onClick={() => (showQueue && isMobile ? toggleShowQueue() : togglePlay())}
                       className={classnames(
                         "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
                         { "scale-[75%] shadow-lg": state.paused },
