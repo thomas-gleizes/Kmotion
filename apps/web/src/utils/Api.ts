@@ -6,6 +6,7 @@ import {
   MusicByPassResponse,
   MusicResponse,
   MusicShareResponse,
+  MusicSyncResponse,
   PlaylistEntriesResponse,
   PlaylistResponse,
   PlaylistsResponse,
@@ -46,7 +47,7 @@ class jsonClient {
     })
   }
 
-  private toSearchParams(params: Record<string, any>): URLSearchParams {
+  private toSearchParams(params: Record<string, string>): URLSearchParams {
     return new URLSearchParams(params)
   }
 
@@ -76,13 +77,15 @@ class jsonClient {
 
   public fetchPlaylists(withEntries: boolean) {
     return this.client
-      .get("playlists", { searchParams: this.toSearchParams({ entries: withEntries }) })
+      .get("playlists", { searchParams: this.toSearchParams({ entries: withEntries.toString() }) })
       .json<PlaylistsResponse>()
   }
 
   public fetchPlaylist(id: number, withEntries: boolean) {
     return this.client
-      .get(`playlists/${id}`, { searchParams: this.toSearchParams({ entries: withEntries }) })
+      .get(`playlists/${id}`, {
+        searchParams: this.toSearchParams({ entries: withEntries.toString() }),
+      })
       .json<PlaylistResponse>()
   }
 
@@ -100,7 +103,9 @@ class jsonClient {
 
   public fetchEntries(id: number, withMusic: boolean) {
     return this.client
-      .get(`playlists/${id}/entries`, { searchParams: this.toSearchParams({ music: withMusic }) })
+      .get(`playlists/${id}/entries`, {
+        searchParams: this.toSearchParams({ music: withMusic.toString() }),
+      })
       .json<PlaylistEntriesResponse>()
   }
 
@@ -134,6 +139,10 @@ class jsonClient {
 
   public downloadExtension() {
     return this.client.get(`extension`)
+  }
+
+  public synchronizeMusic() {
+    return this.client.get("musics/sync").json<MusicSyncResponse>()
   }
 }
 

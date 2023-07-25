@@ -78,3 +78,7 @@ export function saveBlob(blob: Blob, filename: string) {
   link.download = filename
   link.click()
 }
+
+export function s(length: number) {
+  return length < 2 ? "" : "s"
+}
