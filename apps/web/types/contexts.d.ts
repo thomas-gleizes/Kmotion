@@ -33,6 +33,7 @@ interface PlayerContextValues {
   loop: { value: LoopType; set: (value: LoopType) => void }
   history: IMusic[]
   fullscreen: { value: boolean; toggle: (value?: boolean) => void }
+  playing: { value: boolean; toggle: (value?: boolean) => void }
 }
 
 // Layout

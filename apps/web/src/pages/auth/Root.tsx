@@ -9,7 +9,7 @@ const AuthRoot: SyncRouteComponent = () => {
   if (authContext.authenticated) return <Navigate to="/" />
 
   return (
-    <section className="h-full h-full flex flex-col items-center justify-center">
+    <section className="h-full flex flex-col items-center justify-center">
       <Outlet />
     </section>
   )
