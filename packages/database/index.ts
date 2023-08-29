@@ -4,5 +4,3 @@ import { database } from "./src/connexion"
 
 export const prisma = { enums, types }
 export default database
-
-database.selectFrom("users").where("email", "is", "kalat@kmotion.fr").executeTakeFirst()

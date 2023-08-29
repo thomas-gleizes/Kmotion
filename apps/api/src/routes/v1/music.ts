@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto"
 import { FastifyInstance } from "fastify"
-import { Music } from "@prisma/client"
 
 import {
   YoutubeIdParamsDto,
@@ -21,12 +20,13 @@ import {
 } from "@kmotion/types"
 import { musicMapper } from "@kmotion/mappers"
 import YtConverter from "../../services/ytconverter"
-import prisma from "../../services/prisma"
 import { sha256 } from "../../utils/hash"
 import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
+import { connexion } from "../../services/database"
+import { Music } from "@kmotion/database/prisma/types"
 
 export default async function musicRoutes(instance: FastifyInstance) {
   const ytConverter = YtConverter.getInstance()
@@ -37,14 +37,24 @@ export default async function musicRoutes(instance: FastifyInstance) {
     async (request, reply) => {
       const offset: number = request.query.offset || 0
 
-      const musics = await prisma.music.findMany({
-        orderBy: { createdAt: "desc" },
-        skip: +offset * 40,
-        take: 40,
-      })
-      const total = await prisma.music.count()
+      const musics = await connexion
+        .selectFrom("musics")
+        .selectAll()
+        .orderBy("created_at", "desc")
+        .offset(+offset * 40)
+        .limit(40)
+        .execute()
 
-      return reply.send({ success: true, musics: musicMapper.many(musics), meta: { total } })
+      const meta = await connexion
+        .selectFrom("musics")
+        .select(({ fn }) => [fn.count<number>("musics.id").as("total")])
+        .executeTakeFirst()
+
+      return reply.send({
+        success: true,
+        musics: musicMapper.many(musics),
+        meta: { total: meta?.total ?? 0 },
+      })
     }
   )
 
@@ -57,21 +67,23 @@ export default async function musicRoutes(instance: FastifyInstance) {
       const newMusics: Array<Music> = []
 
       for (const music of musics) {
-        const find = await prisma.music.findUnique({
-          where: { youtubeId: music.id },
-        })
+        const find = await connexion
+          .selectFrom("musics")
+          .selectAll()
+          .where("youtube_id", "=", music.id)
+          .executeTakeFirst()
 
         if (!find) {
-          await prisma.music
-            .create({
-              data: {
-                title: music.title.trim(),
-                artist: music.author.trim(),
-                youtubeId: music.id,
-                downloaderId: request.session.user.id,
-                duration: music.duration,
-              },
+          await connexion
+            .insertInto("musics")
+            .values({
+              title: music.title.trim(),
+              artist: music.author.trim(),
+              youtube_id: music.id,
+              downloader_id: request.session.user.id,
+              duration: music.duration,
             })
+            .executeTakeFirst()
             .then((music) => newMusics.push(music))
         }
       }
@@ -90,8 +102,10 @@ export default async function musicRoutes(instance: FastifyInstance) {
       ],
     },
     async (request, reply) => {
-      await prisma.music
-        .findUniqueOrThrow({ where: { youtubeId: request.params.youtubeId } })
+      await connexion
+        .selectFrom("musics")
+        .where("youtube_id", "=", request.params.youtubeId)
+        .executeTakeFirstOrThrow()
         .then(() => {
           throw new BadRequestException("Music already exists")
         })
@@ -103,15 +117,16 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       const info: ConverterMusicInfo = await ytConverter.info(request.params.youtubeId)
 
-      const music = await prisma.music.create({
-        data: {
+      const music = await connexion
+        .insertInto("musics")
+        .values({
           title: info.title,
           artist: info.author.name,
-          youtubeId: request.params.youtubeId,
-          downloaderId: request.session.user.id,
+          youtube_id: request.params.youtubeId,
+          downloader_id: request.session.user.id,
           duration: 0,
-        },
-      })
+        })
+        .executeTakeFirst()
 
       reply.send({ success: "true", music: musicMapper.one(music), info })
     }
@@ -121,9 +136,11 @@ export default async function musicRoutes(instance: FastifyInstance) {
     "/:id",
     { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
-      const music = await prisma.music.findUnique({
-        where: { id: +request.params.id },
-      })
+      const music = await connexion
+        .selectFrom("musics")
+        .selectAll()
+        .where("id", "=", +request.params.id)
+        .executeTakeFirst()
 
       if (!music) throw new NotFoundException("Music not found")
 
@@ -135,13 +152,15 @@ export default async function musicRoutes(instance: FastifyInstance) {
     "/:id/stream",
     { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
-      const music = await prisma.music.findUnique({
-        where: { id: request.params.id },
-      })
+      const music = await connexion
+        .selectFrom("musics")
+        .selectAll()
+        .where("id", "=", +request.params.id)
+        .executeTakeFirst()
 
       if (!music) throw new NotFoundException("Music not found")
 
-      const stream = await ytConverter.stream(music.youtubeId)
+      const stream = await ytConverter.stream(music.youtube_id)
 
       reply
         .headers({
@@ -156,9 +175,11 @@ export default async function musicRoutes(instance: FastifyInstance) {
     "/:youtubeId/info",
     { onRequest: isLogin, preHandler: instance.validateParams(YoutubeIdParamsDto) },
     async (request, reply) => {
-      const music = await prisma.music.findUnique({
-        where: { youtubeId: request.params.youtubeId },
-      })
+      const music = await connexion
+        .selectFrom("musics")
+        .selectAll()
+        .where("youtube_id", "=", request.params.youtubeId)
+        .executeTakeFirst()
 
       reply.send({
         success: true,
@@ -173,13 +194,15 @@ export default async function musicRoutes(instance: FastifyInstance) {
     "/:id/cover",
     { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
-      const music = await prisma.music.findUnique({
-        where: { id: request.params.id },
-      })
+      const music = await connexion
+        .selectFrom("musics")
+        .selectAll()
+        .where("id", "=", +request.params.id)
+        .executeTakeFirst()
 
       if (!music) throw new NotFoundException("Music not found")
 
-      const stream = await ytConverter.cover(music.youtubeId)
+      const stream = await ytConverter.cover(music.youtube_id)
 
       reply
         .headers({
@@ -194,18 +217,18 @@ export default async function musicRoutes(instance: FastifyInstance) {
     "/:id",
     { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
-      const music = await prisma.music.findUnique({
-        where: { id: +request.params.id },
-      })
+      const music = await connexion
+        .selectFrom("musics")
+        .selectAll()
+        .where("id", "=", +request.params.id)
+        .executeTakeFirst()
 
       if (!music) throw new NotFoundException("Music not found")
 
-      await prisma.playlistEntry.deleteMany({ where: { musicId: music.id } })
-      await prisma.music.delete({ where: { id: music.id } })
+      await connexion.deleteFrom("playlist_entries").where("music_id", "=", music.id).execute()
+      await connexion.deleteFrom("musics").where("id", "=", music.id).execute()
 
-      if (process.env.NODE_ENV === "production") {
-        await ytConverter.delete(music.youtubeId)
-      }
+      if (process.env.NODE_ENV === "production") await ytConverter.delete(music.youtube_id)
 
       reply.status(202).send({ success: true })
     }
@@ -215,14 +238,13 @@ export default async function musicRoutes(instance: FastifyInstance) {
     "/search",
     { onRequest: isLogin, preHandler: instance.validateQuery(SearchMusicQuery) },
     async (request, reply) => {
-      const musics = await prisma.music.findMany({
-        where: {
-          OR: [
-            { title: { contains: `%${request.query.q}%` } },
-            { artist: { contains: `%${request.query.q}%` } },
-          ],
-        },
-      })
+      const query = `%${request.query.q}%`
+
+      const musics = await connexion
+        .selectFrom("musics")
+        .selectAll("musics")
+        .where((qb) => qb.or([qb.cmpr("title", "like", query), qb.cmpr("artist", "like", query)]))
+        .execute()
 
       reply.send({ success: true, musics: musicMapper.many(musics) })
     }
@@ -232,21 +254,28 @@ export default async function musicRoutes(instance: FastifyInstance) {
     "/:id/share",
     { onRequest: isAdmin, preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
-      const music = await prisma.music.findUnique({ where: { id: +request.params.id } })
+      const music = await connexion
+        .selectFrom("bypass_codes")
+        .selectAll()
+        .where("id", "=", +request.params.id)
+        .executeTakeFirst()
 
       if (!music) throw new NotFoundException("Music not found")
 
-      const bypassCode = await prisma.bypassCode.create({
-        data: {
-          code: await sha256(randomUUID()),
-          targetId: music.id.toString(),
-          type: "music",
-          valid: true,
-          expireAt: new Date(Date.now() + 1000 * 60 * 60 * 4),
-        },
-      })
+      const code = await sha256(randomUUID())
 
-      const link = `${process.env.CLIENT_URL}/out/test/${bypassCode.code}`
+      const bypassCode = await connexion
+        .insertInto("bypass_codes")
+        .values({
+          code,
+          target_id: music.id.toString(),
+          type: "music",
+          valid: 1,
+          expireAt: new Date(Date.now() + 1000 * 60 * 60 * 4).toString(),
+        })
+        .executeTakeFirst()
+
+      const link = `${process.env.CLIENT_URL}/out/test/${code}`
 
       reply.send({ success: true, link: link, music: musicMapper.one(music) })
     }
@@ -255,26 +284,30 @@ export default async function musicRoutes(instance: FastifyInstance) {
   instance.get<{ Params: BypassMusicParamsDto; Reply: MusicByPassResponse }>(
     "/bypass/:code",
     async (request, reply) => {
-      const code = await prisma.bypassCode.findFirst({
-        where: {
-          code: request.params.code,
-          valid: true,
-          type: "music",
-        },
-      })
+      const code = await connexion
+        .selectFrom("bypass_codes")
+        .selectAll()
+        .where("code", "=", request.params.code)
+        .where("valid", "=", 1)
+        .where("type", "=", "music")
+        .executeTakeFirst()
 
       if (!code || new Date(code.expireAt).getTime() < Date.now())
         throw new NotFoundException("Bypass code not found")
 
-      const music = await prisma.music.findUnique({ where: { id: +code.targetId } })
+      const music = await connexion
+        .selectFrom("musics")
+        .selectAll()
+        .where("id", "=", +code.target_id)
+        .executeTakeFirst()
 
       if (!music) throw new NotFoundException("Music not found")
 
       reply.send({
         success: true,
         music: musicMapper.one(music),
-        song: (await ytConverter.stream(music.youtubeId)).toString("base64"),
-        cover: (await ytConverter.cover(music.youtubeId)).toString("base64"),
+        song: (await ytConverter.stream(music.youtube_id)).toString("base64"),
+        cover: (await ytConverter.cover(music.youtube_id)).toString("base64"),
       })
     }
   )

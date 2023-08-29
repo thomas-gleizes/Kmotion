@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "devDependencies": {
+    "@kmotion/database": "workspace:*",
     "@kmotion/types": "workspace:*",
     "typescript": "^4.9.5"
   }

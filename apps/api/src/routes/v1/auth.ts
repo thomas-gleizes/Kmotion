@@ -15,13 +15,14 @@ export default async function authRoutes(instance: FastifyInstance) {
     async (request, reply) => {
       const user = await connexion
         .selectFrom("users")
+        .selectAll()
         .where("email", "=", request.body.email)
         .executeTakeFirst()
 
       if (!user || (user && (await bcryptCompare(user.password, request.body.password))))
         throw new UnauthorizedException("Email/Password combination is incorrect")
 
-      if (!user.isActivate)
+      if (!user.is_activate)
         throw new UnauthorizedException("Your account must be validate by an admin. Please Wait")
 
       const mappedUser = userMapper.one(user)
@@ -37,28 +38,20 @@ export default async function authRoutes(instance: FastifyInstance) {
     "/register",
     { preHandler: instance.validateBody(RegisterDto) },
     async (request, reply) => {
-      try {
-        const user = await prisma.user.create({
-          data: {
-            email: request.body.email,
-            password: await bcryptHash(request.body.password),
-            name: request.body.name,
-            slug: request.body.name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
-          },
+      await connexion
+        .insertInto("users")
+        .values({
+          email: request.body.email,
+          password: await bcryptHash(request.body.password),
+          name: request.body.name,
+          slug: request.body.name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
         })
+        .executeTakeFirst()
 
-        console.log("User", user)
-
-        reply.send({
-          success: true,
-          message: "You are register but a admin need to confirm your account.",
-        })
-      } catch (error) {
-        if (error instanceof PrismaClientKnownRequestError)
-          if (error.code === "P2002") throw new UnauthorizedException("credentials already taken")
-
-        throw error
-      }
+      reply.send({
+        success: true,
+        message: "You are register but a admin need to confirm your account.",
+      })
     }
   )
 
