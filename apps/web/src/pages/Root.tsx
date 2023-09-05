@@ -9,8 +9,11 @@ const Root: SyncRouteComponent = () => {
   return (
     <>
       <ContextsProvider>
-        <div className="flex items-center justify-center h-screen text-white/80">
-          <div className="relative w-screen h-screen bg-black overflow-hidden">
+        <div
+          className="flex items-center justify-center text-white/80"
+          style={{ height: "100svh" }}
+        >
+          <div className="relative w-full h-full bg-black overflow-hidden">
             <Header />
             <div className="block h-full w-full">
               <Outlet />
