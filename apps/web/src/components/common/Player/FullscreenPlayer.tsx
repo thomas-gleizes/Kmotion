@@ -74,8 +74,9 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
   return (
     <DynamicDialog isOpen={isOpen}>
       <div
-        className="relative z-[90] h-screen -top-header w-full"
+        className="relative z-[90] -top-header w-full"
         onDoubleClick={handleDoubleTapScreen}
+        style={{ height: "100svh" }}
       >
         <div className="absolute top-0 left-0 w-full h-full">
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
@@ -184,7 +185,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                     </div>
                   )}
                   {showQueue && (
-                    <ScrollableContainer className="h-[calc(100vh-420px)] lg:h-[calc(75vh-450px)]">
+                    <ScrollableContainer className="h-[calc(100svh-420px)] lg:h-[calc(75svh-450px)]">
                       <QueueList />
                     </ScrollableContainer>
                   )}
