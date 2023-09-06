@@ -17,8 +17,8 @@ type ClickFunction = (
 ) => void
 
 type Action = {
-  label: string | JSX.Element
-  icon?: JSX.Element
+  label: string | ReactNode
+  icon?: ReactNode
   className?: string | Record<string, boolean>
   onClick: ClickFunction
 }

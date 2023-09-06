@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import classnames from "classnames"
 import { classValidatorResolver } from "@hookform/resolvers/class-validator"
+import { toast } from "react-toastify"
 
 import { RegisterDto } from "@kmotion/validations"
 import { RegisterResponse } from "@kmotion/types"
@@ -21,8 +22,15 @@ const RegisterForm: Component = () => {
 
   const registerMutation = useMutation<RegisterResponse, unknown, RegisterDto>({
     mutationFn: (payload) => api.register(payload),
-    onSuccess: (response) => {
-      console.log("Success:", response)
+    onSuccess: () => {
+      toast.success(
+        "Votre compte a été crée avec success, et est en attente de validation par un admin.",
+      )
+    },
+    onError: (error) => {
+      console.log("Error", error)
+
+      toast.error("Une erreur inconnue est survenue lors de la création du compte.")
     },
   })
 

@@ -2,6 +2,7 @@ import React from "react"
 import { useMutation } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { classValidatorResolver } from "@hookform/resolvers/class-validator"
+import { toast } from "react-toastify"
 
 import { LoginDto } from "@kmotion/validations"
 import { LoginResponse } from "@kmotion/types"
@@ -23,6 +24,7 @@ const LoginForm: Component = () => {
   const mutation = useMutation<LoginResponse, unknown, LoginDto>({
     mutationFn: (data) => api.login(data),
     onSuccess: (resp) => authContext.login(resp.user, resp.token),
+    onError: () => toast.error("Login/Mot de passe incorrect"),
   })
 
   return (
