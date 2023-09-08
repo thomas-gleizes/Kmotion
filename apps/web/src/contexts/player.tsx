@@ -91,6 +91,10 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
         navigator.mediaSession.setActionHandler("nexttrack", () => actions.next())
       }
+
+      navigator.mediaSession.setActionHandler("play", () => togglePlaying(true))
+      navigator.mediaSession.setActionHandler("pause", () => togglePlaying(false))
+      navigator.mediaSession.setActionHandler("stop", () => togglePlaying(false))
     }
   }, [prevMusic, nexMusic, currentMusic])
 

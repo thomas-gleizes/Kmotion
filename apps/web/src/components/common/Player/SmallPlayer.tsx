@@ -70,13 +70,6 @@ const SmallPlayer: Component = () => {
 
   useEffect(() => {
     if ("mediaSession" in navigator) {
-      navigator.mediaSession.setActionHandler("play", () => controls.play())
-      navigator.mediaSession.setActionHandler("pause", () => controls.pause())
-      navigator.mediaSession.setActionHandler("stop", () => {
-        controls.seek(0)
-        controls.pause()
-      })
-
       if (!isIos()) {
         navigator.mediaSession.setActionHandler("seekbackward", () =>
           controls.seek(state.time - 10),
