@@ -185,7 +185,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                     </div>
                   )}
                   {showQueue && (
-                    <ScrollableContainer className="h-[calc(100svh-420px)] lg:h-[calc(75svh-450px)]">
+                    <ScrollableContainer className="h-[calc(100svh-380px)] lg:h-[calc(75svh-450px)]">
                       <QueueList />
                     </ScrollableContainer>
                   )}
