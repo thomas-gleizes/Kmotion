@@ -26,7 +26,7 @@ import { useLayoutContext } from "../../../contexts/layout"
 import DynamicDialog from "../DynamicDialog"
 import ScrollableContainer from "../../layouts/ScrollableContainer"
 import TitlePlayer from "./TitlePlayer"
-import { isMobileOrTablet } from "../../../utils/helpers"
+import { isIos, isMobileOrTablet } from "../../../utils/helpers"
 
 interface Props {
   isOpen: boolean
@@ -238,24 +238,26 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                           </i>
                         </div>
                       </div>
-                      <div className="flex justify-between items-center space-x-4 group">
-                        <div className="text-lg text-white/70 group:active:text-white group-active:scale-125 transition duration-200">
-                          <i>
-                            <FaVolumeDown />
-                          </i>
+                      {!isIos() && (
+                        <div className="flex justify-between items-center space-x-4 group">
+                          <div className="text-lg text-white/70 group:active:text-white group-active:scale-125 transition duration-200">
+                            <i>
+                              <FaVolumeDown />
+                            </i>
+                          </div>
+                          <div className="h-2 w-full rounded-full group-active:scale-y-150 transition duration-200">
+                            <Slider
+                              value={roundMinMax(state.volume * 100, 0, 100, 2)}
+                              onChange={(value) => controls.volume(value / 100)}
+                            />
+                          </div>
+                          <div className="text-lg text-white/70 group:active:text-white group-active:scale-125 transition duration-200">
+                            <i>
+                              <FaVolumeUp />
+                            </i>
+                          </div>
                         </div>
-                        <div className="h-2 w-full rounded-full group-active:scale-y-150 transition duration-200">
-                          <Slider
-                            value={roundMinMax(state.volume * 100, 0, 100, 2)}
-                            onChange={(value) => controls.volume(value / 100)}
-                          />
-                        </div>
-                        <div className="text-lg text-white/70 group:active:text-white group-active:scale-125 transition duration-200">
-                          <i>
-                            <FaVolumeUp />
-                          </i>
-                        </div>
-                      </div>
+                      )}
                       <div className="flex justify-between items-center w-9/12 mx-auto">
                         <i
                           onClick={() => loop.set("all")}
