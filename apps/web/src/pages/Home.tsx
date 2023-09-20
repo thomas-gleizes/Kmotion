@@ -1,8 +1,8 @@
 import React from "react"
+import { Navigate } from "@tanstack/react-router"
 
 import { useAuthContext } from "../contexts/auth"
 import UnauthenticatedHome from "../components/common/UnauthenticatedHome"
-import { Navigate } from "@tanstack/react-router"
 
 const HomePage: Page = () => {
   const authContext = useAuthContext()

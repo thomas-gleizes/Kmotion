@@ -13,7 +13,7 @@ import FullscreenPlayer from "./FullscreenPlayer"
 const defaultPlay = localStorage.getItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING) !== "false"
 
 const SmallPlayer: Component = () => {
-  const { currentMusic, queue, actions, loop, fullscreen, assets } = usePlayerContext()
+  const { currentMusic, queue, actions, loop, fullscreen, assets, playing } = usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
 
   const [audio, state, controls, ref] = useAudio(
@@ -21,20 +21,24 @@ const SmallPlayer: Component = () => {
   )
 
   useEffect(() => {
-    if (!assets.stream.isFetching && state.paused) controls.play()
-  }, [assets.stream])
+    if (playing.value && !state.playing) void controls.play()
+    else if (!playing.value && state.playing) controls.pause()
+  }, [playing.value, state.playing, assets.stream.isFetching])
+
+  const isInit = useRef<boolean>(false)
 
   useEffect(() => {
+    if (!isInit.current) return
+
+    isInit.current = false
     localStorage.setItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING, state.playing ? "true" : "false")
   }, [state.playing])
-
-  const togglePlaying = () => (state.playing ? controls.pause() : controls.play())
 
   useEvent("keydown", (event) => {
     if (!["INPUT", "TEXTAREA"].includes(event.target.tagName))
       switch (event.key) {
         case " ":
-          return togglePlaying()
+          return playing.toggle()
         case "ArrowLeft":
           return controls.seek(state.time - 10)
         case "ArrowRight":
@@ -66,13 +70,6 @@ const SmallPlayer: Component = () => {
 
   useEffect(() => {
     if ("mediaSession" in navigator) {
-      navigator.mediaSession.setActionHandler("play", () => controls.play())
-      navigator.mediaSession.setActionHandler("pause", () => controls.pause())
-      navigator.mediaSession.setActionHandler("stop", () => {
-        controls.seek(0)
-        controls.pause()
-      })
-
       if (!isIos()) {
         navigator.mediaSession.setActionHandler("seekbackward", () =>
           controls.seek(state.time - 10),
@@ -177,9 +174,9 @@ const SmallPlayer: Component = () => {
             <div>
               <i
                 className="text-2xl md:text-3xl lg:text-5xl text-white cursor-pointer"
-                onClick={handleStopPropagation(togglePlaying)}
+                onClick={handleStopPropagation(() => playing.toggle())}
               >
-                {state.playing ? <FaPause /> : <FaPlay />}
+                {playing.value ? <FaPause /> : <FaPlay />}
               </i>
             </div>
             <div>
