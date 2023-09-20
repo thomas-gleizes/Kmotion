@@ -1,0 +1,40 @@
+{
+  "short_name": "K'motion",
+  "name": "K'motion",
+  "icons": [
+    {
+      "src": "icons/favicon.png",
+      "sizes": "64x64 24x24",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "icons/favicon.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/favicon.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/favicon.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "icons/favicon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#00365f",
+  "background_color": "#dfe3f0"
+}

@@ -6,16 +6,21 @@ import { IMusic, IPlaylist } from "@kmotion/types"
 import { LoopType, PlayerContextValues } from "../../types/contexts"
 import { useContextFactory, useImageLoader, useStorageQueue, useStreamLoader } from "../hooks"
 import { getImageResolution, isIos, resizeImage } from "../utils/helpers"
+import { LOCAL_STORAGE_KEYS } from "../utils/constants"
 
 const PlayerContext = createContext<PlayerContextValues>(null as never)
 
 export const usePlayerContext = useContextFactory(PlayerContext)
+
+const defaultPlay = localStorage.getItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING) !== "false"
 
 const PlayerProvider: ComponentWithChild = ({ children }) => {
   const [loop, setLoop] = useLocalStorageState<LoopType>("loop", { defaultValue: "none" })
   const [musicsHistory, setMusicsHistory] = useLocalStorageState<IMusic[]>("musics-history", {
     defaultValue: [],
   })
+  const [playing, togglePlaying] = useToggle(defaultPlay)
+
   const [isFullscreen, toggleFullscreen] = useToggle(false)
 
   const [currentPlaylist, setCurrentPlaylist] = useState<IPlaylist | null>(null)
@@ -86,6 +91,10 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
         navigator.mediaSession.setActionHandler("nexttrack", () => actions.next())
       }
+
+      navigator.mediaSession.setActionHandler("play", () => togglePlaying(true))
+      navigator.mediaSession.setActionHandler("pause", () => togglePlaying(false))
+      navigator.mediaSession.setActionHandler("stop", () => togglePlaying(false))
     }
   }, [prevMusic, nexMusic, currentMusic])
 
@@ -104,6 +113,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         actions,
         loop: { value: loop, set: setLoop },
         fullscreen: { value: isFullscreen, toggle: toggleFullscreen },
+        playing: { value: playing, toggle: togglePlaying },
       }}
     >
       {children}

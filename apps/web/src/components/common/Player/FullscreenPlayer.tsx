@@ -47,12 +47,10 @@ interface Props {
 }
 
 const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
-  const { currentMusic, playlist, actions, loop, assets } = usePlayerContext()
+  const { currentMusic, playlist, actions, loop, assets, playing } = usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
 
   const [showQueue, toggleShowQueue] = useToggle(false)
-
-  const togglePlay = () => (state.paused ? controls.play() : controls.pause())
 
   const [tap, setTap] = useState<"left" | "right">()
   const handleDoubleTapScreen: MouseEventHandler<HTMLDivElement> = (event) => {
@@ -76,8 +74,9 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
   return (
     <DynamicDialog isOpen={isOpen}>
       <div
-        className="relative z-[90] h-screen -top-header w-full"
+        className="relative z-[90] -top-header w-full"
         onDoubleClick={handleDoubleTapScreen}
+        style={{ height: "100svh" }}
       >
         <div className="absolute top-0 left-0 w-full h-full">
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
@@ -138,10 +137,10 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                     <img
                       src={assets.cover.url}
                       alt={currentMusic.title}
-                      onClick={() => (showQueue && isMobile ? toggleShowQueue() : togglePlay())}
+                      onClick={() => (showQueue && isMobile ? toggleShowQueue() : playing.toggle())}
                       className={classnames(
                         "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
-                        { "scale-[75%] shadow-lg": state.paused },
+                        { "scale-[75%] shadow-lg": !playing.value },
                       )}
                     />
                   )}
@@ -186,7 +185,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                     </div>
                   )}
                   {showQueue && (
-                    <ScrollableContainer className="h-[calc(100vh-420px)] lg:h-[calc(75vh-450px)]">
+                    <ScrollableContainer className="h-[calc(100svh-420px)] lg:h-[calc(75svh-450px)]">
                       <QueueList />
                     </ScrollableContainer>
                   )}
@@ -228,8 +227,8 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                           </i>
                         </div>
                         <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
-                          <i onClick={togglePlay} className="rounded-full">
-                            {state.paused ? <FaPlay /> : <FaPause />}
+                          <i onClick={() => playing.toggle()} className="rounded-full">
+                            {!playing.value ? <FaPlay /> : <FaPause />}
                           </i>
                         </div>
                         <div className="text-white text-4xl hover:scale-110 transform transition duration-200 cursor-pointer">
