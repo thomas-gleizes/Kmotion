@@ -59,14 +59,16 @@ const SmallPlayer: Component = () => {
   useEvent(
     "ended",
     () => {
-      if (loop.value === "none" && queue.length === 1) {
-        actions.next()
-        playing.toggle(false)
-      } else if (loop.value === "all" && queue.length === 1) {
-        controls.seek(0)
-        playing.toggle(true)
-      } else {
-        actions.next()
+      switch (loop.value) {
+        case "none":
+          if (queue.length === 1) playing.toggle(false)
+          actions.next()
+          break
+        case "one":
+          actions.next()
+          break
+        case "all":
+          controls.seek(0)
       }
     },
     ref.current,
