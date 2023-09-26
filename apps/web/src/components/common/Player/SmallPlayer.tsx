@@ -28,6 +28,10 @@ const SmallPlayer: Component = () => {
   const isInit = useRef<boolean>(false)
 
   useEffect(() => {
+    if (isInit) controls.seek(0)
+  }, [currentMusic])
+
+  useEffect(() => {
     if (!isInit.current) return
 
     isInit.current = false
