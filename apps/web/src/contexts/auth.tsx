@@ -50,9 +50,6 @@ const AuthProvider: ComponentWithChild = ({ children }) => {
     queryKey: ["auth-user"],
     queryFn: () => api.profile(),
     enabled: authenticated,
-    onSuccess: (data) => {
-      localStorage.setItem("token", data.token)
-    },
   })
 
   const login = async (user: IUser, token: string) => {

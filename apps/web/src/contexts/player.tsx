@@ -12,7 +12,7 @@ const PlayerContext = createContext<PlayerContextValues>(null as never)
 
 export const usePlayerContext = useContextFactory(PlayerContext)
 
-const defaultPlay = localStorage.getItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING) !== "false"
+const defaultPlay = localStorage.getItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING) === "yes"
 
 const PlayerProvider: ComponentWithChild = ({ children }) => {
   const [loop, setLoop] = useLocalStorageState<LoopType>("loop", { defaultValue: "none" })
@@ -38,6 +38,10 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
 
   useImageLoader(nexMusic?.id)
   const [, nextStreamQuery] = useStreamLoader(nexMusic?.id, { enabled: currentMusic !== null })
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING, playing ? "yes" : "no")
+  }, [playing])
 
   useEffect(() => {
     if (currentMusic)
