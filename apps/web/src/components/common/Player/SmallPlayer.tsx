@@ -25,21 +25,13 @@ const SmallPlayer: Component = () => {
     else if (!playing.value && state.playing) controls.pause()
   }, [playing.value, state.playing, assets.stream.isFetching])
 
-  const isInit = useRef<boolean>(false)
-
   useEffect(() => {
-    if (isInit) controls.seek(0)
+    controls.seek(0)
+    localStorage.setItem(LOCAL_STORAGE_KEYS.TIME, "0")
   }, [currentMusic])
 
-  useEffect(() => {
-    if (!isInit.current) return
-
-    isInit.current = false
-    localStorage.setItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING, state.playing ? "true" : "false")
-  }, [state.playing])
-
   useEvent("keydown", (event) => {
-    if (!["INPUT", "TEXTAREA"].includes(event.target.tagName))
+    if (!["INPUT", "TEXTAREA"].includes(event.currentTarget.tagName))
       switch (event.key) {
         case " ":
           return playing.toggle()
