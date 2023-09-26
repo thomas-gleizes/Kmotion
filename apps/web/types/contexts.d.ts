@@ -34,6 +34,7 @@ interface PlayerContextValues {
   history: IMusic[]
   fullscreen: { value: boolean; toggle: (value?: boolean) => void }
   playing: { value: boolean; toggle: (value?: boolean) => void }
+  isShuffled: boolean
 }
 
 // Layout

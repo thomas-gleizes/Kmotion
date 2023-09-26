@@ -11,7 +11,6 @@ import {
   FaPlay,
   FaRandom,
   FaSpinner,
-  FaSync,
   FaSyncAlt,
   FaVolumeDown,
   FaVolumeUp,
@@ -47,7 +46,7 @@ interface Props {
 }
 
 const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
-  const { currentMusic, playlist, actions, loop, assets, playing } = usePlayerContext()
+  const { currentMusic, playlist, actions, loop, assets, playing, isShuffled } = usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
 
   const [showQueue, toggleShowQueue] = useToggle(false)
@@ -259,21 +258,30 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                       )}
                       <div className="flex justify-between items-center w-9/12 mx-auto">
                         <i
-                          onClick={() => loop.set("all")}
+                          onClick={() =>
+                            loop.set(
+                              loop.value === "none" ? "one" : loop.value === "one" ? "all" : "none",
+                            )
+                          }
                           className={classnames(
-                            "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
+                            "cursor-pointer flex items-center text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
                             loop.value !== "none" ? "text-opacity-90 scale-110" : "text-opacity-50",
                           )}
                         >
-                          {loop.value === "all" ? <FaSync /> : <FaSyncAlt />}
+                          <FaSyncAlt />
+                          <sup
+                            className={classnames("select-none", {
+                              invisible: loop.value !== "all",
+                            })}
+                          >
+                            *
+                          </sup>
                         </i>
                         <i
                           onClick={() => actions.shuffle()}
                           className={classnames(
-                            "text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
-                            currentMusic.title.length & 1
-                              ? "text-opacity-90 scale-110"
-                              : "text-opacity-50",
+                            "cursor-pointer text-white rounded-full text-xl lg:text-2xl transition transform duration-200",
+                            isShuffled ? "text-opacity-90 scale-110" : "text-opacity-50",
                           )}
                         >
                           <FaRandom />
@@ -281,7 +289,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                         <i
                           onClick={toggleShowQueue}
                           className={classnames(
-                            "text-white text-opacity-50 rounded-full text-xl lg:text-2xl transition transform duration-200",
+                            "cursor-pointer text-white text-opacity-50 rounded-full text-xl lg:text-2xl transition transform duration-200",
                             { "text-opacity-90": showQueue },
                           )}
                         >

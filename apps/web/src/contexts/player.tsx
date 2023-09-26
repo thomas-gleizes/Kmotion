@@ -25,7 +25,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
 
   const [currentPlaylist, setCurrentPlaylist] = useState<IPlaylist | null>(null)
 
-  const { queue, actions } = useStorageQueue<IMusic>()
+  const { queue, actions, isShuffled } = useStorageQueue<IMusic>()
 
   const currentMusic = queue.at(0) || null
   const nexMusic = queue.at(1) || null
@@ -84,9 +84,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
           navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
         }
 
-        if (nexMusic) {
-          navigator.mediaSession.setActionHandler("nexttrack", () => actions.next())
-        }
+        if (nexMusic) navigator.mediaSession.setActionHandler("nexttrack", () => actions.next())
       } else {
         navigator.mediaSession.setActionHandler("previoustrack", () => actions.previous())
         navigator.mediaSession.setActionHandler("nexttrack", () => actions.next())
@@ -114,6 +112,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         loop: { value: loop, set: setLoop },
         fullscreen: { value: isFullscreen, toggle: toggleFullscreen },
         playing: { value: playing, toggle: togglePlaying },
+        isShuffled,
       }}
     >
       {children}
