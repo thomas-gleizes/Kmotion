@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto"
+import { Readable } from "node:stream"
 import { FastifyInstance } from "fastify"
 import { Music } from "@prisma/client"
 
@@ -27,6 +28,7 @@ import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
+import * as fs from "fs"
 
 export default async function musicRoutes(instance: FastifyInstance) {
   const ytConverter = YtConverter.getInstance()
@@ -141,14 +143,25 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       if (!music) throw new NotFoundException("Music not found")
 
-      const stream = await ytConverter.stream(music.youtubeId)
+      const buffer = await ytConverter.stream(music.youtubeId)
 
       reply
         .headers({
           "Content-Type": "audio/mpeg",
           "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.mp3"`,
         })
-        .send(stream)
+        .send(buffer)
+
+      // const buffer = await ytConverter.stream(music.youtubeId)
+      // const stream = new Readable({
+      //   read() {
+      //     this.push(buffer)
+      //     this.push(null)
+      //   },
+      // })
+      //
+      // reply.type("audio/mpeg")
+      // reply.send(stream)
     },
   )
 
