@@ -3,6 +3,7 @@ import LoginForm from "../components/forms/LoginForm"
 import { useAuthContext } from "../contexts/auth"
 import { useRouterContext } from "../contexts/router"
 import { routes } from "../routes"
+import Header from "../components/common/Header"
 
 const LoginScreen: React.FC = () => {
   const { isAuthenticated } = useAuthContext()
@@ -11,15 +12,13 @@ const LoginScreen: React.FC = () => {
   if (isAuthenticated) router.push(routes.video)
 
   return (
-    <div>
-      <div className="text-center">
-        <div>
-          <h1 className="text-2xl font-bold">Kmotion</h1>
-          <h2 className="text-black/70 text-lg font-semibold">Connexion</h2>
-        </div>
+    <>
+      <Header color="dark" />
+      <div className="w-full mt-7">
+        <h2 className="text-center text-2xl font-semibold">Connexion</h2>
+        <LoginForm />
       </div>
-      <LoginForm />
-    </div>
+    </>
   )
 }
 
