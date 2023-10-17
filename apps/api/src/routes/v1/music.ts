@@ -12,7 +12,7 @@ import {
   ConvertMusicBodyDto,
 } from "@kmotion/validations"
 import {
-  ConverterMusicInfo,
+  ConverterMusicDetails,
   MusicByPassResponse,
   MusicInfoResponse,
   MusicResponse,
@@ -99,23 +99,21 @@ export default async function musicRoutes(instance: FastifyInstance) {
         })
         .catch(() => void null)
 
-      const response = await ytConverter.download(request.params.youtubeId)
+      const { music: musicConverted } = await ytConverter.download(request.params.youtubeId)
 
-      if (response.status !== 200) throw new BadRequestException("request to converter failed")
-
-      const info: ConverterMusicInfo = await ytConverter.info(request.params.youtubeId)
+      console.log("MusicConverted", musicConverted)
 
       const music = await prisma.music.create({
         data: {
-          title: info.title,
-          artist: info.author.name,
+          title: musicConverted.title,
+          artist: musicConverted.author,
           youtubeId: request.params.youtubeId,
           downloaderId: request.session.user.id,
-          duration: 0,
+          duration: musicConverted.duration,
         },
       })
 
-      reply.send({ success: "true", music: musicMapper.one(music), info })
+      reply.send({ success: "true", music: musicMapper.one(music) })
     },
   )
 
@@ -173,11 +171,13 @@ export default async function musicRoutes(instance: FastifyInstance) {
         where: { youtubeId: request.params.youtubeId },
       })
 
+      const info = await ytConverter.info(request.params.youtubeId)
+
       reply.send({
         success: true,
         music: music ? musicMapper.one(music) : null,
         isReady: !!music,
-        info: await ytConverter.info(request.params.youtubeId),
+        info: info,
       })
     },
   )

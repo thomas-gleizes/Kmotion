@@ -1,13 +1,13 @@
 import { MusicInfoResponse } from "@kmotion/types"
 
 import { MESSAGE_TYPE, STORAGE_KEY } from "./resources/constants"
-import { convertMusic, downloadMusic, fetchVideoInfo } from "./utils/api"
+import { convertMusic, fetchVideoInfo, streamMusic } from "./utils/api"
 
 let videoId: string | null = new URL(document.location.href).searchParams.get("v")
 let videoInfo: MusicInfoResponse | null = null
 let status = videoId ? "stand-by" : "no-video"
 
-let convertVideos: VideoData = {}
+const convertVideos: VideoData = {}
 
 async function run() {
   console.log("=============== KMOTION CONTENT SCRIPT ===============")
@@ -24,7 +24,7 @@ async function run() {
     fetchVideoInfo(id)
       .then((response) => {
         if (response.data) {
-          console.log("FETCH SUCCESS", response.data.info.title)
+          console.log("FETCH SUCCESS", response.data)
           videoInfo = response.data
           status = "success"
         }
@@ -35,7 +35,8 @@ async function run() {
   if (status === "stand-by") fetchInfo(videoId as string)
 
   chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    console.log("ConvertVideos", convertVideos)
+    console.log("ON MESSAGE", convertVideos, message)
+
     switch (message.type) {
       case MESSAGE_TYPE.ASK_VIDEO_INFO: {
         switch (status) {
@@ -58,27 +59,32 @@ async function run() {
       case MESSAGE_TYPE.SET_VIDEO_ID: {
         if (typeof message.videoId === "string" && videoId !== message.videoId) {
           videoId = message.videoId
-          if (!convertVideos.hasOwnProperty(message.videoId))
+          if (typeof convertVideos[message.videoId] === "undefined")
             convertVideos[message.videoId] = { status: "stand-by", data: null }
           return fetchInfo(message.videoId)
         }
         break
       }
       case MESSAGE_TYPE.CONVERT_VIDEO: {
-        if (convertVideos[message.videoId].status === "stand-by") {
-          convertVideos[message.videoId].status = "loading"
+        console.log("CONVERT_VIDEO", convertVideos[message.data.videoId])
+        const { videoId, ...payload } = message.data
 
-          convertMusic(message.videoId, message.data)
+        console.log("Payload,", payload)
+
+        if (convertVideos[videoId].status === "stand-by") {
+          convertVideos[videoId].status = "loading"
+
+          convertMusic(videoId, payload)
             .then(
               (response) =>
-                (convertVideos[message.videoId] = {
+                (convertVideos[videoId] = {
                   status: "success",
                   data: response.data,
                 }),
             )
             .catch(
               (err) =>
-                (convertVideos[message.videoId] = {
+                (convertVideos[videoId] = {
                   status: "error",
                   data: err,
                 }),
@@ -88,25 +94,19 @@ async function run() {
         return "ok"
       }
       case MESSAGE_TYPE.DOWNLOAD_VIDEO: {
-        if (convertVideos[message.videoId].status === "stand-by") {
-          convertVideos[message.videoId].status = "loading"
+        console.log("DOWNLOAD")
 
-          downloadMusic(message.videoId)
-            .then(
-              (response) =>
-                (convertVideos[message.videoId] = {
-                  status: "success",
-                  data: response.data,
-                }),
-            )
-            .catch(
-              (err) =>
-                (convertVideos[message.videoId] = {
-                  status: "error",
-                  data: err,
-                }),
-            )
-        }
+        streamMusic(message.data.music.id)
+          .then((response) => response.blob())
+          .then((blob) => {
+            const link = document.createElement("a")
+            link.href = URL.createObjectURL(blob)
+            link.download = `${message.data.music.title}.mp3`
+            link.style.display = "none"
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+          })
 
         return sendResponse({ status: convertVideos[message.videoId].status })
       }

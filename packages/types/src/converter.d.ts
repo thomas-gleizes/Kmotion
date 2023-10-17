@@ -6,8 +6,8 @@ export interface ConvertedMusic {
   url: string
   duration: number
   links: {
-    mp3: string
-    jpg: string
+    audio: string
+    cover: string
   }
   timestamp: string
 }
@@ -18,7 +18,7 @@ export type Thumbnail = {
   height: number
 }
 
-export type ConverterMusicInfo = {
+export type ConverterMusicDetails = {
   videoId: string
   title: string
   lengthSeconds: string

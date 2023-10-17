@@ -1,4 +1,4 @@
-import { ConvertedMusic, ConverterMusicInfo } from "@kmotion/types"
+import { ConvertedMusic, ConverterMusicDetails } from "@kmotion/types"
 
 export default class YtConverter {
   private static instance: YtConverter
@@ -32,17 +32,20 @@ export default class YtConverter {
       .then((data) => data.musics)
   }
 
-  public info(youtubeId: string): Promise<ConverterMusicInfo> {
-    return fetch(`${this._url}/${youtubeId}/info`, { method: "GET", headers: this.getHeaders() })
-      .then((response) => response.json())
-      .then((data) => data.details)
+  public info(
+    youtubeId: string,
+  ): Promise<{ details: ConverterMusicDetails; music: ConvertedMusic }> {
+    return fetch(`${this._url}/${youtubeId}/info`, {
+      method: "GET",
+      headers: this.getHeaders(),
+    }).then((response) => response.json())
   }
 
-  public download(youtubeId: string): Promise<Response> {
+  public download(youtubeId: string): Promise<{ music: ConvertedMusic; alreadyDownload: boolean }> {
     return fetch(`${this._url}/${youtubeId}/download`, {
       method: "GET",
       headers: this.getHeaders(),
-    })
+    }).then((response) => response.json())
   }
 
   public stream(youtubeId: string): Promise<Buffer> {
