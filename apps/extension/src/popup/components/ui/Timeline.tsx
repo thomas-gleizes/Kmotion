@@ -1,16 +1,16 @@
 import React from "react"
 
-import { ConverterMusicInfo } from "@kmotion/types"
+import { ConverterMusicDetails } from "@kmotion/types"
 import CardCollapse from "../common/CardCollapse"
 import { useFormContext } from "react-hook-form"
 import { ConvertMusicBodyDto } from "@kmotion/validations"
 import { FaMinus, FaPlus } from "react-icons/fa"
 
 interface Props {
-  info: ConverterMusicInfo
+  details: ConverterMusicDetails
 }
 
-const Timeline: React.FC<Props> = ({ info }) => {
+const Timeline: React.FC<Props> = ({ details }) => {
   const methods = useFormContext<ConvertMusicBodyDto>()
 
   const field = methods.getValues()?.timeline
@@ -21,7 +21,7 @@ const Timeline: React.FC<Props> = ({ info }) => {
     <CardCollapse defaultOpen={false} title="Timeline">
       <div>
         <div>
-          <div className="font-semibold text-gray-800">Durée video : {info.lengthSeconds} </div>
+          <div className="font-semibold text-gray-800">Durée video : {details.lengthSeconds} </div>
           <div className="font-semibold text-gray-800">Durée selectionnée : {duration} </div>
         </div>
         <div className="w-full flex justify-between items-center">

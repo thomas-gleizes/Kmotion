@@ -2,22 +2,18 @@ import React, { useRef, useEffect } from "react"
 import { useFormContext } from "react-hook-form"
 import classnames from "classnames"
 
-import { ConverterMusicInfo } from "@kmotion/types"
+import { ConverterMusicDetails } from "@kmotion/types"
 import { ConvertMusicBodyDto } from "@kmotion/validations"
 import CardCollapse from "../common/CardCollapse"
 
 interface Props {
-  info: ConverterMusicInfo
+  details: ConverterMusicDetails
 }
 
-const CoverChoice: React.FC<Props> = ({ info }) => {
+const CoverChoice: React.FC<Props> = ({ details }) => {
   const methods = useFormContext<ConvertMusicBodyDto>()
 
   const inputFileRef = useRef<HTMLInputElement>(null)
-
-  const handleChangeUploadFile = async () => {
-    if (inputFileRef.current) inputFileRef.current.click()
-  }
 
   useEffect(() => {
     if (inputFileRef.current) {
@@ -40,12 +36,12 @@ const CoverChoice: React.FC<Props> = ({ info }) => {
     <CardCollapse title="Couverture" defaultOpen={true}>
       <>
         <div className="py-1">
-          {info.thumbnails && (
+          {details.thumbnails && (
             <img width={130} className="mx-auto shadow" src={field.value} alt="cover" />
           )}
         </div>
         <div className="grid grid-cols-2 px-0.5 py-1">
-          {info.thumbnails?.map((cover, index) => (
+          {details.thumbnails?.map((cover, index) => (
             <div key={index} className="my-0.5 w-11/12 mx-auto">
               <button
                 onClick={() => methods.setValue("cover", { type: "classic", value: cover.url })}
@@ -60,20 +56,6 @@ const CoverChoice: React.FC<Props> = ({ info }) => {
               </button>
             </div>
           ))}
-          <div className="my-0.5 w-11/12 mx-auto">
-            <input ref={inputFileRef} type="file" className="hidden" />
-            <button
-              onClick={handleChangeUploadFile}
-              className={classnames(
-                "border w-full rounded text-sm shadow-sm transform hover:scale-105 hover:shadow-md duration-75 bg-gray-100",
-                field?.type === "custom"
-                  ? "text-white bg-gradient-to-bl from-blue-600 to-blue-800"
-                  : "bg-gray-100",
-              )}
-            >
-              Importer
-            </button>
-          </div>
         </div>
       </>
     </CardCollapse>

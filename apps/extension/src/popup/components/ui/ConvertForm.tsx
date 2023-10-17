@@ -2,38 +2,35 @@ import React from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 import { ConvertMusicBodyDto } from "@kmotion/validations"
-import { ConverterMusicInfo } from "@kmotion/types"
+import { ConvertedMusic, ConverterMusicDetails } from "@kmotion/types"
 import CoverChoice from "./CoverChoice"
 import Timeline from "./Timeline"
 import MetaData from "./MetaData"
 import { MESSAGE_TYPE } from "../../../resources/constants"
 
 interface Props {
-  info: ConverterMusicInfo
-  ready: boolean
+  info: { details: ConverterMusicDetails; music: ConvertedMusic }
 }
 
-const ConvertForm: React.FC<Props> = ({ info, ready }) => {
+const ConvertForm: React.FC<Props> = ({ info }) => {
   const formMethods = useForm<ConvertMusicBodyDto>({
     defaultValues: {
       metadata: {
-        title: info.media?.song || info.title || "",
-        artist: info.media?.artist || info.author?.name || "",
+        title: info.details.media?.song || info.details.title || "",
+        artist: info.details.media?.artist || info.details.author?.name || "",
       },
       cover: {
         type: "classic",
-        value: info.thumbnails.at(-1)?.url,
+        value: info.details.thumbnails.at(-1)?.url,
       },
       timeline: {
         start: 0,
-        end: +info.lengthSeconds,
+        end: +info.details.lengthSeconds,
       },
     },
   })
 
   const onSubmit = (values: ConvertMusicBodyDto) => {
-    console.log("Values", values)
-
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
       const [targetTab] = tabs
 
@@ -41,7 +38,7 @@ const ConvertForm: React.FC<Props> = ({ info, ready }) => {
 
       chrome.tabs.sendMessage(
         targetTab.id,
-        { type: MESSAGE_TYPE.CONVERT_VIDEO, data: values },
+        { type: MESSAGE_TYPE.CONVERT_VIDEO, data: { videoId: info.details.videoId, ...values } },
         (message) => {
           console.log("submit response", message)
         },
@@ -52,15 +49,15 @@ const ConvertForm: React.FC<Props> = ({ info, ready }) => {
   return (
     <form onSubmit={formMethods.handleSubmit(onSubmit)} className="flex flex-col space-y-2 px-2">
       <FormProvider {...formMethods}>
-        <MetaData info={info} isReady={ready} />
-        <CoverChoice info={info} />
-        <Timeline info={info} />
+        <MetaData details={info.details} />
+        <CoverChoice details={info.details} />
+        <Timeline details={info.details} />
         <div className="w-full">
           <button
             type="submit"
             className="py-1.5 flex items-center justify-center bg-gradient-to-bl rounded-md from-blue-800 to-gray-800 shadow-lg hover:shadow-xl hover:scale-105 active:hover:shadow-md active:scale-95 disabled:from-gray-500 disabled:to-gray-600 transform transition text-white w-full text-xl font-medium"
           >
-            Convertir
+            Convert
           </button>
         </div>
       </FormProvider>
