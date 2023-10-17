@@ -62,7 +62,7 @@ export default class YtConverter {
   }
 
   public cover(youtubeId: string): Promise<Buffer> {
-    return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.jpg`, {
+    return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.webp`, {
       method: "GET",
       headers: this.getHeaders(),
     })

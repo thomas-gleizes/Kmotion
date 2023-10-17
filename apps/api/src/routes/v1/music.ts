@@ -196,8 +196,8 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       reply
         .headers({
-          "Content-Type": "image/jpeg",
-          "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.jpg"`,
+          "Content-Type": "image/webp",
+          "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.webp"`,
         })
         .send(stream)
     },
