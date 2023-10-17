@@ -33,21 +33,14 @@ export default class YtConverter {
   }
 
   public info(youtubeId: string): Promise<ConverterMusicInfo> {
-    return fetch(`${this._url}/info/${youtubeId}`, { method: "GET", headers: this.getHeaders() })
+    return fetch(`${this._url}/${youtubeId}/info`, { method: "GET", headers: this.getHeaders() })
       .then((response) => response.json())
       .then((data) => data.details)
   }
 
   public download(youtubeId: string): Promise<Response> {
-    return fetch(`${this._url}/download/${youtubeId}`, {
+    return fetch(`${this._url}/${youtubeId}/download`, {
       method: "GET",
-      headers: this.getHeaders(),
-    })
-  }
-
-  public convert(youtubeId: string, data: Record<string, string>): Promise<Response> {
-    return fetch(`${this._url}/convert/${youtubeId}` + new URLSearchParams(data), {
-      method: "POST",
       headers: this.getHeaders(),
     })
   }
@@ -62,6 +55,8 @@ export default class YtConverter {
   }
 
   public cover(youtubeId: string): Promise<Buffer> {
+    console.log("This.", this._url)
+
     return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.webp`, {
       method: "GET",
       headers: this.getHeaders(),
