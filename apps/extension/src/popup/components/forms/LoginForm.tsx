@@ -11,8 +11,8 @@ import { login } from "../../../utils/api"
 const resolver = classValidatorResolver(LoginDto)
 
 const defaultValues: LoginDto = {
-  email: "invite@kmotion.fr",
-  password: "invite123",
+  email: "",
+  password: "",
 }
 
 const LoginForm: React.FC = () => {
@@ -28,7 +28,7 @@ const LoginForm: React.FC = () => {
       setIsSubmitting(true)
       const response = await login(values)
 
-      console.log("Response.data", response.data)
+      console.log("Response", response)
 
       await authContext.login(response.data.user, response.data.token)
       router.push(routes.video)
@@ -42,39 +42,38 @@ const LoginForm: React.FC = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col space-y-2 w-11/12 mx-auto">
-        <div className="space-y-4">
-          <div className="">
-            <label className="text-white font-semibold text-xl mb-1 mx-2">Email</label>
-            <div className="bg-white rounded-lg px-3 py-1">
+        <div className="space-y-2 mx-2">
+          <div>
+            <label className="text-black font-semibold text-xl mb-1">Email</label>
+            <div className="bg-white rounded-lg py-1">
               <input
                 type="email"
-                className="text-lg text-black bg-transparent outline-none px-2"
+                placeholder="example@kmotion.fr"
+                className="text-lg text-black bg-gray-100 border-2 border-blue-800 hover:border-blue-900 focus:border-blue-900 placeholder:opacity-75 shadow outline-none px-4 py-2 rounded w-full transition"
                 {...register("email")}
               />
             </div>
           </div>
-          <div className="">
-            <label className="text-white font-semibold text-xl mb-1 mx-2">Email</label>
-            <div className="bg-white rounded-lg px-3 py-1">
+          <div>
+            <label className="text-black font-semibold text-xl mb-1">Mot de passe</label>
+            <div className="bg-white rounded-lg py-1">
               <input
                 type="password"
-                className="text-lg text-black bg-transparent outline-none px-2"
+                placeholder="*********"
+                className="text-lg text-black bg-gray-100 border-2 border-blue-800 hover:border-blue-900 focus:border-blue-900 placeholder:opacity-75 shadow outline-none px-4 py-2 rounded w-full transition"
                 {...register("password")}
               />
             </div>
           </div>
         </div>
 
-        <div className="">
-          {isSubmitting ? (
-            <button className="btn btn-block loading text-gray-800" disabled>
-              Chargement
-            </button>
-          ) : (
-            <button className="py-2 px-5 text-xl text-white bg-gradient-to-bl from-blue-600 to-blue-900 shadow border-800 rounded-xl transition transform hover:scale-105">
-              Connexion
-            </button>
-          )}
+        <div className="w-full flex justify-center pb-5">
+          <button
+            disabled={isSubmitting}
+            className="py-2 px-5 text-xl text-white bg-gradient-to-bl from-blue-600 to-blue-900 shadow border-800 rounded-md transition transform hover:scale-105 disabled:bg-gray-600"
+          >
+            {isSubmitting ? "Chargement" : "Connexion"}
+          </button>
         </div>
       </div>
     </form>

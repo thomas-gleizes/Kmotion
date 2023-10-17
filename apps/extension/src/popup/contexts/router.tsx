@@ -1,6 +1,7 @@
 import React, { createContext, useState } from "react"
-import { routes } from "../routes"
+
 import { useAuthContext } from "./auth"
+import { routes } from "../routes"
 
 interface Values {
   push: (route: Route) => void

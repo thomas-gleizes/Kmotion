@@ -7,7 +7,7 @@ module.exports = {
         md: ["18px", "22px"],
       },
       spacing: {
-        header: "35px",
+        header: "40px",
         footer: "40px",
       },
     },
