@@ -15,7 +15,9 @@ const LayoutProvider: ComponentWithChild = ({ children }) => {
   )
 
   return (
-    <LayoutContext.Provider value={{ isMobile, isLaggedBlur }}>{children}</LayoutContext.Provider>
+    <LayoutContext.Provider value={{ isMobile, isLaggedBlur: false }}>
+      {children}
+    </LayoutContext.Provider>
   )
 }
 
