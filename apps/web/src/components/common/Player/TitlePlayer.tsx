@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from "react"
 import { useDialog } from "react-dialog-promise"
-import { FaList, FaShare, FaTrash } from "react-icons/fa"
+import { FaDownload, FaList, FaShare, FaTrash } from "react-icons/fa"
 import classnames from "classnames"
 
 import { IMusic } from "@kmotion/types"
@@ -28,7 +28,7 @@ const TitlePlayer: Component<Props> = ({ music }) => {
   const confirmDialog = useDialog(ConfirmDialog)
   const shareDialog = useDialog(SharedMusic)
 
-  const handleAddToPlaylist = async (music: IMusic) => {
+  const handleAddToPlaylist = async () => {
     const result = await addToPlaylist.open({ music })
 
     if (result === "create-playlist") {
@@ -42,10 +42,35 @@ const TitlePlayer: Component<Props> = ({ music }) => {
 
       await new Promise((resolve) => setTimeout(resolve, 500))
       if (result.action === "success-new") {
-        await handleAddToPlaylist(music)
+        await handleAddToPlaylist()
       }
     }
   }
+
+  const handleShare = async () => {
+    const response = await api.shareMusic(music.id)
+    const result = await shareDialog.open({ link: response.link })
+
+    result.copy && navigator.clipboard.writeText(response.link)
+  }
+
+  const handleDelete = () =>
+    confirmDialog
+      .open({
+        message: (
+          <span>
+            Voulez vous supprimer la music "{music.title}" de {music.artist} <br /> Cette action est
+            définitive
+          </span>
+        ),
+      })
+      .then((result) => {
+        if (result)
+          api
+            .deleteMusic(music.id)
+            .then(() => actions.remove(actions.findIndex(music)))
+            .catch((err) => console.log("delete failed", err))
+      })
 
   const listActions = useMemo(() => {
     const listActions = [
@@ -56,6 +81,12 @@ const TitlePlayer: Component<Props> = ({ music }) => {
           className: "hover:bg-white/30",
           onClick: handleAddToPlaylist,
         },
+        {
+          label: "Télécharger",
+          icon: <FaDownload />,
+          className: "hover:bg-white/30",
+          onClick: () => {},
+        },
       ],
     ]
 
@@ -65,34 +96,13 @@ const TitlePlayer: Component<Props> = ({ music }) => {
           label: "Partager",
           icon: <FaShare />,
           className: "text-white/90 hover:bg-white/20",
-          onClick: async (music: IMusic) => {
-            const response = await api.shareMusic(music.id)
-            const result = await shareDialog.open({ link: response.link })
-
-            result.copy && navigator.clipboard.writeText(response.link)
-          },
+          onClick: handleShare,
         },
         {
           label: "Supprimer",
           icon: <FaTrash />,
           className: "text-primary hover:bg-primary/30",
-          onClick: (music: IMusic) =>
-            confirmDialog
-              .open({
-                message: (
-                  <span>
-                    Voulez vous supprimer la music "{music.title}" de {music.artist} <br /> Cette
-                    action est définitive
-                  </span>
-                ),
-              })
-              .then((result) => {
-                if (result)
-                  api
-                    .deleteMusic(music.id)
-                    .then(() => actions.remove(actions.findIndex(music)))
-                    .catch((err) => console.log("delete failed", err))
-              }),
+          onClick: handleDelete,
         },
       )
     }
