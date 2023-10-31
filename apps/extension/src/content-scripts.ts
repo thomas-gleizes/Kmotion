@@ -94,8 +94,6 @@ async function run() {
         return "ok"
       }
       case MESSAGE_TYPE.DOWNLOAD_VIDEO: {
-        console.log("DOWNLOAD")
-
         streamMusic(message.data.music.id)
           .then((response) => response.blob())
           .then((blob) => {

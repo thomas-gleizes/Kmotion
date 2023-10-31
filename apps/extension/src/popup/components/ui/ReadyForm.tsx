@@ -54,7 +54,7 @@ const ReadyForm: React.FC<Props> = ({ details, music }) => {
             <div>
               <span className="font-semibold text-gray-800">Durée : </span>
               <span className={+details.lengthSeconds > 480 ? "text-red-600" : ""}>
-                {(music.duration / 100).toFixed(0)}s
+                {music.duration}s
               </span>
             </div>
           </div>
