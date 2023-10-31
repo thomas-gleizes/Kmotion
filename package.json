@@ -13,7 +13,7 @@
     "api:clean": "cd apps/api && pnpm clean",
     "web:dev": "cd apps/web && pnpm dev",
     "web:build": "pnpm api:clean && cd apps/web && pnpm build && cp -r dist ../api/public",
-    "extension:build": "cd apps/extension && pnpm build",
+    "extension:deploy": "cd apps/extension && pnpm deploy",
     "dev": "concurrently \"pnpm api:dev\" \"pnpm web:dev\"",
     "deploy": "pnpm web:build && pnpm api:start"
   },
