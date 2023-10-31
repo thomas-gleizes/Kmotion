@@ -82,7 +82,7 @@ const TitlePlayer: Component<Props> = ({ music }) => {
           onClick: handleAddToPlaylist,
         },
         {
-          label: "Télécharger",
+          label: "Ouvrir sur Youtube",
           icon: <FaYoutube />,
           className: "hover:bg-white/30",
           onClick: () => window.open(`https://youtube.com/watch?v=${music.youtubeId}`, "_blank"),
@@ -91,7 +91,12 @@ const TitlePlayer: Component<Props> = ({ music }) => {
           label: "Télécharger",
           icon: <FaDownload />,
           className: "hover:bg-white/30",
-          onClick: () => {},
+          onClick: () => {
+            const link = document.createElement("a")
+            link.href = music.links.stream
+            link.setAttribute("download", music.title)
+            link.click()
+          },
         },
       ],
     ]
