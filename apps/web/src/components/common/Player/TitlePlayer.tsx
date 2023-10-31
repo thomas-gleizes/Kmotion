@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from "react"
 import { useDialog } from "react-dialog-promise"
-import { FaDownload, FaList, FaShare, FaTrash } from "react-icons/fa"
+import { FaDownload, FaList, FaShare, FaTrash, FaYoutube } from "react-icons/fa"
 import classnames from "classnames"
 
 import { IMusic } from "@kmotion/types"
@@ -80,6 +80,12 @@ const TitlePlayer: Component<Props> = ({ music }) => {
           icon: <FaList />,
           className: "hover:bg-white/30",
           onClick: handleAddToPlaylist,
+        },
+        {
+          label: "Télécharger",
+          icon: <FaYoutube />,
+          className: "hover:bg-white/30",
+          onClick: () => window.open(`https://youtube.com/watch?v=${music.youtubeId}`, "_blank"),
         },
         {
           label: "Télécharger",
