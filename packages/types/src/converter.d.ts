@@ -5,6 +5,7 @@ export interface ConvertedMusic {
   album: string
   url: string
   duration: number
+  channel: string
   links: {
     audio: string
     cover: string
