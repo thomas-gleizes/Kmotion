@@ -69,6 +69,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
                 youtubeId: music.id,
                 downloaderId: request.session.user.id,
                 duration: music.duration,
+                channel: music.channel,
               },
             })
             .then((music) => newMusics.push(music))
@@ -121,6 +122,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
           youtubeId: request.params.youtubeId,
           downloaderId: request.session.user.id,
           duration: musicConverted.duration,
+          channel: musicConverted.channel,
         },
       })
 
