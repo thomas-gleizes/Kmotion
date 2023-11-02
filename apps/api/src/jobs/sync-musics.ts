@@ -26,6 +26,7 @@ const task = new AsyncTask(
               youtubeId: music.id,
               downloaderId: 1,
               duration: music.duration,
+              channel: music.channel,
             },
           })
           .catch(() => void null)
@@ -35,6 +36,7 @@ const task = new AsyncTask(
             title: music.title.trim(),
             artist: music.author.trim(),
             duration: music.duration,
+            channel: music.channel,
           },
           where: { id: find.id },
         })
