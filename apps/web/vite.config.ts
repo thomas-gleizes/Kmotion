@@ -20,4 +20,5 @@ export default defineConfig({
       external: ["/react-dialog-promise", "/ky"],
     },
   },
+  envDir: "../..",
 })

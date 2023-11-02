@@ -32,6 +32,7 @@ model Music {
   id           Int      @id @default(autoincrement())
   title        String   @db.VarChar(255)
   artist       String?  @db.VarChar(128)
+  channel      String?  @db.VarChar(128)
   youtubeId    String   @unique @map("youtube_id") @db.VarChar(24)
   downloaderId Int      @map("downloader_id")
   duration     Float    @db.Float

@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto"
-import { Readable } from "node:stream"
 import { FastifyInstance } from "fastify"
 import { Music } from "@prisma/client"
 
@@ -12,7 +11,6 @@ import {
   ConvertMusicBodyDto,
 } from "@kmotion/validations"
 import {
-  ConverterMusicDetails,
   MusicByPassResponse,
   MusicInfoResponse,
   MusicResponse,
@@ -28,7 +26,6 @@ import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
-import * as fs from "fs"
 
 export default async function musicRoutes(instance: FastifyInstance) {
   const ytConverter = YtConverter.getInstance()
@@ -75,6 +72,20 @@ export default async function musicRoutes(instance: FastifyInstance) {
               },
             })
             .then((music) => newMusics.push(music))
+        } else {
+          console.log("Find", find)
+
+          console.log("update", music.title, music.channel)
+
+          await prisma.music.update({
+            where: { id: find.id },
+            data: {
+              title: music.title.trim(),
+              artist: music.author.trim(),
+              duration: music.duration,
+              channel: music.channel,
+            },
+          })
         }
       }
 
