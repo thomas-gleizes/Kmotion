@@ -243,6 +243,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
             { channel: { contains: `%${request.query.q}%` } },
           ],
         },
+        orderBy: { createdAt: "desc" },
       })
 
       reply.send({ success: true, musics: musicMapper.many(musics) })
