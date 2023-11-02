@@ -50,6 +50,8 @@ const AuthProvider: ComponentWithChild = ({ children }) => {
     queryKey: ["auth-user"],
     queryFn: () => api.profile(),
     enabled: authenticated,
+    retry: 1,
+    retryDelay: 2000,
   })
 
   const login = async (user: IUser, token: string) => {

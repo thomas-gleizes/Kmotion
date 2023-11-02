@@ -12,6 +12,7 @@ import {
   PlaylistsResponse,
   RegisterResponse,
   SuccessResponseData,
+  UsersResponse,
 } from "@kmotion/types"
 import {
   AddMusicToPlaylistDto,
@@ -143,6 +144,18 @@ class jsonClient {
 
   public synchronizeMusic() {
     return this.client.get("musics/sync").json<MusicSyncResponse>()
+  }
+
+  public fetchUsers() {
+    return this.client.get("users").json<UsersResponse>()
+  }
+
+  public activateUser(id: number) {
+    return this.client.patch(`users/${id}/activate`, { body: "{}" }).json<UsersResponse>()
+  }
+
+  public deactivateUser(id: number) {
+    return this.client.patch(`users/${id}/deactivate`, { body: "{}" }).json<UsersResponse>()
   }
 }
 

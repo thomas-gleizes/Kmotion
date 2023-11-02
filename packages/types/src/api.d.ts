@@ -64,3 +64,7 @@ interface MusicByPassResponse extends SuccessResponseData {
   song: string
   cover: string
 }
+
+interface UsersResponse extends SuccessResponseData {
+  users: IUser[]
+}

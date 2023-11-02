@@ -6,6 +6,7 @@ import { api } from "../../utils/Api"
 import { isChromeDesktop, s, saveBlob } from "../../utils/helpers"
 import { useAuthenticatedContext } from "../../contexts/auth"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
+import AdminPanel from "../../components/admin/AdminPanel"
 
 const Settings: Page = () => {
   const { history } = useRouter()
@@ -23,21 +24,6 @@ const Settings: Page = () => {
     const blob = await api.downloadExtension().blob()
 
     saveBlob(blob, "kmotion.zip")
-    setLoading(false)
-  }
-
-  const handleSync = async () => {
-    setLoading(true)
-
-    const response = await api.synchronizeMusic()
-
-    if (response.musics.length)
-      toast.info(
-        `${response.musics.length} nouvelle${s(response.musics.length)} music${s(
-          response.musics.length,
-        )} synchronisé !`,
-      )
-
     setLoading(false)
   }
 
@@ -63,16 +49,8 @@ const Settings: Page = () => {
             Télécharger l'extension
           </button>
         )}
-        {user.isAdmin && (
-          <button
-            className="btn bg-blue-800 text-white hover:bg-blue-900 disabled:bg-blue-600"
-            onClick={handleSync}
-            disabled={loading}
-          >
-            sync
-          </button>
-        )}
       </div>
+      {user.isAdmin && <AdminPanel />}
     </ScrollableLayout>
   )
 }

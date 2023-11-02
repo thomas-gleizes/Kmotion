@@ -77,6 +77,8 @@ export default async function userRoutes(instance: FastifyInstance) {
     "/:id/deactivate",
     { onRequest: [isAdmin], preHandler: instance.validateParams(IdNumberDto) },
     async (request, reply) => {
+      console.log("Ici")
+
       const user = await prisma.user.update({
         where: { id: request.params.id },
         data: { isActivate: false },
