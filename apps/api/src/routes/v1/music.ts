@@ -240,6 +240,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
           OR: [
             { title: { contains: `%${request.query.q}%` } },
             { artist: { contains: `%${request.query.q}%` } },
+            { channel: { contains: `%${request.query.q}%` } },
           ],
         },
       })
