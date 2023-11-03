@@ -11,11 +11,13 @@ const AdminPanel: Component = () => {
     mutationKey: ["sync-musics"],
     mutationFn: () => api.synchronizeMusic(),
     onSuccess: (resp) => {
-      toast.info(
-        `${resp.musics.length} nouvelle${s(resp.musics.length)} music${s(
-          resp.musics.length,
-        )} synchronisé !`,
-      )
+      if (resp.musics.length === 0) return toast.info("Aucune nouvelle music")
+      else
+        toast.info(
+          `${resp.musics.length} nouvelle${s(resp.musics.length)} music${s(
+            resp.musics.length,
+          )} synchronisé !`,
+        )
     },
   })
 
