@@ -1,9 +1,9 @@
 import React from "react"
 import { DialogComponent } from "react-dialog-promise"
 import { Dialog } from "@headlessui/react"
+import SimpleBar from "simplebar-react"
 
 import SimpleDialog from "../common/SimpleDialog"
-import SimpleBar from "simplebar-react"
 
 interface Props {
   link: string
