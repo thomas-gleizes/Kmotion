@@ -7,34 +7,29 @@ import { s } from "../../utils/helpers"
 import { FaCheck, FaTimes } from "react-icons/fa"
 
 const AdminPanel: Component = () => {
-  const [isLoading, setLoading] = useState<boolean>(false)
-
-  const handleSync = async () => {
-    setLoading(true)
-
-    const response = await api.synchronizeMusic()
-
-    if (response.musics.length)
+  const syncMutation = useMutation({
+    mutationKey: ["sync-musics"],
+    mutationFn: () => api.synchronizeMusic(),
+    onSuccess: (resp) => {
       toast.info(
-        `${response.musics.length} nouvelle${s(response.musics.length)} music${s(
-          response.musics.length,
+        `${resp.musics.length} nouvelle${s(resp.musics.length)} music${s(
+          resp.musics.length,
         )} synchronisé !`,
       )
-
-    setLoading(false)
-  }
+    },
+  })
 
   return (
     <div className="border rounded w-fit">
-      <div className="border-b px-10 py-1 text-xl">Admin pannel</div>
+      <div className="border-b px-10 py-1 text-xl">Admin panel</div>
       <div className="px-5 py-3">
         <UserList />
       </div>
       <div className="px-1 py-1 flex justify-end border-t">
         <button
           className="btn bg-blue-800 text-white hover:bg-blue-900 disabled:bg-blue-600"
-          onClick={handleSync}
-          disabled={isLoading}
+          onClick={() => syncMutation.mutate()}
+          disabled={syncMutation.isLoading}
         >
           sync musics
         </button>
@@ -44,9 +39,15 @@ const AdminPanel: Component = () => {
 }
 
 const UserList = () => {
-  const { data, isLoading, isSuccess, refetch } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    isSuccess,
+    refetch,
+  } = useQuery({
     queryKey: ["users", "users-lists"],
-    queryFn: () => api.fetchUsers(),
+    queryFn: () => api.fetchUsers().then((resp) => resp.users),
+    placeholderData: [],
   })
 
   const activateMutation = useMutation({
@@ -84,7 +85,7 @@ const UserList = () => {
           </tr>
         </thead>
         <tbody>
-          {data.users.map((user) => (
+          {users.map((user) => (
             <tr key={user.id}>
               <td className="px-1 py-0.5">#{user.id}</td>
               <td className="px-2">{user.name}</td>
