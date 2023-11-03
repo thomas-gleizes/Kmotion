@@ -1,8 +1,8 @@
 import React, { HTMLAttributes } from "react"
 import SimpleBar from "simplebar-react"
+import classnames from "classnames"
 
 import { useLayoutContext } from "../../contexts/layout"
-import classnames from "classnames"
 
 const ScrollableContainer: ComponentWithChild<HTMLAttributes<HTMLDivElement>> = ({
   children,
