@@ -17,7 +17,7 @@ const SharedMusic: DialogComponent<Props, Result> = ({ isOpen, close, link }) =>
   return (
     <SimpleDialog isOpen={isOpen} onClose={() => close({ copy: false })}>
       <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-white">
-        Voici le lins de partage valable 4h
+        Voici le liens de partage valable 4h
       </Dialog.Title>
       <div className="mt-5">
         <SimpleBar className="">
