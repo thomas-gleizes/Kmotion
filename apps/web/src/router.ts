@@ -3,6 +3,7 @@ import { lazy, ReactRouter, RootRoute, Route } from "@tanstack/react-router"
 import Root from "./pages/Root"
 import AppRoot from "./pages/app/Root"
 import AuthRoot from "./pages/auth/Root"
+import AdminRoot from "./pages/admin/Root"
 import OtherRoot from "./pages/others/Root"
 import NotFound from "./pages/NotFound"
 
@@ -76,6 +77,31 @@ const appRoutes = [
   }),
 ]
 
+// Admin => /admin/*
+const adminRootRoute = new Route({
+  path: "admin",
+  getParentRoute: () => rootRoute,
+  component: AdminRoot,
+})
+
+const adminRoutes = [
+  new Route({
+    path: "/",
+    component: lazy(() => import("./pages/admin/Home")),
+    getParentRoute: () => adminRootRoute,
+  }),
+  new Route({
+    path: "/users",
+    component: lazy(() => import("./pages/admin/Users")),
+    getParentRoute: () => adminRootRoute,
+  }),
+  new Route({
+    path: "/musics",
+    component: lazy(() => import("./pages/admin/Musics")),
+    getParentRoute: () => adminRootRoute,
+  }),
+]
+
 // Others => /out/*
 const otherRootRoute = new Route({
   path: "out",
@@ -106,6 +132,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   appRootRoute.addChildren(appRoutes),
   authRootRoute.addChildren(authRoutes),
+  adminRootRoute.addChildren(adminRoutes),
   otherRootRoute.addChildren(otherRoutes),
   notFoundRoute,
 ])
