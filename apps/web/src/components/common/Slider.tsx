@@ -22,7 +22,7 @@ const Slider: Component<Props> = ({ value, onChange }) => {
       />
       <input
         type="range"
-        className="input-slider h-full focus:h-3 transform transition w-full outline-none absolute top-0"
+        className="input-slider h-full focus:h-3 transform transition select-none w-full outline-none absolute top-0"
         value={innerValue ?? value}
         onInput={handleChange}
         onMouseUp={handleValidChange}

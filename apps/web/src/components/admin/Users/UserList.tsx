@@ -1,44 +1,8 @@
-import React from "react"
 import { useMutation, useQuery } from "@tanstack/react-query"
-
-import { api } from "../../utils/Api"
+import { api } from "../../../utils/Api"
 import { toast } from "react-toastify"
-import { s } from "../../utils/helpers"
 import { FaCheck, FaTimes } from "react-icons/fa"
-
-const AdminPanel: Component = () => {
-  const syncMutation = useMutation({
-    mutationKey: ["sync-musics"],
-    mutationFn: () => api.synchronizeMusic(),
-    onSuccess: (resp) => {
-      if (resp.musics.length === 0) return toast.info("Aucune nouvelle music")
-      else
-        toast.info(
-          `${resp.musics.length} nouvelle${s(resp.musics.length)} music${s(
-            resp.musics.length,
-          )} synchronisé !`,
-        )
-    },
-  })
-
-  return (
-    <div className="border rounded w-fit">
-      <div className="border-b px-10 py-1 text-xl">Admin panel</div>
-      <div className="px-5 py-3">
-        <UserList />
-      </div>
-      <div className="px-1 py-1 flex justify-end border-t">
-        <button
-          className="btn bg-blue-800 text-white hover:bg-blue-900 disabled:bg-blue-600"
-          onClick={() => syncMutation.mutate()}
-          disabled={syncMutation.isLoading}
-        >
-          sync musics
-        </button>
-      </div>
-    </div>
-  )
-}
+import React from "react"
 
 const UserList = () => {
   const {
@@ -125,4 +89,4 @@ const UserList = () => {
   return <div>Error</div>
 }
 
-export default AdminPanel
+export default UserList

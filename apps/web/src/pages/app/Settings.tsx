@@ -5,11 +5,10 @@ import { api } from "../../utils/Api"
 import { isChromeDesktop, saveBlob } from "../../utils/helpers"
 import { useAuthenticatedContext } from "../../contexts/auth"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
-import AdminPanel from "../../components/admin/AdminPanel"
 
 const Settings: Page = () => {
   const { history } = useRouter()
-  const { user, logout } = useAuthenticatedContext()
+  const { logout } = useAuthenticatedContext()
 
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -30,26 +29,27 @@ const Settings: Page = () => {
 
   return (
     <ScrollableLayout>
-      <h1 className="text-center text-white pt-3">Settings</h1>
-      <div className="flex flex-wrap space-x-2 my-5">
-        <button
-          className="btn bg-blue-800 text-white hover:bg-blue-900 disabled:bg-blue-600"
-          onClick={handleDisconnect}
-          disabled={loading}
-        >
-          Disconnect
-        </button>
-        {displayDownloadExtensionButton && (
+      <div className="m-3">
+        <h1 className="text-center text-white pt-3">Settings</h1>
+        <div className="flex flex-wrap space-x-2 my-5">
           <button
             className="btn bg-blue-800 text-white hover:bg-blue-900 disabled:bg-blue-600"
-            onClick={handleDownloadExtension}
+            onClick={handleDisconnect}
             disabled={loading}
           >
-            Télécharger l'extension
+            Disconnect
           </button>
-        )}
+          {displayDownloadExtensionButton && (
+            <button
+              className="btn bg-blue-800 text-white hover:bg-blue-900 disabled:bg-blue-600"
+              onClick={handleDownloadExtension}
+              disabled={loading}
+            >
+              Télécharger l'extension
+            </button>
+          )}
+        </div>
       </div>
-      {user.isAdmin && <AdminPanel />}
     </ScrollableLayout>
   )
 }
