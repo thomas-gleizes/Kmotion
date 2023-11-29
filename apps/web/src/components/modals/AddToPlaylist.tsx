@@ -1,6 +1,6 @@
-import React, { Fragment, useMemo } from "react"
+import React, { useMemo } from "react"
 import { DialogComponent } from "react-dialog-promise"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { Dialog, Listbox, Transition } from "@headlessui/react"
 import classnames from "classnames"
 import { FaCheck, FaChevronUp, FaSpinner } from "react-icons/fa"
@@ -13,6 +13,9 @@ import { QUERIES_KEY } from "../../utils/constants"
 import { useAuthenticatedContext } from "../../contexts/auth"
 import SimpleDialog from "../common/SimpleDialog"
 import { api } from "../../utils/Api"
+import playlist from "../../pages/app/Playlist"
+import { toast } from "react-toastify"
+import { queryClient } from "../../queryClient"
 
 interface Props {
   music: IMusic
@@ -28,7 +31,18 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
   const { data: playlists, isLoading } = useQuery<IPlaylist[]>({
     queryKey: [...QUERIES_KEY.playlists, user.id],
     queryFn: () => api.fetchPlaylists(false).then((response) => response.playlists),
+    placeholderData: [],
   })
+
+  const filteredPlaylists = useMemo(() => {
+    if (!playlists) return []
+
+    return playlists.filter((playlist) => {
+      if (playlists.entries === undefined) return true
+
+      return !(playlist.entries || []).find((entry) => entry.musicId === music.id)
+    })
+  }, [playlists, music])
 
   const {
     watch,
@@ -50,9 +64,13 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
   const submit = async (values: AddMusicToPlaylistDto) => {
     try {
       await api.addMusicToPlaylist(values)
+
+      // invalidé le cache des playlsts de l'utilisateur pour les prochaines ajout prenne en compte la modification
+      void queryClient.invalidateQueries([...QUERIES_KEY.playlists, user.id])
+
       close("success")
     } catch (e) {
-      console.log("submit Err", e)
+      toast.error("Une erreur est survenue lors de l'ajout de la musique à la playlist")
     }
   }
 
@@ -60,13 +78,13 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
     <SimpleDialog isOpen={isOpen} onClose={() => !isSubmitting && close("cancel")}>
       <div className="max-w-[400px]">
         <Dialog.Title className="text-white text-xl font-semibold">
-          Ajouter {music.title} a une playlist
+          Ajouter <span className="text-primary font-semibold">{music.title}</span> a une playlist
         </Dialog.Title>
         {isLoading ? (
           <div>
             <FaSpinner className="text-primary text-xl animate-spin" />
           </div>
-        ) : playlists?.length ? (
+        ) : filteredPlaylists?.length ? (
           <form onSubmit={handleSubmit(submit)}>
             <Listbox value={selectedId} onChange={(value) => setValue("id", value)}>
               <div className="relative mt-1">
@@ -84,7 +102,7 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
                   leaveTo="opacity-0"
                 >
                   <Listbox.Options className="absolute bg-secondary-light text-white mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                    {playlists.map((playlist, index) => (
+                    {filteredPlaylists.map((playlist, index) => (
                       <Listbox.Option
                         key={index}
                         value={playlist.id}
