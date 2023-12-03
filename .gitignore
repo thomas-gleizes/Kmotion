@@ -4,7 +4,7 @@ apps/api/public
 /apps/api/extension/
 !apps/api/extention/.gitkeep
 .idea
+.DS_Store
 .env
 
 *.log
-
