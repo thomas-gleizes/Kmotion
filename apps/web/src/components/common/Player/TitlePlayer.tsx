@@ -119,7 +119,7 @@ const TitlePlayer: Component<Props> = ({ music }) => {
     }
 
     return listActions
-  }, [user])
+  }, [user, music])
 
   const isOverflow =
     (tRef.current?.offsetWidth || 0) >= (tRef.current?.parentElement?.offsetWidth || 2000)
