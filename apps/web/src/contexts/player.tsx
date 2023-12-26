@@ -21,6 +21,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
   })
   const [playing, togglePlaying] = useToggle(defaultPlay)
 
+  const [isPictureInPicture, togglePictureInPicture] = useToggle(false)
   const [isFullscreen, toggleFullscreen] = useToggle(false)
 
   const [currentPlaylist, setCurrentPlaylist] = useState<IPlaylist | null>(null)
@@ -77,6 +78,10 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
             { src: imageResized, sizes: `512x512`, type: "image/jpeg" },
           ],
         })
+
+        if (isPictureInPicture) {
+          void handlePictureInPicture()
+        }
       })()
     }
   }, [currentMusic, coverUrl])
@@ -100,6 +105,44 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
     }
   }, [prevMusic, nexMusic, currentMusic])
 
+  const handlePictureInPicture = async () => {
+    if (!navigator.mediaSession.metadata) return
+
+    const artwork = navigator.mediaSession.metadata.artwork.at(1)
+    if (!artwork) return
+
+    const canvas = document.createElement("canvas")
+
+    if (!artwork.sizes) [canvas.width, canvas.height] = [426, 240]
+    else [canvas.width, canvas.height] = artwork.sizes!.split("x").map((size) => +size)
+
+    const video = document.createElement("video")
+    video.srcObject = canvas.captureStream()
+    video.muted = true
+
+    const image = new Image()
+    image.crossOrigin = String(true)
+    image.src = artwork.src
+    await image.decode()
+
+    canvas.getContext("2d")!.drawImage(image, 0, 0, canvas.width, canvas.height)
+    await video.play()
+    await video.requestPictureInPicture()
+
+    video.addEventListener("leavepictureinpicture", () => {
+      togglePictureInPicture(false)
+      video.remove()
+    })
+
+    togglePictureInPicture(true)
+  }
+
+  const handleClosePictureInPicture = () => {
+    if (document.pictureInPictureElement) {
+      void document.exitPictureInPicture()
+    }
+  }
+
   return (
     <PlayerContext.Provider
       value={{
@@ -117,6 +160,10 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
         fullscreen: { value: isFullscreen, toggle: toggleFullscreen },
         playing: { value: playing, toggle: togglePlaying },
         isShuffled,
+        pictureInPicture: {
+          value: isPictureInPicture,
+          toggle: isPictureInPicture ? handleClosePictureInPicture : handlePictureInPicture,
+        },
       }}
     >
       {children}
