@@ -15,6 +15,7 @@ import {
   FaVolumeDown,
   FaVolumeUp,
 } from "react-icons/fa"
+import { TbPictureInPictureOff, TbPictureInPictureOn } from "react-icons/tb"
 
 import { usePlayerContext } from "../../../contexts/player"
 import { formatTime } from "../../../utils/time"
@@ -46,7 +47,8 @@ interface Props {
 }
 
 const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
-  const { currentMusic, playlist, actions, loop, assets, playing, isShuffled } = usePlayerContext()
+  const { currentMusic, playlist, actions, loop, assets, playing, isShuffled, pictureInPicture } =
+    usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
 
   const [showQueue, toggleShowQueue] = useToggle(false)
@@ -295,6 +297,21 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                         >
                           <FaListUl />
                         </i>
+                        {document.pictureInPictureEnabled && (
+                          <i
+                            onClick={pictureInPicture.toggle}
+                            className={classnames(
+                              "cursor-pointer text-white text-opacity-50 rounded-full text-xl lg:text-2xl transition transform duration-200",
+                              { "text-opacity-90": pictureInPicture.value },
+                            )}
+                          >
+                            {pictureInPicture.value ? (
+                              <TbPictureInPictureOn />
+                            ) : (
+                              <TbPictureInPictureOff />
+                            )}
+                          </i>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -35,6 +35,10 @@ interface PlayerContextValues {
   fullscreen: { value: boolean; toggle: (value?: boolean) => void }
   playing: { value: boolean; toggle: (value?: boolean) => void }
   isShuffled: boolean
+  pictureInPicture: {
+    value: boolean
+    toggle: () => void
+  }
 }
 
 // Layout

@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react"
 import classnames from "classnames"
 import { useAudio, useEvent, useMount, useTitle } from "react-use"
 import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/fa"
+import { TbPictureInPictureOff, TbPictureInPictureOn } from "react-icons/tb"
 
 import { usePlayerContext } from "../../../contexts/player"
 import { useLayoutContext } from "../../../contexts/layout"
@@ -13,7 +14,8 @@ import FullscreenPlayer from "./FullscreenPlayer"
 const defaultPlay = localStorage.getItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING) !== "false"
 
 const SmallPlayer: Component = () => {
-  const { currentMusic, queue, actions, loop, fullscreen, assets, playing } = usePlayerContext()
+  const { currentMusic, queue, actions, loop, fullscreen, assets, playing, pictureInPicture } =
+    usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
 
   const [audio, state, controls, ref] = useAudio(
@@ -182,10 +184,23 @@ const SmallPlayer: Component = () => {
               </i>
             </div>
             <div>
-              <i className="text-2xl md:text-3xl lg:text-5xl text-white cursor-pointer">
-                <FaForward onClick={handleStopPropagation(actions.next)} />
+              <i
+                className="text-2xl md:text-3xl lg:text-5xl text-white cursor-pointer"
+                onClick={handleStopPropagation(actions.next)}
+              >
+                <FaForward />
               </i>
             </div>
+            {document.pictureInPictureEnabled && (
+              <div>
+                <i
+                  className="text-2xl md:text-3xl lg:text-5xl text-white cursor-pointer"
+                  onClick={handleStopPropagation(pictureInPicture.toggle)}
+                >
+                  {pictureInPicture.value ? <TbPictureInPictureOn /> : <TbPictureInPictureOff />}{" "}
+                </i>
+              </div>
+            )}
           </div>
         </div>
         <div
