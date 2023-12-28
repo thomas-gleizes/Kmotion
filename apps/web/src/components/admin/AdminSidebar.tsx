@@ -38,7 +38,9 @@ const SideBarLink: Component<{ to: string; children: ReactNode }> = ({ to, child
 
   return (
     <Link to={to}>
-      <span className={classnames("text-xl cursor-pointer")}>{children}</span>
+      <span className={classnames("text-xl cursor-pointer", active && "font-bold")}>
+        {children}
+      </span>
     </Link>
   )
 }
@@ -64,8 +66,10 @@ const SubMenu: Component<Props> = ({ links, name }) => {
             <FaChevronDown />
           </span>
         </div>
-        {links.map((link) => (
-          <SideBarLink to={link.path}> {link.label}</SideBarLink>
+        {links.map((link, index) => (
+          <SideBarLink key={index} to={link.path}>
+            {link.label}
+          </SideBarLink>
         ))}
       </div>
     </div>
