@@ -119,6 +119,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
     const video = document.createElement("video")
     video.srcObject = canvas.captureStream()
     video.muted = true
+    video.style.display = "none"
 
     const image = new Image()
     image.crossOrigin = String(true)
@@ -126,6 +127,9 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
     await image.decode()
 
     canvas.getContext("2d")!.drawImage(image, 0, 0, canvas.width, canvas.height)
+
+    document.body.append(video)
+
     await video.play()
     await video.requestPictureInPicture()
 
