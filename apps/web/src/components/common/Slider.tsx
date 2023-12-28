@@ -14,6 +14,8 @@ const Slider: Component<Props> = ({ value, onChange }) => {
     setInnerValue(null)
   }
 
+  const inputValue = innerValue ?? value
+
   return (
     <div className="w-full h-full relative bg-white/40 rounded-full transition">
       <div
@@ -23,7 +25,7 @@ const Slider: Component<Props> = ({ value, onChange }) => {
       <input
         type="range"
         className="input-slider h-full focus:h-3 transform transition select-none w-full outline-none absolute top-0"
-        value={innerValue ?? value}
+        value={isNaN(+inputValue) ? 0 : inputValue}
         onInput={handleChange}
         onMouseUp={handleValidChange}
         onTouchEnd={handleValidChange}
