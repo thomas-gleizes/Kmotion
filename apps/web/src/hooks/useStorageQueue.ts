@@ -14,7 +14,9 @@ export function useStorageQueue<
 
   const savePlaylistRef = useRef<Item[]>([...storageQueue])
 
-  const [isShuffled, setIsShuffled] = useState<boolean>(false)
+  const [isShuffled, setIsShuffled] = useLocalStorageState<boolean>("iiShuffled", {
+    defaultValue: false,
+  })
 
   const [list, listActions] = useList<Item>([...storageQueue])
 
@@ -97,6 +99,12 @@ export function useStorageQueue<
       if (index + destIndex < 0) return setIndex(0)
       else if (index + destIndex >= list.length) return setIndex(list.length - 1)
       else return setIndex(index + destIndex)
+    },
+    clear: function () {
+      setIndex(0)
+      listActions.set([])
+      setStorageQueue([])
+      savePlaylistRef.current = []
     },
   }
 

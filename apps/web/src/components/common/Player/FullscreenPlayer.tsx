@@ -12,6 +12,7 @@ import {
   FaRandom,
   FaSpinner,
   FaSyncAlt,
+  FaTimes,
   FaVolumeDown,
   FaVolumeUp,
 } from "react-icons/fa"
@@ -47,8 +48,17 @@ interface Props {
 }
 
 const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
-  const { currentMusic, playlist, actions, loop, assets, playing, isShuffled, pictureInPicture } =
-    usePlayerContext()
+  const {
+    currentMusic,
+    playlist,
+    actions,
+    loop,
+    assets,
+    playing,
+    isShuffled,
+    pictureInPicture,
+    clear,
+  } = usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
 
   const [showQueue, toggleShowQueue] = useToggle(false)
@@ -85,7 +95,11 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
         </div>
 
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-3 left-3 z-20">
+          <FaTimes className="text-white" onClick={clear} />
+        </div>
+
+        <div className="absolute top-3 right-3 z-20">
           {assets.next.isFetching ? (
             <FaSpinner className="text-white animate-spin" />
           ) : (
