@@ -147,6 +147,13 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
     }
   }
 
+  const clearPlayer = () => {
+    setCurrentPlaylist(null)
+    actions.clear()
+    toggleFullscreen(false)
+    togglePictureInPicture(false)
+  }
+
   return (
     <PlayerContext.Provider
       value={{
@@ -168,6 +175,7 @@ const PlayerProvider: ComponentWithChild = ({ children }) => {
           value: isPictureInPicture,
           toggle: isPictureInPicture ? handleClosePictureInPicture : handlePictureInPicture,
         },
+        clear: clearPlayer,
       }}
     >
       {children}

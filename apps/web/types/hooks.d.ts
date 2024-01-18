@@ -16,4 +16,5 @@ declare type UseStorageQueueActions<T> = {
   shuffle: () => void
   findIndex: (item: T) => number
   go: (destIndex: number) => void
+  clear: () => void
 }

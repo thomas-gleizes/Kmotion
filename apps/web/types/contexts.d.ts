@@ -39,6 +39,7 @@ interface PlayerContextValues {
     value: boolean
     toggle: () => void
   }
+  clear: () => void
 }
 
 // Layout
