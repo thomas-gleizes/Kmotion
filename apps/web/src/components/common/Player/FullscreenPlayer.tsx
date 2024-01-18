@@ -15,6 +15,7 @@ import {
   FaTimes,
   FaVolumeDown,
   FaVolumeUp,
+  FaWindowMinimize,
 } from "react-icons/fa"
 import { TbPictureInPictureOff, TbPictureInPictureOn } from "react-icons/tb"
 
@@ -57,6 +58,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
     playing,
     isShuffled,
     pictureInPicture,
+    fullscreen,
     clear,
   } = usePlayerContext()
   const { isLaggedBlur } = useLayoutContext()
@@ -95,8 +97,11 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           <img src={assets.cover.url} alt="cover" className="h-full w-full" />
         </div>
 
-        <div className="absolute top-3 left-3 z-20">
+        <div className="absolute flex space-x-2 top-3 left-3 z-20">
           <FaTimes className="text-white" onClick={clear} />
+          {!isMobile && (
+            <FaWindowMinimize className="text-white" onClick={() => fullscreen.toggle()} />
+          )}
         </div>
 
         <div className="absolute top-3 right-3 z-20">
