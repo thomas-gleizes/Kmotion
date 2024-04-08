@@ -8,8 +8,13 @@ interface Props {
 const Slider: Component<Props> = ({ value, onChange }) => {
   const [innerValue, setInnerValue] = useState<string | null>(null)
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => setInnerValue(event.target.value)
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    console.log("innerChange", event.target.value)
+    setInnerValue(event.target.value)
+  }
+
   const handleValidChange = () => {
+    if (innerValue === null) return
     onChange(Number(innerValue))
     setInnerValue(null)
   }
