@@ -2,13 +2,13 @@ import React, { HTMLAttributes } from "react"
 import SimpleBar from "simplebar-react"
 import classnames from "classnames"
 
-import { useLayoutContext } from "../../contexts/layout"
+import { useLayoutStore } from "../../stores/layout"
 
 const ScrollableContainer: ComponentWithChild<HTMLAttributes<HTMLDivElement>> = ({
   children,
   ...props
 }) => {
-  const { isMobile } = useLayoutContext()
+  const isMobile = useLayoutStore((store) => store.isMobile)
 
   if (isMobile) {
     return (

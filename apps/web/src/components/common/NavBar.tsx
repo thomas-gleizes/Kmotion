@@ -6,7 +6,6 @@ import { RiPlayList2Fill } from "react-icons/ri"
 import { FaGauge } from "react-icons/fa6"
 
 import { usePlayerContext } from "../../contexts/player"
-import { useLayoutContext } from "../../contexts/layout"
 import { useAuthenticatedContext } from "../../contexts/auth"
 
 const NavLink: ComponentWithChild<{ to: string }> = ({ to, children }) => {
@@ -27,16 +26,10 @@ const NavLink: ComponentWithChild<{ to: string }> = ({ to, children }) => {
 }
 
 const NavBar: Component = () => {
-  const { isLaggedBlur } = useLayoutContext()
   const { user } = useAuthenticatedContext()
 
   return (
-    <div
-      className={classnames(
-        "z-[1000] h-footer transition",
-        isLaggedBlur ? "bg-secondary" : "backdrop-blur-xl bg-secondary/50",
-      )}
-    >
+    <div className="z-[1000] h-footer transition backdrop-blur-xl bg-secondary/50">
       <div className="h-full flex justify-evenly items-center">
         <div>
           <NavLink to="/app/musics">

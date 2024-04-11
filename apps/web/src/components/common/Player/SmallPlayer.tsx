@@ -5,7 +5,6 @@ import { FaBackward, FaForward, FaPause, FaPlay } from "react-icons/fa"
 import { TbPictureInPictureOff, TbPictureInPictureOn } from "react-icons/tb"
 
 import { usePlayerContext } from "../../../contexts/player"
-import { useLayoutContext } from "../../../contexts/layout"
 import { LOCAL_STORAGE_KEYS } from "../../../utils/constants"
 import { handleStopPropagation, isIos } from "../../../utils/helpers"
 import { roundMinMax } from "../../../utils/number"
@@ -16,7 +15,6 @@ const defaultPlay = localStorage.getItem(LOCAL_STORAGE_KEYS.DEFAULT_PLAYING) !==
 const SmallPlayer: Component = () => {
   const { currentMusic, queue, actions, loop, fullscreen, assets, playing, pictureInPicture } =
     usePlayerContext()
-  const { isLaggedBlur } = useLayoutContext()
 
   const [audio, state, controls, ref] = useAudio(
     <audio src={assets.stream.url} autoPlay={defaultPlay} />,
@@ -128,10 +126,7 @@ const SmallPlayer: Component = () => {
       <FullscreenPlayer isOpen={fullscreen.value} state={state} controls={controls} />
       <div
         onClick={handleStopPropagation(() => fullscreen.toggle())}
-        className={classnames(
-          "relative z-[30] border-b border-neutral-800 cursor-default",
-          isLaggedBlur ? "bg-secondary-dark/90" : "bg-secondary-dark/70 backdrop-blur",
-        )}
+        className="relative z-[30] border-b border-neutral-800 cursor-default bg-secondary-dark/70 backdrop-blur"
       >
         <div className="flex items-center py-2 lg:py-4 px-2 lg:px-16 justify-between">
           <div className="w-3/5 flex items-center">
