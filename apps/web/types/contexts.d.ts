@@ -43,8 +43,3 @@ interface PlayerContextValues {
 }
 
 // Layout
-
-interface LayoutContextValues {
-  isMobile: boolean
-  isLaggedBlur: boolean
-}

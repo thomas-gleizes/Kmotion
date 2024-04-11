@@ -28,7 +28,8 @@
     "react-use": "^17.4.0",
     "reflect-metadata": "^0.1.13",
     "simplebar-react": "^3.2.4",
-    "use-local-storage-state": "^18.3.3"
+    "use-local-storage-state": "^18.3.3",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@kmotion/types": "workspace:*",

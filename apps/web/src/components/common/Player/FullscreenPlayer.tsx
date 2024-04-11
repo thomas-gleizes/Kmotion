@@ -24,7 +24,6 @@ import { formatTime } from "../../../utils/time"
 import { roundMinMax } from "../../../utils/number"
 import Slider from "../Slider"
 import QueueList from "./QueueList"
-import { useLayoutContext } from "../../../contexts/layout"
 import DynamicDialog from "../DynamicDialog"
 import ScrollableContainer from "../../layouts/ScrollableContainer"
 import TitlePlayer from "./TitlePlayer"
@@ -61,7 +60,6 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
     fullscreen,
     clear,
   } = usePlayerContext()
-  const { isLaggedBlur } = useLayoutContext()
 
   const [showQueue, toggleShowQueue] = useToggle(false)
 
@@ -128,14 +126,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
           </>
         )}
 
-        <div
-          className={classnames(
-            "h-full pt-header pb-footer",
-            !isLaggedBlur
-              ? "bg-black/10 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]"
-              : "backdrop-blur-[0px] bg-secondary/80",
-          )}
-        >
+        <div className="h-full pt-header pb-footer bg-black/10 backdrop-blur-[150px] lg:backdrop-blur-[500px] backdrop-brightness-[125%] backdrop-saturate-[150%]">
           <div className={classnames("h-full px-6 lg:px-10 py-4")}>
             <div className="h-full flex flex-col lg:flex-row justify-evenly lg:items-center">
               <div
