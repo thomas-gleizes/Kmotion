@@ -163,6 +163,7 @@ const FullscreenPlayer: Component<Props> = ({ isOpen, state, controls }) => {
                       src={assets.cover.url}
                       alt={currentMusic.title}
                       onClick={() => (showQueue && isMobile ? toggleShowQueue() : playing.toggle())}
+                      draggable="false"
                       className={classnames(
                         "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
                         { "scale-[75%] shadow-lg": !playing.value },
