@@ -19,11 +19,11 @@ const LoginPage: Page = () => {
             Pas encore inscrit ?
           </Link>
         </div>
-        <div>
-          <Link to="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
-            mot de passe oublié ?
-          </Link>
-        </div>
+        {/*<div>*/}
+        {/*  <Link to="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">*/}
+        {/*    mot de passe oublié ?*/}
+        {/*  </Link>*/}
+        {/*</div>*/}
       </div>
     </div>
   )
