@@ -1,11 +1,11 @@
 import React from "react"
-import { Outlet, SyncRouteComponent } from "@tanstack/react-router"
+import { Outlet, RouteComponent, ScrollRestoration } from "@tanstack/react-router"
 import { ToastContainer } from "react-toastify"
 
 import ContextsProvider from "../contexts"
 import Header from "../components/common/Header"
 
-const Root: SyncRouteComponent = () => {
+const Root: RouteComponent = () => {
   return (
     <>
       <ContextsProvider>
@@ -16,6 +16,7 @@ const Root: SyncRouteComponent = () => {
           <div className="relative w-full h-full bg-black overflow-hidden">
             <Header />
             <div className="block h-full w-full">
+              <ScrollRestoration />
               <Outlet />
             </div>
           </div>

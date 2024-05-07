@@ -1,7 +1,7 @@
 import React from "react"
-import { Outlet, SyncRouteComponent } from "@tanstack/react-router"
+import { Outlet, RouteComponent } from "@tanstack/react-router"
 
-const OtherRoot: SyncRouteComponent = () => {
+const OtherRoot: RouteComponent = () => {
   return (
     <section className="h-full h-full flex flex-col items-center justify-center">
       <Outlet />

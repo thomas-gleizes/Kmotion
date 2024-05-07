@@ -268,7 +268,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
         },
       })
 
-      const link = `${process.env.CLIENT_URL}/out/test/${bypassCode.code}`
+      const link = `${process.env.CLIENT_URL}/out/bypass/${bypassCode.code}`
 
       reply.send({ success: true, link: link, music: musicMapper.one(music) })
     },

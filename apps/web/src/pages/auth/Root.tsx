@@ -1,9 +1,9 @@
 import React from "react"
-import { Navigate, Outlet, SyncRouteComponent } from "@tanstack/react-router"
+import { Navigate, Outlet, RouteComponent } from "@tanstack/react-router"
 
 import { useAuthContext } from "../../contexts/auth"
 
-const AuthRoot: SyncRouteComponent = () => {
+const AuthRoot: RouteComponent = () => {
   const authContext = useAuthContext()
 
   if (authContext.authenticated) return <Navigate to="/" />
