@@ -19,7 +19,7 @@ import AddToPlaylist from "../../components/modals/AddToPlaylist"
 import ConfirmDialog from "../../components/modals/ConfirmDialog"
 
 const Playlist: Page = () => {
-  const { id } = useParams() as { id: string }
+  const { id } = useParams({ from: "/app/playlist/$id" })
   const { history } = useRouter()
   const { user } = useAuthenticatedContext()
 
