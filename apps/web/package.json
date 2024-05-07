@@ -15,7 +15,7 @@
     "@hookform/resolvers": "^3.1.1",
     "@kmotion/validations": "workspace:*",
     "@tanstack/react-query": "^4.29.25",
-    "@tanstack/react-router": "0.0.1-beta.83",
+    "@tanstack/react-router": "1.31.20",
     "classnames": "^2.3.2",
     "daisyui": "^3.2.1",
     "ky": "^0.33.3",
