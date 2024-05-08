@@ -14,7 +14,7 @@
     "@headlessui/react": "^1.7.15",
     "@hookform/resolvers": "^3.1.1",
     "@kmotion/validations": "workspace:*",
-    "@tanstack/react-query": "^4.29.25",
+    "@tanstack/react-query": "^5.35.1",
     "@tanstack/react-router": "1.31.20",
     "classnames": "^2.3.2",
     "daisyui": "^3.2.1",

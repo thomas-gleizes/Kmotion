@@ -39,7 +39,7 @@ const ByPassMusic: Component<Props> = ({ token }) => {
   })
 
   if (query.isError) return <Navigate to="/" />
-  if (query.isLoading)
+  if (query.isLoading || !query.data)
     return (
       <div className="text-8xl text-primary animate-spin">
         <FaSpinner />
@@ -88,24 +88,14 @@ const Player: Component<PlayerProps> = ({ music, assets }) => {
         "flex items-center transition-all duration-300 h-full lg:px-16 w-full lg:flex-col lg:justify-center"
       }
     >
-      {false ? (
-        <div className="rounded-md bg-gray-200 animate-pulse w-fit">
-          <img
-            className="rounded-lg w-full transform opacity-0 transition-all duration-300 lg:rounded-2xl shadow-2xl select-none"
-            src="/images/placeholder.png"
-            alt={`cover of ${music.title}`}
-          />
-        </div>
-      ) : (
-        <img
-          src={assets.cover}
-          alt={music.title}
-          className={classnames(
-            "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
-            { "scale-[75%] shadow-lg": state.paused },
-          )}
-        />
-      )}
+      <img
+        src={assets.cover}
+        alt={music.title}
+        className={classnames(
+          "rounded-lg w-full transform transition-all duration-300 lg:rounded-2xl shadow-2xl select-none",
+          { "scale-[75%] shadow-lg": state.paused },
+        )}
+      />
     </div>
   )
   return (

@@ -1,30 +1,26 @@
 import React from "react"
-import { useRouter } from "@tanstack/react-router"
-import { useQuery } from "@tanstack/react-query"
+import { Link, useRouter } from "@tanstack/react-router"
+import { queryOptions, useQuery } from "@tanstack/react-query"
 import { FaChevronRight, FaPlus } from "react-icons/fa"
 import { useDialog } from "react-dialog-promise"
 
 import { IPlaylist } from "@kmotion/types"
 import { api } from "../../utils/Api"
-import { QUERIES_KEY } from "../../utils/constants"
-import { useAuthenticatedContext } from "../../contexts/auth"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import EditPlaylist from "../../components/modals/EditPlaylist"
 
-const PlaylistPage: Component = () => {
-  const { user } = useAuthenticatedContext()
+export const playlistsQueryOptions = queryOptions<IPlaylist[]>({
+  queryKey: ["playlists"],
+  queryFn: () => api.fetchPlaylists(true).then((resp) => resp.playlists),
+  refetchOnMount: true,
+  staleTime: 1000 * 60,
+})
 
+const PlaylistPage: Component = () => {
   const editPlaylist = useDialog(EditPlaylist)
 
-  const { data: playlists, refetch } = useQuery<IPlaylist[]>({
-    queryKey: [...QUERIES_KEY.playlists, user.id],
-    queryFn: () => api.fetchPlaylists(true).then((response) => response.playlists),
-    refetchOnMount: true,
-    staleTime: 1000 * 60,
-  })
-
-  const router = useRouter()
+  const { data: playlists, refetch } = useQuery(playlistsQueryOptions)
 
   const handleEditPlaylist = async () => {
     const result = await editPlaylist.open({
@@ -63,10 +59,11 @@ const PlaylistPage: Component = () => {
             </div>
           </div>
           {(playlists || []).map((playlist, index) => (
-            <div
+            <Link
               key={index}
               className="w-full flex cursor-pointer"
-              onClick={() => router.history.push(`/app/playlist/${playlist.id}`, null)}
+              to="/app/playlist/$id"
+              params={{ id: playlist.id.toString() }}
             >
               <div>
                 <div className="h-[100px] w-[100px] lg:h-[200px] lg:w-[200px]">
@@ -92,7 +89,7 @@ const PlaylistPage: Component = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

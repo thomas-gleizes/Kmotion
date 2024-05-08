@@ -1,20 +1,36 @@
-import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router"
+import { createRootRouteWithContext, createRoute, createRouter } from "@tanstack/react-router"
+import { QueryClient } from "@tanstack/react-query"
 
+import { queryClient } from "./queryClient"
 import Root from "./pages/Root"
 import AppRoot from "./pages/app/Root"
 import AuthRoot from "./pages/auth/Root"
 import AdminRoot from "./pages/admin/Root"
 import OtherRoot from "./pages/others/Root"
 import NotFound from "./pages/NotFound"
-import { lazy } from "react"
+import MusicsPage, { musicsQueryOptions } from "./pages/app/Musics"
+import PlaylistPage, { entriesQueryOptions, playlistQueryOptions } from "./pages/app/Playlist"
+import PlaylistsPage, { playlistsQueryOptions } from "./pages/app/Playlists"
+import SettingsPage from "./pages/app/Settings"
+import AdminHomePage from "./pages/admin/Home"
+import AdminUsersPage from "./pages/admin/Users"
+import AdminMusicsPage from "./pages/admin/Musics"
+import OthersMusicPage from "./pages/others/Music"
+import RegisterPage from "./pages/auth/Register"
+import LoginPage from "./pages/auth/Login"
+import HomePage from "./pages/Home"
 
-const rootRoute = createRootRoute({
+type RootContext = {
+  queryClient: QueryClient
+}
+
+const rootRoute = createRootRouteWithContext<RootContext>()({
   component: Root,
 })
 
 const indexRoute = createRoute({
   path: "/",
-  component: lazy(() => import("./pages/Home")),
+  component: HomePage,
   getParentRoute: () => rootRoute,
 })
 
@@ -28,12 +44,12 @@ const authRootRoute = createRoute({
 const authRoutes = [
   createRoute({
     path: "login",
-    component: lazy(() => import("./pages/auth/Login")),
+    component: LoginPage,
     getParentRoute: () => authRootRoute,
   }),
   createRoute({
     path: "register",
-    component: lazy(() => import("./pages/auth/Register")),
+    component: RegisterPage,
     getParentRoute: () => authRootRoute,
   }),
   createRoute({
@@ -53,22 +69,29 @@ const appRootRoute = createRoute({
 const appRoutes = [
   createRoute({
     path: "playlists",
-    component: lazy(() => import("./pages/app/Playlists")),
+    component: PlaylistsPage,
     getParentRoute: () => appRootRoute,
+    loader: ({ context }) => context.queryClient.prefetchQuery(playlistsQueryOptions),
   }),
   createRoute({
     path: "playlist/$id",
-    component: lazy(() => import("./pages/app/Playlist")),
+    component: PlaylistPage,
     getParentRoute: () => appRootRoute,
+    loader: ({ context, params }) =>
+      Promise.all([
+        context.queryClient.prefetchQuery(entriesQueryOptions(+params.id)),
+        context.queryClient.prefetchQuery(playlistQueryOptions(+params.id)),
+      ]),
   }),
   createRoute({
     path: "musics",
-    component: lazy(() => import("./pages/app/Musics")),
+    component: MusicsPage,
     getParentRoute: () => appRootRoute,
+    loader: ({ context }) => context.queryClient.prefetchInfiniteQuery(musicsQueryOptions),
   }),
   createRoute({
     path: "settings",
-    component: lazy(() => import("./pages/app/Settings")),
+    component: SettingsPage,
     getParentRoute: () => appRootRoute,
   }),
   createRoute({
@@ -88,17 +111,17 @@ const adminRootRoute = createRoute({
 const adminRoutes = [
   createRoute({
     path: "/",
-    component: lazy(() => import("./pages/admin/Home")),
+    component: AdminHomePage,
     getParentRoute: () => adminRootRoute,
   }),
   createRoute({
     path: "/users",
-    component: lazy(() => import("./pages/admin/Users")),
+    component: AdminUsersPage,
     getParentRoute: () => adminRootRoute,
   }),
   createRoute({
     path: "/musics",
-    component: lazy(() => import("./pages/admin/Musics")),
+    component: AdminMusicsPage,
     getParentRoute: () => adminRootRoute,
   }),
 ]
@@ -113,7 +136,7 @@ const otherRootRoute = createRoute({
 const otherRoutes = [
   createRoute({
     path: "bypass/$token",
-    component: lazy(() => import("./pages/others/Music")),
+    component: OthersMusicPage,
     getParentRoute: () => otherRootRoute,
   }),
   createRoute({
@@ -142,6 +165,7 @@ export const router = createRouter({
   routeTree,
   defaultPreload: "intent",
   defaultPreloadDelay: 200,
+  context: { queryClient },
 })
 
 declare module "@tanstack/react-router" {

@@ -216,8 +216,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/validations
       '@tanstack/react-query':
-        specifier: ^4.29.25
-        version: 4.29.25(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: ^5.35.1
+        version: 5.35.1(react@18.2.0)
       '@tanstack/react-router':
         specifier: 1.31.20
         version: 1.31.20(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -750,6 +750,9 @@ packages:
   '@tanstack/query-core@4.29.25':
     resolution: {integrity: sha512-DI4y4VC6Uw4wlTpOocEXDky69xeOScME1ezLKsj+hOk7DguC9fkqXtp6Hn39BVb9y0b5IBrY67q6kIX623Zj4Q==}
 
+  '@tanstack/query-core@5.35.1':
+    resolution: {integrity: sha512-0Dnpybqb8+ps6WgqBnqFEC+1F/xLvUosRAq+wiGisTgolOZzqZfkE2995dEXmhuzINiTM7/a6xSGznU0NIvBkw==}
+
   '@tanstack/react-query@4.29.25':
     resolution: {integrity: sha512-c1+Ezu+XboYrdAMdusK2fTdRqXPMgPAnyoTrzHOZQqr8Hqz6PNvV9DSKl8agUo6nXX4np7fdWabIprt+838dLg==}
     peerDependencies:
@@ -761,6 +764,11 @@ packages:
         optional: true
       react-native:
         optional: true
+
+  '@tanstack/react-query@5.35.1':
+    resolution: {integrity: sha512-i2T7m2ffQdNqlX3pO+uMsnQ0H4a59Ens2GxtlMsRiOvdSB4SfYmHb27MnvFV8rGmtWRaa4gPli0/rpDoSS5LbQ==}
+    peerDependencies:
+      react: ^18.0.0
 
   '@tanstack/react-router@1.31.20':
     resolution: {integrity: sha512-as2TcwCMyv+Nq+dYvgDF1o5AP0qfNM2FWu8X2Skei3yJ4n7SyQYPNfcmzs6AQQzj8Okf6I0lJdscOl5f9Ut6Mg==}
@@ -3413,6 +3421,8 @@ snapshots:
 
   '@tanstack/query-core@4.29.25': {}
 
+  '@tanstack/query-core@5.35.1': {}
+
   '@tanstack/react-query@4.29.25(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@tanstack/query-core': 4.29.25
@@ -3420,6 +3430,11 @@ snapshots:
       use-sync-external-store: 1.2.0(react@18.2.0)
     optionalDependencies:
       react-dom: 18.2.0(react@18.2.0)
+
+  '@tanstack/react-query@5.35.1(react@18.2.0)':
+    dependencies:
+      '@tanstack/query-core': 5.35.1
+      react: 18.2.0
 
   '@tanstack/react-router@1.31.20(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:

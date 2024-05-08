@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { infiniteQueryOptions, useInfiniteQuery } from "@tanstack/react-query"
 import useLocalStorageState from "use-local-storage-state"
 import { useDialog } from "react-dialog-promise"
 import { FaList, FaPlay, FaSearch, FaShare, FaThLarge, FaTrash } from "react-icons/fa"
 import { IoShuffleOutline } from "react-icons/io5"
 import { CgRowFirst } from "react-icons/cg"
 
-import { IMusic, MetaData, MusicResponse } from "@kmotion/types"
+import { IMusic, MetaData } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { handleStopPropagation } from "../../utils/helpers"
 import { usePlayerContext } from "../../contexts/player"
@@ -27,6 +27,15 @@ const DisplayMode: Record<string, string> = {
   LIST: "list",
 }
 
+export const musicsQueryOptions = infiniteQueryOptions({
+  queryKey: ["musics"],
+  queryFn: () => api.fetchMusics(0),
+  getNextPageParam: (_, pages) => pages.length,
+  staleTime: 1000 * 30,
+  refetchOnMount: true,
+  initialPageParam: 0,
+})
+
 const Musics: Page = () => {
   const {
     actions,
@@ -45,13 +54,7 @@ const Musics: Page = () => {
     { defaultValue: DisplayMode.GRID },
   )
 
-  const { data, fetchNextPage, isFetching, refetch } = useInfiniteQuery<MusicResponse>({
-    queryKey: ["musics"],
-    queryFn: ({ pageParam = 0 }) => api.fetchMusics(pageParam),
-    getNextPageParam: (_, pages) => pages.length,
-    staleTime: 0,
-    refetchOnMount: true,
-  })
+  const { data, fetchNextPage, isFetching, refetch } = useInfiniteQuery(musicsQueryOptions)
 
   const musics: IMusic[] = useMemo(
     () => (data ? data.pages.map((page) => page.musics).flat() : []),
@@ -271,7 +274,7 @@ const Musics: Page = () => {
             </div>
           )}
           <div className="flex justify-center mt-16">
-            {meta.total !== musics.length && !isFetching ? (
+            {meta.total !== musics?.length && !isFetching ? (
               <button
                 ref={buttonRef}
                 disabled={isFetching}
