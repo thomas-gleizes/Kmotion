@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react"
-import { useParams, useRouter } from "@tanstack/react-router"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { Link, useParams } from "@tanstack/react-router"
+import { useQuery, useQueryClient, queryOptions } from "@tanstack/react-query"
 import { useDialog } from "react-dialog-promise"
 import { FaChevronLeft, FaList, FaPlay, FaSearch, FaTrash } from "react-icons/fa"
 import { CgRowFirst } from "react-icons/cg"
@@ -10,7 +10,6 @@ import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { useAuthenticatedContext } from "../../contexts/auth"
 import { usePlayerContext } from "../../contexts/player"
-import { QUERIES_KEY } from "../../utils/constants"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import EditPlaylist from "../../components/modals/EditPlaylist"
@@ -18,9 +17,24 @@ import { MusicsList } from "../../components/common/Music/List"
 import AddToPlaylist from "../../components/modals/AddToPlaylist"
 import ConfirmDialog from "../../components/modals/ConfirmDialog"
 
+export const playlistQueryOptions = (id: number) =>
+  queryOptions<IPlaylist>({
+    queryKey: ["playlist", id],
+    queryFn: () => api.fetchPlaylist(+id, false).then((data) => data.playlist),
+    staleTime: 1000 * 60 * 5,
+    refetchOnMount: true,
+  })
+
+export const entriesQueryOptions = (id: number) =>
+  queryOptions<IPlaylistEntry[]>({
+    queryKey: ["playlist-entries", id],
+    queryFn: () => api.fetchEntries(+id, true).then((data) => data.entries),
+    staleTime: 1000 * 60 * 5,
+    refetchOnMount: true,
+  })
+
 const Playlist: Page = () => {
   const { id } = useParams({ from: "/app/playlist/$id" })
-  const { history } = useRouter()
   const { user } = useAuthenticatedContext()
 
   const {
@@ -36,19 +50,9 @@ const Playlist: Page = () => {
 
   const [querySearch, setQuerySearch] = useState("")
 
-  const { data: playlist, refetch: refetchPlaylist } = useQuery<IPlaylist>({
-    queryKey: ["playlist", id],
-    queryFn: () => api.fetchPlaylist(+id, false).then((data) => data.playlist),
-    staleTime: 1000 * 60 * 5,
-    refetchOnMount: true,
-  })
+  const { data: playlist, refetch: refetchPlaylist } = useQuery(playlistQueryOptions(+id))
 
-  const entriesQuery = useQuery<IPlaylistEntry[]>({
-    queryKey: ["playlist-entries", id],
-    queryFn: () => api.fetchEntries(+id, true).then((data) => data.entries),
-    staleTime: 1000 * 60 * 5,
-    refetchOnMount: true,
-  })
+  const entriesQuery = useQuery(entriesQueryOptions(+id))
 
   const entries: IPlaylistEntry[] = entriesQuery.data || []
 
@@ -97,7 +101,7 @@ const Playlist: Page = () => {
       await Promise.all([
         refetchPlaylist(),
         entriesQuery.refetch(),
-        queryClient.resetQueries(QUERIES_KEY.playlists),
+        queryClient.resetQueries({ queryKey: ["playlists", id], exact: true }),
       ])
   }
 
@@ -193,9 +197,9 @@ const Playlist: Page = () => {
     <div className="relative">
       <div className="absolute z-30 lg:hidden top-0 left-0 w-full py-3 bg-secondary/70 backdrop-blur">
         <div className="flex justify-between px-3">
-          <button onClick={() => history.back()}>
+          <Link to="/app/playlists">
             <FaChevronLeft className="text-primary text-xl" onClick={() => null} />
-          </button>
+          </Link>
           <button onClick={handleEditPlaylist} className="text-primary">
             Modifier
           </button>
