@@ -139,7 +139,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
   )
 
   instance.get<{ Params: GetMusicPramsDto }>(
-    "/:id/stream",
+    "/:id/audio",
     { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
@@ -148,7 +148,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       if (!music) throw new NotFoundException("Music not found")
 
-      const buffer = await ytConverter.stream(music.youtubeId)
+      const buffer = await ytConverter.audioBuffer(music.youtubeId)
 
       reply
         .headers({
@@ -156,17 +156,44 @@ export default async function musicRoutes(instance: FastifyInstance) {
           "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.mp3"`,
         })
         .send(buffer)
+    },
+  )
 
-      // const buffer = await ytConverter.stream(music.youtubeId)
-      // const stream = new Readable({
-      //   read() {
-      //     this.push(buffer)
-      //     this.push(null)
-      //   },
-      // })
-      //
-      // reply.type("audio/mpeg")
-      // reply.send(stream)
+  instance.get<{ Params: GetMusicPramsDto }>(
+    "/:id/image",
+    { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
+    async (request, reply) => {
+      const music = await prisma.music.findUnique({
+        where: { id: request.params.id },
+      })
+
+      if (!music) throw new NotFoundException("Music not found")
+
+      const stream = await ytConverter.coverBuffer(music.youtubeId)
+
+      reply
+        .headers({
+          "Content-Type": "image/webp",
+          "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.webp"`,
+        })
+        .send(stream)
+    },
+  )
+
+  instance.get<{ Params: GetMusicPramsDto }>(
+    "/:id/audio/stream",
+    {
+      onRequest: isLogin,
+      preHandler: instance.validateParams(GetMusicPramsDto),
+    },
+    async (request, reply) => {
+      const music = await prisma.music.findUnique({
+        where: { id: request.params.id },
+      })
+
+      if (!music) throw new NotFoundException("Music not found")
+
+      return await ytConverter.audioStream(music.youtubeId)
     },
   )
 
@@ -186,27 +213,6 @@ export default async function musicRoutes(instance: FastifyInstance) {
         isReady: !!music,
         info: info,
       })
-    },
-  )
-
-  instance.get<{ Params: GetMusicPramsDto }>(
-    "/:id/cover",
-    { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
-    async (request, reply) => {
-      const music = await prisma.music.findUnique({
-        where: { id: request.params.id },
-      })
-
-      if (!music) throw new NotFoundException("Music not found")
-
-      const stream = await ytConverter.cover(music.youtubeId)
-
-      reply
-        .headers({
-          "Content-Type": "image/webp",
-          "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.webp"`,
-        })
-        .send(stream)
     },
   )
 
@@ -295,8 +301,8 @@ export default async function musicRoutes(instance: FastifyInstance) {
       reply.send({
         success: true,
         music: musicMapper.one(music),
-        song: (await ytConverter.stream(music.youtubeId)).toString("base64"),
-        cover: (await ytConverter.cover(music.youtubeId)).toString("base64"),
+        song: (await ytConverter.audioBuffer(music.youtubeId)).toString("base64"),
+        cover: (await ytConverter.coverBuffer(music.youtubeId)).toString("base64"),
       })
     },
   )

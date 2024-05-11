@@ -2,6 +2,7 @@ import fastify from "fastify"
 import fastifyCookie from "@fastify/cookie"
 import fastifySession from "@fastify/session"
 import fastifyCors from "@fastify/cors"
+import fastifyWebResponse from "fastify-web-response"
 
 import "reflect-metadata"
 
@@ -20,6 +21,7 @@ app.register(fastifySession, {
   cookieName: "kmotion",
   cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 360, secure: false },
 })
+app.register(fastifyWebResponse)
 
 app.register(jobsPlugins)
 app.register(clientPlugin)

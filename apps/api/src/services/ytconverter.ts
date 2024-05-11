@@ -48,7 +48,7 @@ export default class YtConverter {
     }).then((response) => response.json())
   }
 
-  public stream(youtubeId: string): Promise<Buffer> {
+  public audioBuffer(youtubeId: string): Promise<Buffer> {
     return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.mp3`, {
       method: "GET",
       headers: this.getHeaders(),
@@ -57,13 +57,27 @@ export default class YtConverter {
       .then((buffer) => Buffer.from(buffer))
   }
 
-  public cover(youtubeId: string): Promise<Buffer> {
+  public coverBuffer(youtubeId: string): Promise<Buffer> {
     return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.webp`, {
       method: "GET",
       headers: this.getHeaders(),
     })
       .then((response) => response.arrayBuffer())
       .then((buffer) => Buffer.from(buffer))
+  }
+
+  public audioStream(youtubeId: string): Promise<ReadableStream<Uint8Array>> {
+    return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.mp3`, {
+      method: "GET",
+      headers: this.getHeaders(),
+    }).then((response) => response.body as ReadableStream<Uint8Array>)
+  }
+
+  public coverStream(youtubeId: string): Promise<ReadableStream<Uint8Array>> {
+    return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.webp`, {
+      method: "GET",
+      headers: this.getHeaders(),
+    }).then((response) => response.body as ReadableStream<Uint8Array>)
   }
 
   public delete(youtubeId: string): Promise<unknown> {
