@@ -34,7 +34,7 @@ const UserList = () => {
     },
   })
 
-  const disableAction = deactivateMutation.isLoading || activateMutation.isLoading
+  const disableAction = deactivateMutation.isPending || activateMutation.isPending
 
   if (isLoading) return <div>Loading...</div>
 
