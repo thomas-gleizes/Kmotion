@@ -29,7 +29,7 @@ const DisplayMode: Record<string, string> = {
 
 export const musicsQueryOptions = infiniteQueryOptions({
   queryKey: ["musics"],
-  queryFn: () => api.fetchMusics(0),
+  queryFn: ({ pageParam }) => api.fetchMusics(pageParam),
   getNextPageParam: (_, pages) => pages.length,
   staleTime: 1000 * 30,
   refetchOnMount: true,
