@@ -78,6 +78,9 @@ importers:
       fastify:
         specifier: ^4.19.2
         version: 4.19.2
+      fastify-web-response:
+        specifier: ^0.1.2
+        version: 0.1.2
       jsonwebtoken:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1626,6 +1629,10 @@ packages:
 
   fastify-plugin@4.5.0:
     resolution: {integrity: sha512-79ak0JxddO0utAXAQ5ccKhvs6vX2MGyHHMMsmZkBANrq3hXc1CHzvNPHOcvTsVMEPl5I+NT+RO4YKMGehOfSIg==}
+
+  fastify-web-response@0.1.2:
+    resolution: {integrity: sha512-8DKdjQDSKnd15UVjsoibEr44d0jfSm+/MouyYgBWdVjGfhw++lLZdDx212Q8r4M8c96/4wkbY+UaM31ZNy1Ehw==}
+    engines: {node: '>= 18.0.0'}
 
   fastify@4.19.2:
     resolution: {integrity: sha512-2unheeIRWFf9/Jjcz7djOpKuXCTzZjlyFfiBwKqpldkHMN2rfTLu/f9pYTdwlhzC9Cdj0S2H12zlug0Kd5uZ1w==}
@@ -4327,6 +4334,10 @@ snapshots:
   fastest-stable-stringify@2.0.2: {}
 
   fastify-plugin@4.5.0: {}
+
+  fastify-web-response@0.1.2:
+    dependencies:
+      fastify-plugin: 4.5.0
 
   fastify@4.19.2:
     dependencies:

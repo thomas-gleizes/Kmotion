@@ -131,11 +131,11 @@ class jsonClient {
   }
 
   public fetchMusic(id: number) {
-    return this.client.get(`musics/${id}/stream`).blob()
+    return this.client.get(`musics/${id}/audio`).blob()
   }
 
   public fetchCover(id: number) {
-    return this.client.get(`musics/${id}/cover`).blob()
+    return this.client.get(`musics/${id}/image`).blob()
   }
 
   public downloadExtension() {
