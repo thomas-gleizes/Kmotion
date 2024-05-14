@@ -140,7 +140,10 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
   instance.get<{ Params: GetMusicPramsDto }>(
     "/:id/audio",
-    { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
+    {
+      // onRequest: isLogin,
+      preHandler: instance.validateParams(GetMusicPramsDto),
+    },
     async (request, reply) => {
       const music = await prisma.music.findUnique({
         where: { id: request.params.id },
@@ -183,7 +186,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
   instance.get<{ Params: GetMusicPramsDto }>(
     "/:id/audio/stream",
     {
-      onRequest: isLogin,
+      // onRequest: isLogin,
       preHandler: instance.validateParams(GetMusicPramsDto),
     },
     async (request, reply) => {
@@ -193,7 +196,14 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       if (!music) throw new NotFoundException("Music not found")
 
-      return await ytConverter.audioStream(music.youtubeId)
+      const stream = await ytConverter.audioStream(music.youtubeId)
+
+      reply
+        .headers({
+          "Content-Type": "audio/mpeg",
+          "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.mp3"`,
+        })
+        .send(stream)
     },
   )
 

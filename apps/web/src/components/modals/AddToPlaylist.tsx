@@ -9,7 +9,6 @@ import { classValidatorResolver } from "@hookform/resolvers/class-validator"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { AddMusicToPlaylistDto } from "@kmotion/validations"
-import { QUERIES_KEY } from "../../utils/constants"
 import { useAuthenticatedContext } from "../../contexts/auth"
 import SimpleDialog from "../common/SimpleDialog"
 import { api } from "../../utils/Api"
@@ -28,7 +27,7 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
   const { user } = useAuthenticatedContext()
 
   const { data: playlists, isLoading } = useQuery<IPlaylist[]>({
-    queryKey: [...QUERIES_KEY.playlists, user.id],
+    queryKey: ["playlists", user.id],
     queryFn: () => api.fetchPlaylists(false).then((response) => response.playlists),
     placeholderData: [],
   })
@@ -65,7 +64,7 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
       await api.addMusicToPlaylist(values)
 
       // invalidé le cache des playlsts de l'utilisateur pour les prochaines ajout prenne en compte la modification
-      void queryClient.invalidateQueries([...QUERIES_KEY.playlists, user.id])
+      void queryClient.invalidateQueries({ queryKey: ["playlists", user.id] })
 
       close("success")
     } catch (e) {

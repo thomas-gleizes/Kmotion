@@ -8,7 +8,6 @@ import { DialogComponent, useDialog } from "react-dialog-promise"
 import { IMusic, IPlaylist } from "@kmotion/types"
 import { CreatePlaylistDto, UpdatePlaylistDto } from "@kmotion/validations"
 import { api } from "../../utils/Api"
-import { QUERIES_KEY } from "../../utils/constants"
 import DynamicDialog from "../common/DynamicDialog"
 import ImageLoader from "../common/ImageLoader"
 import PlaylistGridImage from "../common/PlaylistGridImage"
@@ -199,7 +198,7 @@ const SearchPlaylist: DialogComponent<{}, SearchResult> = ({ isOpen, close }) =>
   const inputRef = useRef<HTMLInputElement>(null)
 
   const { data } = useQuery<IMusic[]>({
-    queryKey: [...QUERIES_KEY.musics_search, search],
+    queryKey: ["music", "search", search],
     queryFn: () => api.searchMusics(search).then((data) => data.musics),
     enabled: search.length >= 3,
     staleTime: 1000 * 10,
