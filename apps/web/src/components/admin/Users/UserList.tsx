@@ -1,8 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { api } from "../../../utils/Api"
 import { toast } from "react-toastify"
 import { FaCheck, FaTimes } from "react-icons/fa"
 import React from "react"
+
+import { api } from "../../../utils/Api"
 
 const UserList = () => {
   const {

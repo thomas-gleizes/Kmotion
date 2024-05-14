@@ -95,7 +95,12 @@ const appRoutes = [
     getParentRoute: () => appRootRoute,
   }),
   createRoute({
-    path: "*",
+    path: "/*",
+    component: NotFound,
+    getParentRoute: () => appRootRoute,
+  }),
+  createRoute({
+    path: "/",
     component: NotFound,
     getParentRoute: () => appRootRoute,
   }),
