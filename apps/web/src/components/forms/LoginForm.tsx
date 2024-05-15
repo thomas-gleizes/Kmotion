@@ -61,7 +61,7 @@ const LoginForm: Component = () => {
       </div>
       <div className="mt-8">
         <div className="">
-          {mutation.isLoading ? (
+          {mutation.isPending ? (
             <button className="btn btn-block loading text-gray-800" disabled>
               Chargement
             </button>

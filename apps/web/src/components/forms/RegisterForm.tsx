@@ -84,7 +84,7 @@ const RegisterForm: Component = () => {
       </div>
       <div className="mt-5">
         <div className="">
-          {registerMutation.isLoading ? (
+          {registerMutation.isPending ? (
             <button className="btn btn-block loading text-gray-800" disabled>
               Chargement
             </button>
@@ -93,7 +93,7 @@ const RegisterForm: Component = () => {
               type="submit"
               className={classnames(
                 "btn btn-block shadow border-800 transition transform hover:scale-105",
-                registerMutation.isLoading
+                registerMutation.isPending
                   ? "loading text-gray-800"
                   : " bg-gradient-to-bl from-blue-600 to-blue-900 border-800",
               )}

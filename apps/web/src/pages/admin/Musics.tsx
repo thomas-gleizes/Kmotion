@@ -25,7 +25,7 @@ const AdminMusics: Page = () => {
       <button
         className="btn bg-blue-800 text-white hover:bg-blue-900 disabled:bg-blue-600"
         onClick={() => syncMutation.mutate()}
-        disabled={syncMutation.isLoading}
+        disabled={syncMutation.isPending}
       >
         sync musics
       </button>
