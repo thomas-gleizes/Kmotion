@@ -128,6 +128,13 @@ const adminRoutes = [
     path: "/musics",
     component: AdminMusicsPage,
     getParentRoute: () => adminRootRoute,
+    validateSearch: (
+      search: Record<string, unknown>,
+    ): { page: number; row: number; order: "asc" | "desc" } => ({
+      page: search.page ? +search.page : 0,
+      row: search.row ? +search.row : 10,
+      order: search.order === "asc" ? "asc" : "desc",
+    }),
   }),
 ]
 

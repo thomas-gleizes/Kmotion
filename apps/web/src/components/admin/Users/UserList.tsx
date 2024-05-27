@@ -41,7 +41,7 @@ const UserList = () => {
 
   if (isSuccess)
     return (
-      <table>
+      <table className="table-auto border bg-white rounded w-full shadow">
         <thead>
           <tr>
             <th className="px-2">Id</th>
