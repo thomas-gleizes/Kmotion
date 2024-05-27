@@ -13,7 +13,7 @@ const Root: RouteComponent = () => {
           className="flex items-center justify-center text-white/80"
           style={{ height: "100svh" }}
         >
-          <div className="relative w-full h-full bg-black overflow-hidden">
+          <div className="relative w-full h-full bg-black">
             <Header />
             <div className="block h-full w-full">
               <ScrollRestoration />

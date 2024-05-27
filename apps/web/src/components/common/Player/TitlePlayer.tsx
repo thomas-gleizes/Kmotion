@@ -12,6 +12,8 @@ import AddToPlaylist from "../../modals/AddToPlaylist"
 import EditPlaylist from "../../modals/EditPlaylist"
 import ConfirmDialog from "../../modals/ConfirmDialog"
 import SharedMusic from "../../modals/SharedMusic"
+import { queryClient } from "../../../queryClient"
+import { musicsQueryOptions } from "../../../pages/app/Musics"
 
 interface Props {
   music: IMusic
@@ -69,6 +71,7 @@ const TitlePlayer: Component<Props> = ({ music }) => {
           api
             .deleteMusic(music.id)
             .then(() => actions.remove(actions.findIndex(music)))
+            .then(() => queryClient.invalidateQueries(musicsQueryOptions))
             .catch((err) => console.log("delete failed", err))
       })
 

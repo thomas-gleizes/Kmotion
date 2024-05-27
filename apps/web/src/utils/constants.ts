@@ -9,3 +9,7 @@ export const LOCAL_STORAGE_KEYS = {
   VOLUME: "volume",
   DEFAULT_PLAYING: "default_playing",
 } as const
+
+export const env = {
+  API_URL: import.meta.env.VITE_API_URL,
+} as const
