@@ -10,12 +10,14 @@ import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
 import { useAuthenticatedContext } from "../../contexts/auth"
 import { usePlayerContext } from "../../contexts/player"
+import { useLayoutStore } from "../../stores/layout"
 import PlaylistGridImage from "../../components/common/PlaylistGridImage"
 import ScrollableLayout from "../../components/layouts/ScrollableLayout"
 import EditPlaylist from "../../components/modals/EditPlaylist"
 import { MusicsList } from "../../components/common/Music/List"
 import AddToPlaylist from "../../components/modals/AddToPlaylist"
 import ConfirmDialog from "../../components/modals/ConfirmDialog"
+import { FaPen } from "react-icons/fa6"
 
 export const playlistQueryOptions = (id: number) =>
   queryOptions<IPlaylist>({
@@ -36,6 +38,7 @@ export const entriesQueryOptions = (id: number) =>
 const Playlist: Page = () => {
   const { id } = useParams({ from: "/app/playlist/$id" })
   const { user } = useAuthenticatedContext()
+  const isDesktop = useLayoutStore((state) => !state.isMobile)
 
   const {
     actions,
@@ -218,7 +221,7 @@ const Playlist: Page = () => {
                   {playlist.description}
                 </p>
               </div>
-              <div className="flex justify-center space-x-3">
+              <div className="flex justify-center items-center space-x-2">
                 <div>
                   <button
                     onClick={() => handlePlayPlaylist(false)}
@@ -235,6 +238,16 @@ const Playlist: Page = () => {
                     <IoShuffleOutline /> <span>Aléatoire</span>
                   </button>
                 </div>
+                {isDesktop && (
+                  <div>
+                    <button
+                      onClick={handleEditPlaylist}
+                      className="py-3 px-4 font-semibold flex items-center space-x-3 text-red-800 bg-secondary rounded-lg"
+                    >
+                      <FaPen className="h-full" />
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="mt-3 px-2 flex justify-center w-full">
                 <div className="flex items-center space-x-3 bg-secondary-light py-1 px-2 rounded-lg w-full max-w-[500px]">
