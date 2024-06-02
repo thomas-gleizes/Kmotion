@@ -1,8 +1,11 @@
-import React, { useEffect } from "react"
+import React, { useState } from "react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { FaAngleLeft, FaAngleRight, FaSync } from "react-icons/fa"
 import { toast } from "react-toastify"
 import { Link, useSearch } from "@tanstack/react-router"
+import Hls from "hls.js"
+
+import { IMusic } from "@kmotion/types"
 
 import { api } from "../../utils/Api"
 import { s } from "../../utils/helpers"
@@ -14,6 +17,8 @@ const AdminMusics: Page = () => {
   const row = useSearch({ from: "/admin/musics", select: (search) => search.row })
   const order = useSearch({ from: "/admin/musics", select: (search) => search.order })
 
+  const [current, setCurrent] = useState<IMusic | null>(null)
+
   const musicsQuery = useQuery({
     queryKey: ["musics", { offset }],
     queryFn: () => api.fetchMusics(offset),
@@ -22,7 +27,7 @@ const AdminMusics: Page = () => {
   const syncMutation = useMutation({
     mutationKey: ["sync-musics"],
     mutationFn: () => api.synchronizeMusic(),
-    onSuccess: (resp) => {
+    onSuccess: async (resp) => {
       if (resp.musics.length === 0) return toast.info("Aucune nouvelle music")
       else
         toast.info(
@@ -30,6 +35,8 @@ const AdminMusics: Page = () => {
             resp.musics.length,
           )} synchronisé !`,
         )
+
+      await musicsQuery.refetch()
     },
   })
 
@@ -38,6 +45,34 @@ const AdminMusics: Page = () => {
     const seconds = duration % 60
 
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+  }
+
+  const audioRef = React.useRef<HTMLAudioElement>(null)
+
+  const handlePlay = async (music: IMusic) => {
+    const audio = audioRef.current!
+
+    const data = await api.hlsMusic(music.id)
+
+    const src = data.url + "/index.m3u8"
+
+    if (Hls.isSupported()) {
+      console.log("ICI")
+      const hls = new Hls()
+      hls.loadSource(src)
+      hls.attachMedia(audio)
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        audio.play()
+      })
+    } else if (audio.canPlayType("application/vnd.apple.mpegurl")) {
+      console.log("NULL")
+      audio.src = src
+      audio.addEventListener("loadedmetadata", () => {
+        audio.play()
+      })
+    }
+
+    setCurrent(music)
   }
 
   return (
@@ -54,6 +89,9 @@ const AdminMusics: Page = () => {
             <FaSync />
           </i>
         </button>
+        {current && <div>{current.title}</div>}
+
+        <audio ref={audioRef} />
       </div>
       {musicsQuery.isSuccess && (
         <table className="table-auto border bg-white rounded">
@@ -84,7 +122,7 @@ const AdminMusics: Page = () => {
           </thead>
           <tbody className="overflow-y-visible">
             {musicsQuery.data.musics.map((music) => (
-              <tr key={music.id} className="border-b text-lg">
+              <tr onClick={() => handlePlay(music)} key={music.id} className="border-b text-lg">
                 <td className="px-3">
                   <p>{music.id}</p>
                 </td>

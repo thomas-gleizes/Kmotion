@@ -65,6 +65,10 @@ interface MusicByPassResponse extends SuccessResponseData {
   cover: string
 }
 
+interface HlsMusicResponse extends SuccessResponseData {
+  url: string
+}
+
 interface UsersResponse extends SuccessResponseData {
   users: IUser[]
 }

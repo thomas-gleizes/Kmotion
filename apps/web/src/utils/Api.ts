@@ -2,6 +2,7 @@ import ky from "ky"
 import { KyInstance } from "ky/distribution/types/ky"
 
 import {
+  HlsMusicResponse,
   LoginResponse,
   MusicByPassResponse,
   MusicResponse,
@@ -156,6 +157,10 @@ class jsonClient {
 
   public deactivateUser(id: number) {
     return this.client.patch(`users/${id}/deactivate`, { body: "{}" }).json<UsersResponse>()
+  }
+
+  public hlsMusic(id: number) {
+    return this.client.get(`musics/${id}/hls`).json<HlsMusicResponse>()
   }
 }
 
