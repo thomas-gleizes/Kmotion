@@ -16,8 +16,8 @@ const ConvertForm: React.FC<Props> = ({ details }) => {
   const formMethods = useForm<ConvertMusicBodyDto>({
     defaultValues: {
       metadata: {
-        title: details.track.title,
-        artist: details.track.artist,
+        title: details.info.title,
+        artist: details.info.channel,
       },
       cover: {
         type: "classic",
