@@ -20,10 +20,7 @@ export type IMusic = {
   youtubeId: string
   downloaderId: number
   duration: number
-  links: {
-    cover: string
-    stream: string
-  }
+  thumbnail: string
 } & {
   playlistEntries?: IPlaylistEntry[]
   downloader?: IUser

@@ -1,17 +1,15 @@
 import React from "react"
-import { ConverterMusicDetails, IMusic } from "@kmotion/types"
+import { YoutubeInfo, IMusic } from "@kmotion/types"
 import CardCollapse from "../common/CardCollapse"
 import { FaCheck, FaDownload } from "react-icons/fa"
 import { MESSAGE_TYPE } from "../../../resources/constants"
 
 interface Props {
   music: IMusic
-  details: ConverterMusicDetails
+  details: YoutubeInfo
 }
 
 const ReadyForm: React.FC<Props> = ({ details, music }) => {
-  console.log("Music", music)
-
   if (!music) return "pas ok"
 
   const handleDownload = () => {
@@ -34,7 +32,7 @@ const ReadyForm: React.FC<Props> = ({ details, music }) => {
         <div className="flex flex-col space-y-1 items-baseline">
           <div className="flex justify-between items-center w-full text-xs">
             <p>
-              ID: <span className="text-blue-950">{details.videoId}</span>
+              ID: <span className="text-blue-950">{details.id}</span>
             </p>
             <span className="text-lg text-green-500">
               <FaCheck />
@@ -53,7 +51,7 @@ const ReadyForm: React.FC<Props> = ({ details, music }) => {
           <div>
             <div>
               <span className="font-semibold text-gray-800">Durée : </span>
-              <span className={+details.lengthSeconds > 480 ? "text-red-600" : ""}>
+              <span className={+details.duration > 480 ? "text-red-600" : ""}>
                 {music.duration}s
               </span>
             </div>

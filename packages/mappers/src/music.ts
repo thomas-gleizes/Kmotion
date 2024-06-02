@@ -13,10 +13,7 @@ class MusicMapper extends Mapper<PrismaMusic, IMusic> {
       artist: input.artist || "",
       downloaderId: input.downloaderId,
       duration: input.duration,
-      links: {
-        cover: `/api/v1/musics/${input.id}/cover`,
-        stream: `/api/v1/musics/${input.id}/stream`,
-      },
+      thumbnail: `/api/v1/musics/${input.id}/thumbnail`,
     }
 
     if (input.downloader) output.downloader = userMapper.one(input.downloader)

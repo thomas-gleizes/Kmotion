@@ -1,7 +1,7 @@
 import axios from "axios"
 
 import { LoginDto } from "@kmotion/validations"
-import { ConverterMusicDetails, LoginResponse, MusicInfoResponse } from "@kmotion/types"
+import { Track, LoginResponse, MusicInfoResponse } from "@kmotion/types"
 import { STORAGE_KEY } from "../resources/constants"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -40,5 +40,5 @@ export const streamMusic = async (id: string) => {
   })
 }
 
-export const convertMusic = async (youtubeId: string, payload: ConverterMusicDetails) =>
+export const convertMusic = async (youtubeId: string, payload: Track) =>
   instance.post(`/musics/${youtubeId}/add`, payload)

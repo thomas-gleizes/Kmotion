@@ -134,8 +134,8 @@ class jsonClient {
     return this.client.get(`musics/${id}/audio`).blob()
   }
 
-  public fetchCover(id: number) {
-    return this.client.get(`musics/${id}/image`).blob()
+  public fetchThumbnail(id: number) {
+    return this.client.get(`musics/${id}/thumbnail`).blob()
   }
 
   public downloadExtension() {

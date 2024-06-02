@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react"
 import { useAsync } from "react-use"
 import { FaSpinner } from "react-icons/fa"
 
-import { ConvertedMusic, ConverterMusicDetails, IMusic } from "@kmotion/types"
+import { Track, YoutubeInfo, IMusic } from "@kmotion/types"
 import { MESSAGE_TYPE } from "../../../resources/constants"
 import ConvertForm from "../../components/ui/ConvertForm"
 import ReadyForm from "../../components/ui/ReadyForm"
 
 interface State {
-  info: { details: ConverterMusicDetails; music: ConvertedMusic }
+  details: { info: YoutubeInfo; track: Track }
   isReady: boolean
   music: IMusic
   youtubeId: string
@@ -44,11 +44,13 @@ const VideoScreen: React.FC = () => {
                   loop = false
                   if (message.convert) setStatus(message.convert.status)
 
+                  console.log("Message.videoInfo", message.videoInfo)
+
                   return resolve({
-                    youtubeId: message.videoInfo.info.details.videoId,
-                    info: {
-                      details: message.videoInfo.info.details,
-                      music: message.videoInfo.info.music,
+                    youtubeId: message.videoInfo.details.info.id,
+                    details: {
+                      info: message.videoInfo.details.info,
+                      track: message.videoInfo.details.track,
                     },
                     isReady: message.videoInfo.isReady,
                     music: message.videoInfo.music,
@@ -113,10 +115,12 @@ const VideoScreen: React.FC = () => {
   if (error || !value)
     return <div className="text-xl py-5 text-center">Not a youtube video url</div>
 
+  console.log("Value", value)
+
   return value.isReady ? (
-    <ReadyForm details={value.info.details} music={value.music} />
+    <ReadyForm details={value.details.info} music={value.music} />
   ) : (
-    <ConvertForm info={value.info} />
+    <ConvertForm details={value.details} />
   )
 }
 export default VideoScreen

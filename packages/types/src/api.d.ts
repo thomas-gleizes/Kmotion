@@ -1,5 +1,5 @@
 import { IMusic, IPlaylist, IPlaylistEntry, IUser } from "./models"
-import { ConvertedMusic, ConverterMusicDetails } from "./converter"
+import { Track, YoutubeInfo } from "./converter"
 
 export interface SuccessResponseData {
   success: true
@@ -48,9 +48,9 @@ interface MusicResponse extends SuccessResponseData {
 interface MusicInfoResponse extends SuccessResponseData {
   music: IMusic | null
   isReady: boolean
-  info: {
-    details: ConverterMusicDetails
-    music: ConvertedMusic
+  details: {
+    info: YoutubeInfo
+    track: Track
   }
 }
 

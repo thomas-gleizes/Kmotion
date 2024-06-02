@@ -2,12 +2,12 @@ import React, { useRef, useEffect } from "react"
 import { useFormContext } from "react-hook-form"
 import classnames from "classnames"
 
-import { ConverterMusicDetails } from "@kmotion/types"
+import { YoutubeInfo } from "@kmotion/types"
 import { ConvertMusicBodyDto } from "@kmotion/validations"
 import CardCollapse from "../common/CardCollapse"
 
 interface Props {
-  details: ConverterMusicDetails
+  details: YoutubeInfo
 }
 
 const CoverChoice: React.FC<Props> = ({ details }) => {
@@ -32,6 +32,10 @@ const CoverChoice: React.FC<Props> = ({ details }) => {
 
   const field = methods.getValues()?.cover
 
+  const sortedThumbnails = details.thumbnails
+    .sort((a, b) => b.preference - a.preference)
+    .slice(0, 4)
+
   return (
     <CardCollapse title="Couverture" defaultOpen={true}>
       <>
@@ -41,18 +45,18 @@ const CoverChoice: React.FC<Props> = ({ details }) => {
           )}
         </div>
         <div className="grid grid-cols-2 px-0.5 py-1">
-          {details.thumbnails?.map((cover, index) => (
+          {sortedThumbnails.map((thumbnail, index) => (
             <div key={index} className="my-0.5 w-11/12 mx-auto">
               <button
-                onClick={() => methods.setValue("cover", { type: "classic", value: cover.url })}
+                onClick={() => methods.setValue("cover", { type: "classic", value: thumbnail.url })}
                 className={classnames(
                   "border w-full rounded text-sm shadow-sm transform hover:scale-105 hover:shadow-md duration-75",
-                  field?.value === cover.url
+                  field?.value === thumbnail.url
                     ? "text-white bg-gradient-to-bl from-blue-600 to-blue-800"
                     : "bg-gray-100",
                 )}
               >
-                {cover?.width}x{cover?.height}
+                TODO
               </button>
             </div>
           ))}

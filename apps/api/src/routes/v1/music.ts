@@ -26,9 +26,10 @@ import isLogin from "../../middlewares/isLogin"
 import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
+import { syncTracks } from "../../services/sync-tracks"
 
 export default async function musicRoutes(instance: FastifyInstance) {
-  const ytConverter = YtConverter.getInstance()
+  const ytConverter = new YtConverter()
 
   instance.get<{ Reply: MusicResponse; Querystring: GetMusicQuery }>(
     "/",
@@ -51,42 +52,9 @@ export default async function musicRoutes(instance: FastifyInstance) {
     "/sync",
     { onRequest: isAdmin },
     async (request, reply) => {
-      const musics = await ytConverter.musics()
+      await syncTracks(ytConverter, prisma)
 
-      const newMusics: Array<Music> = []
-
-      for (const music of musics) {
-        const find = await prisma.music.findUnique({
-          where: { youtubeId: music.id },
-        })
-
-        if (!find) {
-          await prisma.music
-            .create({
-              data: {
-                title: music.title.trim(),
-                artist: music.author.trim(),
-                youtubeId: music.id,
-                downloaderId: request.session.user.id,
-                duration: music.duration,
-                channel: music.channel,
-              },
-            })
-            .then((music) => newMusics.push(music))
-        } else {
-          await prisma.music.update({
-            where: { id: find.id },
-            data: {
-              title: music.title.trim(),
-              artist: music.author.trim(),
-              duration: music.duration,
-              channel: music.channel,
-            },
-          })
-        }
-      }
-
-      reply.send({ success: true, musics: musicMapper.many(newMusics) })
+      reply.send({ success: true, musics: musicMapper.many([]) })
     },
   )
 
@@ -107,16 +75,16 @@ export default async function musicRoutes(instance: FastifyInstance) {
         })
         .catch(() => void null)
 
-      const { music: musicConverted } = await ytConverter.download(request.params.youtubeId)
+      const track = await ytConverter.download(request.params.youtubeId)
 
       const music = await prisma.music.create({
         data: {
-          title: musicConverted.title.trim(),
-          artist: musicConverted.author.trim(),
+          title: track.title,
+          artist: track.artist,
           youtubeId: request.params.youtubeId,
           downloaderId: request.session.user.id,
-          duration: musicConverted.duration,
-          channel: musicConverted.channel.trim(),
+          duration: track.duration,
+          channel: track.channel.trim(),
         },
       })
 
@@ -141,7 +109,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
   instance.get<{ Params: GetMusicPramsDto }>(
     "/:id/audio",
     {
-      // onRequest: isLogin,
+      onRequest: isLogin,
       preHandler: instance.validateParams(GetMusicPramsDto),
     },
     async (request, reply) => {
@@ -151,40 +119,17 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       if (!music) throw new NotFoundException("Music not found")
 
-      const buffer = await ytConverter.audioBuffer(music.youtubeId)
+      const buffer = await ytConverter
+        .getAudio(music.youtubeId)
+        .then((resp) => resp.arrayBuffer())
+        .then((array) => Buffer.from(array))
 
-      reply
-        .headers({
-          "Content-Type": "audio/mpeg",
-          "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.mp3"`,
-        })
-        .send(buffer)
+      reply.headers({ "Content-Type": "audio/mpeg" }).send(buffer)
     },
   )
 
   instance.get<{ Params: GetMusicPramsDto }>(
-    "/:id/image",
-    { onRequest: isLogin, preHandler: instance.validateParams(GetMusicPramsDto) },
-    async (request, reply) => {
-      const music = await prisma.music.findUnique({
-        where: { id: request.params.id },
-      })
-
-      if (!music) throw new NotFoundException("Music not found")
-
-      const stream = await ytConverter.coverBuffer(music.youtubeId)
-
-      reply
-        .headers({
-          "Content-Type": "image/webp",
-          "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.webp"`,
-        })
-        .send(stream)
-    },
-  )
-
-  instance.get<{ Params: GetMusicPramsDto }>(
-    "/:id/audio/stream",
+    "/:id/thumbnail",
     {
       // onRequest: isLogin,
       preHandler: instance.validateParams(GetMusicPramsDto),
@@ -196,14 +141,12 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       if (!music) throw new NotFoundException("Music not found")
 
-      const stream = await ytConverter.audioStream(music.youtubeId)
+      const buffer = await ytConverter
+        .getThumbnail(music.youtubeId)
+        .then((resp) => resp.arrayBuffer())
+        .then((array) => Buffer.from(array))
 
-      reply
-        .headers({
-          "Content-Type": "audio/mpeg",
-          "Content-Disposition": `attachment; filename="${encodeURIComponent(music.title)}.mp3"`,
-        })
-        .send(stream)
+      reply.headers({ "Content-Type": "image/jpeg" }).send(buffer)
     },
   )
 
@@ -215,13 +158,16 @@ export default async function musicRoutes(instance: FastifyInstance) {
         where: { youtubeId: request.params.youtubeId },
       })
 
-      const info = await ytConverter.info(request.params.youtubeId)
+      const details = await ytConverter.getYoutubeInfo(request.params.youtubeId)
 
       reply.send({
         success: true,
         music: music ? musicMapper.one(music) : null,
         isReady: !!music,
-        info: info,
+        details: {
+          info: details.info,
+          track: details.track,
+        },
       })
     },
   )
@@ -240,7 +186,7 @@ export default async function musicRoutes(instance: FastifyInstance) {
       await prisma.music.delete({ where: { id: music.id } })
 
       if (process.env.NODE_ENV === "production") {
-        await ytConverter.delete(music.youtubeId)
+        await ytConverter.deleteTrack(music.youtubeId)
       }
 
       reply.status(202).send({ success: true })
@@ -311,8 +257,8 @@ export default async function musicRoutes(instance: FastifyInstance) {
       reply.send({
         success: true,
         music: musicMapper.one(music),
-        song: (await ytConverter.audioBuffer(music.youtubeId)).toString("base64"),
-        cover: (await ytConverter.coverBuffer(music.youtubeId)).toString("base64"),
+        song: "",
+        cover: "",
       })
     },
   )
