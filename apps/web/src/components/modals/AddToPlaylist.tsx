@@ -64,7 +64,7 @@ const AddToPlaylist: DialogComponent<Props, Result> = ({ isOpen, close, music })
       await api.addMusicToPlaylist(values)
 
       // invalidé le cache des playlsts de l'utilisateur pour les prochaines ajout prenne en compte la modification
-      void queryClient.invalidateQueries({ queryKey: ["playlists", user.id] })
+      await queryClient.invalidateQueries({ queryKey: ["playlists", user.id] })
 
       close("success")
     } catch (e) {
