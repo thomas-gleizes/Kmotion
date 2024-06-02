@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto"
 import { FastifyInstance } from "fastify"
-import { Music } from "@prisma/client"
 
 import {
   YoutubeIdParamsDto,
@@ -11,6 +10,7 @@ import {
   ConvertMusicBodyDto,
 } from "@kmotion/validations"
 import {
+  HlsMusicResponse,
   MusicByPassResponse,
   MusicInfoResponse,
   MusicResponse,
@@ -27,6 +27,7 @@ import isAdmin from "../../middlewares/isAdmin"
 import BadRequestException from "../../exceptions/http/BadRequestException"
 import NotFoundException from "../../exceptions/http/NotFoundException"
 import { syncTracks } from "../../services/sync-tracks"
+import hls from "../../services/hls"
 
 export default async function musicRoutes(instance: FastifyInstance) {
   const ytConverter = new YtConverter()
@@ -260,6 +261,26 @@ export default async function musicRoutes(instance: FastifyInstance) {
         song: "",
         cover: "",
       })
+    },
+  )
+
+  instance.get<{ Params: GetMusicPramsDto; Reply: HlsMusicResponse }>(
+    "/:id/hls",
+    { preHandler: instance.validateParams(GetMusicPramsDto) },
+    async (request, reply) => {
+      const music = await prisma.music.findUnique({
+        where: { id: +request.params.id },
+      })
+
+      if (!music) throw new NotFoundException("Music not found")
+
+      try {
+        await hls.generateHLS(music.youtubeId)
+
+        return reply.send({ success: true, url: `http://localhost:8000/hls/${music.youtubeId}` })
+      } catch (error) {
+        throw new BadRequestException("Failed to generate HLS")
+      }
     },
   )
 }
