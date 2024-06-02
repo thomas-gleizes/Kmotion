@@ -1,89 +1,45 @@
-import { ConvertedMusic, ConverterMusicDetails } from "@kmotion/types"
+import { Track, YoutubeInfo } from "@kmotion/types"
 
 export default class YtConverter {
-  private static instance: YtConverter
+  private readonly _url: string
 
-  private _url: string
-  private _token: string
-
-  private constructor() {
+  public constructor() {
     this._url = process.env.CONVERTER_URL as string
-    this._token = process.env.CONVERTER_TOKEN as string
   }
 
-  public static getInstance(): YtConverter {
-    if (!YtConverter.instance) {
-      YtConverter.instance = new YtConverter()
-    }
-
-    return YtConverter.instance
-  }
-
-  private getHeaders(): Headers {
-    const headers = new Headers()
-    headers.append("authorization", this._token)
-
-    return headers
-  }
-
-  public async musics(): Promise<Array<ConvertedMusic>> {
-    return fetch(`${this._url}/musics`, { method: "GET", headers: this.getHeaders() })
+  public getTracks(): Promise<Track[]> {
+    return fetch(`${this._url}/tracks`, { method: "GET" })
       .then((response) => response.json())
-      .then((data) => data.musics)
+      .then((data) => data.tracks)
   }
 
-  public info(
-    youtubeId: string,
-  ): Promise<{ details: ConverterMusicDetails; music: ConvertedMusic }> {
-    return fetch(`${this._url}/${youtubeId}/info`, {
-      method: "GET",
-      headers: this.getHeaders(),
-    }).then((response) => response.json())
+  public getTrack(id: string): Promise<Track> {
+    return fetch(`${this._url}/youtube/${id}`, { method: "GET" })
+      .then((response) => response.json())
+      .then((data) => data.track)
   }
 
-  public download(youtubeId: string): Promise<{ music: ConvertedMusic; alreadyDownload: boolean }> {
-    return fetch(`${this._url}/${youtubeId}/download`, {
-      method: "GET",
-      headers: this.getHeaders(),
-    }).then((response) => response.json())
+  public async deleteTrack(id: string): Promise<void> {
+    await fetch(`${this._url}/youtube/${id}`, { method: "DELETE" })
   }
 
-  public audioBuffer(youtubeId: string): Promise<Buffer> {
-    return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.mp3`, {
-      method: "GET",
-      headers: this.getHeaders(),
-    })
-      .then((response) => response.arrayBuffer())
-      .then((buffer) => Buffer.from(buffer))
+  public getYoutubeInfo(youtubeId: string): Promise<{ track: Track; info: YoutubeInfo }> {
+    return fetch(`${this._url}/youtube/${youtubeId}/info`, { method: "GET" })
+      .then((response) => response.json())
+      .then((data) => ({ info: data.info, track: data.track }))
   }
 
-  public coverBuffer(youtubeId: string): Promise<Buffer> {
-    return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.webp`, {
-      method: "GET",
-      headers: this.getHeaders(),
-    })
-      .then((response) => response.arrayBuffer())
-      .then((buffer) => Buffer.from(buffer))
+  public download(youtubeId: string): Promise<Track> {
+    return fetch(`${this._url}/youtube/${youtubeId}/download`, { method: "POST" })
+      .then((response) => response.json())
+      .then((data) => data.track)
   }
 
-  public audioStream(youtubeId: string): Promise<ReadableStream<Uint8Array>> {
-    return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.mp3`, {
-      method: "GET",
-      headers: this.getHeaders(),
-    }).then((response) => response.body as ReadableStream<Uint8Array>)
+  public getThumbnail(youtubeId: string): Promise<Response> {
+    return fetch(`${this._url}/static/${youtubeId}/thumbnail.webp`, { method: "GET" })
   }
 
-  public coverStream(youtubeId: string): Promise<ReadableStream<Uint8Array>> {
-    return fetch(`${this._url}/static/${youtubeId}/${youtubeId}.webp`, {
-      method: "GET",
-      headers: this.getHeaders(),
-    }).then((response) => response.body as ReadableStream<Uint8Array>)
-  }
-
-  public delete(youtubeId: string): Promise<unknown> {
-    return fetch(`${this._url}/${youtubeId}`, {
-      method: "DELETE",
-      headers: this.getHeaders(),
-    })
+  public getAudio(youtubeId: string): Promise<Response> {
+    return fetch(`${this._url}/static/${youtubeId}/audio.mp3`, { method: "GET" })
   }
 }

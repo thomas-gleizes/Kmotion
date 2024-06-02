@@ -96,7 +96,7 @@ const TitlePlayer: Component<Props> = ({ music }) => {
           className: "hover:bg-white/30",
           onClick: () => {
             const link = document.createElement("a")
-            link.href = music.links.stream
+            link.href = music.links.audio
             link.setAttribute("download", music.title)
             link.click()
           },

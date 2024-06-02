@@ -2,30 +2,30 @@ import React from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 import { ConvertMusicBodyDto } from "@kmotion/validations"
-import { ConvertedMusic, ConverterMusicDetails } from "@kmotion/types"
+import { Track, YoutubeInfo } from "@kmotion/types"
 import CoverChoice from "./CoverChoice"
 import Timeline from "./Timeline"
 import MetaData from "./MetaData"
 import { MESSAGE_TYPE } from "../../../resources/constants"
 
 interface Props {
-  info: { details: ConverterMusicDetails; music: ConvertedMusic }
+  details: { info: YoutubeInfo; track: Track }
 }
 
-const ConvertForm: React.FC<Props> = ({ info }) => {
+const ConvertForm: React.FC<Props> = ({ details }) => {
   const formMethods = useForm<ConvertMusicBodyDto>({
     defaultValues: {
       metadata: {
-        title: info.details.media?.song || info.details.title || "",
-        artist: info.details.media?.artist || info.details.author?.name || "",
+        title: details.track.title,
+        artist: details.track.artist,
       },
       cover: {
         type: "classic",
-        value: info.details.thumbnails.at(-1)?.url,
+        value: details.info.thumbnails[0].url,
       },
       timeline: {
         start: 0,
-        end: +info.details.lengthSeconds,
+        end: details.info.duration,
       },
     },
   })
@@ -38,7 +38,7 @@ const ConvertForm: React.FC<Props> = ({ info }) => {
 
       chrome.tabs.sendMessage(
         targetTab.id,
-        { type: MESSAGE_TYPE.CONVERT_VIDEO, data: { videoId: info.details.videoId, ...values } },
+        { type: MESSAGE_TYPE.CONVERT_VIDEO, data: { videoId: details.info.id, ...values } },
         (message) => {
           console.log("submit response", message)
         },
@@ -49,9 +49,9 @@ const ConvertForm: React.FC<Props> = ({ info }) => {
   return (
     <form onSubmit={formMethods.handleSubmit(onSubmit)} className="flex flex-col space-y-2 px-2">
       <FormProvider {...formMethods}>
-        <MetaData details={info.details} />
-        <CoverChoice details={info.details} />
-        <Timeline details={info.details} />
+        <MetaData details={details.info} />
+        <CoverChoice details={details.info} />
+        <Timeline details={details.info} />
         <div className="w-full">
           <button
             type="submit"

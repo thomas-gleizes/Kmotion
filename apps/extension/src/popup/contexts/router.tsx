@@ -27,8 +27,6 @@ const RouterProvider: React.FC = () => {
     setCurrentRoute(route)
   }
 
-  console.log(currentRoute)
-
   if (currentRoute.needAuth && !isAuthenticated) push(routes.login)
 
   return (

@@ -14,7 +14,7 @@ export function useImageLoader(
 
   const queryImage = useQuery<string>({
     queryKey: ["music-image", id],
-    queryFn: () => api.fetchCover(id as number).then((blob) => URL.createObjectURL(blob)),
+    queryFn: () => api.fetchThumbnail(id as number).then((blob) => URL.createObjectURL(blob)),
     staleTime: Infinity,
     enabled: !!id && enabled,
   })

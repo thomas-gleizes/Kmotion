@@ -1,13 +1,12 @@
 import React from "react"
 import { useFormContext } from "react-hook-form"
-import { FaCheck } from "react-icons/fa"
 
-import { ConverterMusicDetails } from "@kmotion/types"
+import { YoutubeInfo } from "@kmotion/types"
 import { ConvertMusicBodyDto } from "@kmotion/validations"
 import CardCollapse from "../common/CardCollapse"
 
 interface Props {
-  details: ConverterMusicDetails
+  details: YoutubeInfo
 }
 
 const MetaData: React.FC<Props> = ({ details }) => {
@@ -18,7 +17,7 @@ const MetaData: React.FC<Props> = ({ details }) => {
       <div className="flex flex-col space-y-1 divide-y divide-blue-200">
         <div className="flex justify-between items-center text-xs">
           <p>
-            ID: <span className="text-blue-950">{details.videoId}</span>
+            ID: <span className="text-blue-950">{details.id}</span>
           </p>
         </div>
         <div className="text-xs">
@@ -34,8 +33,8 @@ const MetaData: React.FC<Props> = ({ details }) => {
         <div>
           <div>
             <span className="font-semibold text-gray-800">Durée : </span>
-            <span className={+details.lengthSeconds > 480 ? "text-red-600" : ""}>
-              {details.lengthSeconds}s
+            <span className={+details.duration > 480 ? "text-red-600" : ""}>
+              {details.duration}s
             </span>
           </div>
           <div className="text-xs text-right opacity-30">
