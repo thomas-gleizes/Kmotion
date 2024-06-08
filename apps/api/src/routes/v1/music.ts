@@ -53,9 +53,9 @@ export default async function musicRoutes(instance: FastifyInstance) {
     "/sync",
     { onRequest: isAdmin },
     async (request, reply) => {
-      await syncTracks(ytConverter, prisma)
+      const newMusics = await syncTracks(ytConverter, prisma)
 
-      reply.send({ success: true, musics: musicMapper.many([]) })
+      reply.send({ success: true, musics: musicMapper.many(newMusics) })
     },
   )
 
