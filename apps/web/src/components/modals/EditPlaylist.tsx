@@ -11,6 +11,7 @@ import { api } from "../../utils/Api"
 import DynamicDialog from "../common/DynamicDialog"
 import ImageLoader from "../common/ImageLoader"
 import PlaylistGridImage from "../common/PlaylistGridImage"
+import { handleStopPropagation } from "../../utils/helpers"
 
 type Props =
   | {
@@ -128,7 +129,7 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
             <div className="w-[150px] h-[150px] mx-auto">
               <PlaylistGridImage ids={musics.map((m) => m.id)} />
             </div>
-            <div className="py-2 text-center pt-8">
+            <div className="py-2 text-center pt-8" onKeyDown={handleStopPropagation()}>
               <input
                 type="text"
                 className="bg-transparent outline:none text-center text-xl text-white placeholder:text-neutral-600"
@@ -136,7 +137,10 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
                 {...register("title")}
               />
             </div>
-            <div className="border-y py-4 border-neutral-500 mt-2">
+            <div
+              className="border-y py-4 border-neutral-500 mt-2"
+              onKeyDown={handleStopPropagation()}
+            >
               <textarea
                 rows={1}
                 className="bg-transparent outline:none w-full text-base text-neutral-400 placeholder:text-neutral-600"
