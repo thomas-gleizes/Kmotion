@@ -5,6 +5,7 @@ import { useDialog } from "react-dialog-promise"
 import { FaChevronLeft, FaList, FaPlay, FaSearch, FaTrash } from "react-icons/fa"
 import { CgRowFirst } from "react-icons/cg"
 import { IoShuffleOutline } from "react-icons/io5"
+import { FaPen } from "react-icons/fa6"
 
 import { IMusic, IPlaylist, IPlaylistEntry } from "@kmotion/types"
 import { api } from "../../utils/Api"
@@ -17,7 +18,7 @@ import EditPlaylist from "../../components/modals/EditPlaylist"
 import { MusicsList } from "../../components/common/Music/List"
 import AddToPlaylist from "../../components/modals/AddToPlaylist"
 import ConfirmDialog from "../../components/modals/ConfirmDialog"
-import { FaPen } from "react-icons/fa6"
+import { handleStopPropagation } from "../../utils/helpers"
 
 export const playlistQueryOptions = (id: number) =>
   queryOptions<IPlaylist>({
@@ -250,7 +251,10 @@ const Playlist: Page = () => {
                 )}
               </div>
               <div className="mt-3 px-2 flex justify-center w-full">
-                <div className="flex items-center space-x-3 bg-secondary-light py-1 px-2 rounded-lg w-full max-w-[500px]">
+                <div
+                  onKeyDown={handleStopPropagation()}
+                  className="flex items-center space-x-3 bg-secondary-light py-1 px-2 rounded-lg w-full max-w-[500px]"
+                >
                   <FaSearch className="text-white/70" />
                   <input
                     type="search"

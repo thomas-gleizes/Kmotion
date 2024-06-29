@@ -212,7 +212,10 @@ const Musics: Page = () => {
               )}
             </div>
           </div>
-          <div className="flex items-center space-x-2 py-1 text-white/90 group rounded-lg bg-secondary px-3 my-2 transition">
+          <div
+            onKeyDown={handleStopPropagation()}
+            className="flex items-center space-x-2 py-1 text-white/90 group rounded-lg bg-secondary px-3 my-2 transition"
+          >
             <FaSearch className="text-xl" />
             <input
               value={search}
