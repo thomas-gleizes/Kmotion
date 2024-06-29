@@ -10,10 +10,10 @@ export function elementIsDisplay(element: Element, marge: number): boolean {
   )
 }
 
-export function handleStopPropagation(callback: (event: MouseEvent) => void): EventHandler<any> {
+export function handleStopPropagation(callback?: (event: MouseEvent) => void): EventHandler<any> {
   return (event: MouseEvent) => {
     event.stopPropagation()
-    callback(event)
+    typeof callback === "function" && callback(event)
   }
 }
 
