@@ -68,30 +68,28 @@ export const MusicItem: Component<MusicItemProps> = ({ music, onClick, actions }
   const [isDisplay, ref] = useIsDisplay<HTMLDivElement>(0.3)
 
   return (
-    <div ref={ref} onClick={onClick} className="cursor-pointer">
-      <div className="flex items-center h-full">
-        <div className="w-1/6 md:w-1/5 h-full flex items-center">
-          <ImageLoader enabled={isDisplay} id={music.id} fallback={<FallbackImage />}>
-            {({ src }) => <img className="w-full rounded-lg" src={src} alt={music.title} />}
-          </ImageLoader>
-        </div>
-        <div className="w-5/6 md:w-4/5 pl-3">
-          <div className="h-full border-b border-white/50 md:pl-2 flex items-center justify-between">
-            <div
-              className={classnames(
-                actions.length ? "w-[85%]" : "w-full",
-                "h-full flex flex-col justify-center",
-              )}
-            >
-              <p className="truncate xl:text-3xl text-white">{music.title}</p>
-              <p className="truncate text-sm text-white/70">{music.artist}</p>
-            </div>
-            {actions.length > 0 && (
-              <div className="w-fit">
-                <MusicItemActions actions={actions} music={music} />
-              </div>
+    <div ref={ref} onClick={onClick} className="flex h-full cursor-pointer">
+      <div className="w-1/6 md:w-1/5 h-full flex items-center">
+        <ImageLoader enabled={isDisplay} id={music.id} fallback={<FallbackImage />}>
+          {({ src }) => <img className="w-full rounded-lg" src={src} alt={music.title} />}
+        </ImageLoader>
+      </div>
+      <div className="w-5/6 md:w-4/5 pl-3">
+        <div className="h-full border-b border-white/50 md:pl-2 flex items-center justify-between">
+          <div
+            className={classnames(
+              actions.length ? "w-[85%]" : "w-full",
+              "h-full flex flex-col justify-center",
             )}
+          >
+            <p className="truncate xl:text-3xl text-white">{music.title}</p>
+            <p className="truncate text-sm text-white/70">{music.artist}</p>
           </div>
+          {actions.length > 0 && (
+            <div className="w-fit">
+              <MusicItemActions actions={actions} music={music} />
+            </div>
+          )}
         </div>
       </div>
     </div>
