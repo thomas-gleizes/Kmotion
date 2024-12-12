@@ -162,6 +162,10 @@ class jsonClient {
   public hlsMusic(id: number) {
     return this.client.get(`musics/${id}/hls`).json<HlsMusicResponse>()
   }
+
+  public convertMusic(youtubeId: string) {
+    return this.client.post(`musics/${youtubeId}/add`, { body: "{}" }).json()
+  }
 }
 
 export const api = new jsonClient()
