@@ -82,3 +82,16 @@ export function saveBlob(blob: Blob, filename: string) {
 export function s(length: number) {
   return length < 2 ? "" : "s"
 }
+
+export const extractYouTubeId = (input: string): string | null => {
+  const urlPattern =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  const idPattern = /^[a-zA-Z0-9_-]{11}$/
+
+  if (idPattern.test(input)) {
+    return input
+  }
+
+  const match = input.match(urlPattern)
+  return match ? match[1].trim() : null
+}

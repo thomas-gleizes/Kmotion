@@ -11,6 +11,7 @@ import { api } from "../../utils/Api"
 import { s } from "../../utils/helpers"
 import ImageLoader from "../../components/common/ImageLoader"
 import FallbackImage from "../../components/common/FallbackImage"
+import AdminConverterForm from "../../components/admin/Musics/AdminConverterForm"
 
 const AdminMusics: Page = () => {
   const offset = useSearch({ from: "/admin/musics", select: (search) => search.page })
@@ -78,17 +79,21 @@ const AdminMusics: Page = () => {
   return (
     <div className="pb-24">
       <div className="pb-4">
-        <h1 className="text-center text-3xl">Admin musics page</h1>
-        <button
-          className="bg-blue-800 text-white hover:bg-blue-900 disabled:bg-blue-600 shadow px-5 py-2 text-xl rounded flex items-center justify-center gap-5"
-          onClick={() => syncMutation.mutate()}
-          disabled={syncMutation.isPending}
-        >
-          Synchronize
-          <i>
-            <FaSync />
-          </i>
-        </button>
+        <h1 className="text-center text-3xl my-8">Tracks</h1>
+        <div className="flex space-x-2">
+          <button
+            className="bg-blue-800 text-white hover:bg-blue-900 disabled:bg-blue-600 shadow px-5 py-2 text-xl rounded flex items-center justify-center gap-5"
+            onClick={() => syncMutation.mutate()}
+            disabled={syncMutation.isPending}
+          >
+            Synchronize
+            <i>
+              <FaSync />
+            </i>
+          </button>
+          <AdminConverterForm refresh={musicsQuery.refetch} />
+        </div>
+
         {current && <div>{current.title}</div>}
 
         <audio ref={audioRef} />
