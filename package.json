@@ -32,5 +32,31 @@
   "dependencies": {
     "@prisma/client": "^5.0.0",
     "concurrently": "^8.2.0"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/client",
+      "@prisma/client",
+      "@prisma/engines",
+      "@prisma/engines",
+      "@prisma/engines",
+      "bcrypt",
+      "bcrypt",
+      "bcrypt",
+      "esbuild",
+      "esbuild",
+      "esbuild",
+      "prisma",
+      "prisma",
+      "prisma"
+    ],
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "bcrypt",
+      "esbuild",
+      "prisma"
+    ]
   }
 }
