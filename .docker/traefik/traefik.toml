@@ -1,0 +1,15 @@
+[log]
+  level = "DEBUG"
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+
+[api]
+  dashboard = true
+  insecure = true
+
+[providers.docker]
+  exposedByDefault = false
+  network = "kmotion_reverse_proxy"
+  watch = true
