@@ -78,6 +78,8 @@ export default async function musicRoutes(instance: FastifyInstance) {
 
       const track = await ytConverter.download(request.params.youtubeId)
 
+      console.log("Track", track)
+
       const music = await prisma.music.create({
         data: {
           title: track.title,
