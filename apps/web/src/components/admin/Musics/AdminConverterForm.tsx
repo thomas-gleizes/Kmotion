@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form"
 import { api } from "../../../utils/Api"
 import { extractYouTubeId } from "../../../utils/helpers"
+import { FaSpinner } from "react-icons/fa"
+import React from "react"
 
 type Props = {
   refresh: () => void
@@ -27,14 +29,22 @@ const AdminConverterForm: Component<Props> = ({ refresh }) => {
       <div className="flex">
         <input
           {...form.register("youtubeVideoIdOrUrl")}
+          disabled={form.formState.isSubmitting}
           placeholder="https://www.youtube.com/watch?v=5NC8jgUCE2U"
-          className="bg-white rounded-l w-[500px] px-5 py-2 text-xl shadow outline-none"
+          className="bg-white rounded-l w-[500px] px-5 py-2 text-xl shadow outline-none disabled:bg-gray-200 disabled:cursor-not-allowed"
         />
         <button
           type="submit"
-          className="bg-blue-800 text-white hover:bg-blue-900 disabled:bg-blue-600 shadow px-5 py-2 text-xl rounded-r flex items-center justify-center gap-5"
+          disabled={form.formState.isSubmitting}
+          className="bg-blue-800 min-w-28 text-white hover:bg-blue-900 disabled:cursor-not-allowed disabled:bg-gray-400 shadow px-5 py-2 text-xl rounded-r flex items-center justify-center gap-5"
         >
-          Convert
+          {form.formState.isSubmitting ? (
+            <div>
+              <FaSpinner className="text-white text-xl animate-spin" />
+            </div>
+          ) : (
+            "Convert"
+          )}
         </button>
       </div>
       <div>
