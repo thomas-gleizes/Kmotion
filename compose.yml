@@ -51,6 +51,8 @@ services:
     image: mariadb:11.1.5
     volumes:
       - database:/var/lib/mysql
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: kmotion
@@ -60,18 +62,3 @@ services:
       kmotion_reverse_proxy:
         aliases:
           - kmotion-database
-
-  smtp:
-    container_name: kmotion_maildev
-    image: mailhog/mailhog:latest
-    networks:
-      kmotion_reverse_proxy:
-        aliases:
-          - kmotion-maildev
-    ports:
-      - "8025:8025"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.kmotion_maildev.loadbalancer.server.port=8025"
-      - "traefik.http.routers.kmotion_maildev.rule=Host(`maildev.kmotion.localhost`)"
-      - "traefik.http.routers.kmotion_maildev.entrypoints=web"
