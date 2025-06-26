@@ -1,7 +1,6 @@
 import React from "react"
 import { DialogComponent } from "react-dialog-promise"
 import { Dialog } from "@headlessui/react"
-import SimpleBar from "simplebar-react"
 
 import SimpleDialog from "../common/SimpleDialog"
 
@@ -20,9 +19,9 @@ const SharedMusic: DialogComponent<Props, Result> = ({ isOpen, close, link }) =>
         Voici le liens de partage valable 4h
       </Dialog.Title>
       <div className="mt-5">
-        <SimpleBar className="">
+        <div>
           <p className="text-sm text-white">{link}</p>
-        </SimpleBar>
+        </div>
       </div>
       <div className="flex justify-between w-full mt-8">
         <button
