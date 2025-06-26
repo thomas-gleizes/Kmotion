@@ -15,7 +15,7 @@
     "@hookform/resolvers": "^3.1.1",
     "@kmotion/validations": "workspace:*",
     "@tanstack/react-query": "^5.35.1",
-    "@tanstack/react-router": "1.31.20",
+    "@tanstack/react-router": "1.121.34",
     "classnames": "^2.3.2",
     "daisyui": "^3.2.1",
     "hls.js": "^1.5.9",
@@ -28,7 +28,6 @@
     "react-toastify": "^9.1.3",
     "react-use": "^17.4.0",
     "reflect-metadata": "^0.1.13",
-    "simplebar-react": "^3.2.4",
     "use-local-storage-state": "^18.3.3",
     "zustand": "^5.0.2"
   },

@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react"
 import { FaCheckCircle, FaMinusCircle, FaPlusCircle, FaSearch } from "react-icons/fa"
 import { useQuery } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
-import SimpleBar from "simplebar-react"
 import { DialogComponent, useDialog } from "react-dialog-promise"
 
 import { IMusic, IPlaylist } from "@kmotion/types"
@@ -124,7 +123,7 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
             </button>
           </div>
         </div>
-        <SimpleBar className="h-[calc(100vh-17px)]">
+        <div className="h-[calc(100vh-17px)]">
           <div className="pt-24 px-5 pb-footer">
             <div className="w-[150px] h-[150px] mx-auto">
               <PlaylistGridImage ids={musics.map((m) => m.id)} />
@@ -181,7 +180,7 @@ const EditPlaylist: DialogComponent<Props, Result> = ({
               ))}
             </div>
           </div>
-        </SimpleBar>
+        </div>
       </form>
     </DynamicDialog>
   )
@@ -267,7 +266,7 @@ const SearchPlaylist: DialogComponent<{}, SearchResult> = ({ isOpen, close }) =>
             placeholder="Rechercher des Morceau"
           />
         </div>
-        <SimpleBar className="h-[calc(100vh-96px)] pb-footer">
+        <div className="h-[calc(100vh-96px)] pb-footer">
           <div className="flex flex-col space-y-2 px-4 pb-24">
             {musics.map((music, index) => (
               <div key={index} className="w-full py-0.5 flex" onClick={() => toggleCheck(music)}>
@@ -294,7 +293,7 @@ const SearchPlaylist: DialogComponent<{}, SearchResult> = ({ isOpen, close }) =>
               </div>
             ))}
           </div>
-        </SimpleBar>
+        </div>
       </div>
     </DynamicDialog>
   )
