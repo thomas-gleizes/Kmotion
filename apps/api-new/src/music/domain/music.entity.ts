@@ -9,7 +9,7 @@ export class Music {
     public artist: string,
     public readonly mediaId: string,
     public readonly mediaSource: MediaSource,
-    public readonly downloaderId: string,
+    public readonly downloaderId: string | null,
     public duration: number,
     public thumbnail: string,
   ) {}

@@ -6,6 +6,6 @@ export const usersTable = pgTable('users', {
   name: varchar({ length: 255 }).notNull(),
   slug: varchar({ length: 255 }).notNull().unique(),
   password: varchar({ length: 255 }).notNull(),
-  isAdmin: boolean().default(false),
-  isActive: boolean().default(true),
+  isAdmin: boolean('is_admin').default(false),
+  isActive: boolean('is_active').default(true),
 });
