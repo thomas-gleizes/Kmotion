@@ -4,7 +4,9 @@ import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { environment } from './core/config/environment';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { HttpLoggingInterceptor } from 'src/shared/presentation/interceptor/http-loging.interceptor';
+import HttpLoggingInterceptor from 'src/shared/presentation/interceptor/http-loging.interceptor';
+import { DomainExceptionFilter } from 'src/shared/presentation/exception-filters/domain.exception-filter';
+import { GlobalExceptionFilters } from 'src/shared/presentation/exception-filters/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -14,8 +16,10 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api/3.1');
-  app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new HttpLoggingInterceptor());
+  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new DomainExceptionFilter());
+  app.useGlobalFilters(new GlobalExceptionFilters());
 
   const document = new DocumentBuilder()
     .setTitle('Kmotion api')
