@@ -1,9 +1,11 @@
-import { FindUserByIdCase } from 'src/user/application/use-cases/find-user-by-id.case';
-import { GetProfileCase } from 'src/user/application/use-cases/get-profile.case';
-import { FindUserBySlugCase } from 'src/user/application/use-cases/find-user-by-slug.case';
+import { FindUserByIdHandler } from 'src/user/application/queries/find-user-by-id/find-user-by-id.handler';
+import { GetProfileHandler } from 'src/user/application/queries/get-profile/get-profile.handler';
+import { FindUserBySlugHandler } from 'src/user/application/queries/find-user-by-slug/find-user-by-slug.handler';
+import { FindUsersHandler } from 'src/user/application/queries/find-users/find-users.handler';
 
-export const userUserCases = [
-  FindUserByIdCase,
-  FindUserBySlugCase,
-  GetProfileCase,
+export const userQueryHandlers = [
+  FindUserByIdHandler,
+  FindUserBySlugHandler,
+  GetProfileHandler,
+  FindUsersHandler,
 ];

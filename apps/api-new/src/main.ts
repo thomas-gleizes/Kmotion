@@ -1,13 +1,17 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { environment } from './core/config/environment';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpLoggingInterceptor } from 'src/shared/presentation/interceptor/http-loging.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: new ConsoleLogger({
+      prefix: 'Kmotion',
+    }),
+  });
 
   app.setGlobalPrefix('api/3.1');
   app.useGlobalPipes(new ValidationPipe());

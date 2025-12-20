@@ -3,6 +3,17 @@ import { UserModule } from './user/user.module';
 import { MusicModule } from './music/music.module';
 import { AuthModule } from './auth/auth.module';
 import { CoreModule } from 'src/core/core.module';
+import { CqrsModule } from '@nestjs/cqrs';
+import { ScheduleModule } from '@nestjs/schedule';
 
-@Module({ imports: [CoreModule, AuthModule, UserModule, MusicModule] })
+@Module({
+  imports: [
+    ScheduleModule.forRoot(),
+    CqrsModule.forRoot(),
+    CoreModule,
+    AuthModule,
+    UserModule,
+    MusicModule,
+  ],
+})
 export class AppModule {}

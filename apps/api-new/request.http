@@ -9,8 +9,7 @@ Content-Type: application/json
 }
 
 > {%
-  client.global.set('token', response.body.token);
-  client.global.set('email', response.body.user.email);
+  client.global.set('token', response.body);
 %}
 
 
@@ -26,7 +25,8 @@ Content-Type: application/json
 
 > {%
   client.global.set('token', response.body.token);
-  client.global.set('user', response.body.user);
+  client.global.set('id', response.body.user.id);
+  client.global.set('slug', response.body.user.slug);
 %}
 
 ### User : Get profile
