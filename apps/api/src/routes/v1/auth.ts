@@ -49,8 +49,6 @@ export default async function authRoutes(instance: FastifyInstance) {
           },
         })
 
-        console.log("User", user)
-
         reply.send({
           success: true,
           message: "You are register but a admin need to confirm your account.",
