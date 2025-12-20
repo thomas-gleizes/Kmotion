@@ -3,13 +3,13 @@ import { UserController } from './presentation/user.controller';
 import { UserRepository } from 'src/user/infrastructure/persistance/repositories/user.repository';
 import { USER_REPOSITORY_PORT } from 'src/user/domain/port/user-repository.port';
 import { AuthModule } from 'src/auth/auth.module';
-import { userUserCases } from 'src/user/application';
+import { userQueryHandlers } from 'src/user/application';
 
 @Module({
   imports: [AuthModule],
   controllers: [UserController],
   providers: [
-    ...userUserCases,
+    ...userQueryHandlers,
     { provide: USER_REPOSITORY_PORT, useClass: UserRepository },
   ],
   exports: [USER_REPOSITORY_PORT],

@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './presentation/auth.controller';
-import { AuthService } from 'src/auth/application/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { environment } from 'src/core/config/environment';
 import { AuthRepository } from 'src/auth/infrastructure/repository/auth.repository';
 import { AUTH_REPOSITORY_PORT } from 'src/auth/domain/port/auth-repository.port';
+import { AUTH_SERVICE_PORT } from 'src/auth/application/port/auth-service.port';
+import { JwtAuthServiceAdapter } from 'src/auth/infrastructure/adapters/jwt-auth-service.adapter';
+import { authCommands } from 'src/auth/application/commands';
 
 @Module({
   imports: [
@@ -18,12 +20,16 @@ import { AUTH_REPOSITORY_PORT } from 'src/auth/domain/port/auth-repository.port'
   ],
   controllers: [AuthController],
   providers: [
-    AuthService,
+    ...authCommands,
+    {
+      provide: AUTH_SERVICE_PORT,
+      useClass: JwtAuthServiceAdapter,
+    },
     {
       provide: AUTH_REPOSITORY_PORT,
       useClass: AuthRepository,
     },
   ],
-  exports: [AuthService],
+  exports: [AUTH_SERVICE_PORT],
 })
 export class AuthModule {}

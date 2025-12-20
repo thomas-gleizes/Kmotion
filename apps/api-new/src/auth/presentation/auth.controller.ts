@@ -1,40 +1,35 @@
 import {
   Body,
   Controller,
-  Get,
+  NotImplementedException,
   Post,
-  UseGuards,
-  Request,
 } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
 import {
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthService } from 'src/auth/application/auth.service';
 import { LoginBodyDto } from 'src/auth/presentation/dto/input/login-body.dto';
 import { RegisterBodyDto } from 'src/auth/presentation/dto/input/register-body.dto';
-import { UserDto } from 'src/user/presentation/dto/output/user.dto';
+import { LoginCommand } from 'src/auth/application/commands/login/login.command';
+import { RegisterCommand } from 'src/auth/application/commands/register/register.command';
 
 @Controller('auth')
 @ApiTags('Authentication')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @Post('login')
   @ApiOperation({ summary: 'Login user', description: 'Return access token' })
   @ApiOkResponse({ type: String, description: 'Access token' })
   async login(@Body() body: LoginBodyDto) {
-    const result = await this.authService.signIn(
-      body.email.toLowerCase(),
-      body.password,
+    const accessToken: string = await this.commandBus.execute(
+      new LoginCommand(body.email, body.password),
     );
 
-    return {
-      user: UserDto.fromDomain(result.user),
-      token: result.token,
-    };
+    return accessToken;
   }
 
   @Post('register')
@@ -44,16 +39,11 @@ export class AuthController {
   })
   @ApiOkResponse({ type: String, description: 'Access token' })
   async register(@Body() body: RegisterBodyDto) {
-    const result = await this.authService.register(
-      body.email.toLowerCase(),
-      body.name,
-      body.password,
+    const acessToken: string = await this.commandBus.execute(
+      new RegisterCommand(body.email, body.name, body.password),
     );
 
-    return {
-      user: UserDto.fromDomain(result.user),
-      token: result.token,
-    };
+    return acessToken;
   }
 
   @Post('logout')
@@ -62,5 +52,7 @@ export class AuthController {
     description: 'Invalidate access token',
   })
   @ApiNoContentResponse({ description: 'User logged out successfully' })
-  logout() {}
+  logout() {
+    throw new NotImplementedException();
+  }
 }
