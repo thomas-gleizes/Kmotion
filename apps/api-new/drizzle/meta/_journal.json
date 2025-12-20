@@ -22,6 +22,13 @@
       "when": 1766230714547,
       "tag": "0002_great_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1766243367614,
+      "tag": "0003_unique_blazing_skull",
+      "breakpoints": true
     }
   ]
 }
