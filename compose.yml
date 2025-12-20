@@ -4,61 +4,19 @@ volumes:
   database:
 
 networks:
-  kmotion_reverse_proxy:
-    name: kmotion_reverse_proxy
+  kmotion-net:
+    name: kmotion-net
     driver: bridge
 
 services:
-  traefik:
-    container_name: kmotion_traefik
-    image: traefik:v2.5
-    networks:
-      kmotion_reverse_proxy:
-        aliases:
-          - kmotion-traefik
-    ports:
-      - "80:80"
-    volumes:
-      - ./.docker/traefik/traefik.toml:/etc/traefik/traefik.toml
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.kmotion_traefik.rule=Host(`traefik.kmotion.localhost`)"
-      - "traefik.http.routers.kmotion_traefik.entrypoints=web"
-      - "traefik.http.routers.kmotion_traefik.service=api@internal"
-
-  app:
-    container_name: kmotion_app
-    build:
-      context: .docker/app
-      dockerfile: Dockerfile
-    command: bash -c "pnpm install --frozen-lockfile && pnpm dev"
-    networks:
-      kmotion_reverse_proxy:
-        aliases:
-          - kmotion-web
-    working_dir: /var/www/app
-    volumes:
-      - ./:/var/www/app
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.kmotion_web.loadbalancer.server.port=3000"
-      - "traefik.http.routers.kmotion_web.rule=Host(`kmotion.localhost`)"
-      - "traefik.http.routers.kmotion_web.entrypoints=web"
-
   database:
-    container_name: kmotion_database
-    image: mariadb:11.1.5
-    volumes:
-      - database:/var/lib/mysql
-    ports:
-      - "3306:3306"
+    image: postgres:17.6
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: kmotion
-      MYSQL_USER: kmotion
-      MYSQL_PASSWORD: kmotion
+      POSTGRES_HOST_AUTH_METHOD: trust
     networks:
-      kmotion_reverse_proxy:
-        aliases:
-          - kmotion-database
+      kmotion-net:
+    ports:
+      - "5432:5432"
+    volumes:
+      - database:/var/lib/postgresql/data
+      - ./.docker/database:/docker-entrypoint-initdb.d

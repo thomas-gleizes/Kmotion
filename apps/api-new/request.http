@@ -1,0 +1,54 @@
+### Auth : Register
+POST {{baseURL}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{$random.email}}",
+  "name": "{{$random.name.fullName}}",
+  "password": "password123"
+}
+
+> {%
+  client.global.set('token', response.body.token);
+  client.global.set('email', response.body.user.email);
+%}
+
+
+### Auth : Login
+POST {{baseURL}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "password123"
+}
+
+
+> {%
+  client.global.set('token', response.body.token);
+  client.global.set('user', response.body.user);
+%}
+
+### User : Get profile
+GET {{baseURL}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+> {%
+  client.global.set('id', response.body.id);
+  client.global.set('slug', response.body.slug);
+%}
+
+### User : Find By ID
+GET {{baseURL}}/users/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### User : Finy By Slug
+GET {{baseURL}}/users/slug/{{slug}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### User : Index
+GET {{baseURL}}/users
+
