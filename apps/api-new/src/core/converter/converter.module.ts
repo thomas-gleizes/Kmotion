@@ -6,7 +6,6 @@ import { environment } from 'src/core/config/environment';
 @Module({
   imports: [
     HttpModule.register({
-      timeout: 5000,
       baseURL: environment.CONVERTER_URL,
       headers: {
         'Content-Type': 'application/json',

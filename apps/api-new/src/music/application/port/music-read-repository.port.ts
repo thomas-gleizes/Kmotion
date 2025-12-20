@@ -14,4 +14,6 @@ export const MUSIC_READ_REPOSITORY_PORT = Symbol('MUSIC_READ_REPOSITORY_PORT');
 
 export interface MusicReadRepositoryPort {
   exist(mediaId: string, mediaSource: MediaSource): Promise<boolean>;
+
+  search(query: string): Promise<MusicRead[]>;
 }

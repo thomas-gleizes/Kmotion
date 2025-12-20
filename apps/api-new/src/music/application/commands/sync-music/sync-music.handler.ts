@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SyncMusicCommand } from 'src/music/application/commands/sync-music/sync-music.command';
 import { Inject, Logger } from '@nestjs/common';
-import { ConverterServiceAdapter } from 'src/music/infrastructure/adapters/converter-service-adapter.service';
+import { ConverterServiceAdapter } from 'src/music/infrastructure/adapters/converter-service.adapter';
 import {
   MUSIC_WRITE_REPOSITORY_PORT,
   type MusicWriteRepositoryPort,

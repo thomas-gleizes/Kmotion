@@ -6,9 +6,10 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { catchError, Observable, tap, throwError } from 'rxjs';
+import { randomUUID } from 'crypto';
 
 @Injectable()
-export class HttpLoggingInterceptor implements NestInterceptor {
+class HttpLoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger('HTTP');
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -17,7 +18,9 @@ export class HttpLoggingInterceptor implements NestInterceptor {
     const url = req.originalUrl;
     const now = Date.now();
 
-    this.logger.log(`-> ${method} ${url}`);
+    const id = randomUUID();
+
+    this.logger.log(`${id} -> ${method} ${url}`);
 
     return next.handle().pipe(
       tap(() => {
@@ -26,15 +29,19 @@ export class HttpLoggingInterceptor implements NestInterceptor {
         const statusCode = response.statusCode;
 
         if (statusCode >= 400) {
-          this.logger.error(`<- ${method} ${url} ${statusCode} - ${delay}ms`);
+          this.logger.error(
+            `${id} <- ${method} ${url} ${statusCode} - ${delay}ms`,
+          );
         } else {
-          this.logger.log(`<- ${method} ${url} ${statusCode} - ${delay}ms`);
+          this.logger.log(
+            `${id} <- ${method} ${url} ${statusCode} - ${delay}ms`,
+          );
         }
       }),
       catchError((error) => {
         const delay = Date.now() - now;
         this.logger.error(
-          `<- ${method} ${url} - ${
+          `${id} <- ${method} ${url} - ${
             error.message ?? 'Unknow Error'
           } - ${delay}ms`,
         );
@@ -44,3 +51,5 @@ export class HttpLoggingInterceptor implements NestInterceptor {
     );
   }
 }
+
+export default HttpLoggingInterceptor;

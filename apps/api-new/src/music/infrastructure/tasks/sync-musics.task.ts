@@ -16,10 +16,10 @@ export class SyncMusicsTask implements OnApplicationBootstrap {
 
   @Cron('* * * * *')
   async onApplicationBootstrap() {
-    this.logger.debug('Syncing musics...');
+    this.logger.log('Syncing musics...');
 
     const added = await this.commandBus.execute(new SyncMusicCommand());
 
-    this.logger.debug(`Synced ${added} musics`);
+    this.logger.log(`Synced ${added} musics`);
   }
 }
