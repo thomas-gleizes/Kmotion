@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { FindMusicByIdQuery } from 'src/music/application/queries/find-music-by-id/find-music-by-id.query';
+import { FindMusicByMediaIdQuery } from 'src/music/application/queries/find-music-by-media-id/find-music-by-media-id.query';
 import {
   MUSIC_READ_REPOSITORY_PORT,
   MusicRead,
@@ -8,15 +8,20 @@ import {
 import { RessourceNotFoundException } from 'src/shared/domain/exceptions/ressource-not-found.exception';
 import { Inject } from '@nestjs/common';
 
-@QueryHandler(FindMusicByIdQuery)
-export class FindMusicByIdHandler implements IQueryHandler<FindMusicByIdQuery> {
+@QueryHandler(FindMusicByMediaIdQuery)
+export class FindMusicByMediaIdHandler
+  implements IQueryHandler<FindMusicByMediaIdQuery>
+{
   constructor(
     @Inject(MUSIC_READ_REPOSITORY_PORT)
     private readonly musicReadRepository: MusicReadRepositoryPort,
   ) {}
 
-  async execute(query: FindMusicByIdQuery): Promise<MusicRead> {
-    const music = await this.musicReadRepository.findById(query.id);
+  async execute(query: FindMusicByMediaIdQuery): Promise<MusicRead> {
+    const music = await this.musicReadRepository.findByMediaId(
+      query.mediaId,
+      query.mediaSource,
+    );
 
     if (!music) throw new RessourceNotFoundException('Music');
 

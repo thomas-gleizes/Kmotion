@@ -1,14 +1,14 @@
-import { ConverterHttpService } from 'src/core/converter/converter-http.service';
+import { YtConverterHttpService } from 'src/core/converter/yt-converter-http.service';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   MUSIC_READ_REPOSITORY_PORT,
   type MusicReadRepositoryPort,
 } from 'src/music/application/port/music-read-repository.port';
-import { MediaSource, Music } from 'src/music/domain/music.entity';
+import { MediaSource } from 'src/music/domain/values-object/media-source.value-object';
 import { ConverterServicePort } from 'src/music/domain/port/converter-service.port';
 import { DomainException } from 'src/shared/domain/exceptions/domain.exception';
 import { MusicsFactory } from 'src/music/infrastructure/factories/musics.factory';
-import { RessourceNotFoundException } from 'src/shared/domain/exceptions/ressource-not-found.exception';
+import { Music } from 'src/music/domain/music.entity';
 
 @Injectable()
 export class ConverterServiceAdapter implements ConverterServicePort {
@@ -17,7 +17,7 @@ export class ConverterServiceAdapter implements ConverterServicePort {
   constructor(
     @Inject(MUSIC_READ_REPOSITORY_PORT)
     private readonly musicReadRepository: MusicReadRepositoryPort,
-    private readonly converterHttpService: ConverterHttpService,
+    private readonly converterHttpService: YtConverterHttpService,
     private readonly musicFactory: MusicsFactory,
   ) {}
 
@@ -28,10 +28,7 @@ export class ConverterServiceAdapter implements ConverterServicePort {
       const musics: Music[] = [];
 
       for (const track of tracks) {
-        const isExist = await this.musicReadRepository.exist(
-          track.id,
-          'youtube',
-        );
+        const isExist = await this.musicReadRepository.exist(track.id);
 
         if (isExist) continue;
 

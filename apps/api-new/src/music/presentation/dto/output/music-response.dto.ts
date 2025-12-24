@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MusicRead } from 'src/music/application/port/music-read-repository.port';
+import { MediaSource } from 'src/music/domain/values-object/media-source.value-object';
 
 export class MusicResponseDto {
   @ApiProperty({
@@ -39,19 +40,11 @@ export class MusicResponseDto {
   })
   duration: number;
 
-  @ApiProperty({
-    description: 'URL pointing to the audio stream or audio file',
-    example: 'https://cdn.example.com/audio/bohemian-rhapsody.mp3',
-    format: 'uri',
-  })
-  audio: string;
+  @ApiProperty({ enum: MediaSource, description: 'Media source of track' })
+  mediaSource: MediaSource;
 
-  @ApiProperty({
-    description: 'URL of the track thumbnail image',
-    example: 'https://cdn.example.com/thumbnails/bohemian-rhapsody.jpg',
-    format: 'uri',
-  })
-  thumbnail: string;
+  @ApiProperty({ type: String, description: 'Id of source media' })
+  mediaId: string;
 
   static fromReadModel(model: MusicRead) {
     const dto = new MusicResponseDto();
@@ -61,8 +54,8 @@ export class MusicResponseDto {
     dto.artist = model.artist;
     dto.channel = model.channel;
     dto.duration = model.duration;
-    dto.audio = model.audio;
-    dto.thumbnail = model.thumbnail;
+    dto.mediaSource = model.mediaSource;
+    dto.mediaId = model.mediaId;
 
     return dto;
   }

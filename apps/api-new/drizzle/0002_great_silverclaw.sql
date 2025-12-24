@@ -1,2 +1,0 @@
-ALTER TABLE "musics" ALTER COLUMN "downloaderId" DROP NOT NULL;--> statement-breakpoint
-ALTER TABLE "musics" ADD CONSTRAINT "musics_downloaderId_users_id_fk" FOREIGN KEY ("downloaderId") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE cascade;

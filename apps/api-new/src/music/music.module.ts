@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MusicController } from './presentation/music.controller';
+import MusicController from './presentation/music.controller';
 import { SyncMusicsTask } from 'src/music/infrastructure/tasks/sync-musics.task';
 import { musicsCommandHandlers } from 'src/music/application/commands';
 import { ConverterServiceAdapter } from 'src/music/infrastructure/adapters/converter-service.adapter';

@@ -1,4 +1,5 @@
-### Auth : Register
+@musicId = 6a116c36-e920-4dee-88ba-532a9c98841d
+
 POST {{baseURL}}/auth/register
 Content-Type: application/json
 
@@ -24,7 +25,7 @@ Content-Type: application/json
 
 
 > {%
-  client.global.set('token', response.body.token);
+  client.global.set('token', response.body);
 %}
 
 ### User : Get profile
@@ -48,13 +49,23 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 ### User : Index
-GET {{baseURL}}/users
+GET {{baseURL}}/users?offset=1&size=1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
 
 ### Music : Sync
 POST {{baseURL}}/musics/sync
 Authorization: Bearer {{token}}
 Content-Type: application/json
 Accept: text/plain
+
+### Musics : Index
+GET {{baseURL}}/musics?page=0&size=20
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
 
 
 ### Music : Download
@@ -73,3 +84,19 @@ GET {{baseURL}}/musics/search?query=il v
 Authorization: Bearer {{token}}
 Content-Type: application/json
 Accept: application/json
+
+### Music : Get By Id
+GET {{baseURL}}/musics/{{musicId}}
+Authorization: Bearer {{token}}
+
+### Music : Fetch thunbnail
+GET {{baseURL}}/musics/{{musicId}}/thumbnail
+Authorization: Bearer {{token}}
+
+### Music : Fetch thunbnail
+GET {{baseURL}}/musics/{{musicId}}/audio
+Authorization: Bearer {{token}}
+
+### Music : Get By Media
+GET {{baseURL}}/musics/media/a13ffqJgH78?source=youtube
+Authorization: Bearer {{token}}
