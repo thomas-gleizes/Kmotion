@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { ConverterHttpService } from 'src/core/converter/converter-http.service';
+import { YtConverterHttpService } from 'src/core/converter/yt-converter-http.service';
 import { environment } from 'src/core/config/environment';
 
 @Module({
@@ -13,7 +13,7 @@ import { environment } from 'src/core/config/environment';
       },
     }),
   ],
-  providers: [ConverterHttpService],
-  exports: [ConverterHttpService],
+  providers: [YtConverterHttpService],
+  exports: [YtConverterHttpService],
 })
 export class ConverterModule {}

@@ -30,9 +30,14 @@ export class UserController {
     description: 'All users',
   })
   async index(@Query() query: UsersIndexBodyDto) {
-    return this.queryBus.execute(
+    await this.queryBus.execute(
       new FindUsersQuery(query.pageSize, query.pageToken, query.filters),
     );
+
+    return {
+      records: [],
+      total: 0,
+    } as PaginatedUsersDto;
   }
 
   @Get('me')

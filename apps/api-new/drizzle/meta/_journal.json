@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1766083849428,
-      "tag": "0000_rare_skin",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1766230115526,
-      "tag": "0001_magenta_shooting_star",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1766230714547,
-      "tag": "0002_great_silverclaw",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1766243367614,
-      "tag": "0003_unique_blazing_skull",
+      "when": 1766571168195,
+      "tag": "0000_steep_exiles",
       "breakpoints": true
     }
   ]

@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  OnApplicationBootstrap,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Cron } from '@nestjs/schedule';
 import { SyncMusicCommand } from 'src/music/application/commands/sync-music/sync-music.command';
@@ -11,14 +6,19 @@ import { SyncMusicCommand } from 'src/music/application/commands/sync-music/sync
 @Injectable()
 export class SyncMusicsTask implements OnApplicationBootstrap {
   private readonly logger = new Logger(SyncMusicsTask.name);
+  private isRunning: boolean = false;
 
   constructor(private readonly commandBus: CommandBus) {}
 
-  @Cron('* * * * *')
+  @Cron('0 5 * * *')
   async onApplicationBootstrap() {
+    if (this.isRunning) return;
+
     this.logger.log('Syncing musics...');
 
+    this.isRunning = true;
     const added = await this.commandBus.execute(new SyncMusicCommand());
+    this.isRunning = false;
 
     this.logger.log(`Synced ${added} musics`);
   }
