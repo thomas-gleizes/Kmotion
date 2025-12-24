@@ -1,4 +1,5 @@
-@musicId = 6a116c36-e920-4dee-88ba-532a9c98841d
+@musicId = c46642a8-9818-41c8-9847-54d838b351dd
+@playlistId = 4ccad19f-a4f2-460a-aa84-1ce16e53a00b
 
 POST {{baseURL}}/auth/register
 Content-Type: application/json
@@ -100,3 +101,72 @@ Authorization: Bearer {{token}}
 ### Music : Get By Media
 GET {{baseURL}}/musics/media/a13ffqJgH78?source=youtube
 Authorization: Bearer {{token}}
+
+### Playlist : Create
+POST {{baseURL}}/playlists
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "{{$random.commerce.productName}}",
+  "description": "{{$random.lorem.paragraph}}",
+  "visibility": "private",
+  "entries": [
+    { "musicId": "{{musicId}}", "position": 1 }
+  ]
+}
+
+### Playlist : Index
+GET {{baseURL}}/playlists?page=0&size=20
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Playlist : Show
+GET {{baseURL}}/playlists/{{playlistId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Playlist : Update
+PATCH {{baseURL}}/playlists/{{playlistId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Ma Super Playlist Modifiée",
+  "description": "Nouvelle description"
+}
+
+### Playlist : Delete
+DELETE {{baseURL}}/playlists/{{playlistId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Playlist : Add Music
+POST {{baseURL}}/playlists/{{playlistId}}/musics
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "musicId": "{{musicId}}",
+  "position": 2
+}
+
+### Playlist : Remove Music
+DELETE {{baseURL}}/playlists/{{playlistId}}/musics/{{musicId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Playlist : Show by user id
+GET {{baseURL}}/playlists/users/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Plalist: Add entry to playlist
+POST {{baseURL}}/playlists/{{playlistId}}/musics
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "musicId": "a222216b-ed85-4b0c-bc75-dc47dbba87a1",
+  "position": 1
+}

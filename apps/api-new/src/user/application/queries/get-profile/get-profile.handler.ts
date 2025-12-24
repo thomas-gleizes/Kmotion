@@ -1,21 +1,23 @@
 import { Inject } from '@nestjs/common';
 import {
-  USER_REPOSITORY_PORT,
-  type UserRepositoryPort,
-} from 'src/user/domain/port/user-repository.port';
+  USER_QUERY_REPOSITORY_PORT,
+  type UserQueryRepositoryPort,
+  type UserRead,
+} from 'src/user/application/port/user-query-repository.port';
 import { RessourceNotFoundException } from 'src/shared/domain/exceptions/ressource-not-found.exception';
-import { User } from 'src/user/domain/user.entity';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetProfileQuery } from './get-profile.query';
 
 @QueryHandler(GetProfileQuery)
-export class GetProfileHandler implements IQueryHandler<GetProfileQuery, User> {
+export class GetProfileHandler
+  implements IQueryHandler<GetProfileQuery, UserRead>
+{
   constructor(
-    @Inject(USER_REPOSITORY_PORT)
-    private readonly userRepository: UserRepositoryPort,
+    @Inject(USER_QUERY_REPOSITORY_PORT)
+    private readonly userRepository: UserQueryRepositoryPort,
   ) {}
 
-  async execute(query: GetProfileQuery) {
+  async execute(query: GetProfileQuery): Promise<UserRead> {
     const user = await this.userRepository.findById(query.id);
 
     if (!user) {

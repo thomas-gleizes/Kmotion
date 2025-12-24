@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { CoreModule } from 'src/core/core.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ScheduleModule } from '@nestjs/schedule';
+import { PlaylistModule } from 'src/playlist/playlist.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     AuthModule,
     UserModule,
     MusicModule,
+    PlaylistModule,
   ],
 })
 export class AppModule {}
