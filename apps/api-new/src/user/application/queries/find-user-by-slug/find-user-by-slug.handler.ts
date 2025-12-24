@@ -1,24 +1,23 @@
-import { User } from 'src/user/domain/user.entity';
 import {
-  USER_REPOSITORY_PORT,
-  type UserRepositoryPort,
-} from 'src/user/domain/port/user-repository.port';
+  USER_QUERY_REPOSITORY_PORT,
+  type UserQueryRepositoryPort,
+  type UserRead,
+} from 'src/user/application/port/user-query-repository.port';
 import { Inject } from '@nestjs/common';
 import { RessourceNotFoundException } from 'src/shared/domain/exceptions/ressource-not-found.exception';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { FindUserBySlugQuery } from './find-user-by-slug.query';
 
 @QueryHandler(FindUserBySlugQuery)
-export class FindUserBySlugHandler implements IQueryHandler<
-  FindUserBySlugQuery,
-  User
-> {
+export class FindUserBySlugHandler
+  implements IQueryHandler<FindUserBySlugQuery, UserRead>
+{
   constructor(
-    @Inject(USER_REPOSITORY_PORT)
-    private readonly userRepository: UserRepositoryPort,
+    @Inject(USER_QUERY_REPOSITORY_PORT)
+    private readonly userRepository: UserQueryRepositoryPort,
   ) {}
 
-  async execute(query: FindUserBySlugQuery): Promise<User> {
+  async execute(query: FindUserBySlugQuery): Promise<UserRead> {
     const user = await this.userRepository.findBySlug(query.slug);
 
     if (!user) {

@@ -1,5 +1,5 @@
 {
-  "id": "f3639aff-cd0c-49e5-858e-e1d6903477b7",
+  "id": "ac0251da-e598-4b50-b148-d5c4b57c2f7d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,7 +10,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(52)",
+          "type": "varchar(36)",
           "primaryKey": true,
           "notNull": true
         },
@@ -82,7 +82,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(52)",
+          "type": "varchar(36)",
           "primaryKey": true,
           "notNull": true
         },
@@ -118,7 +118,7 @@
         },
         "downloader_id": {
           "name": "downloader_id",
-          "type": "varchar(52)",
+          "type": "varchar(36)",
           "primaryKey": false,
           "notNull": false
         },
@@ -158,6 +158,129 @@
         }
       },
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.playlists": {
+      "name": "playlists",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(36)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "playlists_user_id_users_id_fk": {
+          "name": "playlists_user_id_users_id_fk",
+          "tableFrom": "playlists",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.playlist_entries": {
+      "name": "playlist_entries",
+      "schema": "",
+      "columns": {
+        "playlistId": {
+          "name": "playlistId",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "musicId": {
+          "name": "musicId",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "playlist_entries_playlistId_playlists_id_fk": {
+          "name": "playlist_entries_playlistId_playlists_id_fk",
+          "tableFrom": "playlist_entries",
+          "tableTo": "playlists",
+          "columnsFrom": [
+            "playlistId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "playlist_entries_musicId_musics_id_fk": {
+          "name": "playlist_entries_musicId_musics_id_fk",
+          "tableFrom": "playlist_entries",
+          "tableTo": "musics",
+          "columnsFrom": [
+            "musicId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "playlist_entries_playlistId_musicId_pk": {
+          "name": "playlist_entries_playlistId_musicId_pk",
+          "columns": [
+            "playlistId",
+            "musicId"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},

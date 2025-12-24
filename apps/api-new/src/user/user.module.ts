@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { UserController } from './presentation/user.controller';
-import { UserRepository } from 'src/user/infrastructure/persistance/repositories/user.repository';
-import { USER_REPOSITORY_PORT } from 'src/user/domain/port/user-repository.port';
+import { UserWriteRepository } from 'src/user/infrastructure/persistance/repositories/user-write.repository';
+import { UserQueryRepository } from 'src/user/infrastructure/persistance/repositories/user-query.repository';
+import { USER_WRITE_REPOSITORY_PORT } from 'src/user/domain/port/user-write-repository.port';
+import { USER_QUERY_REPOSITORY_PORT } from 'src/user/application/port/user-query-repository.port';
 import { AuthModule } from 'src/auth/auth.module';
 import { userQueryHandlers } from 'src/user/application';
 
@@ -10,8 +12,9 @@ import { userQueryHandlers } from 'src/user/application';
   controllers: [UserController],
   providers: [
     ...userQueryHandlers,
-    { provide: USER_REPOSITORY_PORT, useClass: UserRepository },
+    { provide: USER_WRITE_REPOSITORY_PORT, useClass: UserWriteRepository },
+    { provide: USER_QUERY_REPOSITORY_PORT, useClass: UserQueryRepository },
   ],
-  exports: [USER_REPOSITORY_PORT],
+  exports: [USER_WRITE_REPOSITORY_PORT, USER_QUERY_REPOSITORY_PORT],
 })
 export class UserModule {}
