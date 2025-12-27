@@ -8,7 +8,7 @@ import { Inject } from '@nestjs/common';
 import { DRIZZLE } from 'src/core/database/drizzle.provider';
 import type { DrizzleDB } from 'src/core/database/database';
 import { playlistTable } from 'src/playlist/infrastructure/persistance/schemas/playlist.schema';
-import { and, count, eq } from 'drizzle-orm';
+import { and, asc, count, eq } from 'drizzle-orm';
 import { userTable } from 'src/user/infrastructure/persistance/schemas/user.schema';
 import { playlistEntryTable } from 'src/playlist/infrastructure/persistance/schemas/playlist-entry.schema';
 import { musicTable } from 'src/music/infrastructure/persistance/schemas/music.schema';
@@ -92,10 +92,16 @@ export class PlaylistReadRepository implements PlaylistQueryRepositoryPort {
       .groupBy(playlistTable.id, userTable.id, userTable.name, userTable.slug)
       .where(eq(playlistTable.userId, userId));
 
-    return records.map((record) => ({
-      ...record,
-      visibility: record.visibility as Visibility,
-    }));
+    const results: ManyPlaylistRead[] = [];
+    for (const record of records) {
+      results.push({
+        ...record,
+        visibility: record.visibility as Visibility,
+        firstsMusicsIds: await this.fetchFirstMusicsId(record.id),
+      });
+    }
+
+    return results;
   }
 
   async findMany(
@@ -127,9 +133,25 @@ export class PlaylistReadRepository implements PlaylistQueryRepositoryPort {
       .limit(size)
       .offset(page * size);
 
-    return records.map((record) => ({
-      ...record,
-      visibility: record.visibility as Visibility,
-    }));
+    const results: ManyPlaylistRead[] = [];
+    for (const record of records) {
+      results.push({
+        ...record,
+        visibility: record.visibility as Visibility,
+        firstsMusicsIds: await this.fetchFirstMusicsId(record.id),
+      });
+    }
+
+    return results;
+  }
+
+  private async fetchFirstMusicsId(playlistId: string): Promise<string[]> {
+    return this.database
+      .select({ id: playlistEntryTable.musicId })
+      .from(playlistEntryTable)
+      .where(eq(playlistEntryTable.playlistId, playlistId))
+      .orderBy(asc(playlistEntryTable.position))
+      .limit(4)
+      .then((result) => result.map(({ id }) => id));
   }
 }

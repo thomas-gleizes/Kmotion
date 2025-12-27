@@ -7,6 +7,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import HttpLoggingInterceptor from 'src/shared/presentation/interceptor/http-loging.interceptor';
 import { DomainExceptionFilter } from 'src/shared/presentation/exception-filters/domain.exception-filter';
 import { GlobalExceptionFilters } from 'src/shared/presentation/exception-filters/global-exception.filter';
+import {
+  API_PREFIX,
+  API_SWAGGER,
+  API_VERSION,
+} from 'src/core/config/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -15,7 +20,7 @@ async function bootstrap() {
     }),
   });
 
-  app.setGlobalPrefix('api/3.1');
+  app.setGlobalPrefix(API_PREFIX);
   app.useGlobalInterceptors(new HttpLoggingInterceptor());
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new DomainExceptionFilter());
@@ -24,11 +29,11 @@ async function bootstrap() {
   const document = new DocumentBuilder()
     .setTitle('Kmotion api')
     .setDescription('Kmotion api description')
-    .setVersion('3.1')
+    .setVersion(API_VERSION)
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, document);
-  SwaggerModule.setup('api/3.1/swagger', app, documentFactory);
+  SwaggerModule.setup(API_SWAGGER, app, documentFactory);
 
   await app.listen(environment.PORT);
 }

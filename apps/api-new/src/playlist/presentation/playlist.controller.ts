@@ -36,6 +36,10 @@ import {
   ManyPlaylistResponseDto,
   PlaylistResponseDto,
 } from 'src/playlist/presentation/output/playlist-response.dto';
+import {
+  ManyPlaylistRead,
+  PlaylistRead,
+} from 'src/playlist/application/port/playlist-query-repository.port';
 
 @ApiTags('Playlists')
 @Controller('playlists')
@@ -139,10 +143,14 @@ export class PlaylistController {
     @CurrentUser() user: AuthPayload,
     @Query() pagination: PlaylistPaginationDto,
   ) {
-    return this.queryBus.execute(
+    const playlists: ManyPlaylistRead[] = await this.queryBus.execute(
       new FindManyPlaylistsQuery({
         pagination: { page: pagination.page, size: pagination.size },
       }),
+    );
+
+    return playlists.map((playlist) =>
+      ManyPlaylistResponseDto.fromModel(playlist),
     );
   }
 
@@ -151,7 +159,11 @@ export class PlaylistController {
   @ApiOperation({ operationId: 'show', summary: 'Get a playlist' })
   @ApiOkResponse({ type: PlaylistResponseDto })
   async show(@Param('id') id: string, @CurrentUser() user: AuthPayload) {
-    return this.queryBus.execute(new FindPlaylistByIdQuery(id));
+    const playlist: PlaylistRead = await this.queryBus.execute(
+      new FindPlaylistByIdQuery(id),
+    );
+
+    return PlaylistResponseDto.fromModel(playlist);
   }
 
   @Get('users/:id')
@@ -165,6 +177,12 @@ export class PlaylistController {
     @Param('id') userId: string,
     @CurrentUser() user: AuthPayload,
   ) {
-    return this.queryBus.execute(new FindUserPlaylistsQuery(userId));
+    const playlists: ManyPlaylistRead[] = await this.queryBus.execute(
+      new FindUserPlaylistsQuery(userId),
+    );
+
+    return playlists.map((playlist) =>
+      ManyPlaylistResponseDto.fromModel(playlist),
+    );
   }
 }
