@@ -40,6 +40,7 @@ export type ManyPlaylistRead = {
   visibility: Visibility;
   user: UserPlaylistRead;
   entriesTotal: number;
+  firstsMusicsIds: string[]; // First fours musics ids
 };
 
 export interface PlaylistQueryRepositoryPort {
