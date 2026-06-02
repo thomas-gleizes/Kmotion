@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kmotion-server
+  namespace: kmotion
+  labels:
+    app: kmotion-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kmotion-server
+  template:
+    metadata:
+      name: kmotion-server
+      labels:
+        app: kmotion-server
+    spec:
+      containers:
+        - name: kmotion-server
+          image: nginx
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always
+      

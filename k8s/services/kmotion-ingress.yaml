@@ -1,0 +1,10 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kmotion-ingress
+  labels:
+    role: kmotion-ingress
+spec:
+  rules:
+    - host: kmotion.thomasgleizes.fr
+
