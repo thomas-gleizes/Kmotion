@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  PORT: "3000"
+  NODE_ENV: production
+  API_URL: https://kmotion.thomasgleizes.fr/api
+  CLIENT_URL: https://kmotion.thomasgleizes.fr
+  DOMAIN: kmotion.thomasgleizes.fr
+  CONVERTER_TOKEN: FF
+  CONVERTER_URL: https://localhost:3000
+  SECRET_SEED: ""
+  SECRET_SESSION: ""
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_NAME: appdb
+  DB_USER: postgres
+kind: ConfigMap
+metadata:
+  name: server
+  namespace: kmotion

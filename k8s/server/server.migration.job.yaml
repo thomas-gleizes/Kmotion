@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: server-migration
+  namespace: kmotion
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migration
+          image: kmotion:local
+          imagePullPolicy: Never
+          command: ["node_modules/.bin/drizzle-kit", "migrate"]
+          envFrom:
+            - configMapRef:
+                name: server
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
+
+
