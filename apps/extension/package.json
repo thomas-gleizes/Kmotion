@@ -1,43 +1,37 @@
 {
   "name": "@kmotion/extension",
-  "license": "ISC",
+  "version": "1.0.0",
+  "description": "YouTube to MP3 converter extension",
   "scripts": {
+    "dev": "vite dev",
     "build": "vite build",
-    "clean": "rm -r -f dist/* && rm -r -f ../api/extension/kmotion.zip",
-    "archive": "zip -r ../api/extension/kmotion.zip dist/*",
-    "deploy": "pnpm clean && pnpm build && pnpm archive"
+    "preview": "vite preview",
+    "deploy": "npm run build && npm run package",
+    "package": "web-ext build -s dist -a build --overwrite-dest"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@headlessui/react": "^1.7.15",
     "@hookform/resolvers": "^3.1.1",
-    "@kmotion/validations": "workspace:^",
-    "@tanstack/react-query": "^4.29.25",
-    "axios": "^1.4.0",
     "classnames": "^2.3.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "openapi-fetch": "^0.17.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-hook-form": "^7.45.1",
     "react-icons": "^4.10.1",
-    "react-spinners": "^0.13.8",
-    "react-use": "^17.4.0",
-    "reflect-metadata": "^0.1.13",
-    "simplebar-react": "^3.2.4",
-    "uuid": "^9.0.0"
+    "zod": "^3.22.4",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
-    "@crxjs/vite-plugin": "^1.0.14",
-    "@kmotion/types": "workspace:^",
-    "@types/chrome": "^0.0.241",
-    "@types/node": "^18.16.19",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@types/uuid": "^9.0.2",
+    "@types/chrome": "^0.0.260",
     "@vitejs/plugin-react": "^4.0.3",
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.3.3",
+    "autoprefixer": "^10.4.20",
+    "openapi-typescript": "^7.13.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
     "typescript": "^5.1.6",
-    "vite": "^4.5.3",
-    "vite-plugin-chrome-extension": "^0.0.7"
+    "vite": "^6.0.3",
+    "web-ext": "^8.1.0"
   }
 }
