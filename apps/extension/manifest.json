@@ -1,20 +1,31 @@
 {
   "manifest_version": 3,
-  "name": "Kmotion extension",
-  "version": "0.1",
+  "name": "kMotion - YouTube to MP3",
+  "version": "1.0.0",
+  "description": "Convert YouTube videos to MP3 with kMotion",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://youtu.be/*"
+  ],
   "action": {
-    "default_popup": "index.html",
-    "default_icon": "public/icon.png"
+    "default_popup": "dist/popup.html",
+    "default_title": "kMotion - YouTube to MP3"
   },
   "background": {
-    "service_worker": "src/background.ts",
-    "type": "module"
+    "service_worker": "dist/background.js"
   },
   "content_scripts": [
     {
-      "js": ["src/content-scripts.ts"],
-      "matches": ["https://*.youtube.com/*"]
+      "matches": ["https://www.youtube.com/*", "https://youtu.be/*"],
+      "js": ["dist/content.js"],
+      "run_at": "document_start"
     }
-  ],
-  "permissions": ["storage", "webNavigation", "activeTab", "tabs", "contextMenus"]
+  ]
 }
+
