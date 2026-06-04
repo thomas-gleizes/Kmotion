@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app: server
+  name: server
+  namespace: kmotion
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+      name: server
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: server
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        image: ghcr.io/thomas-gleizes/kmotion:latest
+        imagePullPolicy: Always
+        name: server
+        ports:
+        - containerPort: 80
+          protocol: TCP
+      restartPolicy: Always
