@@ -18,6 +18,20 @@ spec:
         app: server
       name: server
     spec:
+      initContainers:
+        - name: migration
+          image: ghcr.io/thomas-gleizes/kmotion:latest
+          imagePullPolicy: Always
+          command: ["node_modules/.bin/drizzle-kit", "migrate"]
+          envFrom:
+            - configMapRef:
+                name: server
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
       containers:
       - envFrom:
         - configMapRef:
