@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { HealthController } from './health/health.controller';
 import { UserModule } from './user/user.module';
 import { MusicModule } from './music/music.module';
 import { AuthModule } from './auth/auth.module';
@@ -8,6 +9,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { PlaylistModule } from 'src/playlist/playlist.module';
 
 @Module({
+  controllers: [HealthController],
   imports: [
     ScheduleModule.forRoot(),
     CqrsModule.forRoot(),
