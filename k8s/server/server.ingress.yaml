@@ -3,7 +3,13 @@ kind: Ingress
 metadata:
   name: server
   namespace: kmotion
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
+  tls:
+    - hosts:
+        - kmotion.thomasgleizes.fr
+      secretName: kmotion-tls
   rules:
     - host: kmotion.thomasgleizes.fr
       http:
