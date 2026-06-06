@@ -4,7 +4,7 @@ import { paths } from "../types/schema"
 const STORAGE_KEY_TOKEN = "auth_token"
 const STORAGE_KEY_USER = "auth_user"
 
-// Base URL for the API (as defined in server constants)
+// Base URL for the API (as defined in app constants)
 const API_BASE_URL = "http://localhost:3000/api/3.1"
 
 class ExtensionAPI {
@@ -36,7 +36,7 @@ class ExtensionAPI {
       throw new Error("Login failed")
     }
 
-    // data is the token string according to server controller
+    // data is the token string according to app controller
     return { accessToken: data }
   }
 

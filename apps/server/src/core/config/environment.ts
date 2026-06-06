@@ -19,7 +19,9 @@ export const validationSchema = z.object({
 
   JWT_SECRET: z.string().default('secret'),
   JWT_EXPIRATION_TIME: z.number().default(500000),
+
   PASSWORD_PAPER: z.string().default('PAPER'),
+
   CONVERTER_URL: z.url().default('http://localhost:3000'),
   CONVERTER_KEY: z.string().default(''),
 });
