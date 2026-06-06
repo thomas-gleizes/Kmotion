@@ -9,8 +9,9 @@ data:
   API_URL: https://kmotion.thomasgleizes.fr/api
   CLIENT_URL: https://kmotion.thomasgleizes.fr
   DOMAIN: kmotion.thomasgleizes.fr
-  CONVERTER_KEY: YxSn9ROYVgesVbrtoM04cuMPdp0GXF9i
-  CONVERTER_URL: http://app.ytc
+  PASSWORD_PAPER: Npjkyd6YkD01erQMxGhdsxT0TecxNmwG
+  CONVERTER_TOKEN: 7bLFvjgzOM2nOqYM5L7OFpBPSEl25ukN
+  CONVERTER_URL: http://ytc.app
   SECRET_SEED: ""
   SECRET_SESSION: ""
   DB_HOST: postgres
