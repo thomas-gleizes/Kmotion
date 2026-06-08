@@ -4,19 +4,19 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    app: server
-  name: server
+    app: app
+  name: app
   namespace: kmotion
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: server
+      app: app
   template:
     metadata:
       labels:
-        app: server
-      name: server
+        app: app
+      name: app
     spec:
       initContainers:
         - name: migration
@@ -25,7 +25,7 @@ spec:
           command: ["node_modules/.bin/drizzle-kit", "migrate"]
           envFrom:
             - configMapRef:
-                name: server
+                name: app
           env:
             - name: DB_PASSWORD
               valueFrom:
@@ -35,7 +35,7 @@ spec:
       containers:
       - envFrom:
         - configMapRef:
-            name: server
+            name: app
         env:
         - name: DB_PASSWORD
           valueFrom:
@@ -44,7 +44,7 @@ spec:
               key: POSTGRES_PASSWORD
         image: ghcr.io/thomas-gleizes/kmotion:latest
         imagePullPolicy: Always
-        name: server
+        name: app
         ports:
         - containerPort: 80
           protocol: TCP
