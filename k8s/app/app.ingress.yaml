@@ -1,11 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: server
+  name: app
   namespace: kmotion
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+#  annotations:
+#    cert-manager.io/cluster-issuer: letsencrypt-prod
+#    traefik.ingress.kubernetes.io/router.priority: "100"
 spec:
+  ingressClassName: traefik
   tls:
     - hosts:
         - kmotion.thomasgleizes.fr
@@ -14,10 +16,10 @@ spec:
     - host: kmotion.thomasgleizes.fr
       http:
         paths:
-          - path: /
+          - path: /api
             pathType: Prefix
             backend:
               service:
-                name: server
+                name: app
                 port:
                   number: 80
