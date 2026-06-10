@@ -24,7 +24,7 @@ export class UserController {
 
   @Get()
   @UseGuards(AuthGuard)
-  @ApiOperation({ operationId: 'index', summary: 'Get all users' })
+  @ApiOperation({ operationId: 'users_index', summary: 'Get all users' })
   @ApiOkResponse({
     type: PaginatedUsersDto,
     description: 'All users',
@@ -58,7 +58,7 @@ export class UserController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  @ApiOperation({ operationId: 'show', summary: 'Find user by id' })
+  @ApiOperation({ operationId: 'users_show', summary: 'Find user by id' })
   @ApiOkResponse({ type: UserDto, description: 'User profile' })
   async show(@Param('id') id: string) {
     return this.queryBus.execute(new FindUserByIdQuery({ id }));

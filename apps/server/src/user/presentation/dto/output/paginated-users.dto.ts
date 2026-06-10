@@ -6,6 +6,6 @@ export class PaginatedUsersDto implements PaginateResponseDto<UserDto> {
   @ApiProperty({ type: [UserDto], description: 'Users' })
   records: UserDto[];
 
-  @ApiProperty({ type: 'string', description: 'Next page' })
+  @ApiProperty({ type: 'number', description: 'Total users' })
   total: number;
 }

@@ -146,7 +146,7 @@ export class PlaylistController {
   @Get()
   @UseGuards(AuthGuard)
   @ApiOperation({
-    operationId: 'index',
+    operationId: 'playlists_index',
     summary: 'Get all current user playlists',
   })
   @ApiOkResponse({ type: [ManyPlaylistResponseDto] })
@@ -167,7 +167,7 @@ export class PlaylistController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  @ApiOperation({ operationId: 'show', summary: 'Get a playlist' })
+  @ApiOperation({ operationId: 'playlists_show', summary: 'Get a playlist' })
   @ApiOkResponse({ type: PlaylistResponseDto })
   async show(@Param('id') id: string, @CurrentUser() user: AuthPayload) {
     const playlist: PlaylistRead = await this.queryBus.execute(
