@@ -46,7 +46,7 @@ export const RegisterPage = () => {
       <form className={authCardStyle} onSubmit={onSubmit}>
         <div className={authBrandStyle}>
           <MusicNoteIcon size={28} />
-          Motio
+          Kmotion
         </div>
         <TextField
           label="Nom"

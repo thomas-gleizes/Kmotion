@@ -1,7 +1,9 @@
+import { useState } from "react"
 import { Outlet } from "@tanstack/react-router"
 import { css } from "styled-system/css"
 import { Sidebar } from "./Sidebar"
 import { PlayerBar } from "./PlayerBar"
+import { FullscreenPlayer } from "./FullscreenPlayer"
 
 const shell = css({
   display: "grid",
@@ -19,13 +21,16 @@ const main = css({
 })
 
 export function AppShell() {
+  const [fullscreen, setFullscreen] = useState(false)
+
   return (
     <div className={shell}>
       <Sidebar />
       <main className={main}>
         <Outlet />
       </main>
-      <PlayerBar />
+      <PlayerBar onExpand={() => setFullscreen(true)} />
+      {fullscreen && <FullscreenPlayer onClose={() => setFullscreen(false)} />}
     </div>
   )
 }

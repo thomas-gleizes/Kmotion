@@ -20,13 +20,6 @@ const bar = css({
   animation: "fadeIn token(durations.normal) token(easings.apple)",
 })
 
-const trackInfo = css({
-  display: "flex",
-  alignItems: "center",
-  gap: "12px",
-  minWidth: 0,
-})
-
 const cover = css({
   width: "48px",
   height: "48px",
@@ -34,6 +27,22 @@ const cover = css({
   overflow: "hidden",
   flexShrink: 0,
   boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+})
+
+const expandTrigger = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "12px",
+  minWidth: 0,
+  background: "none",
+  border: "none",
+  color: "text",
+  cursor: "pointer",
+  padding: "4px 8px 4px 0",
+  borderRadius: "s",
+  textAlign: "left",
+  transition: "opacity token(durations.fast) token(easings.apple)",
+  _hover: { opacity: 0.8 },
 })
 
 const titleStyle = cx(truncate, css({ fontSize: "14px", fontWeight: "600" }))
@@ -112,7 +121,7 @@ const volumeArea = css({
   color: "textSecondary",
 })
 
-export function PlayerBar() {
+export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
   const player = usePlayer()
   const { currentTime, duration } = usePlayerProgress()
 
@@ -121,7 +130,7 @@ export function PlayerBar() {
 
   return (
     <div className={bar}>
-      <div className={trackInfo}>
+      <button type="button" className={expandTrigger} onClick={onExpand} aria-label="Agrandir le lecteur">
         <div className={cover}>
           <AuthImage path={thumbnailPath(current.id)} alt={current.title} />
         </div>
@@ -129,7 +138,7 @@ export function PlayerBar() {
           <div className={titleStyle}>{current.title}</div>
           <div className={artistStyle}>{current.artist}</div>
         </div>
-      </div>
+      </button>
 
       <div className={controls}>
         <div className={buttons}>

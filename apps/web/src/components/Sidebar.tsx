@@ -73,7 +73,7 @@ export function Sidebar() {
     <aside className={sidebar}>
       <div className={brand}>
         <MusicNoteIcon size={26} />
-        Motio
+        Kmotion
       </div>
       <nav className={css({ display: "flex", flexDirection: "column", gap: "2px" })}>
         <Link to="/" className={navLink}>
