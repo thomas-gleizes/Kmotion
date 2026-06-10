@@ -1,4 +1,4 @@
-const TOKEN_KEY = "motio_token"
+const TOKEN_KEY = "Kmotion_token"
 
 export type AuthPayload = {
   sub: string
