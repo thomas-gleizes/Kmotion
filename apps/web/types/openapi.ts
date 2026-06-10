@@ -1,0 +1,1087 @@
+export interface paths {
+    "/api/3.1/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Health check
+         * @description Returns API status
+         */
+        get: operations["HealthController_check"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Login user
+         * @description Return access token
+         */
+        post: operations["AuthController_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register new user
+         * @description Return access token
+         */
+        post: operations["AuthController_register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Logout user
+         * @description Invalidate access token
+         */
+        post: operations["AuthController_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all users */
+        get: operations["users_index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/users/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get current user profile */
+        get: operations["profile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find user by id */
+        get: operations["users_show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/users/slug/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find user by slug */
+        get: operations["showBySlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/musics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all music */
+        get: operations["musics_index"];
+        put?: never;
+        /**
+         * Add media
+         * @description Add media to database and convert it by source and id
+         */
+        post: operations["addMedia"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/musics/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sync music with converter service */
+        post: operations["sync"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/musics/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search music */
+        get: operations["search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/musics/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get music by id */
+        get: operations["musics_show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/musics/{id}/audio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get music audio */
+        get: operations["getAudio"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/musics/{id}/thumbnail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get music thumbnail */
+        get: operations["getThumbnail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/musics/media/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find music by media id */
+        get: operations["showByMediaId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/playlists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all current user playlists */
+        get: operations["playlists_index"];
+        put?: never;
+        /** Create a playlist */
+        post: operations["create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/playlists/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a playlist */
+        get: operations["playlists_show"];
+        put?: never;
+        post?: never;
+        /** Delete a playlist */
+        delete: operations["delete"];
+        options?: never;
+        head?: never;
+        /** Update a playlist */
+        patch: operations["update"];
+        trace?: never;
+    };
+    "/api/3.1/playlists/{id}/musics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a music to a playlist */
+        post: operations["addMusic"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/playlists/{id}/musics/{musicId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a music from a playlist */
+        delete: operations["removeMusic"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/playlists/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get playlists of user */
+        get: operations["showByUserID"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+}
+export type webhooks = Record<string, never>;
+export interface components {
+    schemas: {
+        LoginBodyDto: {
+            /** Format: email */
+            email: string;
+            /** Format: password */
+            password: string;
+        };
+        RegisterBodyDto: {
+            name: string;
+            /** Format: email */
+            email: string;
+            /** Format: password */
+            password: string;
+        };
+        UserFiltersDto: {
+            email: string;
+            name: string;
+        };
+        UserOrderByDto: {
+            field: string;
+            order: string;
+        };
+        UserDto: {
+            /**
+             * Format: uuid
+             * @example 123e4567-e89b-12d3-a456-426655440000
+             */
+            id: string;
+            /**
+             * Format: email
+             * @example john.doe@example.com
+             */
+            email: string;
+            /** @example John Doe */
+            name: string;
+            /** @example john-doe */
+            slug: string;
+            /** @example true */
+            isActive: boolean;
+            /** @example false */
+            isAdmin: boolean;
+        };
+        PaginatedUsersDto: {
+            /** @description Users */
+            records: components["schemas"]["UserDto"][];
+            /** @description Total users */
+            total: number;
+        };
+        MusicResponseDto: {
+            /**
+             * Format: uuid
+             * @description Unique identifier of the track
+             * @example c8b6f7a2-3e4d-4c9a-9c2e-8c9f1d2a3b4c
+             */
+            id: string;
+            /**
+             * @description Track title
+             * @example Bohemian Rhapsody
+             */
+            title: string;
+            /**
+             * @description Name of the artist or band
+             * @example Queen
+             */
+            artist: string;
+            /**
+             * @description Source platform or channel of the track
+             * @example youtube
+             * @enum {string}
+             */
+            channel: "youtube" | "spotify" | "soundcloud" | "local";
+            /**
+             * @description Total track duration in seconds
+             * @example 354
+             */
+            duration: number;
+            /**
+             * @description Media source of track
+             * @enum {string}
+             */
+            mediaSource: "youtube";
+            /** @description Id of source media */
+            mediaId: string;
+        };
+        MusicsResponseDto: {
+            records: components["schemas"]["MusicResponseDto"][];
+            total: number;
+        };
+        AddMediaBodyDto: {
+            /**
+             * @description Media source of track
+             * @example youtube
+             * @enum {string}
+             */
+            mediaSource: "youtube";
+            /**
+             * @description Id of source media
+             * @example dQw4w9WgXcQ
+             */
+            mediaId: string;
+        };
+        PlaylistEntryDto: {
+            /** @description Playlist music id */
+            musicId: string;
+            /** @description Playlist music position */
+            position: number;
+        };
+        CreatePlaylistDto: {
+            /** @description Playlist title */
+            title: string;
+            /** @description Playlist description */
+            description: string;
+            /**
+             * @description Playlist visibility
+             * @enum {string}
+             */
+            visibility?: "public" | "private";
+            /** @description Playlist musics ids */
+            entries?: components["schemas"]["PlaylistEntryDto"][];
+        };
+        UpdatePlaylistDto: {
+            /** @description Playlist title */
+            title?: string;
+            /** @description Playlist description */
+            description?: string;
+            /**
+             * @description Playlist visibility
+             * @enum {string}
+             */
+            visibility?: "public" | "private";
+            /** @description Playlist musics ids */
+            entries?: components["schemas"]["PlaylistEntryDto"][];
+        };
+        AddMusicToPlaylistDto: {
+            /** @description Music ID to add */
+            musicId: string;
+            /** @description Position in the playlist */
+            position: number;
+        };
+        UserPlaylistResponseDto: {
+            id: string;
+            name: string;
+            slug: string;
+        };
+        ManyPlaylistResponseDto: {
+            id: string;
+            title: string;
+            description: string;
+            /** @enum {string} */
+            visibility: "public" | "private";
+            user: components["schemas"]["UserPlaylistResponseDto"];
+            entriesTotal: number;
+            thumbnails: string[];
+        };
+        PlaylistEntryResponseDto: {
+            id: string;
+            title: string;
+            artist: string;
+            channel: string;
+            duration: number;
+            thumbnail: string;
+            audio: string;
+            mediaId: string;
+            mediaSource: string;
+            position: number;
+        };
+        PlaylistResponseDto: {
+            id: string;
+            title: string;
+            description: string;
+            /** @enum {string} */
+            visibility: "public" | "private";
+            user: components["schemas"]["UserPlaylistResponseDto"];
+            entries: components["schemas"]["PlaylistEntryResponseDto"][];
+            thumbnails: string[];
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
+}
+export type $defs = Record<string, never>;
+export interface operations {
+    HealthController_check: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description API is up and running */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginBodyDto"];
+            };
+        };
+        responses: {
+            /** @description Access token */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    AuthController_register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterBodyDto"];
+            };
+        };
+        responses: {
+            /** @description Access token */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    AuthController_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User logged out successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    users_index: {
+        parameters: {
+            query?: {
+                /** @description Filters */
+                filters?: components["schemas"]["UserFiltersDto"][];
+                /** @description Order by */
+                orderBy?: components["schemas"]["UserOrderByDto"][];
+                /** @description Page size */
+                pageSize?: number;
+                /** @description Page token */
+                pageToken?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedUsersDto"];
+                };
+            };
+        };
+    };
+    profile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User profile */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+        };
+    };
+    users_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User profile */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+        };
+    };
+    showBySlug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User profile */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+        };
+    };
+    musics_index: {
+        parameters: {
+            query?: {
+                /** @description Page */
+                page?: number;
+                /** @description Size */
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music paginated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MusicsResponseDto"];
+                };
+            };
+        };
+    };
+    addMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddMediaBodyDto"];
+            };
+        };
+        responses: {
+            /** @description Added media */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    sync: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music synchronised */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                };
+            };
+        };
+    };
+    search: {
+        parameters: {
+            query: {
+                query: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MusicResponseDto"][];
+                };
+            };
+        };
+    };
+    musics_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MusicResponseDto"];
+                };
+            };
+        };
+    };
+    getAudio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music audio */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "audio/mpeg": string;
+                };
+            };
+        };
+    };
+    getThumbnail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music thumbnail */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/jpeg": string;
+                    "image/png": string;
+                };
+            };
+        };
+    };
+    showByMediaId: {
+        parameters: {
+            query: {
+                mediaSource: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MusicResponseDto"];
+                };
+            };
+        };
+    };
+    playlists_index: {
+        parameters: {
+            query?: {
+                /** @description Page number */
+                page?: number;
+                /** @description Number of items per page */
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManyPlaylistResponseDto"][];
+                };
+            };
+        };
+    };
+    create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePlaylistDto"];
+            };
+        };
+        responses: {
+            /** @description Playlist created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    playlists_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaylistResponseDto"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Playlist deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePlaylistDto"];
+            };
+        };
+        responses: {
+            /** @description Playlist updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    addMusic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddMusicToPlaylistDto"];
+            };
+        };
+        responses: {
+            /** @description Music added to playlist */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    removeMusic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                musicId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music removed from playlist */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    showByUserID: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManyPlaylistResponseDto"][];
+                };
+            };
+        };
+    };
+}

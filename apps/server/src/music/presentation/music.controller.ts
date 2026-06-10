@@ -18,7 +18,6 @@ import {
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AddMediaBodyDto } from 'src/music/presentation/dto/input/add-media-body.dto';
 import { SyncMusicCommand } from 'src/music/application/commands/sync-music/sync-music.command';
-import { number } from 'zod';
 import { AddMusicCommand } from 'src/music/application/commands/add-music/add-music.command';
 import { CurrentUser } from 'src/shared/presentation/decorators/current-user.decorator';
 import { type AuthPayload } from 'src/auth/application/port/auth-service.port';
@@ -46,7 +45,7 @@ class MusicController {
 
   @Get()
   @UseGuards(AuthGuard)
-  @ApiOperation({ operationId: 'index', summary: 'Get all music' })
+  @ApiOperation({ operationId: 'musics_index', summary: 'Get all music' })
   @ApiOkResponse({ type: MusicsResponseDto, description: 'Music paginated' })
   async index(@Query() pagination: MusicsPaginationDto) {
     const result = await this.queryBus.execute(
@@ -62,7 +61,7 @@ class MusicController {
     operationId: 'sync',
     summary: 'Sync music with converter service',
   })
-  @ApiOkResponse({ type: number, description: 'Music synchronised' })
+  @ApiOkResponse({ type: Number, description: 'Music synchronised' })
   async sync() {
     await this.commandBus.execute(new SyncMusicCommand(undefined));
   }
@@ -91,7 +90,11 @@ class MusicController {
   @Get('/search')
   @UseGuards(AuthGuard)
   @ApiOperation({ operationId: 'search', summary: 'Search music' })
-  @ApiOkResponse({ type: [String], description: 'Music' })
+  @ApiOkResponse({
+    type: MusicResponseDto,
+    isArray: true,
+    description: 'Music',
+  })
   async search(@Query('query') query: string) {
     const musics = await this.queryBus.execute(
       new SearchMusicsQuery({ query }),
@@ -102,8 +105,8 @@ class MusicController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  @ApiOperation({ operationId: 'show', summary: 'Get music by id' })
-  @ApiOkResponse({ type: String, description: 'Music' })
+  @ApiOperation({ operationId: 'musics_show', summary: 'Get music by id' })
+  @ApiOkResponse({ type: MusicResponseDto, description: 'Music' })
   async show(@Param('id') id: string) {
     const record = await this.queryBus.execute(
       new FindMusicByIdQuery({ musicId: id }),
