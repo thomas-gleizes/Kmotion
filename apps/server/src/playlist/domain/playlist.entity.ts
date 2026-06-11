@@ -58,6 +58,10 @@ export class PlaylistEntity {
     this._entries.remove(musicId);
   }
 
+  reorderEntries(entries: PlaylistEntry[]) {
+    this._entries.reorder(entries);
+  }
+
   getId(): string {
     return this._id;
   }

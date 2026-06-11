@@ -25,10 +25,7 @@ export class UpdatePlaylistHandler implements ICommandHandler<UpdatePlaylistComm
     if (title) playlist.setTitle(title);
     if (description) playlist.setDescription(description);
     if (visibility) playlist.setVisibility(visibility);
-    if (entries) {
-      // Clear and re-add or implement a better update logic in entity
-      // For now, let's assume the entity has a way to replace entries or we use the PlaylistEntries VO
-    }
+    if (entries) playlist.reorderEntries(entries);
 
     await this.playlistWriteRepository.save(playlist);
   }

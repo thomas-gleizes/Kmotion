@@ -91,4 +91,45 @@ describe('PlaylistEntries', () => {
     const playlist = new PlaylistEntries([]);
     expect(() => playlist.add('music-1', -1)).toThrow(InvalidPositionException);
   });
+
+  it('should reorder entries and normalize positions', () => {
+    const playlist = new PlaylistEntries([
+      { musicId: 'music-1', position: 0 },
+      { musicId: 'music-2', position: 1 },
+      { musicId: 'music-3', position: 2 },
+    ]);
+    playlist.reorder([
+      { musicId: 'music-3', position: 5 },
+      { musicId: 'music-1', position: 8 },
+      { musicId: 'music-2', position: 12 },
+    ]);
+    expect(playlist.getEntries()).toEqual([
+      { musicId: 'music-3', position: 0 },
+      { musicId: 'music-1', position: 1 },
+      { musicId: 'music-2', position: 2 },
+    ]);
+  });
+
+  it('should throw if reorder does not describe the exact same musics', () => {
+    const playlist = new PlaylistEntries([
+      { musicId: 'music-1', position: 0 },
+      { musicId: 'music-2', position: 1 },
+    ]);
+    expect(() =>
+      playlist.reorder([
+        { musicId: 'music-1', position: 0 },
+        { musicId: 'unknown', position: 1 },
+      ]),
+    ).toThrow(MusicNotFoundInPlaylistException);
+  });
+
+  it('should throw if reorder count differs from the playlist', () => {
+    const playlist = new PlaylistEntries([
+      { musicId: 'music-1', position: 0 },
+      { musicId: 'music-2', position: 1 },
+    ]);
+    expect(() =>
+      playlist.reorder([{ musicId: 'music-1', position: 0 }]),
+    ).toThrow(MusicNotFoundInPlaylistException);
+  });
 });
