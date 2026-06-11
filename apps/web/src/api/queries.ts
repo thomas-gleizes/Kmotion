@@ -120,6 +120,20 @@ export function useDeleteUser() {
   })
 }
 
+export function useDeleteMusic() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) =>
+      unwrap(
+        await api.DELETE("/api/3.1/musics/{id}", {
+          params: { path: { id } },
+          parseAs: "text",
+        }),
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["musics"] }),
+  })
+}
+
 export function useSyncMusics() {
   const queryClient = useQueryClient()
   return useMutation({

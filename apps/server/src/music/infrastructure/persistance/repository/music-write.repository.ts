@@ -38,6 +38,10 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
     return this.mapToDomain(record);
   }
 
+  async delete(id: string) {
+    await this.database.delete(musicTable).where(eq(musicTable.id, id));
+  }
+
   async save(music: Music) {
     await this.database
       .insert(musicTable)

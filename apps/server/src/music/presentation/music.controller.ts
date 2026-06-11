@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -26,6 +27,7 @@ import { AuthGuard } from 'src/shared/presentation/guards/auth.guard';
 import { AdminGuard } from 'src/shared/presentation/guards/admin.guard';
 import { UpdateMusicDto } from 'src/music/presentation/dto/input/update-music.dto';
 import { UpdateMusicCommand } from 'src/music/application/commands/update-music/update-music.command';
+import { DeleteMusicCommand } from 'src/music/application/commands/delete-music/delete-music.command';
 import { SearchMusicsQuery } from 'src/music/application/queries/search-musics/search-musics.query';
 import { MusicRead } from 'src/music/application/port/music-read-repository.port';
 import { MusicResponseDto } from 'src/music/presentation/dto/output/music-response.dto';
@@ -140,6 +142,17 @@ class MusicController {
     );
 
     return MusicResponseDto.fromReadModel(record);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard, AdminGuard)
+  @ApiOperation({
+    operationId: 'deleteMusic',
+    summary: 'Delete a music (admin only)',
+  })
+  @ApiOkResponse({ description: 'Music deleted' })
+  async delete(@Param('id') id: string) {
+    await this.commandBus.execute(new DeleteMusicCommand({ musicId: id }));
   }
 
   @Get(':id/audio')
