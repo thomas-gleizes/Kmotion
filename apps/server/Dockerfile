@@ -6,7 +6,7 @@ FROM base AS builder
 
 WORKDIR /app
 
-COPY ./apps/server .
+COPY . .
 
 RUN CI=true pnpm install --frozen-lockfile
 RUN pnpm generate

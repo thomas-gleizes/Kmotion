@@ -12,16 +12,25 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push:
-    name: Build and Push to GHCR
+    name: Build and Push ${{ matrix.name }} to GHCR
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
       packages: write
+
+    strategy:
+      matrix:
+        include:
+          - name: server
+            image: ${{ github.repository }}
+            context: ./apps/server
+          - name: web
+            image: ${{ github.repository }}-web
+            context: ./apps/web
 
     steps:
       - name: Checkout repository
@@ -44,7 +53,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ matrix.image }}
           tags: |
             type=ref,event=branch,enable=${{ github.ref != 'refs/heads/master' }}
             type=ref,event=pr
@@ -56,8 +65,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./Dockerfile
+          context: ${{ matrix.context }}
+          file: ${{ matrix.context }}/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
