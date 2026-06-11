@@ -32,7 +32,7 @@ describe('FindUserPlaylistsHandler', () => {
     ];
     repository.findByUserId.mockResolvedValue(playlistsRead);
 
-    const query = new FindUserPlaylistsQuery('user-1');
+    const query = new FindUserPlaylistsQuery({ userId: 'user-1' });
     const result = await handler.execute(query);
 
     expect(result).toEqual(playlistsRead);
