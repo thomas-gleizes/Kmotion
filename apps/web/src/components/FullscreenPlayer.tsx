@@ -92,24 +92,28 @@ const body = css({
   zIndex: 1,
   display: "flex",
   flex: 1,
-  gap: "40px",
-  padding: "8px 48px 40px",
+  flexDirection: "column",
+  gap: "20px",
+  padding: "8px 20px calc(24px + env(safe-area-inset-bottom))",
   minHeight: 0,
+  md: { flexDirection: "row", gap: "40px", padding: "8px 48px 40px" },
 })
 
 const artSection = css({
-  flex: 1,
+  flex: "0 0 auto",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   minHeight: 0,
   minWidth: 0,
+  md: { flex: 1 },
 })
 
 const artBase = css({
   width: "100%",
   aspectRatio: "16/9",
-  maxHeight: "60vh",
+  maxHeight: "38dvh",
+  md: { maxHeight: "60vh" },
   borderRadius: "m",
   overflow: "hidden",
   transformOrigin: "center",
@@ -125,19 +129,27 @@ const artPaused = css({
 })
 
 const infoSection = css({
-  flex: "0 0 30%",
-  maxWidth: "30%",
+  flex: 1,
+  width: "100%",
+  maxWidth: "100%",
   display: "flex",
   flexDirection: "column",
   gap: "20px",
   overflowY: "auto",
   minWidth: 0,
   paddingRight: "4px",
+  md: { flex: "0 0 30%", maxWidth: "30%", width: "auto" },
 })
 
 const trackTitle = cx(
   truncate,
-  css({ fontSize: "28px", fontWeight: "800", letterSpacing: "-0.5px", lineHeight: "1.2" }),
+  css({
+    fontSize: "22px",
+    fontWeight: "800",
+    letterSpacing: "-0.5px",
+    lineHeight: "1.2",
+    md: { fontSize: "28px" },
+  }),
 )
 
 const trackArtist = cx(
@@ -227,8 +239,10 @@ const repeatBadge = css({
   textAlign: "center",
 })
 
+// Masqué sur mobile : le volume se règle avec les boutons physiques.
 const volumeRow = css({
-  display: "flex",
+  display: "none",
+  md: { display: "flex" },
   alignItems: "center",
   gap: "10px",
   width: "100%",

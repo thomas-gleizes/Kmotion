@@ -62,8 +62,10 @@ const sectionTitle = css({ fontSize: "14px", color: "textSecondary" })
 const row = css({
   display: "flex",
   alignItems: "center",
-  gap: "16px",
+  flexWrap: "wrap",
+  gap: "8px 16px",
   padding: "10px 12px",
+  md: { flexWrap: "nowrap", gap: "16px" },
   borderRadius: "s",
   transition: "background token(durations.fast) token(easings.apple)",
   _hover: { backgroundColor: "rgba(255,255,255,0.05)" },
@@ -73,10 +75,12 @@ const cellMain = css({ flex: 1, minWidth: 0 })
 const rowTitle = cx(truncate, css({ fontSize: "15px", fontWeight: "600" }))
 const rowSub = cx(truncate, css({ fontSize: "13px", color: "textSecondary" }))
 const rowDuration = css({
+  display: "none",
   fontSize: "13px",
   color: "textTertiary",
   fontVariantNumeric: "tabular-nums",
   flexShrink: 0,
+  md: { display: "block" },
 })
 
 const badge = css({
@@ -101,6 +105,7 @@ const iconButton = css({
   justifyContent: "center",
   width: "32px",
   height: "32px",
+  _touch: { width: "40px", height: "40px" },
   borderRadius: "full",
   border: "none",
   background: "none",

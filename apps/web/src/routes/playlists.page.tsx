@@ -14,13 +14,16 @@ const header = css({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
+  flexWrap: "wrap",
+  gap: "12px",
   marginBottom: "24px",
 })
 
 const grid = css({
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-  gap: "12px",
+  gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+  gap: "10px",
+  md: { gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" },
 })
 
 export const PlaylistsPage = () => {

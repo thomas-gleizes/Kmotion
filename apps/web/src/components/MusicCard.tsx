@@ -16,6 +16,7 @@ const card = css({
   _hover: {
     backgroundColor: "rgba(255, 255, 255, 0.05)",
     "& .play-overlay": { opacity: 1 },
+    "& .add-corner": { opacity: 1 },
   },
 })
 
@@ -64,8 +65,11 @@ const addCorner = css({
   backgroundColor: "rgba(0, 0, 0, 0.55)",
   color: "white",
   cursor: "pointer",
+  opacity: 0,
   transition: "all token(durations.fast) token(easings.apple)",
   _hover: { backgroundColor: "accent", transform: "scale(1.1)" },
+  // Toujours visible sur écran tactile (pas de hover pour le révéler).
+  _touch: { opacity: 1, width: "36px", height: "36px" },
 })
 
 const titleStyle = cx(truncate, css({ fontSize: "14px", fontWeight: "600" }))
@@ -87,20 +91,20 @@ export function MusicCard({ music, onPlay, onAddToPlaylist }: Props) {
           <div className={playCircle}>
             <PlayIcon size={22} />
           </div>
-          {onAddToPlaylist && (
-            <button
-              type="button"
-              className={addCorner}
-              aria-label="Ajouter à une playlist"
-              onClick={(event) => {
-                event.stopPropagation()
-                onAddToPlaylist()
-              }}
-            >
-              <PlusIcon size={16} />
-            </button>
-          )}
         </div>
+        {onAddToPlaylist && (
+          <button
+            type="button"
+            className={`${addCorner} add-corner`}
+            aria-label="Ajouter à une playlist"
+            onClick={(event) => {
+              event.stopPropagation()
+              onAddToPlaylist()
+            }}
+          >
+            <PlusIcon size={16} />
+          </button>
+        )}
       </div>
       <div>
         <div className={titleStyle}>{music.title}</div>

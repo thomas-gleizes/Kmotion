@@ -18,6 +18,8 @@ const base = css({
   transition: "all token(durations.fast) token(easings.apple)",
   _disabled: { opacity: 0.45, cursor: "default" },
   _focusVisible: { outline: "2px solid token(colors.accent)", outlineOffset: "2px" },
+  // Cible tactile confortable sur écran tactile.
+  _touch: { minHeight: "44px" },
 })
 
 const variants: Record<Variant, string> = {

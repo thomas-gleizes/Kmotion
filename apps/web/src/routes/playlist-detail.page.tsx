@@ -27,22 +27,28 @@ import {
 
 const headerStyle = css({
   display: "flex",
-  gap: "28px",
-  alignItems: "flex-end",
-  marginBottom: "32px",
+  flexDirection: "column",
+  alignItems: "flex-start",
+  gap: "16px",
+  marginBottom: "24px",
+  md: { flexDirection: "row", alignItems: "flex-end", gap: "28px", marginBottom: "32px" },
 })
 
-const mosaicWrapper = css({ width: "200px", flexShrink: 0 })
+const mosaicWrapper = css({ width: "140px", flexShrink: 0, md: { width: "200px" } })
 
 const infoStyle = css({ display: "flex", flexDirection: "column", gap: "10px", minWidth: 0 })
 
-const titleStyle = css({ fontSize: "36px", fontWeight: "800", letterSpacing: "-1px" })
+const titleStyle = css({
+  fontSize: "clamp(26px, 7vw, 36px)",
+  fontWeight: "800",
+  letterSpacing: "-1px",
+})
 
 const descriptionStyle = css({ color: "textSecondary", fontSize: "14px" })
 
 const metaStyle = css({ color: "textTertiary", fontSize: "13px" })
 
-const actionsRow = css({ display: "flex", gap: "10px", marginTop: "6px" })
+const actionsRow = css({ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "6px" })
 
 const entryActions = css({ display: "flex", alignItems: "center", gap: "2px" })
 
@@ -52,6 +58,7 @@ const iconButton = css({
   justifyContent: "center",
   width: "30px",
   height: "30px",
+  _touch: { width: "40px", height: "40px" },
   borderRadius: "full",
   border: "none",
   background: "none",
