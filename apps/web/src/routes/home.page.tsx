@@ -1,13 +1,13 @@
-import { useState } from "react"
 import { createRoute } from "@tanstack/react-router"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useDialog } from "react-dialog-promise"
 import { css } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
-import { musicsQuery, type Music } from "../api/queries"
+import { musicsQuery } from "../api/queries"
 import { emptyState, pageHeading } from "../lib/styles"
 import { usePlayer } from "../player/PlayerContext"
 import { MusicCard } from "../components/MusicCard"
-import { AddToPlaylistModal } from "../components/AddToPlaylistModal"
+import { AddToPlaylistDialog } from "../components/dialogs/AddToPlaylistDialog"
 import { Button } from "../components/Button"
 
 const PAGE_SIZE = 30
@@ -36,7 +36,7 @@ export const HomePage = () => {
     placeholderData: keepPreviousData,
   })
   const player = usePlayer()
-  const [musicToAdd, setMusicToAdd] = useState<Music | null>(null)
+  const addToPlaylist = useDialog(AddToPlaylistDialog)
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1
 
@@ -58,7 +58,7 @@ export const HomePage = () => {
             key={music.id}
             music={music}
             onPlay={() => player.playQueue(data.records, i)}
-            onAddToPlaylist={() => setMusicToAdd(music)}
+            onAddToPlaylist={() => addToPlaylist.open({ music })}
           />
         ))}
       </div>
@@ -75,7 +75,6 @@ export const HomePage = () => {
           </Button>
         </div>
       )}
-      {musicToAdd && <AddToPlaylistModal music={musicToAdd} onClose={() => setMusicToAdd(null)} />}
     </div>
   )
 }

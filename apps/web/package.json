@@ -16,6 +16,7 @@
     "@tanstack/react-router": "^1.170.15",
     "openapi-fetch": "^0.17.0",
     "react": "^19.2.6",
+    "react-dialog-promise": "^0.6.7",
     "react-dom": "^19.2.6",
     "zustand": "^5.0.14"
   },
