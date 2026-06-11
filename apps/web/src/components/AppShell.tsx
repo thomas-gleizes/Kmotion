@@ -4,6 +4,7 @@ import { css } from "styled-system/css"
 import { Sidebar } from "./Sidebar"
 import { PlayerBar } from "./PlayerBar"
 import { FullscreenPlayer } from "./FullscreenPlayer"
+import { useMediaShortcuts } from "../hooks/useMediaShortcuts"
 
 const shell = css({
   display: "grid",
@@ -22,6 +23,7 @@ const main = css({
 
 export function AppShell() {
   const [fullscreen, setFullscreen] = useState(false)
+  useMediaShortcuts({ fullscreen, setFullscreen })
 
   return (
     <div className={shell}>

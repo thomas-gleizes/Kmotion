@@ -45,7 +45,10 @@ type PlayerActions = {
   next: () => void
   prev: () => void
   seek: (seconds: number) => void
+  seekBy: (delta: number) => void
   setVolume: (volume: number) => void
+  adjustVolume: (delta: number) => void
+  toggleMute: () => void
   cycleRepeat: () => void
   toggleShuffle: () => void
 }
@@ -109,6 +112,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // Position à restaurer une fois les métadonnées du titre repris chargées.
   const pendingSeekRef = useRef<number | null>(snapshot ? snapshot.currentTime : null)
   const lastSaveRef = useRef(0)
+  // Dernier volume non nul, pour restaurer le son après une coupure (mute).
+  const lastVolumeRef = useRef(snapshot?.volume || 1)
 
   // Persiste l'état courant pour reprise ultérieure (lit la position en direct
   // sur l'élément audio plutôt que sur l'état React, désynchronisé).
@@ -217,6 +222,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setCurrentTime(seconds)
   }, [])
 
+  // Déplacement relatif (raccourcis clavier) : lit la position en direct sur
+  // l'élément audio et la borne à la durée du titre.
+  const seekBy = useCallback((delta: number) => {
+    const target = Math.min(audio.duration || Infinity, Math.max(0, audio.currentTime + delta))
+    audio.currentTime = target
+    setCurrentTime(target)
+  }, [])
+
   const setVolume = useCallback(
     (value: number) => {
       audio.volume = value
@@ -225,6 +238,29 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     },
     [saveSnapshot],
   )
+
+  const adjustVolume = useCallback(
+    (delta: number) => {
+      const value = Math.min(1, Math.max(0, audio.volume + delta))
+      audio.volume = value
+      setVolumeState(value)
+      saveSnapshot()
+    },
+    [saveSnapshot],
+  )
+
+  const toggleMute = useCallback(() => {
+    if (audio.volume > 0) {
+      lastVolumeRef.current = audio.volume
+      audio.volume = 0
+      setVolumeState(0)
+    } else {
+      const restored = lastVolumeRef.current || 0.5
+      audio.volume = restored
+      setVolumeState(restored)
+    }
+    saveSnapshot()
+  }, [saveSnapshot])
 
   const cycleRepeat = useCallback(() => {
     const cycle: RepeatMode[] = ["off", "all", "one"]
@@ -323,21 +359,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       navigator.mediaSession.setActionHandler("previoustrack", prev)
     }
 
-    // Barre espace = lecture/pause, sauf pendant la saisie dans un champ
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.code !== "Space") return
-      const target = event.target as HTMLElement
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)
-        return
-      if (!audio.src) return
-      event.preventDefault()
-      if (audio.paused) void audio.play()
-      else audio.pause()
-    }
-    window.addEventListener("keydown", onKeyDown)
-
     return () => {
-      window.removeEventListener("keydown", onKeyDown)
       window.removeEventListener("pagehide", saveSnapshot)
       document.removeEventListener("visibilitychange", onHidden)
       audio.removeEventListener("play", onPlay)
@@ -366,7 +388,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       next,
       prev,
       seek,
+      seekBy,
       setVolume,
+      adjustVolume,
+      toggleMute,
       cycleRepeat,
       toggleShuffle,
     }
@@ -384,7 +409,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     next,
     prev,
     seek,
+    seekBy,
     setVolume,
+    adjustVolume,
+    toggleMute,
     cycleRepeat,
     toggleShuffle,
   ])
