@@ -48,13 +48,19 @@ const ambientBg = css({
 })
 
 // Voile dégradé pour garder titres, contrôles et file de lecture lisibles.
+// Sur mobile (layout vertical), le dégradé part du haut pour laisser la
+// couleur ambiante apparaître derrière la pochette, comme sur desktop.
 const scrim = css({
   position: "absolute",
   inset: 0,
   zIndex: 0,
   background:
-    "radial-gradient(120% 90% at 30% 0%, rgba(10,10,12,0.35) 0%, rgba(10,10,12,0.72) 60%, rgba(8,8,16,0.9) 100%)",
+    "radial-gradient(140% 60% at 50% 0%, rgba(10,10,12,0.3) 0%, rgba(10,10,12,0.75) 55%, rgba(8,8,16,0.92) 100%)",
   pointerEvents: "none",
+  md: {
+    background:
+      "radial-gradient(120% 90% at 30% 0%, rgba(10,10,12,0.35) 0%, rgba(10,10,12,0.72) 60%, rgba(8,8,16,0.9) 100%)",
+  },
 })
 
 const header = css({
