@@ -1,8 +1,9 @@
+import { type DialogComponent } from "react-dialog-promise"
 import { useQuery } from "@tanstack/react-query"
 import { css } from "styled-system/css"
-import { playlistsQuery, useAddMusicToPlaylist, type Music } from "../api/queries"
-import { Modal } from "./Modal"
-import { PlaylistMosaic } from "./PlaylistCard"
+import { playlistsQuery, useAddMusicToPlaylist, type Music } from "../../api/queries"
+import { Modal } from "../Modal"
+import { PlaylistMosaic } from "../PlaylistCard"
 
 const list = css({ display: "flex", flexDirection: "column", gap: "4px" })
 
@@ -25,20 +26,19 @@ const item = css({
 })
 
 const mosaicSize = css({ width: "44px", flexShrink: 0 })
-
 const emptyStyle = css({ color: "textSecondary", fontSize: "14px", padding: "8px 0" })
+const subText = css({ color: "textSecondary", fontSize: "12px", display: "block" })
 
-type Props = {
-  music: Music
-  onClose: () => void
-}
-
-export function AddToPlaylistModal({ music, onClose }: Props) {
+export const AddToPlaylistDialog: DialogComponent<{ music: Music }, void> = ({
+  isOpen,
+  close,
+  music,
+}) => {
   const { data: playlists } = useQuery(playlistsQuery)
   const addMusic = useAddMusicToPlaylist()
 
   return (
-    <Modal title={`Ajouter « ${music.title} »`} onClose={onClose}>
+    <Modal title={`Ajouter « ${music.title} »`} open={isOpen} onClose={() => close()}>
       {playlists?.length === 0 && (
         <p className={emptyStyle}>Aucune playlist. Créez-en une depuis l’onglet Playlists.</p>
       )}
@@ -56,7 +56,7 @@ export function AddToPlaylistModal({ music, onClose }: Props) {
                   musicId: music.id,
                   position: playlist.entriesTotal + 1,
                 },
-                { onSuccess: onClose },
+                { onSuccess: () => close() },
               )
             }
           >
@@ -65,7 +65,7 @@ export function AddToPlaylistModal({ music, onClose }: Props) {
             </span>
             <span>
               {playlist.title}
-              <span className={css({ color: "textSecondary", fontSize: "12px", display: "block" })}>
+              <span className={subText}>
                 {playlist.entriesTotal} titre{playlist.entriesTotal > 1 ? "s" : ""}
               </span>
             </span>

@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from "react"
+import { useState } from "react"
 import { createRoute, redirect } from "@tanstack/react-router"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useDialog } from "react-dialog-promise"
 import { css, cx } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
 import { isAuthenticated, getCurrentUser } from "../auth/auth"
@@ -8,7 +9,6 @@ import {
   musicsQuery,
   usersQuery,
   useSyncMusics,
-  useUpdateMusic,
   useDeleteMusic,
   useBanUser,
   useUnbanUser,
@@ -19,8 +19,8 @@ import {
 import { formatDuration } from "../lib/format"
 import { truncate, emptyState, pageHeading } from "../lib/styles"
 import { Button } from "../components/Button"
-import { Modal } from "../components/Modal"
-import { TextField } from "../components/TextField"
+import { MusicEditDialog } from "../components/dialogs/MusicEditDialog"
+import { ConfirmDialog } from "../components/dialogs/ConfirmDialog"
 import { EditIcon, SpinnerIcon, SyncIcon, TrashIcon } from "../components/icons"
 
 const PAGE_SIZE = 30
@@ -126,13 +126,9 @@ const pager = css({
   fontSize: "14px",
 })
 
-const formStyle = css({ display: "flex", flexDirection: "column", gap: "16px" })
-const formActions = css({ display: "flex", gap: "10px", justifyContent: "flex-end" })
-const errorStyle = css({ color: "danger", fontSize: "13px" })
 const syncFeedback = css({ fontSize: "13px", marginTop: "10px" })
 const syncOk = css({ color: "accent" })
 const syncError = css({ color: "danger" })
-const confirmText = css({ color: "textSecondary", fontSize: "14px", marginBottom: "20px" })
 
 function Pager({
   page,
@@ -158,59 +154,28 @@ function Pager({
   )
 }
 
-function MusicEditForm({ music, onClose }: { music: Music; onClose: () => void }) {
-  const updateMusic = useUpdateMusic()
-  const [title, setTitle] = useState(music.title)
-  const [artist, setArtist] = useState(music.artist)
-
-  const onSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    updateMusic.mutate(
-      { id: music.id, body: { title: title.trim(), artist: artist.trim() } },
-      { onSuccess: onClose },
-    )
-  }
-
-  return (
-    <form className={formStyle} onSubmit={onSubmit}>
-      <TextField
-        label="Titre"
-        required
-        autoFocus
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-      />
-      <TextField
-        label="Artiste"
-        required
-        value={artist}
-        onChange={(event) => setArtist(event.target.value)}
-      />
-      {updateMusic.isError && <div className={errorStyle}>La mise à jour a échoué. Réessayez.</div>}
-      <div className={formActions}>
-        <Button type="button" variant="ghost" onClick={onClose}>
-          Annuler
-        </Button>
-        <Button type="submit" disabled={updateMusic.isPending || !title.trim() || !artist.trim()}>
-          {updateMusic.isPending ? "Enregistrement…" : "Enregistrer"}
-        </Button>
-      </div>
-    </form>
-  )
-}
-
 function MusicsSection() {
   const [page, setPage] = useState(0)
   const { data, isPending } = useQuery({
     ...musicsQuery(page, PAGE_SIZE),
     placeholderData: keepPreviousData,
   })
-  const [editing, setEditing] = useState<Music | null>(null)
-  const [confirmDelete, setConfirmDelete] = useState<Music | null>(null)
   const syncMusics = useSyncMusics()
   const deleteMusic = useDeleteMusic()
+  const editDialog = useDialog(MusicEditDialog)
+  const confirmDialog = useDialog(ConfirmDialog)
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1
+
+  const confirmDeleteMusic = async (music: Music) => {
+    const confirmed = await confirmDialog.open({
+      title: "Supprimer le titre ?",
+      message: `« ${music.title} » sera définitivement supprimé de la bibliothèque et de toutes les playlists. Cette action est irréversible.`,
+      confirmLabel: "Supprimer",
+      danger: true,
+    })
+    if (confirmed) deleteMusic.mutate(music.id)
+  }
 
   return (
     <div>
@@ -244,7 +209,7 @@ function MusicsSection() {
             <button
               type="button"
               className={iconButton}
-              onClick={() => setEditing(music)}
+              onClick={() => editDialog.open({ music })}
               aria-label={`Modifier ${music.title}`}
               title="Modifier les métadonnées"
             >
@@ -253,7 +218,7 @@ function MusicsSection() {
             <button
               type="button"
               className={dangerIconButton}
-              onClick={() => setConfirmDelete(music)}
+              onClick={() => confirmDeleteMusic(music)}
               aria-label={`Supprimer ${music.title}`}
               title="Supprimer le titre"
             >
@@ -265,35 +230,6 @@ function MusicsSection() {
 
       {data && data.total > PAGE_SIZE && (
         <Pager page={page} totalPages={totalPages} onChange={setPage} />
-      )}
-
-      {editing && (
-        <Modal title="Modifier le titre" onClose={() => setEditing(null)}>
-          <MusicEditForm music={editing} onClose={() => setEditing(null)} />
-        </Modal>
-      )}
-
-      {confirmDelete && (
-        <Modal title="Supprimer le titre ?" onClose={() => setConfirmDelete(null)}>
-          <p className={confirmText}>
-            « {confirmDelete.title} » sera définitivement supprimé de la bibliothèque et de toutes
-            les playlists. Cette action est irréversible.
-          </p>
-          <div className={formActions}>
-            <Button variant="ghost" onClick={() => setConfirmDelete(null)}>
-              Annuler
-            </Button>
-            <Button
-              variant="danger"
-              disabled={deleteMusic.isPending}
-              onClick={() =>
-                deleteMusic.mutate(confirmDelete.id, { onSuccess: () => setConfirmDelete(null) })
-              }
-            >
-              {deleteMusic.isPending ? "Suppression…" : "Supprimer"}
-            </Button>
-          </div>
-        </Modal>
       )}
     </div>
   )
@@ -308,11 +244,21 @@ function UsersSection() {
   const banUser = useBanUser()
   const unbanUser = useUnbanUser()
   const deleteUser = useDeleteUser()
-  const [confirmDelete, setConfirmDelete] = useState<User | null>(null)
+  const confirmDialog = useDialog(ConfirmDialog)
   const currentUserId = getCurrentUser()?.sub
 
   const busy = banUser.isPending || unbanUser.isPending || deleteUser.isPending
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1
+
+  const confirmDeleteUser = async (user: User) => {
+    const confirmed = await confirmDialog.open({
+      title: "Supprimer l’utilisateur ?",
+      message: `« ${user.name} » sera définitivement supprimé, ainsi que ses playlists. Cette action est irréversible.`,
+      confirmLabel: "Supprimer",
+      danger: true,
+    })
+    if (confirmed) deleteUser.mutate(user.id)
+  }
 
   return (
     <div>
@@ -354,7 +300,7 @@ function UsersSection() {
                 variant="danger"
                 disabled={busy || isSelf}
                 title={isSelf ? "Vous ne pouvez pas vous supprimer" : undefined}
-                onClick={() => setConfirmDelete(user)}
+                onClick={() => confirmDeleteUser(user)}
               >
                 Supprimer
               </Button>
@@ -365,29 +311,6 @@ function UsersSection() {
 
       {data && data.total > PAGE_SIZE && (
         <Pager page={page} totalPages={totalPages} onChange={setPage} />
-      )}
-
-      {confirmDelete && (
-        <Modal title="Supprimer l’utilisateur ?" onClose={() => setConfirmDelete(null)}>
-          <p className={confirmText}>
-            « {confirmDelete.name} » sera définitivement supprimé, ainsi que ses playlists. Cette
-            action est irréversible.
-          </p>
-          <div className={formActions}>
-            <Button variant="ghost" onClick={() => setConfirmDelete(null)}>
-              Annuler
-            </Button>
-            <Button
-              variant="danger"
-              disabled={deleteUser.isPending}
-              onClick={() =>
-                deleteUser.mutate(confirmDelete.id, { onSuccess: () => setConfirmDelete(null) })
-              }
-            >
-              {deleteUser.isPending ? "Suppression…" : "Supprimer"}
-            </Button>
-          </div>
-        </Modal>
       )}
     </div>
   )

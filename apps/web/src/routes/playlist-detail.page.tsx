@@ -1,6 +1,6 @@
-import { useState } from "react"
 import { createRoute, useNavigate } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
+import { useDialog } from "react-dialog-promise"
 import { css } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
 import {
@@ -15,8 +15,8 @@ import { formatDuration } from "../lib/format"
 import { PlaylistMosaic } from "../components/PlaylistCard"
 import { MusicRow } from "../components/MusicRow"
 import { Button } from "../components/Button"
-import { Modal } from "../components/Modal"
-import { PlaylistForm } from "../components/PlaylistForm"
+import { PlaylistFormDialog } from "../components/dialogs/PlaylistFormDialog"
+import { ConfirmDialog } from "../components/dialogs/ConfirmDialog"
 import { emptyState } from "../lib/styles"
 import {
   ChevronDownIcon,
@@ -73,11 +73,35 @@ const PlaylistDetailPage = () => {
   const updatePlaylist = useUpdatePlaylist(playlistId)
   const deletePlaylist = useDeletePlaylist()
   const removeMusic = useRemoveMusicFromPlaylist()
-  const [showEdit, setShowEdit] = useState(false)
-  const [confirmDelete, setConfirmDelete] = useState(false)
+  const editDialog = useDialog(PlaylistFormDialog)
+  const confirmDialog = useDialog(ConfirmDialog)
 
   if (isPending) return <div className={emptyState}>Chargement…</div>
   if (!playlist) return <div className={emptyState}>Playlist introuvable.</div>
+
+  const openEdit = () =>
+    editDialog.open({
+      heading: "Modifier la playlist",
+      submitLabel: "Enregistrer",
+      initial: {
+        title: playlist.title,
+        description: playlist.description,
+        visibility: playlist.visibility,
+      },
+      onSubmit: (values) => updatePlaylist.mutateAsync(values),
+    })
+
+  const openDelete = async () => {
+    const confirmed = await confirmDialog.open({
+      title: "Supprimer la playlist ?",
+      message: `« ${playlist.title} » sera définitivement supprimée. Les titres restent dans votre bibliothèque.`,
+      confirmLabel: "Supprimer",
+      danger: true,
+    })
+    if (confirmed) {
+      deletePlaylist.mutate(playlistId, { onSuccess: () => void navigate({ to: "/playlists" }) })
+    }
+  }
 
   const entries = [...playlist.entries].sort((a, b) => a.position - b.position)
   const totalDuration = entries.reduce((sum, entry) => sum + entry.duration, 0)
@@ -112,10 +136,10 @@ const PlaylistDetailPage = () => {
             <Button onClick={() => player.playQueue(entries)} disabled={entries.length === 0}>
               <PlayIcon size={16} /> Tout lire
             </Button>
-            <Button variant="ghost" onClick={() => setShowEdit(true)}>
+            <Button variant="ghost" onClick={openEdit}>
               Modifier
             </Button>
-            <Button variant="danger" onClick={() => setConfirmDelete(true)}>
+            <Button variant="danger" onClick={openDelete}>
               Supprimer
             </Button>
           </div>
@@ -168,48 +192,6 @@ const PlaylistDetailPage = () => {
           }
         />
       ))}
-
-      {showEdit && (
-        <Modal title="Modifier la playlist" onClose={() => setShowEdit(false)}>
-          <PlaylistForm
-            initial={{
-              title: playlist.title,
-              description: playlist.description,
-              visibility: playlist.visibility,
-            }}
-            pending={updatePlaylist.isPending}
-            submitLabel="Enregistrer"
-            onSubmit={(values) =>
-              updatePlaylist.mutate(values, { onSuccess: () => setShowEdit(false) })
-            }
-          />
-        </Modal>
-      )}
-
-      {confirmDelete && (
-        <Modal title="Supprimer la playlist ?" onClose={() => setConfirmDelete(false)}>
-          <p className={css({ color: "textSecondary", fontSize: "14px", marginBottom: "20px" })}>
-            « {playlist.title} » sera définitivement supprimée. Les titres restent dans votre
-            bibliothèque.
-          </p>
-          <div className={css({ display: "flex", gap: "10px", justifyContent: "flex-end" })}>
-            <Button variant="ghost" onClick={() => setConfirmDelete(false)}>
-              Annuler
-            </Button>
-            <Button
-              variant="danger"
-              disabled={deletePlaylist.isPending}
-              onClick={() =>
-                deletePlaylist.mutate(playlistId, {
-                  onSuccess: () => void navigate({ to: "/playlists" }),
-                })
-              }
-            >
-              Supprimer
-            </Button>
-          </div>
-        </Modal>
-      )}
     </div>
   )
 }

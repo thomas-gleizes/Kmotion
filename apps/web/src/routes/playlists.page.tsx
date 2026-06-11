@@ -1,13 +1,12 @@
-import { useState } from "react"
 import { createRoute } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
+import { useDialog } from "react-dialog-promise"
 import { css, cx } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
 import { playlistsQuery, useCreatePlaylist } from "../api/queries"
 import { PlaylistCard } from "../components/PlaylistCard"
-import { PlaylistForm } from "../components/PlaylistForm"
+import { PlaylistFormDialog } from "../components/dialogs/PlaylistFormDialog"
 import { Button } from "../components/Button"
-import { Modal } from "../components/Modal"
 import { PlusIcon } from "../components/icons"
 import { emptyState, pageHeading } from "../lib/styles"
 
@@ -26,14 +25,21 @@ const grid = css({
 
 export const PlaylistsPage = () => {
   const { data: playlists, isPending } = useQuery(playlistsQuery)
-  const [showCreate, setShowCreate] = useState(false)
   const createPlaylist = useCreatePlaylist()
+  const createDialog = useDialog(PlaylistFormDialog)
+
+  const openCreate = () =>
+    createDialog.open({
+      heading: "Nouvelle playlist",
+      submitLabel: "Créer",
+      onSubmit: (values) => createPlaylist.mutateAsync(values),
+    })
 
   return (
     <div>
       <div className={header}>
         <h1 className={cx(pageHeading, css({ marginBottom: 0 }))}>Playlists</h1>
-        <Button onClick={() => setShowCreate(true)}>
+        <Button onClick={openCreate}>
           <PlusIcon size={16} /> Nouvelle playlist
         </Button>
       </div>
@@ -47,18 +53,6 @@ export const PlaylistsPage = () => {
           <PlaylistCard key={playlist.id} playlist={playlist} />
         ))}
       </div>
-
-      {showCreate && (
-        <Modal title="Nouvelle playlist" onClose={() => setShowCreate(false)}>
-          <PlaylistForm
-            pending={createPlaylist.isPending}
-            submitLabel="Créer"
-            onSubmit={(values) =>
-              createPlaylist.mutate(values, { onSuccess: () => setShowCreate(false) })
-            }
-          />
-        </Modal>
-      )}
     </div>
   )
 }

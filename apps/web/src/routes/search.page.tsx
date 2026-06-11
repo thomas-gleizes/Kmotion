@@ -1,12 +1,13 @@
 import { useState } from "react"
 import { createRoute } from "@tanstack/react-router"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useDialog } from "react-dialog-promise"
 import { css } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
-import { musicSearchQuery, type Music } from "../api/queries"
+import { musicSearchQuery } from "../api/queries"
 import { usePlayer } from "../player/PlayerContext"
 import { MusicRow } from "../components/MusicRow"
-import { AddToPlaylistModal } from "../components/AddToPlaylistModal"
+import { AddToPlaylistDialog } from "../components/dialogs/AddToPlaylistDialog"
 import { PlusIcon, SearchIcon } from "../components/icons"
 import { useDebounce } from "../hooks/useDebounce"
 import { emptyState, pageHeading } from "../lib/styles"
@@ -55,7 +56,7 @@ export const SearchPage = () => {
   const [input, setInput] = useState("")
   const query = useDebounce(input.trim())
   const player = usePlayer()
-  const [musicToAdd, setMusicToAdd] = useState<Music | null>(null)
+  const addToPlaylist = useDialog(AddToPlaylistDialog)
 
   const { data: results, isFetching } = useQuery({
     ...musicSearchQuery(query),
@@ -93,7 +94,7 @@ export const SearchPage = () => {
             <button
               type="button"
               className={addButton}
-              onClick={() => setMusicToAdd(music)}
+              onClick={() => addToPlaylist.open({ music })}
               aria-label="Ajouter à une playlist"
             >
               <PlusIcon size={18} />
@@ -101,8 +102,6 @@ export const SearchPage = () => {
           }
         />
       ))}
-
-      {musicToAdd && <AddToPlaylistModal music={musicToAdd} onClose={() => setMusicToAdd(null)} />}
     </div>
   )
 }
