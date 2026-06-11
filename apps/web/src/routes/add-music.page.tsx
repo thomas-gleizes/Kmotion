@@ -69,7 +69,9 @@ export const AddMusicPage = () => {
         {addMusic.isSuccess && (
           <div className={successStyle}>
             Titre ajouté à la bibliothèque !
-            <Link to="/">Voir la bibliothèque</Link>
+            <Link to="/" search={{ page: 1 }}>
+              Voir la bibliothèque
+            </Link>
           </div>
         )}
         <Button type="submit" disabled={addMusic.isPending}>

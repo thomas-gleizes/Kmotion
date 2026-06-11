@@ -76,7 +76,7 @@ export function Sidebar() {
         Kmotion
       </div>
       <nav className={css({ display: "flex", flexDirection: "column", gap: "2px" })}>
-        <Link to="/" className={navLink}>
+        <Link to="/" search={{ page: 1 }} className={navLink}>
           <MusicNoteIcon size={18} /> Écouter
         </Link>
         <Link to="/search" className={navLink}>

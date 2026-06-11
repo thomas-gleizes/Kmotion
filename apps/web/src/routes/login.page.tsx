@@ -73,7 +73,7 @@ export const LoginPage = () => {
     },
     onSuccess: (token) => {
       setToken(token)
-      void navigate({ to: "/" })
+      void navigate({ to: "/", search: { page: 1 } })
     },
   })
 
@@ -124,6 +124,6 @@ export const loginRoute = createRoute({
   component: LoginPage,
   getParentRoute: () => rootRoute,
   beforeLoad: () => {
-    if (isAuthenticated()) throw redirect({ to: "/" })
+    if (isAuthenticated()) throw redirect({ to: "/", search: { page: 1 } })
   },
 })
