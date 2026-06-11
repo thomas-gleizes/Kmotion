@@ -162,7 +162,13 @@ export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
 
   return (
     <div className={bar}>
-      <button type="button" className={expandTrigger} onClick={onExpand} aria-label="Agrandir le lecteur">
+      <button
+        type="button"
+        className={expandTrigger}
+        onClick={onExpand}
+        aria-label="Agrandir le lecteur"
+        title="Agrandir le lecteur (F)"
+      >
         <div className={cover}>
           <AuthImage path={thumbnailPath(current.id)} alt={current.title} />
         </div>
@@ -180,6 +186,7 @@ export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
             onClick={player.toggleShuffle}
             aria-label="Lecture aléatoire"
             aria-pressed={player.shuffle}
+            title="Lecture aléatoire (S)"
           >
             <ShuffleIcon size={18} />
           </button>
@@ -188,6 +195,7 @@ export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
             className={controlButton}
             onClick={player.prev}
             aria-label="Titre précédent"
+            title="Titre précédent (P)"
           >
             <PrevIcon size={20} />
           </button>
@@ -196,6 +204,7 @@ export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
             className={`${controlButton} ${playButton}`}
             onClick={player.toggle}
             aria-label={player.isPlaying ? "Pause" : "Lecture"}
+            title={player.isPlaying ? "Pause (Espace)" : "Lecture (Espace)"}
           >
             {player.isLoading ? (
               <SpinnerIcon size={18} />
@@ -211,6 +220,7 @@ export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
             onClick={player.next}
             disabled={!player.hasNext}
             aria-label="Titre suivant"
+            title="Titre suivant (N)"
           >
             <NextIcon size={20} />
           </button>
@@ -226,6 +236,7 @@ export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
                   : "Répétition désactivée"
             }
             aria-pressed={player.repeat !== "off"}
+            title="Répétition (R)"
           >
             <RepeatIcon size={18} />
             {player.repeat === "one" && <span className={repeatBadge}>1</span>}

@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import { css, cx } from "styled-system/css"
 import { usePlayer, usePlayerProgress } from "../player/PlayerContext"
 import { thumbnailPath } from "../player/audioCache"
@@ -306,14 +305,6 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
   const { currentTime, duration } = usePlayerProgress()
   const { url: artUrl } = useAuthedBlobUrl(player.current ? thumbnailPath(player.current.id) : null)
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
-    }
-    window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
-  }, [onClose])
-
   if (!player.current) return null
   const { current } = player
 
@@ -329,7 +320,13 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
       )}
       <div className={scrim} aria-hidden />
       <div className={header}>
-        <button type="button" className={closeBtn} onClick={onClose} aria-label="Réduire">
+        <button
+          type="button"
+          className={closeBtn}
+          onClick={onClose}
+          aria-label="Réduire"
+          title="Réduire (F / Échap)"
+        >
           <ChevronDownIcon size={22} />
         </button>
         <span className={nowPlayingLabel}>En lecture</span>
@@ -378,6 +375,7 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
               onClick={player.toggleShuffle}
               aria-label="Lecture aléatoire"
               aria-pressed={player.shuffle}
+              title="Lecture aléatoire (S)"
             >
               <ShuffleIcon size={22} />
             </button>
@@ -386,6 +384,7 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
               className={ctrlBtn}
               onClick={player.prev}
               aria-label="Titre précédent"
+              title="Titre précédent (P)"
             >
               <PrevIcon size={28} />
             </button>
@@ -394,6 +393,7 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
               className={`${ctrlBtn} ${playBtnExtra}`}
               onClick={player.toggle}
               aria-label={player.isPlaying ? "Pause" : "Lecture"}
+              title={player.isPlaying ? "Pause (Espace)" : "Lecture (Espace)"}
             >
               {player.isLoading ? (
                 <SpinnerIcon size={22} />
@@ -409,6 +409,7 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
               onClick={player.next}
               disabled={!player.hasNext}
               aria-label="Titre suivant"
+              title="Titre suivant (N)"
             >
               <NextIcon size={28} />
             </button>
@@ -424,6 +425,7 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
                     : "Répétition désactivée"
               }
               aria-pressed={player.repeat !== "off"}
+              title="Répétition (R)"
             >
               <RepeatIcon size={22} />
               {player.repeat === "one" && <span className={repeatBadge}>1</span>}
