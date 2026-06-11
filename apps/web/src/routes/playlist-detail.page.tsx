@@ -28,15 +28,29 @@ import {
 const headerStyle = css({
   display: "flex",
   flexDirection: "column",
-  alignItems: "flex-start",
+  alignItems: "center",
+  textAlign: "center",
   gap: "16px",
   marginBottom: "24px",
-  md: { flexDirection: "row", alignItems: "flex-end", gap: "28px", marginBottom: "32px" },
+  md: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    textAlign: "left",
+    gap: "28px",
+    marginBottom: "32px",
+  },
 })
 
-const mosaicWrapper = css({ width: "140px", flexShrink: 0, md: { width: "200px" } })
+const mosaicWrapper = css({ width: "180px", flexShrink: 0, md: { width: "200px" } })
 
-const infoStyle = css({ display: "flex", flexDirection: "column", gap: "10px", minWidth: 0 })
+const infoStyle = css({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "10px",
+  minWidth: 0,
+  md: { alignItems: "flex-start" },
+})
 
 const titleStyle = css({
   fontSize: "clamp(26px, 7vw, 36px)",
@@ -48,7 +62,14 @@ const descriptionStyle = css({ color: "textSecondary", fontSize: "14px" })
 
 const metaStyle = css({ color: "textTertiary", fontSize: "13px" })
 
-const actionsRow = css({ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "6px" })
+const actionsRow = css({
+  display: "flex",
+  flexWrap: "wrap",
+  justifyContent: "center",
+  gap: "10px",
+  marginTop: "6px",
+  md: { justifyContent: "flex-start" },
+})
 
 const entryActions = css({ display: "flex", alignItems: "center", gap: "2px" })
 
