@@ -8,9 +8,7 @@ import {
 import { DomainException } from 'src/shared/domain/exceptions/domain.exception';
 
 @CommandHandler(RemoveMusicFromPlaylistCommand)
-export class RemoveMusicFromPlaylistHandler
-  implements ICommandHandler<RemoveMusicFromPlaylistCommand>
-{
+export class RemoveMusicFromPlaylistHandler implements ICommandHandler<RemoveMusicFromPlaylistCommand> {
   constructor(
     @Inject(PLAYLIST_WRITE_REPOSITORY)
     private readonly playlistWriteRepository: PlaylistWriteRepositoryPort,

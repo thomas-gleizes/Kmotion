@@ -9,9 +9,7 @@ import { FindPlaylistByIdQuery } from './find-playlist-by-id.query';
 import { RessourceNotFoundException } from 'src/shared/domain/exceptions/ressource-not-found.exception';
 
 @QueryHandler(FindPlaylistByIdQuery)
-export class FindPlaylistByIdHandler
-  implements IQueryHandler<FindPlaylistByIdQuery>
-{
+export class FindPlaylistByIdHandler implements IQueryHandler<FindPlaylistByIdQuery> {
   constructor(
     @Inject(PLAYLIST_READ_REPOSITORY_PORT)
     private readonly playlistRepository: PlaylistQueryRepositoryPort,

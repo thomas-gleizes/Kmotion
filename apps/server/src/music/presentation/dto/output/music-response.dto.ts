@@ -46,6 +46,13 @@ export class MusicResponseDto {
   @ApiProperty({ type: String, description: 'Id of source media' })
   mediaId: string;
 
+  @ApiProperty({
+    type: Boolean,
+    description: 'Whether the audio has been converted and is available',
+    example: true,
+  })
+  converted: boolean;
+
   static fromReadModel(model: MusicRead) {
     const dto = new MusicResponseDto();
 
@@ -56,6 +63,7 @@ export class MusicResponseDto {
     dto.duration = model.duration;
     dto.mediaSource = model.mediaSource;
     dto.mediaId = model.mediaId;
+    dto.converted = model.converted;
 
     return dto;
   }

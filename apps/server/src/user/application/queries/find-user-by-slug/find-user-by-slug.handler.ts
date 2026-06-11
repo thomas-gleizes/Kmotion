@@ -9,9 +9,7 @@ import { IQueryHandler, QueryHandler } from 'src/core/cqrs';
 import { FindUserBySlugQuery } from './find-user-by-slug.query';
 
 @QueryHandler(FindUserBySlugQuery)
-export class FindUserBySlugHandler
-  implements IQueryHandler<FindUserBySlugQuery>
-{
+export class FindUserBySlugHandler implements IQueryHandler<FindUserBySlugQuery> {
   constructor(
     @Inject(USER_QUERY_REPOSITORY_PORT)
     private readonly userRepository: UserQueryRepositoryPort,

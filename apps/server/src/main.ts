@@ -22,6 +22,7 @@ async function bootstrap() {
 
   const logger = new Logger('MAIN');
 
+  app.enableCors({ origin: true });
   app.setGlobalPrefix(API_PREFIX);
   app.useGlobalInterceptors(new HttpLoggingInterceptor());
   app.useGlobalPipes(new ValidationPipe());

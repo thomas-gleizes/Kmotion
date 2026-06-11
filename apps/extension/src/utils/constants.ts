@@ -1,6 +1,8 @@
+export const API_URL =
+  (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000/api/3.1"
+
 export const STORAGE_KEYS = {
-  AUTH_TOKEN: "extension_auth_token",
-  AUTH_USER: "extension_auth_user",
-  CURRENT_VIDEO_ID: "extension_current_video_id",
+  AUTH_TOKEN: "auth_token",
 } as const
 
+export const POLL_INTERVAL_MS = 5000
