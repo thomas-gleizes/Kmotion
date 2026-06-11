@@ -18,13 +18,13 @@ describe('CreatePlaylistHandler', () => {
   });
 
   it('should create and save a playlist', async () => {
-    const command = new CreatePlaylistCommand(
-      'New Playlist',
-      'user-1',
-      'A nice description',
-      Visibility.public,
-      [],
-    );
+    const command = new CreatePlaylistCommand({
+      title: 'New Playlist',
+      userId: 'user-1',
+      description: 'A nice description',
+      visibility: Visibility.public,
+      entries: [],
+    });
 
     const result = await handler.execute(command);
 

@@ -21,12 +21,12 @@ describe('AddMusicToPlaylistHandler', () => {
     const playlist = PlaylistEntity.create('Title', 'Desc', 'user-1');
     repository.findById.mockResolvedValue(playlist);
 
-    const command = new AddMusicToPlaylistCommand(
-      playlist.getId(),
-      'user-1',
-      'music-1',
-      0,
-    );
+    const command = new AddMusicToPlaylistCommand({
+      playlistId: playlist.getId(),
+      userId: 'user-1',
+      musicId: 'music-1',
+      position: 0,
+    });
 
     await handler.execute(command);
 
@@ -41,12 +41,12 @@ describe('AddMusicToPlaylistHandler', () => {
     const playlist = PlaylistEntity.create('Title', 'Desc', 'user-1');
     repository.findById.mockResolvedValue(playlist);
 
-    const command = new AddMusicToPlaylistCommand(
-      playlist.getId(),
-      'other-user',
-      'music-1',
-      0,
-    );
+    const command = new AddMusicToPlaylistCommand({
+      playlistId: playlist.getId(),
+      userId: 'other-user',
+      musicId: 'music-1',
+      position: 0,
+    });
 
     await expect(handler.execute(command)).rejects.toThrow(DomainException);
     expect(repository.save).not.toHaveBeenCalled();

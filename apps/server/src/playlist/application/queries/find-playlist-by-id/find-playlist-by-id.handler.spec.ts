@@ -31,7 +31,7 @@ describe('FindPlaylistByIdHandler', () => {
     };
     repository.findById.mockResolvedValue(playlistRead);
 
-    const query = new FindPlaylistByIdQuery('playlist-1');
+    const query = new FindPlaylistByIdQuery({ id: 'playlist-1' });
     const result = await handler.execute(query);
 
     expect(result).toEqual(playlistRead);
@@ -41,7 +41,7 @@ describe('FindPlaylistByIdHandler', () => {
   it('should throw RessourceNotFoundException if playlist not found', async () => {
     repository.findById.mockResolvedValue(null);
 
-    const query = new FindPlaylistByIdQuery('unknown');
+    const query = new FindPlaylistByIdQuery({ id: 'unknown' });
 
     await expect(handler.execute(query)).rejects.toThrow(
       RessourceNotFoundException,

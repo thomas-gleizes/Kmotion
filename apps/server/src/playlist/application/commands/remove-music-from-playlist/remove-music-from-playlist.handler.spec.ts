@@ -27,11 +27,11 @@ describe('RemoveMusicFromPlaylistHandler', () => {
     );
     repository.findById.mockResolvedValue(playlist);
 
-    const command = new RemoveMusicFromPlaylistCommand(
-      playlist.getId(),
-      'user-1',
-      'music-1',
-    );
+    const command = new RemoveMusicFromPlaylistCommand({
+      playlistId: playlist.getId(),
+      userId: 'user-1',
+      musicId: 'music-1',
+    });
 
     await handler.execute(command);
 
@@ -43,11 +43,11 @@ describe('RemoveMusicFromPlaylistHandler', () => {
     const playlist = PlaylistEntity.create('Title', 'Desc', 'user-1');
     repository.findById.mockResolvedValue(playlist);
 
-    const command = new RemoveMusicFromPlaylistCommand(
-      playlist.getId(),
-      'other-user',
-      'music-1',
-    );
+    const command = new RemoveMusicFromPlaylistCommand({
+      playlistId: playlist.getId(),
+      userId: 'other-user',
+      musicId: 'music-1',
+    });
 
     await expect(handler.execute(command)).rejects.toThrow(DomainException);
     expect(repository.save).not.toHaveBeenCalled();

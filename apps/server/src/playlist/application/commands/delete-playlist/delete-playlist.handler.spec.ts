@@ -21,7 +21,10 @@ describe('DeletePlaylistHandler', () => {
     const playlist = PlaylistEntity.create('Title', 'Desc', 'user-1');
     repository.findById.mockResolvedValue(playlist);
 
-    const command = new DeletePlaylistCommand(playlist.getId(), 'user-1');
+    const command = new DeletePlaylistCommand({
+      id: playlist.getId(),
+      userId: 'user-1',
+    });
 
     await handler.execute(command);
 
@@ -32,7 +35,10 @@ describe('DeletePlaylistHandler', () => {
     const playlist = PlaylistEntity.create('Title', 'Desc', 'user-1');
     repository.findById.mockResolvedValue(playlist);
 
-    const command = new DeletePlaylistCommand(playlist.getId(), 'other-user');
+    const command = new DeletePlaylistCommand({
+      id: playlist.getId(),
+      userId: 'other-user',
+    });
 
     await expect(handler.execute(command)).rejects.toThrow(DomainException);
     expect(repository.delete).not.toHaveBeenCalled();
