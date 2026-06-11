@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "server:dev": "cd apps/server && pnpm start:dev",
+    "web:dev": "cd apps/web && pnpm dev"
+  }
+}
