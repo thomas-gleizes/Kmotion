@@ -253,7 +253,8 @@ export interface paths {
         get: operations["musics_show"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete a music (admin only) */
+        delete: operations["deleteMusic"];
         options?: never;
         head?: never;
         /** Update music metadata (admin only) */
@@ -962,6 +963,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MusicResponseDto"];
                 };
+            };
+        };
+    };
+    deleteMusic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

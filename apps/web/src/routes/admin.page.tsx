@@ -9,6 +9,7 @@ import {
   usersQuery,
   useSyncMusics,
   useUpdateMusic,
+  useDeleteMusic,
   useBanUser,
   useUnbanUser,
   useDeleteUser,
@@ -20,7 +21,7 @@ import { truncate, emptyState, pageHeading } from "../lib/styles"
 import { Button } from "../components/Button"
 import { Modal } from "../components/Modal"
 import { TextField } from "../components/TextField"
-import { EditIcon, SpinnerIcon, SyncIcon } from "../components/icons"
+import { EditIcon, SpinnerIcon, SyncIcon, TrashIcon } from "../components/icons"
 
 const PAGE_SIZE = 30
 
@@ -109,6 +110,11 @@ const iconButton = css({
   transition: "all token(durations.fast) token(easings.apple)",
   _hover: { color: "accent", backgroundColor: "rgba(250, 45, 72, 0.12)" },
 })
+
+const dangerIconButton = cx(
+  iconButton,
+  css({ _hover: { color: "danger !important", backgroundColor: "rgba(255, 69, 58, 0.12)" } }),
+)
 
 const pager = css({
   display: "flex",
@@ -200,7 +206,9 @@ function MusicsSection() {
     placeholderData: keepPreviousData,
   })
   const [editing, setEditing] = useState<Music | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<Music | null>(null)
   const syncMusics = useSyncMusics()
+  const deleteMusic = useDeleteMusic()
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1
 
@@ -232,15 +240,26 @@ function MusicsSection() {
             <div className={rowSub}>{music.artist}</div>
           </div>
           <span className={rowDuration}>{formatDuration(music.duration)}</span>
-          <button
-            type="button"
-            className={iconButton}
-            onClick={() => setEditing(music)}
-            aria-label={`Modifier ${music.title}`}
-            title="Modifier les métadonnées"
-          >
-            <EditIcon size={18} />
-          </button>
+          <div className={actions}>
+            <button
+              type="button"
+              className={iconButton}
+              onClick={() => setEditing(music)}
+              aria-label={`Modifier ${music.title}`}
+              title="Modifier les métadonnées"
+            >
+              <EditIcon size={18} />
+            </button>
+            <button
+              type="button"
+              className={dangerIconButton}
+              onClick={() => setConfirmDelete(music)}
+              aria-label={`Supprimer ${music.title}`}
+              title="Supprimer le titre"
+            >
+              <TrashIcon size={18} />
+            </button>
+          </div>
         </div>
       ))}
 
@@ -251,6 +270,29 @@ function MusicsSection() {
       {editing && (
         <Modal title="Modifier le titre" onClose={() => setEditing(null)}>
           <MusicEditForm music={editing} onClose={() => setEditing(null)} />
+        </Modal>
+      )}
+
+      {confirmDelete && (
+        <Modal title="Supprimer le titre ?" onClose={() => setConfirmDelete(null)}>
+          <p className={confirmText}>
+            « {confirmDelete.title} » sera définitivement supprimé de la bibliothèque et de toutes
+            les playlists. Cette action est irréversible.
+          </p>
+          <div className={formActions}>
+            <Button variant="ghost" onClick={() => setConfirmDelete(null)}>
+              Annuler
+            </Button>
+            <Button
+              variant="danger"
+              disabled={deleteMusic.isPending}
+              onClick={() =>
+                deleteMusic.mutate(confirmDelete.id, { onSuccess: () => setConfirmDelete(null) })
+              }
+            >
+              {deleteMusic.isPending ? "Suppression…" : "Supprimer"}
+            </Button>
+          </div>
         </Modal>
       )}
     </div>
