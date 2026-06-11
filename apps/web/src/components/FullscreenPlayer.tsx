@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { css, cx } from "styled-system/css"
 import { usePlayer, usePlayerProgress } from "../player/PlayerContext"
 import { thumbnailPath } from "../player/audioCache"
@@ -25,8 +26,11 @@ const overlay = css({
   flexDirection: "column",
   overflow: "hidden",
   background: "linear-gradient(160deg, #0f0a0b 0%, #0a0a0c 55%, #080810 100%)",
-  animation: "slideUp 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)",
 })
+
+const overlayEntering = css({ animation: "slideUp 0.35s token(easings.apple)" })
+
+const overlayExiting = css({ animation: "slideDown 0.28s token(easings.apple) both" })
 
 // Calque ambiant : la pochette floutée et saturée colore le fond avec les
 // teintes du morceau en cours (à la Apple Music / Spotify).
@@ -311,16 +315,29 @@ const queueDur = css({
   fontVariantNumeric: "tabular-nums",
 })
 
-export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
+export function FullscreenPlayer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const player = usePlayer()
   const { currentTime, duration } = usePlayerProgress()
-  const { url: artUrl } = useAuthedBlobUrl(player.current ? thumbnailPath(player.current.id) : null)
+  // Reste monté pendant l'animation de sortie, puis se démonte (`render`).
+  const [render, setRender] = useState(open)
+  const { url: artUrl } = useAuthedBlobUrl(
+    render && player.current ? thumbnailPath(player.current.id) : null,
+  )
 
-  if (!player.current) return null
+  // Remonte dès l'ouverture (ajustement d'état pendant le render, pattern React).
+  if (open && !render) setRender(true)
+
+  if (!render || !player.current) return null
   const { current } = player
 
   return (
-    <div className={overlay}>
+    <div
+      className={cx(overlay, open ? overlayEntering : overlayExiting)}
+      onAnimationEnd={(event) => {
+        // Ignorer les animations des enfants (elles remontent) ; démonter à la fin de la sortie.
+        if (event.target === event.currentTarget && !open) setRender(false)
+      }}
+    >
       {artUrl && (
         <div
           key={current.id}
