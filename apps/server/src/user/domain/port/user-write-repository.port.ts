@@ -6,5 +6,6 @@ export interface UserWriteRepositoryPort {
   save(user: User, password?: string): Promise<void>;
   activate(id: string): Promise<void>;
   deactivate(id: string): Promise<void>;
+  delete(id: string): Promise<void>;
   findById(id: string): Promise<User | null>;
 }

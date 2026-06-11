@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { eq, InferSelectModel } from 'drizzle-orm';
+import { count, eq, InferSelectModel } from 'drizzle-orm';
 import type { DrizzleDB } from 'src/core/database/database';
 import { DRIZZLE } from 'src/core/database/drizzle.provider';
 import { userTable } from 'src/user/infrastructure/persistance/schemas/user.schema';
 import {
+  PaginatedUsers,
   UserQueryRepositoryPort,
   UserRead,
 } from 'src/user/application/port/user-query-repository.port';
@@ -56,5 +57,25 @@ export class UserQueryRepository implements UserQueryRepositoryPort {
     if (!record) return null;
 
     return this.mapToRead(record);
+  }
+
+  async findAll({
+    page,
+    size,
+  }: {
+    page: number;
+    size: number;
+  }): Promise<PaginatedUsers> {
+    const records = await this.database
+      .select()
+      .from(userTable)
+      .limit(size)
+      .offset(page * size);
+
+    const [{ total }] = await this.database
+      .select({ total: count() })
+      .from(userTable);
+
+    return { records: records.map((record) => this.mapToRead(record)), total };
   }
 }

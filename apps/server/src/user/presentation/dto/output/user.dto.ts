@@ -1,5 +1,6 @@
 import { User } from 'src/user/domain/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRead } from 'src/user/application/port/user-query-repository.port';
 
 export class UserDto {
   @ApiProperty({
@@ -29,6 +30,10 @@ export class UserDto {
   isAdmin: boolean;
 
   static fromDomain(user: User) {
+    return UserDto.fromRead(user);
+  }
+
+  static fromRead(user: User | UserRead) {
     const dto = new UserDto();
 
     dto.id = user.id;

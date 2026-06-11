@@ -5,13 +5,14 @@ import { UserQueryRepository } from 'src/user/infrastructure/persistance/reposit
 import { USER_WRITE_REPOSITORY_PORT } from 'src/user/domain/port/user-write-repository.port';
 import { USER_QUERY_REPOSITORY_PORT } from 'src/user/application/port/user-query-repository.port';
 import { AuthModule } from 'src/auth/auth.module';
-import { userQueryHandlers } from 'src/user/application';
+import { userCommandHandlers, userQueryHandlers } from 'src/user/application';
 
 @Module({
   imports: [AuthModule],
   controllers: [UserController],
   providers: [
     ...userQueryHandlers,
+    ...userCommandHandlers,
     { provide: USER_WRITE_REPOSITORY_PORT, useClass: UserWriteRepository },
     { provide: USER_QUERY_REPOSITORY_PORT, useClass: UserQueryRepository },
   ],
