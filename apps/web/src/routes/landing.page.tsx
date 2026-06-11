@@ -226,6 +226,6 @@ export const landingRoute = createRoute({
   component: LandingPage,
   getParentRoute: () => rootRoute,
   beforeLoad: () => {
-    if (isAuthenticated()) throw redirect({ to: "/", search: { page: 1 } })
+    if (isAuthenticated()) throw redirect({ to: "/" })
   },
 })
