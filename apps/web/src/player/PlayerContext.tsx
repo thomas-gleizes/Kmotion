@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react"
 import { audioPath, getBlobUrl } from "./audioCache"
+import { usePlayerStore } from "./playerStore"
 
 export type Track = {
   id: string
@@ -55,6 +56,9 @@ const ProgressContext = createContext<ProgressState>({ currentTime: 0, duration:
 // Élément audio unique, hors du cycle de rendu React.
 const audio = new Audio()
 
+// Sauvegarde l'instantané au plus toutes les 5 s pendant la lecture.
+const SAVE_THROTTLE_MS = 5000
+
 // Ordre de lecture : permutation des indices de la file. À plat quand le mode
 // aléatoire est désactivé, mélangé (Fisher-Yates) sinon, le titre de départ
 // restant en tête pour ne pas interrompre la lecture en cours.
@@ -69,24 +73,59 @@ function buildPlayOrder(length: number, shuffle: boolean, startIndex: number): n
   return [startIndex, ...rest]
 }
 
+// Relit l'instantané persisté en assainissant l'ordre / la position au cas où
+// le localStorage aurait été altéré.
+function readSnapshot() {
+  const s = usePlayerStore.getState().snapshot
+  if (!s || s.queue.length === 0) return null
+  const validOrder =
+    s.order.length === s.queue.length && s.order.every((i) => i >= 0 && i < s.queue.length)
+  const order = validOrder ? s.order : s.queue.map((_, i) => i)
+  const orderPos = s.orderPos >= 0 && s.orderPos < order.length ? s.orderPos : 0
+  return { ...s, order, orderPos }
+}
+
 export function PlayerProvider({ children }: { children: ReactNode }) {
-  const [queue, setQueue] = useState<Track[]>([])
-  const [index, setIndex] = useState(-1)
-  const [orderPos, setOrderPos] = useState(-1)
+  // Capturé une seule fois au montage (initialiseur paresseux, sûr au render).
+  const [snapshot] = useState(readSnapshot)
+
+  const [queue, setQueue] = useState<Track[]>(snapshot ? snapshot.queue : [])
+  const [index, setIndex] = useState(snapshot ? snapshot.order[snapshot.orderPos] : -1)
+  const [orderPos, setOrderPos] = useState(snapshot ? snapshot.orderPos : -1)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
+  const [currentTime, setCurrentTime] = useState(snapshot ? snapshot.currentTime : 0)
   const [duration, setDuration] = useState(0)
-  const [volume, setVolumeState] = useState(audio.volume)
-  const [repeat, setRepeat] = useState<RepeatMode>("off")
-  const [shuffle, setShuffle] = useState(false)
+  const [volume, setVolumeState] = useState(snapshot?.volume ?? audio.volume)
+  const [repeat, setRepeat] = useState<RepeatMode>(snapshot?.repeat ?? "off")
+  const [shuffle, setShuffle] = useState(snapshot?.shuffle ?? false)
 
   const loadIdRef = useRef(0)
-  const queueRef = useRef<Track[]>([])
-  const orderRef = useRef<number[]>([])
-  const orderPosRef = useRef(-1)
-  const repeatRef = useRef<RepeatMode>("off")
-  const shuffleRef = useRef(false)
+  const queueRef = useRef<Track[]>(snapshot ? snapshot.queue : [])
+  const orderRef = useRef<number[]>(snapshot ? snapshot.order : [])
+  const orderPosRef = useRef(snapshot ? snapshot.orderPos : -1)
+  const repeatRef = useRef<RepeatMode>(snapshot?.repeat ?? "off")
+  const shuffleRef = useRef(snapshot?.shuffle ?? false)
+  // Position à restaurer une fois les métadonnées du titre repris chargées.
+  const pendingSeekRef = useRef<number | null>(snapshot ? snapshot.currentTime : null)
+  const lastSaveRef = useRef(0)
+
+  // Persiste l'état courant pour reprise ultérieure (lit la position en direct
+  // sur l'élément audio plutôt que sur l'état React, désynchronisé).
+  const saveSnapshot = useCallback(() => {
+    const tracks = queueRef.current
+    const pos = orderPosRef.current
+    if (tracks.length === 0 || pos < 0) return
+    usePlayerStore.getState().save({
+      queue: tracks,
+      order: orderRef.current,
+      orderPos: pos,
+      currentTime: audio.currentTime,
+      repeat: repeatRef.current,
+      shuffle: shuffleRef.current,
+      volume: audio.volume,
+    })
+  }, [])
 
   const loadTrack = useCallback(async (track: Track, autoplay = true) => {
     const loadId = ++loadIdRef.current
@@ -178,17 +217,22 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setCurrentTime(seconds)
   }, [])
 
-  const setVolume = useCallback((value: number) => {
-    audio.volume = value
-    setVolumeState(value)
-  }, [])
+  const setVolume = useCallback(
+    (value: number) => {
+      audio.volume = value
+      setVolumeState(value)
+      saveSnapshot()
+    },
+    [saveSnapshot],
+  )
 
   const cycleRepeat = useCallback(() => {
     const cycle: RepeatMode[] = ["off", "all", "one"]
     const nextMode = cycle[(cycle.indexOf(repeatRef.current) + 1) % cycle.length]
     repeatRef.current = nextMode
     setRepeat(nextMode)
-  }, [])
+    saveSnapshot()
+  }, [saveSnapshot])
 
   // Bascule le mode aléatoire en conservant le titre en cours : on reconstruit
   // l'ordre autour de lui (mélangé ou remis à plat) sans relancer la lecture.
@@ -203,13 +247,47 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const pos = enabled ? 0 : currentQueueIndex
     orderPosRef.current = pos
     setOrderPos(pos)
-  }, [])
+    saveSnapshot()
+  }, [saveSnapshot])
+
+  // Restaure le titre persisté au montage : chargé sans lecture automatique
+  // (les navigateurs la bloquent), prêt à reprendre où l'utilisateur s'était arrêté.
+  useEffect(() => {
+    if (!snapshot) return
+    audio.volume = snapshot.volume
+    // Hydratation au montage : charger l'audio est un effet de bord légitime.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadTrack(snapshot.queue[snapshot.order[snapshot.orderPos]], false)
+  }, [snapshot, loadTrack])
 
   useEffect(() => {
-    const onPlay = () => setIsPlaying(true)
-    const onPause = () => setIsPlaying(false)
-    const onTime = () => setCurrentTime(audio.currentTime)
-    const onMeta = () => setDuration(audio.duration || 0)
+    const onPlay = () => {
+      setIsPlaying(true)
+      saveSnapshot()
+    }
+    const onPause = () => {
+      setIsPlaying(false)
+      saveSnapshot()
+    }
+    const onTime = () => {
+      setCurrentTime(audio.currentTime)
+      const now = Date.now()
+      if (now - lastSaveRef.current > SAVE_THROTTLE_MS) {
+        lastSaveRef.current = now
+        saveSnapshot()
+      }
+    }
+    const onMeta = () => {
+      setDuration(audio.duration || 0)
+      const pending = pendingSeekRef.current
+      if (pending != null) {
+        pendingSeekRef.current = null
+        if (pending > 0 && pending < (audio.duration || Infinity)) {
+          audio.currentTime = pending
+          setCurrentTime(pending)
+        }
+      }
+    }
     const onEnded = () => {
       if (repeatRef.current === "one") {
         audio.currentTime = 0
@@ -227,11 +305,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       }
       goToOrderPos(pos)
     }
+    const onHidden = () => {
+      if (document.visibilityState === "hidden") saveSnapshot()
+    }
     audio.addEventListener("play", onPlay)
     audio.addEventListener("pause", onPause)
     audio.addEventListener("timeupdate", onTime)
     audio.addEventListener("loadedmetadata", onMeta)
     audio.addEventListener("ended", onEnded)
+    window.addEventListener("pagehide", saveSnapshot)
+    document.addEventListener("visibilitychange", onHidden)
 
     if ("mediaSession" in navigator) {
       navigator.mediaSession.setActionHandler("play", () => void audio.play())
@@ -255,13 +338,15 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     return () => {
       window.removeEventListener("keydown", onKeyDown)
+      window.removeEventListener("pagehide", saveSnapshot)
+      document.removeEventListener("visibilitychange", onHidden)
       audio.removeEventListener("play", onPlay)
       audio.removeEventListener("pause", onPause)
       audio.removeEventListener("timeupdate", onTime)
       audio.removeEventListener("loadedmetadata", onMeta)
       audio.removeEventListener("ended", onEnded)
     }
-  }, [goToOrderPos, next, prev])
+  }, [goToOrderPos, next, prev, saveSnapshot])
 
   const value = useMemo(() => {
     const current = index >= 0 ? (queue[index] ?? null) : null
