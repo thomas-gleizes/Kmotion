@@ -15,3 +15,8 @@
     box-shadow: 0 28px 72px rgba(250, 45, 72, 0.28);
   }
 }
+
+@keyframes ambientIn {
+  from { opacity: 0; }
+  to   { opacity: 0.55; }
+}
