@@ -70,6 +70,15 @@ export function useAddMusic() {
   })
 }
 
+export function useSyncMusics() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () =>
+      unwrap(await api.POST("/api/3.1/musics/sync", { parseAs: "text" })),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["musics"] }),
+  })
+}
+
 export function useUpdateMusic() {
   const queryClient = useQueryClient()
   return useMutation({

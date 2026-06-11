@@ -60,10 +60,10 @@ class MusicController {
   }
 
   @Post('/sync')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AdminGuard)
   @ApiOperation({
     operationId: 'sync',
-    summary: 'Sync music with converter service',
+    summary: 'Sync music with converter service (admin only)',
   })
   @ApiOkResponse({ type: Number, description: 'Music synchronised' })
   async sync() {

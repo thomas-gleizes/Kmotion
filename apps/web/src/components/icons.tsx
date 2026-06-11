@@ -73,6 +73,12 @@ export const PersonIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const SyncIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 5.5V2.8L8.4 6.4 12 10V7.5a4.5 4.5 0 1 1-4.4 5.4H5.5A6.5 6.5 0 1 0 12 5.5Z" />
+  </Icon>
+)
+
 export const ShieldIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M12 2.2 4.8 5v6.1c0 4.4 3 8.5 7.2 9.7 4.2-1.2 7.2-5.3 7.2-9.7V5L12 2.2Zm-1 12.4-2.9-2.9 1.4-1.4 1.5 1.5 3.9-3.9 1.4 1.4-5.3 5.3Z" />
