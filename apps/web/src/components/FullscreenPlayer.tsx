@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { css, cx } from "styled-system/css"
 import { usePlayer, usePlayerProgress } from "../player/PlayerContext"
 import { thumbnailPath } from "../player/audioCache"
+import { useAuthedBlobUrl } from "../hooks/useAuthedBlobUrl"
 import { formatDuration } from "../lib/format"
 import { AuthImage } from "./AuthImage"
 import {
@@ -21,11 +22,39 @@ const overlay = css({
   zIndex: 100,
   display: "flex",
   flexDirection: "column",
+  overflow: "hidden",
   background: "linear-gradient(160deg, #0f0a0b 0%, #0a0a0c 55%, #080810 100%)",
   animation: "slideUp 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)",
 })
 
+// Calque ambiant : la pochette floutée et saturée colore le fond avec les
+// teintes du morceau en cours (à la Apple Music / Spotify).
+const ambientBg = css({
+  position: "absolute",
+  inset: "-10%",
+  zIndex: 0,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  filter: "blur(72px) saturate(1.7)",
+  transform: "scale(1.25)",
+  opacity: 0.55,
+  animation: "ambientIn 0.8s token(easings.apple) both",
+  pointerEvents: "none",
+})
+
+// Voile dégradé pour garder titres, contrôles et file de lecture lisibles.
+const scrim = css({
+  position: "absolute",
+  inset: 0,
+  zIndex: 0,
+  background:
+    "radial-gradient(120% 90% at 30% 0%, rgba(10,10,12,0.35) 0%, rgba(10,10,12,0.72) 60%, rgba(8,8,16,0.9) 100%)",
+  pointerEvents: "none",
+})
+
 const header = css({
+  position: "relative",
+  zIndex: 1,
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
@@ -54,6 +83,8 @@ const nowPlayingLabel = css({
 })
 
 const body = css({
+  position: "relative",
+  zIndex: 1,
   display: "flex",
   flex: 1,
   gap: "40px",
@@ -248,6 +279,7 @@ const queueDur = css({
 export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
   const player = usePlayer()
   const { currentTime, duration } = usePlayerProgress()
+  const { url: artUrl } = useAuthedBlobUrl(player.current ? thumbnailPath(player.current.id) : null)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -262,6 +294,15 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
 
   return (
     <div className={overlay}>
+      {artUrl && (
+        <div
+          key={current.id}
+          className={ambientBg}
+          style={{ backgroundImage: `url(${artUrl})` }}
+          aria-hidden
+        />
+      )}
+      <div className={scrim} aria-hidden />
       <div className={header}>
         <button type="button" className={closeBtn} onClick={onClose} aria-label="Réduire">
           <ChevronDownIcon size={22} />
