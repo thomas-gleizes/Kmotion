@@ -94,7 +94,7 @@ const body = css({
 })
 
 const artSection = css({
-  flex: "0 0 60%",
+  flex: "0 0 52%",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -104,10 +104,19 @@ const artSection = css({
 const artBase = css({
   width: "100%",
   aspectRatio: "16/9",
-  maxHeight: "65vh",
+  maxHeight: "60vh",
   borderRadius: "m",
   overflow: "hidden",
-  boxShadow: "0 20px 56px rgba(0,0,0,0.55)",
+  transformOrigin: "center",
+  transform: "scale(1)",
+  boxShadow: "0 24px 64px rgba(0,0,0,0.55)",
+  transition: "transform 0.4s token(easings.apple), box-shadow 0.4s token(easings.apple)",
+})
+
+// En pause, la pochette se réduit légèrement (à la Apple Music / Spotify).
+const artPaused = css({
+  transform: "scale(0.9)",
+  boxShadow: "0 14px 36px rgba(0,0,0,0.45)",
 })
 
 const infoSection = css({
@@ -335,12 +344,7 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
 
       <div className={body}>
         <div className={artSection}>
-          <div
-            className={artBase}
-            style={
-              player.isPlaying ? { animation: "albumBreath 3s ease-in-out infinite" } : undefined
-            }
-          >
+          <div className={cx(artBase, !player.isPlaying && artPaused)}>
             <AuthImage path={thumbnailPath(current.id)} alt={current.title} />
           </div>
         </div>
