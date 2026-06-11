@@ -3,9 +3,9 @@ kind: Ingress
 metadata:
   name: app
   namespace: kmotion
-#  annotations:
-#    cert-manager.io/cluster-issuer: letsencrypt-prod
-#    traefik.ingress.kubernetes.io/router.priority: "100"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.priority: "100"
 spec:
   ingressClassName: traefik
   tls:
