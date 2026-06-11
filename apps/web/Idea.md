@@ -12,5 +12,5 @@ Idée pour le projet
 11. Dans le panel admin, rajoute un gestion d'user (possiblité de ban/deban/supprimé un user)
 12. Dans le panel admin, gestion des musics, possiblité de supprimé un music (je crois que la feature coté backend existe déja)
 13. DONE - Supprimer le pulse sur la thumnail de la music en fullscreen, replace par un scale up/down si elle joue ou pas, et diminue un peu la largeur.
-14. Rajoute une animation a la fermture du fullscreen player
+14. DONE - Rajoute une animation a la fermture du fullscreen player
 

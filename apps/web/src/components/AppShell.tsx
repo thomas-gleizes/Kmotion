@@ -32,7 +32,7 @@ export function AppShell() {
         <Outlet />
       </main>
       <PlayerBar onExpand={() => setFullscreen(true)} />
-      {fullscreen && <FullscreenPlayer onClose={() => setFullscreen(false)} />}
+      <FullscreenPlayer open={fullscreen} onClose={() => setFullscreen(false)} />
     </div>
   )
 }
