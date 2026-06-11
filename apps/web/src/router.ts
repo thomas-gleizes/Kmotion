@@ -12,6 +12,7 @@ import { playlistsRoute } from "./routes/playlists.page.tsx"
 import { playlistDetailRoute } from "./routes/playlist-detail.page.tsx"
 import { addMusicRoute } from "./routes/add-music.page.tsx"
 import { profileRoute } from "./routes/profile.page.tsx"
+import { adminRoute } from "./routes/admin.page.tsx"
 
 type RootContext = {
   queryClient: QueryClient
@@ -32,6 +33,7 @@ const routeTree = rootRoute.addChildren([
     playlistDetailRoute,
     addMusicRoute,
     profileRoute,
+    adminRoute,
   ]),
 ])
 

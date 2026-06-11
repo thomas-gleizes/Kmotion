@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Response,
@@ -22,6 +23,9 @@ import { AddMusicCommand } from 'src/music/application/commands/add-music/add-mu
 import { CurrentUser } from 'src/shared/presentation/decorators/current-user.decorator';
 import { type AuthPayload } from 'src/auth/application/port/auth-service.port';
 import { AuthGuard } from 'src/shared/presentation/guards/auth.guard';
+import { AdminGuard } from 'src/shared/presentation/guards/admin.guard';
+import { UpdateMusicDto } from 'src/music/presentation/dto/input/update-music.dto';
+import { UpdateMusicCommand } from 'src/music/application/commands/update-music/update-music.command';
 import { SearchMusicsQuery } from 'src/music/application/queries/search-musics/search-musics.query';
 import { MusicRead } from 'src/music/application/port/music-read-repository.port';
 import { MusicResponseDto } from 'src/music/presentation/dto/output/music-response.dto';
@@ -108,6 +112,29 @@ class MusicController {
   @ApiOperation({ operationId: 'musics_show', summary: 'Get music by id' })
   @ApiOkResponse({ type: MusicResponseDto, description: 'Music' })
   async show(@Param('id') id: string) {
+    const record = await this.queryBus.execute(
+      new FindMusicByIdQuery({ musicId: id }),
+    );
+
+    return MusicResponseDto.fromReadModel(record);
+  }
+
+  @Patch(':id')
+  @UseGuards(AuthGuard, AdminGuard)
+  @ApiOperation({
+    operationId: 'updateMusic',
+    summary: 'Update music metadata (admin only)',
+  })
+  @ApiOkResponse({ type: MusicResponseDto, description: 'Music updated' })
+  async update(@Param('id') id: string, @Body() body: UpdateMusicDto) {
+    await this.commandBus.execute(
+      new UpdateMusicCommand({
+        musicId: id,
+        title: body.title,
+        artist: body.artist,
+      }),
+    );
+
     const record = await this.queryBus.execute(
       new FindMusicByIdQuery({ musicId: id }),
     );

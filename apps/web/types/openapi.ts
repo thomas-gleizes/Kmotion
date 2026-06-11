@@ -221,7 +221,8 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /** Update music metadata (admin only) */
+        patch: operations["updateMusic"];
         trace?: never;
     };
     "/api/3.1/musics/{id}/audio": {
@@ -504,6 +505,12 @@ export interface components {
             musicId: string;
             /** @description Position in the playlist */
             position: number;
+        };
+        UpdateMusicDto: {
+            /** @description Track title */
+            title?: string;
+            /** @description Name of the artist or band */
+            artist?: string;
         };
         UserPlaylistResponseDto: {
             id: string;
@@ -831,6 +838,32 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Music */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MusicResponseDto"];
+                };
+            };
+        };
+    };
+    updateMusic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMusicDto"];
+            };
+        };
+        responses: {
+            /** @description Music updated */
             200: {
                 headers: {
                     [name: string]: unknown;

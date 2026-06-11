@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router"
 import { css, cx } from "styled-system/css"
 import { getCurrentUser, logout } from "../auth/auth"
 import { truncate } from "../lib/styles"
-import { ListIcon, MusicNoteIcon, PersonIcon, PlusIcon, SearchIcon } from "./icons"
+import { ListIcon, MusicNoteIcon, PersonIcon, PlusIcon, SearchIcon, ShieldIcon } from "./icons"
 
 const sidebar = css({
   gridArea: "sidebar",
@@ -91,6 +91,11 @@ export function Sidebar() {
         <Link to="/profile" className={navLink}>
           <PersonIcon size={18} /> Profil
         </Link>
+        {user?.isAdmin && (
+          <Link to="/admin" className={navLink}>
+            <ShieldIcon size={18} /> Admin
+          </Link>
+        )}
       </nav>
       <div className={footer}>
         <div className={userName}>{user?.name}</div>
