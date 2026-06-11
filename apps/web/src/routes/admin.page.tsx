@@ -4,22 +4,33 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { css, cx } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
 import { isAuthenticated, getCurrentUser } from "../auth/auth"
-import { musicsQuery, useUpdateMusic, type Music } from "../api/queries"
+import { musicsQuery, useSyncMusics, useUpdateMusic, type Music } from "../api/queries"
 import { formatDuration } from "../lib/format"
 import { truncate, emptyState, pageHeading } from "../lib/styles"
 import { Button } from "../components/Button"
 import { Modal } from "../components/Modal"
 import { TextField } from "../components/TextField"
-import { EditIcon } from "../components/icons"
+import { EditIcon, SpinnerIcon, SyncIcon } from "../components/icons"
 
 const PAGE_SIZE = 30
+
+const headerRow = css({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "16px",
+})
 
 const subHeading = css({
   color: "textSecondary",
   fontSize: "14px",
-  marginTop: "-16px",
+  marginTop: "4px",
   marginBottom: "24px",
 })
+
+const syncFeedback = css({ fontSize: "13px", marginTop: "10px" })
+const syncOk = css({ color: "accent" })
+const syncError = css({ color: "danger" })
 
 const row = css({
   display: "flex",
@@ -121,13 +132,34 @@ const AdminPage = () => {
     placeholderData: keepPreviousData,
   })
   const [editing, setEditing] = useState<Music | null>(null)
+  const syncMusics = useSyncMusics()
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1
 
   return (
     <div>
-      <h1 className={pageHeading}>Administration</h1>
+      <div className={headerRow}>
+        <h1 className={pageHeading} style={{ marginBottom: 0 }}>
+          Administration
+        </h1>
+        <Button
+          variant="ghost"
+          disabled={syncMusics.isPending}
+          onClick={() => syncMusics.mutate()}
+        >
+          {syncMusics.isPending ? <SpinnerIcon size={16} /> : <SyncIcon size={16} />}
+          {syncMusics.isPending ? "Synchronisation…" : "Synchroniser"}
+        </Button>
+      </div>
       <p className={subHeading}>Modifier les métadonnées des titres de la bibliothèque.</p>
+      {syncMusics.isSuccess && (
+        <div className={cx(syncFeedback, syncOk)}>Bibliothèque synchronisée.</div>
+      )}
+      {syncMusics.isError && (
+        <div className={cx(syncFeedback, syncError)}>
+          La synchronisation a échoué. Réessayez.
+        </div>
+      )}
 
       {isPending && <div className={emptyState}>Chargement…</div>}
       {data && data.records.length === 0 && (
