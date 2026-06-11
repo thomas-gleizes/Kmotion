@@ -8,6 +8,6 @@ export const appLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   component: AppShell,
   beforeLoad: () => {
-    if (!isAuthenticated()) throw redirect({ to: "/login" })
+    if (!isAuthenticated()) throw redirect({ to: "/welcome" })
   },
 })

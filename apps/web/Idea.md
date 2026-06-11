@@ -3,7 +3,7 @@ Idée pour le projet
 2. DONE - Sur le fullscren player il faudrait utilisé les couleur de la thumnail pour la couleur de fond - une premier idée de de metre l'image en background et d'ajouté un blur et une opacity pour faire un effect, sinon je suis ouvert a d'autre idée
 3. DONE - Sur la gestion de la playlist, il faudrait avoir un repeat (playlist et track) et un randomzier (vraie random - pas de mélange selon genre) de l'ordre, base toit sur les standart d'autre application, 
 4. DONE - rajouté zustand et un store local pour sauvegardé les infos de la music en coure et le timestamp pour le relancé quand on revient sur l'application, 
-5. Crée un landing page pour l'application
+5. DONE - Crée un landing page pour l'application
 6. Rajoute le thumbnail de les metadata pour le navigateur (pour le mode picture in picture)
 7. Rajoute des raccoucis clavier (f = trigger off/on le full screen), + d'autres que tu me documenteras
 8. (FRONT&BACK) - Rajoute un la possibilité de modifié l'ordre des musique dans la playlist (y'a déja des icons pour le faire dans le front)
