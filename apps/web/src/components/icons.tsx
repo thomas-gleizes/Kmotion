@@ -73,6 +73,18 @@ export const PersonIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const ShieldIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 2.2 4.8 5v6.1c0 4.4 3 8.5 7.2 9.7 4.2-1.2 7.2-5.3 7.2-9.7V5L12 2.2Zm-1 12.4-2.9-2.9 1.4-1.4 1.5 1.5 3.9-3.9 1.4 1.4-5.3 5.3Z" />
+  </Icon>
+)
+
+export const EditIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 15.6V20h4.4L19.8 8.6l-4.4-4.4L4 15.6Zm17.7-10.3a1.2 1.2 0 0 0 0-1.7l-2.3-2.3a1.2 1.2 0 0 0-1.7 0l-1.8 1.8 4 4 1.8-1.8Z" />
+  </Icon>
+)
+
 export const TrashIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M9.5 3.5A1.5 1.5 0 0 1 11 2h2a1.5 1.5 0 0 1 1.5 1.5V4H19a1 1 0 1 1 0 2h-.55l-.86 13.07A2 2 0 0 1 15.6 21H8.4a2 2 0 0 1-2-1.93L5.55 6H5a1 1 0 0 1 0-2h4.5v-.5ZM10 9a.9.9 0 0 1 .9.9v7.2a.9.9 0 1 1-1.8 0V9.9A.9.9 0 0 1 10 9Zm4 0a.9.9 0 0 1 .9.9v7.2a.9.9 0 1 1-1.8 0V9.9A.9.9 0 0 1 14 9Z" />

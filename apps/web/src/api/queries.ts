@@ -9,6 +9,7 @@ export type PlaylistEntry = components["schemas"]["PlaylistEntryResponseDto"]
 export type User = components["schemas"]["UserDto"]
 export type CreatePlaylistInput = components["schemas"]["CreatePlaylistDto"]
 export type UpdatePlaylistInput = components["schemas"]["UpdatePlaylistDto"]
+export type UpdateMusicInput = components["schemas"]["UpdateMusicDto"]
 
 export const keys = {
   me: ["me"] as const,
@@ -63,6 +64,20 @@ export function useAddMusic() {
         await api.POST("/api/3.1/musics", {
           body: { mediaSource: "youtube", mediaId },
           parseAs: "text",
+        }),
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["musics"] }),
+  })
+}
+
+export function useUpdateMusic() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: { id: string; body: UpdateMusicInput }) =>
+      unwrap(
+        await api.PATCH("/api/3.1/musics/{id}", {
+          params: { path: { id: input.id } },
+          body: input.body,
         }),
       ),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["musics"] }),

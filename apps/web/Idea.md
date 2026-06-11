@@ -7,7 +7,7 @@ Idée pour le projet
 6. DONE - Rajoute le thumbnail de les metadata pour le navigateur (pour le mode picture in picture)
 7. DONE - Rajoute des raccoucis clavier (f = trigger off/on le full screen), + d'autres que tu me documenteras
 8. DONE - (FRONT&BACK) - Rajoute un la possibilité de modifié l'ordre des musique dans la playlist (y'a déja des icons pour le faire dans le front)
-9. Quand l'user est admin rajoute un panel d'administration qui permet de modifier les metadata de la musique
+9. DONE - Quand l'user est admin rajoute un panel d'administration qui permet de modifier les metadata de la musique
 10. Dans le panel admin, rajoute la possiblité de sync la music via un bouton (le sync ce fait de base sur un cron et au boostrap du server)
 11. Dans le panel admin, rajoute un gestion d'user (possiblité de ban/deban/supprimé un user)
 12. Dans le panel admin, gestion des musics, possiblité de supprimé un music (je crois que la feature coté backend existe déja)
