@@ -5,3 +5,4 @@ Idée pour le frontend
 3. sur la gestion de la playlist, il faudrait avoir un repeat (playlist et track) et un randomzier (vraie random - pas de mélange selon genre) de l'ordre, base toit sur les standart d'autre application, 
 4. rajouté zustand et un store local pour sauvegardé les infos de la music en coure et le timestamp pour le relancé quand on revient sur l'application, 
 5. Crée un landing page pour l'application
+6. Rajoute le thumbnail de les metadata pour le navigateur (pour le mode picture in picture)
