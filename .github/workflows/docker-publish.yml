@@ -16,9 +16,9 @@ env:
 jobs:
   build-and-push:
     name: Build and Push ${{ matrix.name }} to GHCR
-    runs-on: self-hosted
-    container:
-      image: ubuntu:latest
+    runs-on: ubuntu-latest
+#    container:
+#      image: ubuntu:latest
 
     permissions:
       contents: read
