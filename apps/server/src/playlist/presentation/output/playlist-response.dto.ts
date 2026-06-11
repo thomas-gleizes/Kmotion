@@ -110,7 +110,7 @@ export class PlaylistResponseDto {
     dto.entries = model.entries.map(PlaylistEntryResponseDto.fromModel);
     dto.thumbnails = [...model.entries]
       .slice(0, 4)
-      .map((item) => `${API_PREFIX}/musics/${item.mediaId}/thumbnail`);
+      .map((item) => `${API_PREFIX}/musics/${item.id}/thumbnail`);
 
     return dto;
   }
