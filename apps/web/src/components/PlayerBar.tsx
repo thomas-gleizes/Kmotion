@@ -4,7 +4,16 @@ import { usePlayer, usePlayerProgress } from "../player/PlayerContext"
 import { thumbnailPath } from "../player/audioCache"
 import { formatDuration } from "../lib/format"
 import { AuthImage } from "./AuthImage"
-import { NextIcon, PauseIcon, PlayIcon, PrevIcon, SpinnerIcon, VolumeIcon } from "./icons"
+import {
+  NextIcon,
+  PauseIcon,
+  PlayIcon,
+  PrevIcon,
+  RepeatIcon,
+  ShuffleIcon,
+  SpinnerIcon,
+  VolumeIcon,
+} from "./icons"
 
 const bar = css({
   gridArea: "player",
@@ -85,6 +94,29 @@ const playButton = css({
   _hover: { transform: "scale(1.06)", color: "black" },
 })
 
+const toggleActive = css({
+  color: "accent !important",
+  _hover: { color: "accentHover !important" },
+})
+
+const repeatWrap = css({ position: "relative" })
+
+const repeatBadge = css({
+  position: "absolute",
+  top: "0",
+  right: "0",
+  minWidth: "12px",
+  height: "12px",
+  padding: "0 2px",
+  borderRadius: "full",
+  backgroundColor: "accent",
+  color: "white",
+  fontSize: "8px",
+  fontWeight: "700",
+  lineHeight: "12px",
+  textAlign: "center",
+})
+
 const progressRow = css({
   display: "flex",
   alignItems: "center",
@@ -144,6 +176,15 @@ export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
         <div className={buttons}>
           <button
             type="button"
+            className={cx(controlButton, player.shuffle && toggleActive)}
+            onClick={player.toggleShuffle}
+            aria-label="Lecture aléatoire"
+            aria-pressed={player.shuffle}
+          >
+            <ShuffleIcon size={18} />
+          </button>
+          <button
+            type="button"
             className={controlButton}
             onClick={player.prev}
             aria-label="Titre précédent"
@@ -168,10 +209,26 @@ export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
             type="button"
             className={controlButton}
             onClick={player.next}
-            disabled={player.index >= player.queue.length - 1}
+            disabled={!player.hasNext}
             aria-label="Titre suivant"
           >
             <NextIcon size={20} />
+          </button>
+          <button
+            type="button"
+            className={cx(controlButton, repeatWrap, player.repeat !== "off" && toggleActive)}
+            onClick={player.cycleRepeat}
+            aria-label={
+              player.repeat === "one"
+                ? "Répéter le titre"
+                : player.repeat === "all"
+                  ? "Répéter la file"
+                  : "Répétition désactivée"
+            }
+            aria-pressed={player.repeat !== "off"}
+          >
+            <RepeatIcon size={18} />
+            {player.repeat === "one" && <span className={repeatBadge}>1</span>}
           </button>
         </div>
         <div className={progressRow}>

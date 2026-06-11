@@ -11,6 +11,8 @@ import {
   PauseIcon,
   PlayIcon,
   PrevIcon,
+  RepeatIcon,
+  ShuffleIcon,
   SpinnerIcon,
   VolumeIcon,
 } from "./icons"
@@ -188,6 +190,29 @@ const playBtnExtra = css({
   _hover: { transform: "scale(1.06) !important" },
 })
 
+const toggleActive = css({
+  color: "accent !important",
+  _hover: { color: "accentHover !important", transform: "none" },
+})
+
+const repeatWrap = css({ position: "relative" })
+
+const repeatBadge = css({
+  position: "absolute",
+  top: "2px",
+  right: "2px",
+  minWidth: "13px",
+  height: "13px",
+  padding: "0 2px",
+  borderRadius: "full",
+  backgroundColor: "accent",
+  color: "white",
+  fontSize: "9px",
+  fontWeight: "700",
+  lineHeight: "13px",
+  textAlign: "center",
+})
+
 const volumeRow = css({
   display: "flex",
   alignItems: "center",
@@ -349,6 +374,15 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
           <div className={controlsRow}>
             <button
               type="button"
+              className={cx(ctrlBtn, player.shuffle && toggleActive)}
+              onClick={player.toggleShuffle}
+              aria-label="Lecture aléatoire"
+              aria-pressed={player.shuffle}
+            >
+              <ShuffleIcon size={22} />
+            </button>
+            <button
+              type="button"
               className={ctrlBtn}
               onClick={player.prev}
               aria-label="Titre précédent"
@@ -373,10 +407,26 @@ export function FullscreenPlayer({ onClose }: { onClose: () => void }) {
               type="button"
               className={ctrlBtn}
               onClick={player.next}
-              disabled={player.index >= player.queue.length - 1}
+              disabled={!player.hasNext}
               aria-label="Titre suivant"
             >
               <NextIcon size={28} />
+            </button>
+            <button
+              type="button"
+              className={cx(ctrlBtn, repeatWrap, player.repeat !== "off" && toggleActive)}
+              onClick={player.cycleRepeat}
+              aria-label={
+                player.repeat === "one"
+                  ? "Répéter le titre"
+                  : player.repeat === "all"
+                    ? "Répéter la file"
+                    : "Répétition désactivée"
+              }
+              aria-pressed={player.repeat !== "off"}
+            >
+              <RepeatIcon size={22} />
+              {player.repeat === "one" && <span className={repeatBadge}>1</span>}
             </button>
           </div>
 
