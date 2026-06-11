@@ -69,7 +69,7 @@ export const AddMusicPage = () => {
         {addMusic.isSuccess && (
           <div className={successStyle}>
             Titre ajouté à la bibliothèque !
-            <Link to="/" search={{ page: 1 }}>
+            <Link to="/">
               Voir la bibliothèque
             </Link>
           </div>

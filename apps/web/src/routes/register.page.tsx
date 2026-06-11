@@ -32,7 +32,7 @@ export const RegisterPage = () => {
     },
     onSuccess: (token) => {
       setToken(token)
-      void navigate({ to: "/", search: { page: 1 } })
+      void navigate({ to: "/" })
     },
   })
 
@@ -92,6 +92,6 @@ export const registerRoute = createRoute({
   component: RegisterPage,
   getParentRoute: () => rootRoute,
   beforeLoad: () => {
-    if (isAuthenticated()) throw redirect({ to: "/", search: { page: 1 } })
+    if (isAuthenticated()) throw redirect({ to: "/" })
   },
 })

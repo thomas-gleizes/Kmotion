@@ -1,14 +1,15 @@
+import { useEffect, useRef } from "react"
 import { createRoute } from "@tanstack/react-router"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery } from "@tanstack/react-query"
 import { useDialog } from "react-dialog-promise"
 import { css } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
-import { musicsQuery } from "../api/queries"
+import { musicsInfiniteQuery } from "../api/queries"
 import { emptyState, pageHeading } from "../lib/styles"
 import { usePlayer } from "../player/PlayerContext"
 import { MusicCard } from "../components/MusicCard"
 import { AddToPlaylistDialog } from "../components/dialogs/AddToPlaylistDialog"
-import { Button } from "../components/Button"
+import { SpinnerIcon } from "../components/icons"
 
 const PAGE_SIZE = 30
 
@@ -18,77 +19,69 @@ const grid = css({
   gap: "12px",
 })
 
-const pager = css({
+const sentinel = css({ height: "1px" })
+
+const loadingMore = css({
   display: "flex",
-  alignItems: "center",
   justifyContent: "center",
-  gap: "16px",
-  marginTop: "28px",
+  padding: "24px",
   color: "textSecondary",
-  fontSize: "14px",
 })
 
 export const HomePage = () => {
-  const { page } = homeRoute.useSearch()
-  const navigate = homeRoute.useNavigate()
-  const { data, isPending } = useQuery({
-    ...musicsQuery(page - 1, PAGE_SIZE),
-    placeholderData: keepPreviousData,
-  })
+  const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
+    musicsInfiniteQuery(PAGE_SIZE),
+  )
   const player = usePlayer()
   const addToPlaylist = useDialog(AddToPlaylistDialog)
+  const sentinelRef = useRef<HTMLDivElement>(null)
 
-  const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1
+  const records = data?.pages.flatMap((page) => page.records) ?? []
 
-  const goToPage = (next: number) =>
-    navigate({ search: (prev) => ({ ...prev, page: next }) })
+  useEffect(() => {
+    const target = sentinelRef.current
+    if (!target) return
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        void fetchNextPage()
+      }
+    })
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
   return (
     <div>
       <h1 className={pageHeading}>Écouter</h1>
       {isPending && <div className={emptyState}>Chargement de la bibliothèque…</div>}
-      {data && data.records.length === 0 && (
+      {data && records.length === 0 && (
         <div className={emptyState}>
           Votre bibliothèque est vide. Ajoutez un titre depuis l’onglet « Ajouter ».
         </div>
       )}
       <div className={grid}>
-        {data?.records.map((music, i) => (
+        {records.map((music, i) => (
           <MusicCard
             key={music.id}
             music={music}
-            onPlay={() => player.playQueue(data.records, i)}
+            onPlay={() => player.playQueue(records, i)}
             onAddToPlaylist={() => addToPlaylist.open({ music })}
           />
         ))}
       </div>
-      {data && data.total > PAGE_SIZE && (
-        <div className={pager}>
-          <Button variant="ghost" disabled={page <= 1} onClick={() => goToPage(page - 1)}>
-            Précédent
-          </Button>
-          <span>
-            Page {page} / {totalPages}
-          </span>
-          <Button variant="ghost" disabled={page >= totalPages} onClick={() => goToPage(page + 1)}>
-            Suivant
-          </Button>
+      <div ref={sentinelRef} className={sentinel} />
+      {isFetchingNextPage && (
+        <div className={loadingMore}>
+          <SpinnerIcon size={20} />
         </div>
       )}
     </div>
   )
 }
 
-type HomeSearch = {
-  page: number
-}
-
 export const homeRoute = createRoute({
   path: "/",
   component: HomePage,
   getParentRoute: () => appLayoutRoute,
-  validateSearch: (search: Record<string, unknown>): HomeSearch => {
-    const page = Number(search.page)
-    return { page: Number.isInteger(page) && page >= 1 ? page : 1 }
-  },
 })

@@ -1,4 +1,4 @@
-import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query"
+import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query"
 import type { components } from "../../types/openapi"
 import { api } from "./client"
 
@@ -35,6 +35,16 @@ export const musicsQuery = (page: number, size: number) =>
     queryKey: keys.musics(page, size),
     queryFn: async () =>
       unwrap(await api.GET("/api/3.1/musics", { params: { query: { page, size } } })),
+  })
+
+export const musicsInfiniteQuery = (size: number) =>
+  infiniteQueryOptions({
+    queryKey: ["musics", "infinite", { size }] as const,
+    queryFn: async ({ pageParam }) =>
+      unwrap(await api.GET("/api/3.1/musics", { params: { query: { page: pageParam, size } } })),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) =>
+      allPages.length * size < lastPage.total ? allPages.length : undefined,
   })
 
 export const musicSearchQuery = (query: string) =>

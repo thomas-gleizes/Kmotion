@@ -350,7 +350,7 @@ export const adminRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   beforeLoad: () => {
     if (!isAuthenticated() || !getCurrentUser()?.isAdmin) {
-      throw redirect({ to: "/", search: { page: 1 } })
+      throw redirect({ to: "/" })
     }
   },
 })
