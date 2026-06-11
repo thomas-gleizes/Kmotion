@@ -1,11 +1,11 @@
-import { createRoute } from "@tanstack/react-router"
+import { createRoute, Link } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { css } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
 import { meQuery } from "../api/queries"
 import { logout } from "../auth/auth"
 import { Button } from "../components/Button"
-import { PersonIcon } from "../components/icons"
+import { PersonIcon, PlusIcon, ShieldIcon } from "../components/icons"
 import { pageHeading } from "../lib/styles"
 
 const card = css({
@@ -43,6 +43,30 @@ const badge = css({
   fontWeight: "600",
 })
 
+// Liens absents de la tab bar mobile (présents dans la sidebar desktop).
+const mobileLinks = css({
+  display: "flex",
+  flexDirection: "column",
+  gap: "4px",
+  maxWidth: "480px",
+  marginTop: "16px",
+  md: { display: "none" },
+})
+
+const mobileLink = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "12px",
+  padding: "14px 16px",
+  borderRadius: "s",
+  fontSize: "15px",
+  fontWeight: "500",
+  color: "textSecondary",
+  backgroundColor: "surface",
+  border: "1px solid token(colors.border)",
+  '&[data-status="active"]': { color: "accent" },
+})
+
 const ProfilePage = () => {
   const { data: user, isPending } = useQuery(meQuery)
 
@@ -67,6 +91,17 @@ const ProfilePage = () => {
           </Button>
         </div>
       </div>
+
+      <nav className={mobileLinks}>
+        <Link to="/add" className={mobileLink}>
+          <PlusIcon size={18} /> Ajouter un titre
+        </Link>
+        {user?.isAdmin && (
+          <Link to="/admin" className={mobileLink}>
+            <ShieldIcon size={18} /> Administration
+          </Link>
+        )}
+      </nav>
     </div>
   )
 }

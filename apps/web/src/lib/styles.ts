@@ -1,10 +1,11 @@
 import { css } from "styled-system/css"
 
 export const pageHeading = css({
-  fontSize: "32px",
+  fontSize: "26px",
   fontWeight: "800",
   letterSpacing: "-0.8px",
-  marginBottom: "24px",
+  marginBottom: "20px",
+  md: { fontSize: "32px", marginBottom: "24px" },
 })
 
 export const truncate = css({

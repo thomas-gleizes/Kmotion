@@ -7,6 +7,12 @@ export default defineConfig({
 
   exclude: [],
 
+  conditions: {
+    extend: {
+      touch: "@media (hover: none)",
+    },
+  },
+
   theme: {
     extend: {
       tokens: {

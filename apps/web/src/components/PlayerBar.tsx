@@ -1,5 +1,6 @@
 import { css, cx } from "styled-system/css"
 import { truncate } from "../lib/styles"
+import { useIsMobile } from "../hooks/useMediaQuery"
 import { usePlayer, usePlayerProgress } from "../player/PlayerContext"
 import { thumbnailPath } from "../player/audioCache"
 import { formatDuration } from "../lib/format"
@@ -153,9 +154,122 @@ const volumeArea = css({
   color: "textSecondary",
 })
 
+const miniBar = css({
+  gridArea: "player",
+  position: "relative",
+  display: "flex",
+  alignItems: "center",
+  gap: "12px",
+  padding: "8px 12px",
+  backgroundColor: "surfaceTranslucent",
+  backdropFilter: "blur(20px) saturate(180%)",
+  borderTop: "1px solid token(colors.border)",
+  boxShadow: "bar",
+  animation: "fadeIn token(durations.normal) token(easings.apple)",
+})
+
+const miniProgressTrack = css({
+  position: "absolute",
+  top: "-1px",
+  left: 0,
+  right: 0,
+  height: "2px",
+  backgroundColor: "rgba(255,255,255,0.12)",
+})
+
+const miniProgressFill = css({
+  height: "100%",
+  backgroundColor: "accent",
+})
+
+const miniExpand = css({
+  flex: 1,
+  display: "flex",
+  alignItems: "center",
+  gap: "12px",
+  minWidth: 0,
+  background: "none",
+  border: "none",
+  color: "text",
+  cursor: "pointer",
+  padding: 0,
+  textAlign: "left",
+})
+
+const miniCover = css({
+  width: "40px",
+  height: "40px",
+  borderRadius: "s",
+  overflow: "hidden",
+  flexShrink: 0,
+})
+
+const miniPlayButton = css({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "44px",
+  height: "44px",
+  borderRadius: "full",
+  border: "none",
+  background: "none",
+  color: "text",
+  cursor: "pointer",
+  flexShrink: 0,
+})
+
+function MiniPlayer({ onExpand }: { onExpand?: () => void }) {
+  const player = usePlayer()
+  const { currentTime, duration } = usePlayerProgress()
+
+  if (!player.current) return null
+  const { current } = player
+  const total = duration || current.duration || 0
+  const progress = total > 0 ? Math.min(100, (currentTime / total) * 100) : 0
+
+  return (
+    <div className={miniBar}>
+      <div className={miniProgressTrack}>
+        <div className={miniProgressFill} style={{ width: `${progress}%` }} />
+      </div>
+      <button
+        type="button"
+        className={miniExpand}
+        onClick={onExpand}
+        aria-label="Agrandir le lecteur"
+      >
+        <div className={miniCover}>
+          <AuthImage path={thumbnailPath(current.id)} alt={current.title} />
+        </div>
+        <div className={css({ minWidth: 0 })}>
+          <div className={titleStyle}>{current.title}</div>
+          <div className={artistStyle}>{current.artist}</div>
+        </div>
+      </button>
+      <button
+        type="button"
+        className={miniPlayButton}
+        onClick={player.toggle}
+        aria-label={player.isPlaying ? "Pause" : "Lecture"}
+      >
+        {player.isLoading ? (
+          <SpinnerIcon size={22} />
+        ) : player.isPlaying ? (
+          <PauseIcon size={22} />
+        ) : (
+          <PlayIcon size={22} />
+        )}
+      </button>
+    </div>
+  )
+}
+
 export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
   const player = usePlayer()
   const { currentTime, duration } = usePlayerProgress()
+  const isMobile = useIsMobile()
+
+  if (isMobile) return <MiniPlayer onExpand={onExpand} />
 
   if (!player.current) return null
   const { current } = player

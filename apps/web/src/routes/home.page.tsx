@@ -15,8 +15,9 @@ const PAGE_SIZE = 30
 
 const grid = css({
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))",
-  gap: "12px",
+  gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+  gap: "10px",
+  md: { gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "12px" },
 })
 
 const sentinel = css({ height: "1px" })
