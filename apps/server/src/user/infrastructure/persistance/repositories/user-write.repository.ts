@@ -76,4 +76,8 @@ export class UserWriteRepository implements UserWriteRepositoryPort {
       .set({ isActive: false })
       .where(eq(userTable.id, id));
   }
+
+  async delete(id: string): Promise<void> {
+    await this.database.delete(userTable).where(eq(userTable.id, id));
+  }
 }

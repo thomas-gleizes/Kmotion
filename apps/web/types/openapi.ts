@@ -129,6 +129,41 @@ export interface paths {
         get: operations["users_show"];
         put?: never;
         post?: never;
+        /** Delete a user (admin only) */
+        delete: operations["deleteUser"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/users/{id}/ban": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ban a user (admin only) */
+        post: operations["banUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/users/{id}/unban": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unban a user (admin only) */
+        post: operations["unbanUser"];
         delete?: never;
         options?: never;
         head?: never;
@@ -645,14 +680,10 @@ export interface operations {
     users_index: {
         parameters: {
             query?: {
-                /** @description Filters */
-                filters?: components["schemas"]["UserFiltersDto"][];
-                /** @description Order by */
-                orderBy?: components["schemas"]["UserOrderByDto"][];
-                /** @description Page size */
-                pageSize?: number;
-                /** @description Page token */
-                pageToken?: string;
+                /** @description Page number */
+                page?: number;
+                /** @description Number of items per page */
+                size?: number;
             };
             header?: never;
             path?: never;
@@ -668,6 +699,66 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PaginatedUsersDto"];
                 };
+            };
+        };
+    };
+    banUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User banned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    unbanUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User unbanned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

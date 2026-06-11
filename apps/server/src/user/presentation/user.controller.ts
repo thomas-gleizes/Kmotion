@@ -1,9 +1,11 @@
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { QueryBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   Controller,
+  Delete,
   Get,
   Param,
+  Post,
   Query,
   Request,
   UseGuards,
@@ -12,36 +14,47 @@ import { GetProfileQuery } from 'src/user/application/queries/get-profile/get-pr
 import { FindUserBySlugQuery } from 'src/user/application/queries/find-user-by-slug/find-user-by-slug.query';
 import { FindUserByIdQuery } from 'src/user/application/queries/find-user-by-id/find-user-by-id.query';
 import { FindUsersQuery } from 'src/user/application/queries/find-users/find-users.query';
+import { BanUserCommand } from 'src/user/application/commands/ban-user/ban-user.command';
+import { UnbanUserCommand } from 'src/user/application/commands/unban-user/unban-user.command';
+import { DeleteUserCommand } from 'src/user/application/commands/delete-user/delete-user.command';
 import { UserDto } from 'src/user/presentation/dto/output/user.dto';
 import { AuthGuard } from 'src/shared/presentation/guards/auth.guard';
+import { AdminGuard } from 'src/shared/presentation/guards/admin.guard';
+import { CurrentUser } from 'src/shared/presentation/decorators/current-user.decorator';
+import { type AuthPayload } from 'src/auth/application/port/auth-service.port';
 import { PaginatedUsersDto } from 'src/user/presentation/dto/output/paginated-users.dto';
-import { UsersIndexBodyDto } from 'src/user/presentation/dto/input/users-index-body.dto';
+import { UsersPaginationDto } from 'src/user/presentation/dto/input/users-pagination.dto';
+import { PaginatedUsers } from 'src/user/application/port/user-query-repository.port';
 
 @Controller('users')
 @ApiTags('User')
 export class UserController {
-  constructor(private readonly queryBus: QueryBus) {}
+  constructor(
+    private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
+  ) {}
 
   @Get()
-  @UseGuards(AuthGuard)
-  @ApiOperation({ operationId: 'users_index', summary: 'Get all users' })
-  @ApiOkResponse({
-    type: PaginatedUsersDto,
-    description: 'All users',
+  @UseGuards(AuthGuard, AdminGuard)
+  @ApiOperation({
+    operationId: 'users_index',
+    summary: 'Get all users (admin only)',
   })
-  async index(@Query() query: UsersIndexBodyDto) {
-    await this.queryBus.execute(
+  @ApiOkResponse({ type: PaginatedUsersDto, description: 'All users' })
+  async index(
+    @Query() pagination: UsersPaginationDto,
+  ): Promise<PaginatedUsersDto> {
+    const result: PaginatedUsers = await this.queryBus.execute(
       new FindUsersQuery({
-        pageSize: query.pageSize,
-        pageToken: query.pageToken,
-        filters: query.filters,
+        page: pagination.page ?? 0,
+        size: pagination.size ?? 20,
       }),
     );
 
     return {
-      records: [],
-      total: 0,
-    } as PaginatedUsersDto;
+      records: result.records.map((user) => UserDto.fromRead(user)),
+      total: result.total,
+    };
   }
 
   @Get('me')
@@ -70,5 +83,39 @@ export class UserController {
   @ApiOkResponse({ type: UserDto, description: 'User profile' })
   async showBySlug(@Param('slug') slug: string) {
     return this.queryBus.execute(new FindUserBySlugQuery({ slug }));
+  }
+
+  @Post(':id/ban')
+  @UseGuards(AuthGuard, AdminGuard)
+  @ApiOperation({ operationId: 'banUser', summary: 'Ban a user (admin only)' })
+  @ApiOkResponse({ description: 'User banned' })
+  async ban(@Param('id') id: string, @CurrentUser() user: AuthPayload) {
+    await this.commandBus.execute(
+      new BanUserCommand({ userId: id, currentUserId: user.sub }),
+    );
+  }
+
+  @Post(':id/unban')
+  @UseGuards(AuthGuard, AdminGuard)
+  @ApiOperation({
+    operationId: 'unbanUser',
+    summary: 'Unban a user (admin only)',
+  })
+  @ApiOkResponse({ description: 'User unbanned' })
+  async unban(@Param('id') id: string) {
+    await this.commandBus.execute(new UnbanUserCommand({ userId: id }));
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard, AdminGuard)
+  @ApiOperation({
+    operationId: 'deleteUser',
+    summary: 'Delete a user (admin only)',
+  })
+  @ApiOkResponse({ description: 'User deleted' })
+  async delete(@Param('id') id: string, @CurrentUser() user: AuthPayload) {
+    await this.commandBus.execute(
+      new DeleteUserCommand({ userId: id, currentUserId: user.sub }),
+    );
   }
 }

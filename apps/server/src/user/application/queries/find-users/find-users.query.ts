@@ -1,16 +1,12 @@
 import { Query } from 'src/core/cqrs';
-import { PaginatedResult } from 'src/user/application/queries/find-users/find-users.handler';
-import { User } from 'src/user/domain/user.entity';
-
-export type FindUsersFilters = {};
+import { PaginatedUsers } from 'src/user/application/port/user-query-repository.port';
 
 export type FindUsersQueryPayload = {
-  pageSize?: number;
-  pageToken?: string;
-  filters?: FindUsersFilters;
+  page: number;
+  size: number;
 };
 
-export class FindUsersQuery extends Query<PaginatedResult<User>> {
+export class FindUsersQuery extends Query<PaginatedUsers> {
   constructor(public readonly payload: FindUsersQueryPayload) {
     super();
   }
