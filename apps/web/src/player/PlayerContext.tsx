@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react"
-import { audioPath, getBlobUrl } from "./audioCache"
+import { audioPath, getBlobUrl, thumbnailPath } from "./audioCache"
 import { usePlayerStore } from "./playerStore"
 
 export type Track = {
@@ -149,10 +149,23 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
 
     if ("mediaSession" in navigator) {
+      // Métadonnées de base immédiates, puis pochette dès qu'elle est prête :
+      // elle alimente les contrôles média du navigateur / de l'OS (écran
+      // verrouillé, notification, « Now Playing », picture-in-picture).
       navigator.mediaSession.metadata = new MediaMetadata({
         title: track.title,
         artist: track.artist,
       })
+      void getBlobUrl(thumbnailPath(track.id))
+        .then((thumbUrl) => {
+          if (loadId !== loadIdRef.current) return
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: track.title,
+            artist: track.artist,
+            artwork: [{ src: thumbUrl, sizes: "480x360", type: "image/jpeg" }],
+          })
+        })
+        .catch(() => {})
     }
   }, [])
 
