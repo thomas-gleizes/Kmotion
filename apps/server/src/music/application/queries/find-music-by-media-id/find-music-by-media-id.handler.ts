@@ -9,9 +9,7 @@ import { RessourceNotFoundException } from 'src/shared/domain/exceptions/ressour
 import { Inject } from '@nestjs/common';
 
 @QueryHandler(FindMusicByMediaIdQuery)
-export class FindMusicByMediaIdHandler
-  implements IQueryHandler<FindMusicByMediaIdQuery>
-{
+export class FindMusicByMediaIdHandler implements IQueryHandler<FindMusicByMediaIdQuery> {
   constructor(
     @Inject(MUSIC_READ_REPOSITORY_PORT)
     private readonly musicReadRepository: MusicReadRepositoryPort,

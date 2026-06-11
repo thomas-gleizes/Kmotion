@@ -1,110 +1,79 @@
 import React, { useEffect, useState } from "react"
+import { FiLoader } from "react-icons/fi"
 import { LoginForm } from "./LoginForm"
-import { VideoDetails } from "./VideoDetails"
-import { NoVideo } from "./NoVideo"
+import { Header } from "./Header"
+import { TabBar, type Tab } from "./TabBar"
+import { VideoTab } from "./tabs/VideoTab"
+import { LibraryTab } from "./tabs/LibraryTab"
 import { useAuthStore, useVideoStore } from "../stores"
 import { api } from "../utils/api"
-import { extractVideoId } from "../utils/youtube"
-import { FiLogOut } from "react-icons/fi"
 
 export const PopupApp: React.FC = () => {
   const token = useAuthStore((state) => state.token)
-  const clearToken = useAuthStore((state) => state.clearToken)
-  const { videoId, isYoutube } = useVideoStore()
-  const [isCheckingAuth, setIsCheckingAuth] = useState(!!token)
-  const [isAuthenticated, setIsAuthenticated] = useState(!!token)
+  const [hydrated, setHydrated] = useState(false)
+  const [activeTab, setActiveTab] = useState<Tab>("video")
+  const setTab = useVideoStore((state) => state.setTab)
 
+  // Detect the active tab's video + listen for SPA navigation messages.
   useEffect(() => {
-    // Get current tab URL to extract video ID
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tab = tabs[0]
-      if (tab.url) {
-        const id = extractVideoId(tab.url)
-        useVideoStore.setState({ videoId: id })
-      }
+      setTab(tabs[0]?.url)
     })
 
-    // Listen for video ID changes from content script
-    const messageListener = (
-      request: any,
-      sender: chrome.runtime.MessageSender,
-      sendResponse: (response?: any) => void
-    ) => {
-      if (request.type === "YOUTUBE_VIDEO_DETECTED") {
-        useVideoStore.setState({ videoId: request.videoId })
+    const listener = (request: { type?: string; videoId?: string | null }) => {
+      if (request?.type === "YOUTUBE_VIDEO_DETECTED" || request?.type === "VIDEO_ID_CHANGED") {
+        useVideoStore.setState({ videoId: request.videoId ?? null })
       }
     }
+    chrome.runtime.onMessage.addListener(listener)
+    return () => chrome.runtime.onMessage.removeListener(listener)
+  }, [setTab])
 
-    chrome.runtime.onMessage.addListener(messageListener)
-
+  // Hydrate the session from chrome.storage and validate the token.
+  useEffect(() => {
+    let active = true
+    ;(async () => {
+      const stored = await api.loadToken()
+      if (!active) return
+      if (!stored) {
+        setHydrated(true)
+        return
+      }
+      try {
+        const user = await api.getProfile()
+        if (!active) return
+        useAuthStore.getState().setSession(stored, user)
+      } catch {
+        await api.clearAuth()
+        if (active) useAuthStore.getState().clear()
+      } finally {
+        if (active) setHydrated(true)
+      }
+    })()
     return () => {
-      chrome.runtime.onMessage.removeListener(messageListener)
+      active = false
     }
   }, [])
 
-  useEffect(() => {
-    if (token && isCheckingAuth) {
-      // Verify token is still valid
-      api.setToken(token)
-      api
-        .getProfile()
-        .then(() => {
-          setIsAuthenticated(true)
-          setIsCheckingAuth(false)
-        })
-        .catch(() => {
-          clearToken()
-          setIsAuthenticated(false)
-          setIsCheckingAuth(false)
-        })
-    } else {
-      setIsCheckingAuth(false)
-    }
-  }, [token])
-
-  const handleLoginSuccess = () => {
-    setIsAuthenticated(true)
-  }
-
-  const handleLogout = () => {
-    clearToken()
-    setIsAuthenticated(false)
-  }
-
-  if (isCheckingAuth) {
+  if (!hydrated) {
     return (
-      <div className="w-full p-6 bg-white text-center">
-        <div className="animate-spin inline-block w-6 h-6 border-3 border-blue-600 border-t-transparent rounded-full"></div>
+      <div className="h-full flex items-center justify-center bg-bg">
+        <FiLoader className="animate-spin text-ink-tertiary" size={24} />
       </div>
     )
   }
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      {!isAuthenticated ? (
-        <LoginForm onSuccess={handleLoginSuccess} />
-      ) : (
-        <>
-          <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center">
-            <h1 className="font-bold text-gray-900">kMotion</h1>
-            <button
-              onClick={handleLogout}
-              className="p-1.5 hover:bg-gray-100 rounded-md transition"
-              title="Logout"
-            >
-              <FiLogOut size={18} className="text-gray-600" />
-            </button>
-          </div>
+  if (!token) {
+    return <LoginForm />
+  }
 
-          {isYoutube && videoId ? (
-            <VideoDetails videoId={videoId} />
-          ) : (
-            <NoVideo isYoutube={isYoutube} />
-          )}
-        </>
-      )}
+  return (
+    <div className="h-full flex flex-col bg-bg text-ink">
+      <Header />
+      <main className="flex-1 overflow-y-auto">
+        {activeTab === "video" ? <VideoTab /> : <LibraryTab />}
+      </main>
+      <TabBar active={activeTab} onChange={setActiveTab} />
     </div>
   )
 }
-
-

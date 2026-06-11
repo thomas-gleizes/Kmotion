@@ -8,9 +8,7 @@ import {
 import { FindUserPlaylistsQuery } from './find-user-playlists.query';
 
 @QueryHandler(FindUserPlaylistsQuery)
-export class FindUserPlaylistsHandler
-  implements IQueryHandler<FindUserPlaylistsQuery>
-{
+export class FindUserPlaylistsHandler implements IQueryHandler<FindUserPlaylistsQuery> {
   constructor(
     @Inject(PLAYLIST_READ_REPOSITORY_PORT)
     private readonly playlistRepository: PlaylistQueryRepositoryPort,

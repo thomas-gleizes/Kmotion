@@ -14,6 +14,7 @@ export type MusicRead = {
   duration: number;
   audio: string;
   thumbnail: string;
+  converted: boolean;
 };
 
 export type MusicFilters = {};

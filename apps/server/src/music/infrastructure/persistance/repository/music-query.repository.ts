@@ -32,6 +32,7 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
       thumbnail: record.thumbnail,
       channel: record.artist,
       duration: record.duration ?? 0,
+      converted: record.audio !== '',
     };
   }
 

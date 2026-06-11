@@ -8,9 +8,7 @@ import {
 import { Inject } from '@nestjs/common';
 
 @CommandHandler(CreatePlaylistCommand)
-export class CreatePlaylistHandler
-  implements ICommandHandler<CreatePlaylistCommand>
-{
+export class CreatePlaylistHandler implements ICommandHandler<CreatePlaylistCommand> {
   constructor(
     @Inject(PLAYLIST_WRITE_REPOSITORY)
     private readonly playlistWriteRepository: PlaylistWriteRepositoryPort,

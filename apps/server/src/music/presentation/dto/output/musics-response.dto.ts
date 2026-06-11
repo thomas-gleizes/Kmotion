@@ -4,9 +4,7 @@ import { MusicRead } from 'src/music/application/port/music-read-repository.port
 import { ApiProperty } from '@nestjs/swagger';
 import { MusicResponseDto } from 'src/music/presentation/dto/output/music-response.dto';
 
-export class MusicsResponseDto
-  implements PaginateResponseDto<MusicResponseDto>
-{
+export class MusicsResponseDto implements PaginateResponseDto<MusicResponseDto> {
   @ApiProperty({ type: [MusicResponseDto] })
   records: MusicResponseDto[];
 

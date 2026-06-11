@@ -6,26 +6,32 @@
   "permissions": [
     "storage",
     "activeTab",
-    "scripting",
     "tabs"
   ],
   "host_permissions": [
     "https://www.youtube.com/*",
-    "https://youtu.be/*"
+    "https://youtu.be/*",
+    "http://localhost:3000/*",
+    "https://kmotion.thomasgleizes.fr/*"
   ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "kmotion@kmotion.app",
+      "strict_min_version": "115.0"
+    }
+  },
   "action": {
-    "default_popup": "dist/popup.html",
+    "default_popup": "popup.html",
     "default_title": "kMotion - YouTube to MP3"
   },
   "background": {
-    "service_worker": "dist/background.js"
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*", "https://youtu.be/*"],
-      "js": ["dist/content.js"],
+      "js": ["content.js"],
       "run_at": "document_start"
     }
   ]
 }
-

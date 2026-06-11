@@ -37,7 +37,7 @@ export class GlobalExceptionFilters implements ExceptionFilter {
     ) {
       status = exception.getStatus();
       const res = exception.getResponse();
-      message = typeof res === 'object' ? (res as any).message : res;
+      message = typeof res === 'object' ? res.message : res;
       name = exception.name;
     }
 

@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "npm run build && npm run package",
-    "package": "web-ext build -s dist -a build --overwrite-dest"
+    "package": "web-ext build -s dist -a build --overwrite-dest",
+    "generate:types": "openapi-typescript http://localhost:3000/api/3.1/openapi.json -o src/types/schema.d.ts"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,8 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.260",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.20",
     "openapi-typescript": "^7.13.0",
