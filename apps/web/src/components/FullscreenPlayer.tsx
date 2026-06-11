@@ -94,11 +94,12 @@ const body = css({
 })
 
 const artSection = css({
-  flex: "0 0 52%",
+  flex: 1,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   minHeight: 0,
+  minWidth: 0,
 })
 
 const artBase = css({
@@ -120,7 +121,8 @@ const artPaused = css({
 })
 
 const infoSection = css({
-  flex: 1,
+  flex: "0 0 30%",
+  maxWidth: "30%",
   display: "flex",
   flexDirection: "column",
   gap: "20px",
