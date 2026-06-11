@@ -76,4 +76,27 @@ export class PlaylistEntries {
     this.remove(musicId);
     this.add(musicId, newPosition);
   }
+
+  /**
+   * Réordonne entièrement la playlist à partir de la liste fournie.
+   * Doit décrire exactement les mêmes musiques (aucun ajout / retrait) ;
+   * les positions sont normalisées (0..n-1) selon l'ordre demandé.
+   */
+  reorder(entries: PlaylistEntry[]) {
+    const currentIds = new Set(this.entries.map((e) => e.musicId));
+    const nextIds = new Set(entries.map((e) => e.musicId));
+
+    const sameMusics =
+      entries.length === this.entries.length &&
+      nextIds.size === entries.length &&
+      [...nextIds].every((id) => currentIds.has(id));
+
+    if (!sameMusics) {
+      throw new MusicNotFoundInPlaylistException();
+    }
+
+    this.entries = [...entries]
+      .sort((a, b) => a.position - b.position)
+      .map((entry, index) => ({ musicId: entry.musicId, position: index }));
+  }
 }
