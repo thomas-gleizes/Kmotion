@@ -5,17 +5,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes albumBreath {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 20px 56px rgba(0, 0, 0, 0.55);
-  }
-  50% {
-    transform: scale(1.04);
-    box-shadow: 0 28px 72px rgba(250, 45, 72, 0.28);
-  }
-}
-
 @keyframes ambientIn {
   from { opacity: 0; }
   to   { opacity: 0.55; }
