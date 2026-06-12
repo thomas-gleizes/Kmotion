@@ -15,7 +15,7 @@ export const authPageStyle = css({
   alignItems: "center",
   justifyContent: "center",
   background:
-    "radial-gradient(1200px 800px at 70% -10%, rgba(250, 45, 72, 0.18), transparent 60%), radial-gradient(900px 600px at 10% 110%, rgba(94, 92, 230, 0.15), transparent 60%), token(colors.bg)",
+    "radial-gradient(1200px 800px at 70% -10%, token(colors.accentGlow), transparent 60%), radial-gradient(900px 600px at 10% 110%, rgba(94, 92, 230, 0.15), transparent 60%), token(colors.bg)",
 })
 
 export const authCardStyle = css({

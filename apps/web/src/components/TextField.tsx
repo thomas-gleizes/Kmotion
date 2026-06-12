@@ -28,7 +28,7 @@ const inputStyle = css({
   _focus: {
     outline: "none",
     borderColor: "accent",
-    boxShadow: "0 0 0 3px rgba(250, 45, 72, 0.25)",
+    boxShadow: "0 0 0 3px token(colors.accentGlow)",
   },
 })
 

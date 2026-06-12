@@ -9,7 +9,7 @@ const page = css({
   display: "flex",
   flexDirection: "column",
   background:
-    "radial-gradient(1200px 800px at 70% -10%, rgba(250, 45, 72, 0.2), transparent 60%), radial-gradient(900px 600px at 10% 110%, rgba(94, 92, 230, 0.16), transparent 60%), token(colors.bg)",
+    "radial-gradient(1200px 800px at 70% -10%, token(colors.accentGlow), transparent 60%), radial-gradient(900px 600px at 10% 110%, rgba(94, 92, 230, 0.16), transparent 60%), token(colors.bg)",
 })
 
 const nav = css({
@@ -107,7 +107,7 @@ const ctaPrimary = css({
 const ctaGhost = css({
   backgroundColor: "surfaceRaised",
   color: "text",
-  _hover: { backgroundColor: "rgba(255, 255, 255, 0.14)", transform: "translateY(-2px)" },
+  _hover: { backgroundColor: "overlayIntense", transform: "translateY(-2px)" },
   _active: { transform: "scale(0.97)" },
 })
 
@@ -140,7 +140,7 @@ const featureIcon = css({
   width: "42px",
   height: "42px",
   borderRadius: "m",
-  backgroundColor: "rgba(250, 45, 72, 0.14)",
+  backgroundColor: "accentSoft",
   color: "accent",
 })
 

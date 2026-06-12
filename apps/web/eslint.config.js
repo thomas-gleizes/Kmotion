@@ -24,7 +24,7 @@ export default tseslint.config(
   },
   {
     // Le routing code-based impose d'exporter les définitions de routes avec les composants
-    files: ["src/routes/**/*.tsx", "src/player/PlayerContext.tsx"],
+    files: ["src/routes/**/*.tsx", "src/player/PlayerContext.tsx", "src/theme/ThemeContext.tsx"],
     rules: {
       "react-refresh/only-export-components": "off",
     },

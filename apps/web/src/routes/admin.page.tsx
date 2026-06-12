@@ -68,7 +68,7 @@ const row = css({
   md: { flexWrap: "nowrap", gap: "16px" },
   borderRadius: "s",
   transition: "background token(durations.fast) token(easings.apple)",
-  _hover: { backgroundColor: "rgba(255,255,255,0.05)" },
+  _hover: { backgroundColor: "overlay" },
 })
 
 const cellMain = css({ flex: 1, minWidth: 0 })
@@ -95,7 +95,7 @@ const badge = css({
   verticalAlign: "middle",
 })
 const adminBadge = cx(badge, css({ backgroundColor: "rgba(94, 92, 230, 0.22)", color: "#b7b6ff" }))
-const bannedBadge = cx(badge, css({ backgroundColor: "rgba(255, 69, 58, 0.18)", color: "danger" }))
+const bannedBadge = cx(badge, css({ backgroundColor: "dangerSoft", color: "danger" }))
 
 const actions = css({ display: "flex", gap: "8px", flexShrink: 0 })
 
@@ -113,12 +113,12 @@ const iconButton = css({
   cursor: "pointer",
   flexShrink: 0,
   transition: "all token(durations.fast) token(easings.apple)",
-  _hover: { color: "accent", backgroundColor: "rgba(250, 45, 72, 0.12)" },
+  _hover: { color: "accent", backgroundColor: "accentSoft" },
 })
 
 const dangerIconButton = cx(
   iconButton,
-  css({ _hover: { color: "danger !important", backgroundColor: "rgba(255, 69, 58, 0.12)" } }),
+  css({ _hover: { color: "danger !important", backgroundColor: "dangerSoft" } }),
 )
 
 const pager = css({

@@ -11,7 +11,7 @@ const card = css({
   padding: "10px",
   borderRadius: "m",
   transition: "background token(durations.fast) token(easings.apple)",
-  _hover: { backgroundColor: "rgba(255, 255, 255, 0.05)" },
+  _hover: { backgroundColor: "overlay" },
 })
 
 const mosaic = css({

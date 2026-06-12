@@ -20,7 +20,7 @@ const searchBox = css({
   marginBottom: "12px",
   color: "textSecondary",
   transition: "all token(durations.fast) token(easings.apple)",
-  _focusWithin: { borderColor: "accent", boxShadow: "0 0 0 3px rgba(250, 45, 72, 0.2)" },
+  _focusWithin: { borderColor: "accent", boxShadow: "0 0 0 3px token(colors.accentGlow)" },
 })
 
 const searchInput = css({
@@ -56,10 +56,10 @@ const toggleButton = css({
   color: "textSecondary",
   cursor: "pointer",
   transition: "all token(durations.fast) token(easings.apple)",
-  _hover: { color: "accent", backgroundColor: "rgba(250, 45, 72, 0.12)" },
+  _hover: { color: "accent", backgroundColor: "accentSoft" },
 })
 
-const inPlaylist = css({ color: "#30d158", _hover: { color: "#30d158" } })
+const inPlaylist = css({ color: "success", _hover: { color: "success" } })
 const selected = css({ color: "accent" })
 
 const footer = css({
