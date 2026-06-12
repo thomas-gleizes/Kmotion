@@ -20,13 +20,11 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
     private readonly authService: AuthServicePort,
   ) {}
 
-  async execute(command: RegisterCommand): Promise<string> {
+  async execute(command: RegisterCommand): Promise<void> {
     const { email, name, password } = command.payload;
     const user = User.create(email, name);
     const hash = await this.authService.hash(password);
 
     await this.authRepository.save(user, hash);
-
-    return this.authService.sign(user);
   }
 }

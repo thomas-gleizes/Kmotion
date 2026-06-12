@@ -649,14 +649,12 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Access token */
-            200: {
+            /** @description User created, awaiting admin activation */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": string;
-                };
+                content?: never;
             };
         };
     };

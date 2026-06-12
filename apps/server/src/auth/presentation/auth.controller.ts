@@ -1,10 +1,13 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   NotImplementedException,
   Post,
 } from '@nestjs/common';
 import {
+  ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
@@ -34,13 +37,16 @@ export class AuthController {
   }
 
   @Post('register')
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Register new user',
-    description: 'Return access token',
+    description: 'Create an inactive account, awaiting admin activation',
   })
-  @ApiOkResponse({ type: String, description: 'Access token' })
+  @ApiCreatedResponse({
+    description: 'User created, awaiting admin activation',
+  })
   async register(@Body() body: RegisterBodyDto) {
-    return await this.commandBus.execute(
+    await this.commandBus.execute(
       new RegisterCommand({
         email: body.email,
         name: body.name,

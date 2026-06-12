@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import {
   AUTH_SERVICE_PORT,
+  type AuthPayload,
   type AuthServicePort,
 } from 'src/auth/application/port/auth-service.port';
 
@@ -26,13 +27,20 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
+    let payload: AuthPayload;
     try {
-      const payload = await this.authService.verify(token);
-
-      request['user'] = payload;
+      payload = await this.authService.verify(token);
     } catch (error) {
       throw new UnauthorizedException();
     }
+
+    // Rejette les tokens émis pour un compte inactif (ex: tokens délivrés
+    // au register avant que le compte soit activé par un admin).
+    if (!payload.isActive) {
+      throw new UnauthorizedException('Account not activated');
+    }
+
+    request['user'] = payload;
 
     return true;
   }

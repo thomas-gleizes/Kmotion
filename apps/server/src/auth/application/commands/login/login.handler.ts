@@ -29,8 +29,12 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       throw new DomainException('User not found');
     }
 
-    if (this.authService.compare(passwordHash, password)) {
+    if (!this.authService.compare(password, passwordHash)) {
       throw new DomainException("Password doesn't match");
+    }
+
+    if (!user.isActive) {
+      throw new DomainException('Account not activated');
     }
 
     return this.authService.sign(user);

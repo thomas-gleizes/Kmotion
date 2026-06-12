@@ -15,6 +15,13 @@
       "when": 1781099502466,
       "tag": "0001_chief_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781248262253,
+      "tag": "0002_lucky_goliath",
+      "breakpoints": true
     }
   ]
 }
