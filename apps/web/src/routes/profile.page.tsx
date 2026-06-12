@@ -9,6 +9,11 @@ import { CheckIcon, PersonIcon, PlusIcon, ShieldIcon } from "../components/icons
 import { pageHeading } from "../lib/styles"
 import { useTheme } from "../theme/ThemeContext"
 import { themes } from "../theme/themes"
+import {
+  useAudioSettingsStore,
+  CROSSFADE_MIN,
+  CROSSFADE_MAX,
+} from "../player/audioSettingsStore"
 
 const card = css({
   maxWidth: "480px",
@@ -95,6 +100,69 @@ const themeLabelRow = css({
 
 const themeDescription = css({ fontSize: "12px", color: "textSecondary" })
 
+const settingsCard = css({
+  display: "flex",
+  flexDirection: "column",
+  gap: "16px",
+  maxWidth: "480px",
+  padding: "20px",
+  borderRadius: "m",
+  border: "1px solid token(colors.border)",
+  backgroundColor: "surface",
+})
+
+const toggleRow = css({
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "space-between",
+  gap: "16px",
+  cursor: "pointer",
+})
+
+const toggleLabel = css({ fontSize: "15px", fontWeight: "600" })
+const toggleHint = css({ fontSize: "12px", color: "textSecondary", marginTop: "2px" })
+
+const durationRow = css({
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+  paddingTop: "16px",
+  borderTop: "1px solid token(colors.border)",
+})
+
+const durationHeader = css({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  fontSize: "14px",
+  fontWeight: "600",
+})
+
+const durationValue = css({
+  fontSize: "13px",
+  color: "accent",
+  fontVariantNumeric: "tabular-nums",
+})
+
+const slider = css({
+  width: "100%",
+  appearance: "none",
+  height: "4px",
+  borderRadius: "full",
+  backgroundColor: "overlayIntense",
+  cursor: "pointer",
+  "&::-webkit-slider-thumb": {
+    appearance: "none",
+    width: "16px",
+    height: "16px",
+    borderRadius: "full",
+    backgroundColor: "accent",
+    transition: "transform token(durations.fast) token(easings.apple)",
+  },
+  "&:hover::-webkit-slider-thumb": { transform: "scale(1.2)" },
+  _disabled: { opacity: 0.4, cursor: "not-allowed" },
+})
+
 // Liens absents de la tab bar mobile (présents dans la sidebar desktop).
 const mobileLinks = css({
   display: "flex",
@@ -122,6 +190,10 @@ const mobileLink = css({
 const ProfilePage = () => {
   const { data: user, isPending } = useQuery(meQuery)
   const { theme, setTheme } = useTheme()
+  const crossfadeEnabled = useAudioSettingsStore((s) => s.crossfadeEnabled)
+  const crossfadeDuration = useAudioSettingsStore((s) => s.crossfadeDuration)
+  const setCrossfadeEnabled = useAudioSettingsStore((s) => s.setCrossfadeEnabled)
+  const setCrossfadeDuration = useAudioSettingsStore((s) => s.setCrossfadeDuration)
 
   return (
     <div>
@@ -166,6 +238,41 @@ const ProfilePage = () => {
             <div className={themeDescription}>{t.description}</div>
           </button>
         ))}
+      </div>
+
+      <h2 className={sectionTitle}>Lecture</h2>
+      <div className={settingsCard}>
+        <label className={toggleRow}>
+          <span>
+            <span className={toggleLabel}>Fondu enchaîné</span>
+            <span className={toggleHint}>
+              Transition « DJ » : le titre suivant démarre avant la fin du précédent, en fondu.
+            </span>
+          </span>
+          <input
+            type="checkbox"
+            checked={crossfadeEnabled}
+            onChange={(event) => setCrossfadeEnabled(event.target.checked)}
+          />
+        </label>
+
+        {crossfadeEnabled && (
+          <div className={durationRow}>
+            <div className={durationHeader}>
+              <span>Durée du fondu</span>
+              <span className={durationValue}>{crossfadeDuration} s</span>
+            </div>
+            <input
+              type="range"
+              className={slider}
+              min={CROSSFADE_MIN}
+              max={CROSSFADE_MAX}
+              step={1}
+              value={crossfadeDuration}
+              onChange={(event) => setCrossfadeDuration(Number(event.target.value))}
+            />
+          </div>
+        )}
       </div>
 
       <nav className={mobileLinks}>

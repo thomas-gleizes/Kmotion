@@ -10,6 +10,7 @@ import {
 } from "react"
 import { audioPath, getBlobUrl, thumbnailPath } from "./audioCache"
 import { usePlayerStore } from "./playerStore"
+import { useAudioSettingsStore } from "./audioSettingsStore"
 
 export type Track = {
   id: string
@@ -56,8 +57,12 @@ type PlayerActions = {
 const PlayerContext = createContext<(PlayerState & PlayerActions) | null>(null)
 const ProgressContext = createContext<ProgressState>({ currentTime: 0, duration: 0 })
 
-// Élément audio unique, hors du cycle de rendu React.
-const audio = new Audio()
+// Deux platines audio (dual-deck), hors du cycle de rendu React : permet de
+// faire jouer deux titres simultanément pendant un fondu enchaîné.
+const decks = [new Audio(), new Audio()] as const
+
+// Cadence de la rampe de volume du fondu enchaîné.
+const FADE_STEP_MS = 50
 
 // Sauvegarde l'instantané au plus toutes les 5 s pendant la lecture.
 const SAVE_THROTTLE_MS = 5000
@@ -99,7 +104,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false)
   const [currentTime, setCurrentTime] = useState(snapshot ? snapshot.currentTime : 0)
   const [duration, setDuration] = useState(0)
-  const [volume, setVolumeState] = useState(snapshot?.volume ?? audio.volume)
+  const [volume, setVolumeState] = useState(snapshot?.volume ?? decks[0].volume)
   const [repeat, setRepeat] = useState<RepeatMode>(snapshot?.repeat ?? "off")
   const [shuffle, setShuffle] = useState(snapshot?.shuffle ?? false)
 
@@ -112,11 +117,39 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // Position à restaurer une fois les métadonnées du titre repris chargées.
   const pendingSeekRef = useRef<number | null>(snapshot ? snapshot.currentTime : null)
   const lastSaveRef = useRef(0)
+
+  // --- Moteur dual-deck / fondu enchaîné -----------------------------------
+  // Platine active (0 ou 1) : celle dont le titre est affiché et dont la
+  // progression pilote l'UI.
+  const activeDeckRef = useRef(0)
+  // Volume maître réglé par l'utilisateur (0–1), distinct du gain de fondu.
+  const masterVolumeRef = useRef(snapshot?.volume ?? decks[0].volume)
   // Dernier volume non nul, pour restaurer le son après une coupure (mute).
   const lastVolumeRef = useRef(snapshot?.volume || 1)
+  // Gain de fondu par platine : volume effectif = maître × gain.
+  const deckGainRef = useRef<[number, number]>([1, 0])
+  // Réglages du fondu, miroirs des valeurs du store (lus par le moteur audio).
+  const crossfadeEnabledRef = useRef(false)
+  const crossfadeDurationRef = useRef(6)
+  const crossfadingRef = useRef(false)
+  const fadeTimerRef = useRef<number | null>(null)
+
+  const crossfadeEnabled = useAudioSettingsStore((s) => s.crossfadeEnabled)
+  const crossfadeDuration = useAudioSettingsStore((s) => s.crossfadeDuration)
+  useEffect(() => {
+    crossfadeEnabledRef.current = crossfadeEnabled
+    crossfadeDurationRef.current = crossfadeDuration
+  }, [crossfadeEnabled, crossfadeDuration])
+
+  const active = useCallback(() => decks[activeDeckRef.current], [])
+
+  // Applique le volume effectif (maître × gain de fondu) à une platine.
+  const applyVolume = useCallback((deck: number) => {
+    decks[deck].volume = masterVolumeRef.current * deckGainRef.current[deck]
+  }, [])
 
   // Persiste l'état courant pour reprise ultérieure (lit la position en direct
-  // sur l'élément audio plutôt que sur l'état React, désynchronisé).
+  // sur la platine active plutôt que sur l'état React, désynchronisé).
   const saveSnapshot = useCallback(() => {
     const tracks = queueRef.current
     const pos = orderPosRef.current
@@ -125,53 +158,80 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       queue: tracks,
       order: orderRef.current,
       orderPos: pos,
-      currentTime: audio.currentTime,
+      currentTime: active().currentTime,
       repeat: repeatRef.current,
       shuffle: shuffleRef.current,
-      volume: audio.volume,
+      volume: masterVolumeRef.current,
     })
-  }, [])
+  }, [active])
 
-  const loadTrack = useCallback(async (track: Track, autoplay = true) => {
-    const loadId = ++loadIdRef.current
-    setIsLoading(true)
-    setCurrentTime(0)
-    setDuration(track.duration)
-    try {
-      const url = await getBlobUrl(audioPath(track.id))
-      if (loadId !== loadIdRef.current) return
-      audio.src = url
-      if (autoplay) await audio.play()
-    } catch {
-      if (loadId === loadIdRef.current) setIsPlaying(false)
-    } finally {
-      if (loadId === loadIdRef.current) setIsLoading(false)
-    }
-
-    if ("mediaSession" in navigator) {
-      // Métadonnées de base immédiates, puis pochette dès qu'elle est prête :
-      // elle alimente les contrôles média du navigateur / de l'OS (écran
-      // verrouillé, notification, « Now Playing », picture-in-picture).
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: track.title,
-        artist: track.artist,
-      })
-      void getBlobUrl(thumbnailPath(track.id))
-        .then((thumbUrl) => {
-          if (loadId !== loadIdRef.current) return
-          navigator.mediaSession.metadata = new MediaMetadata({
-            title: track.title,
-            artist: track.artist,
-            artwork: [{ src: thumbUrl, sizes: "480x360", type: "image/jpeg" }],
-          })
+  // Alimente les contrôles média du navigateur / de l'OS (écran verrouillé,
+  // notification, « Now Playing »). Métadonnées de base immédiates, puis pochette
+  // dès qu'elle est prête. `guardId` invalide les pochettes de titres obsolètes.
+  const updateMediaSession = useCallback((track: Track, guardId: number) => {
+    if (!("mediaSession" in navigator)) return
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: track.title,
+      artist: track.artist,
+    })
+    void getBlobUrl(thumbnailPath(track.id))
+      .then((thumbUrl) => {
+        if (guardId !== loadIdRef.current) return
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: track.title,
+          artist: track.artist,
+          artwork: [{ src: thumbUrl, sizes: "480x360", type: "image/jpeg" }],
         })
-        .catch(() => {})
-    }
+      })
+      .catch(() => {})
   }, [])
 
-  // Joue le titre à la position `pos` de l'ordre de lecture.
+  // Charge un titre sur la platine active et le joue (coupure nette).
+  const loadTrack = useCallback(
+    async (track: Track, autoplay = true) => {
+      const loadId = ++loadIdRef.current
+      const deck = active()
+      setIsLoading(true)
+      setCurrentTime(0)
+      setDuration(track.duration)
+      try {
+        const url = await getBlobUrl(audioPath(track.id))
+        if (loadId !== loadIdRef.current) return
+        deck.src = url
+        deckGainRef.current[activeDeckRef.current] = 1
+        applyVolume(activeDeckRef.current)
+        if (autoplay) await deck.play()
+      } catch {
+        if (loadId === loadIdRef.current) setIsPlaying(false)
+      } finally {
+        if (loadId === loadIdRef.current) setIsLoading(false)
+      }
+      updateMediaSession(track, loadId)
+    },
+    [active, applyVolume, updateMediaSession],
+  )
+
+  // Interrompt un fondu en cours : coupe la rampe, rend la platine active à plein
+  // volume et coupe la platine sortante.
+  const cancelCrossfade = useCallback(() => {
+    if (fadeTimerRef.current !== null) {
+      clearInterval(fadeTimerRef.current)
+      fadeTimerRef.current = null
+    }
+    if (!crossfadingRef.current) return
+    const other = activeDeckRef.current ^ 1
+    decks[other].pause()
+    deckGainRef.current[other] = 0
+    deckGainRef.current[activeDeckRef.current] = 1
+    applyVolume(other)
+    applyVolume(activeDeckRef.current)
+    crossfadingRef.current = false
+  }, [applyVolume])
+
+  // Joue le titre à la position `pos` de l'ordre de lecture (coupure nette).
   const goToOrderPos = useCallback(
     (pos: number, autoplay = true) => {
+      cancelCrossfade()
       const order = orderRef.current
       const tracks = queueRef.current
       if (pos < 0 || pos >= order.length) return
@@ -184,8 +244,84 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       const upcoming = tracks[order[pos + 1]]
       if (upcoming) void getBlobUrl(audioPath(upcoming.id)).catch(() => {})
     },
-    [loadTrack],
+    [cancelCrossfade, loadTrack],
   )
+
+  // Position de lecture suivante en tenant compte du mode répétition, ou -1 s'il
+  // n'y a pas de suivant.
+  const nextOrderPos = useCallback(() => {
+    let pos = orderPosRef.current + 1
+    if (pos >= orderRef.current.length) {
+      if (repeatRef.current === "all") pos = 0
+      else return -1
+    }
+    return pos
+  }, [])
+
+  // Démarre un fondu enchaîné vers le titre suivant : charge l'entrant sur la
+  // platine inactive, bascule l'active, puis fait la rampe linéaire des volumes.
+  const startCrossfade = useCallback(() => {
+    const pos = nextOrderPos()
+    if (pos < 0) return
+    const order = orderRef.current
+    const tracks = queueRef.current
+    const queueIndex = order[pos]
+    const track = tracks[queueIndex]
+    if (!track) return
+
+    crossfadingRef.current = true
+    const fromDeck = activeDeckRef.current
+    const toDeck = fromDeck ^ 1
+    const loadId = ++loadIdRef.current
+
+    void getBlobUrl(audioPath(track.id))
+      .then((url) => {
+        // Fondu annulé / remplacé entre-temps (skip manuel, nouvelle file…).
+        if (loadId !== loadIdRef.current || !crossfadingRef.current) return
+
+        const incoming = decks[toDeck]
+        incoming.src = url
+        deckGainRef.current[toDeck] = 0
+        applyVolume(toDeck)
+        void incoming.play().catch(() => {})
+
+        // La platine entrante devient active : sa progression pilote l'UI.
+        activeDeckRef.current = toDeck
+        orderPosRef.current = pos
+        setOrderPos(pos)
+        setIndex(queueIndex)
+        setCurrentTime(0)
+        setDuration(track.duration)
+        updateMediaSession(track, loadId)
+        const upcoming = tracks[order[pos + 1]]
+        if (upcoming) void getBlobUrl(audioPath(upcoming.id)).catch(() => {})
+
+        // Rampe linéaire : gain sortant 1→0, gain entrant 0→1.
+        const fadeMs = Math.max(0.1, crossfadeDurationRef.current) * 1000
+        const start = Date.now()
+        if (fadeTimerRef.current !== null) clearInterval(fadeTimerRef.current)
+        fadeTimerRef.current = window.setInterval(() => {
+          const t = Math.min(1, (Date.now() - start) / fadeMs)
+          deckGainRef.current[fromDeck] = 1 - t
+          deckGainRef.current[toDeck] = t
+          applyVolume(fromDeck)
+          applyVolume(toDeck)
+          if (t >= 1) {
+            if (fadeTimerRef.current !== null) clearInterval(fadeTimerRef.current)
+            fadeTimerRef.current = null
+            decks[fromDeck].pause()
+            decks[fromDeck].removeAttribute("src")
+            deckGainRef.current[fromDeck] = 0
+            deckGainRef.current[toDeck] = 1
+            applyVolume(toDeck)
+            crossfadingRef.current = false
+          }
+        }, FADE_STEP_MS)
+      })
+      .catch(() => {
+        crossfadingRef.current = false
+      })
+  }, [applyVolume, nextOrderPos, updateMediaSession])
 
   const playQueue = useCallback(
     (tracks: Track[], startIndex = 0) => {
@@ -199,81 +335,91 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   )
 
   const next = useCallback(() => {
-    const order = orderRef.current
-    let pos = orderPosRef.current + 1
-    if (pos >= order.length) {
-      if (repeatRef.current === "all") pos = 0
-      else return
-    }
+    const pos = nextOrderPos()
+    if (pos < 0) return
     goToOrderPos(pos)
-  }, [goToOrderPos])
+  }, [goToOrderPos, nextOrderPos])
 
   const prev = useCallback(() => {
-    if (audio.currentTime > 3) {
-      audio.currentTime = 0
+    if (active().currentTime > 3) {
+      active().currentTime = 0
       return
     }
     let pos = orderPosRef.current - 1
     if (pos < 0) {
       if (repeatRef.current === "all") pos = orderRef.current.length - 1
       else {
-        audio.currentTime = 0
+        active().currentTime = 0
         return
       }
     }
     goToOrderPos(pos)
-  }, [goToOrderPos])
+  }, [active, goToOrderPos])
 
   const toggle = useCallback(() => {
-    if (!audio.src) return
-    if (audio.paused) void audio.play()
-    else audio.pause()
-  }, [])
+    const deck = active()
+    if (!deck.src) return
+    if (deck.paused) void deck.play()
+    else deck.pause()
+  }, [active])
 
-  const seek = useCallback((seconds: number) => {
-    audio.currentTime = seconds
-    setCurrentTime(seconds)
-  }, [])
+  const seek = useCallback(
+    (seconds: number) => {
+      active().currentTime = seconds
+      setCurrentTime(seconds)
+    },
+    [active],
+  )
 
   // Déplacement relatif (raccourcis clavier) : lit la position en direct sur
-  // l'élément audio et la borne à la durée du titre.
-  const seekBy = useCallback((delta: number) => {
-    const target = Math.min(audio.duration || Infinity, Math.max(0, audio.currentTime + delta))
-    audio.currentTime = target
-    setCurrentTime(target)
-  }, [])
+  // la platine active et la borne à la durée du titre.
+  const seekBy = useCallback(
+    (delta: number) => {
+      const deck = active()
+      const target = Math.min(deck.duration || Infinity, Math.max(0, deck.currentTime + delta))
+      deck.currentTime = target
+      setCurrentTime(target)
+    },
+    [active],
+  )
 
   const setVolume = useCallback(
     (value: number) => {
-      audio.volume = value
+      masterVolumeRef.current = value
+      applyVolume(0)
+      applyVolume(1)
       setVolumeState(value)
       saveSnapshot()
     },
-    [saveSnapshot],
+    [applyVolume, saveSnapshot],
   )
 
   const adjustVolume = useCallback(
     (delta: number) => {
-      const value = Math.min(1, Math.max(0, audio.volume + delta))
-      audio.volume = value
+      const value = Math.min(1, Math.max(0, masterVolumeRef.current + delta))
+      masterVolumeRef.current = value
+      applyVolume(0)
+      applyVolume(1)
       setVolumeState(value)
       saveSnapshot()
     },
-    [saveSnapshot],
+    [applyVolume, saveSnapshot],
   )
 
   const toggleMute = useCallback(() => {
-    if (audio.volume > 0) {
-      lastVolumeRef.current = audio.volume
-      audio.volume = 0
+    if (masterVolumeRef.current > 0) {
+      lastVolumeRef.current = masterVolumeRef.current
+      masterVolumeRef.current = 0
       setVolumeState(0)
     } else {
       const restored = lastVolumeRef.current || 0.5
-      audio.volume = restored
+      masterVolumeRef.current = restored
       setVolumeState(restored)
     }
+    applyVolume(0)
+    applyVolume(1)
     saveSnapshot()
-  }, [saveSnapshot])
+  }, [applyVolume, saveSnapshot])
 
   const cycleRepeat = useCallback(() => {
     const cycle: RepeatMode[] = ["off", "all", "one"]
@@ -303,71 +449,87 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // (les navigateurs la bloquent), prêt à reprendre où l'utilisateur s'était arrêté.
   useEffect(() => {
     if (!snapshot) return
-    audio.volume = snapshot.volume
+    masterVolumeRef.current = snapshot.volume
+    deckGainRef.current = [1, 0]
+    applyVolume(0)
     // Hydratation au montage : charger l'audio est un effet de bord légitime.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadTrack(snapshot.queue[snapshot.order[snapshot.orderPos]], false)
-  }, [snapshot, loadTrack])
+  }, [snapshot, loadTrack, applyVolume])
 
   useEffect(() => {
-    const onPlay = () => {
+    const onPlay = (e: Event) => {
+      if (e.currentTarget !== active()) return
       setIsPlaying(true)
       saveSnapshot()
     }
-    const onPause = () => {
+    const onPause = (e: Event) => {
+      if (e.currentTarget !== active()) return
       setIsPlaying(false)
       saveSnapshot()
     }
-    const onTime = () => {
-      setCurrentTime(audio.currentTime)
+    const onTime = (e: Event) => {
+      if (e.currentTarget !== active()) return
+      const deck = active()
+      setCurrentTime(deck.currentTime)
+      // Déclenchement du fondu enchaîné à l'approche de la fin du titre.
+      if (crossfadeEnabledRef.current && !crossfadingRef.current && repeatRef.current !== "one") {
+        const remaining = (deck.duration || 0) - deck.currentTime
+        if (remaining > 0.2 && remaining <= crossfadeDurationRef.current && nextOrderPos() >= 0) {
+          startCrossfade()
+        }
+      }
       const now = Date.now()
       if (now - lastSaveRef.current > SAVE_THROTTLE_MS) {
         lastSaveRef.current = now
         saveSnapshot()
       }
     }
-    const onMeta = () => {
-      setDuration(audio.duration || 0)
+    const onMeta = (e: Event) => {
+      if (e.currentTarget !== active()) return
+      const deck = active()
+      setDuration(deck.duration || 0)
       const pending = pendingSeekRef.current
       if (pending != null) {
         pendingSeekRef.current = null
-        if (pending > 0 && pending < (audio.duration || Infinity)) {
-          audio.currentTime = pending
+        if (pending > 0 && pending < (deck.duration || Infinity)) {
+          deck.currentTime = pending
           setCurrentTime(pending)
         }
       }
     }
-    const onEnded = () => {
+    const onEnded = (e: Event) => {
+      // Une platine sortante qui se termine pendant un fondu est ignorée : la
+      // rampe se charge du nettoyage.
+      if (e.currentTarget !== active()) return
       if (repeatRef.current === "one") {
-        audio.currentTime = 0
-        void audio.play()
+        active().currentTime = 0
+        void active().play()
         return
       }
-      const order = orderRef.current
-      let pos = orderPosRef.current + 1
-      if (pos >= order.length) {
-        if (repeatRef.current === "all") pos = 0
-        else {
-          setIsPlaying(false)
-          return
-        }
+      const pos = nextOrderPos()
+      if (pos < 0) {
+        setIsPlaying(false)
+        return
       }
       goToOrderPos(pos)
     }
     const onHidden = () => {
       if (document.visibilityState === "hidden") saveSnapshot()
     }
-    audio.addEventListener("play", onPlay)
-    audio.addEventListener("pause", onPause)
-    audio.addEventListener("timeupdate", onTime)
-    audio.addEventListener("loadedmetadata", onMeta)
-    audio.addEventListener("ended", onEnded)
+    for (const deck of decks) {
+      deck.addEventListener("play", onPlay)
+      deck.addEventListener("pause", onPause)
+      deck.addEventListener("timeupdate", onTime)
+      deck.addEventListener("loadedmetadata", onMeta)
+      deck.addEventListener("ended", onEnded)
+    }
     window.addEventListener("pagehide", saveSnapshot)
     document.addEventListener("visibilitychange", onHidden)
 
     if ("mediaSession" in navigator) {
-      navigator.mediaSession.setActionHandler("play", () => void audio.play())
-      navigator.mediaSession.setActionHandler("pause", () => audio.pause())
+      navigator.mediaSession.setActionHandler("play", () => void active().play())
+      navigator.mediaSession.setActionHandler("pause", () => active().pause())
       navigator.mediaSession.setActionHandler("nexttrack", next)
       navigator.mediaSession.setActionHandler("previoustrack", prev)
     }
@@ -375,13 +537,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     return () => {
       window.removeEventListener("pagehide", saveSnapshot)
       document.removeEventListener("visibilitychange", onHidden)
-      audio.removeEventListener("play", onPlay)
-      audio.removeEventListener("pause", onPause)
-      audio.removeEventListener("timeupdate", onTime)
-      audio.removeEventListener("loadedmetadata", onMeta)
-      audio.removeEventListener("ended", onEnded)
+      for (const deck of decks) {
+        deck.removeEventListener("play", onPlay)
+        deck.removeEventListener("pause", onPause)
+        deck.removeEventListener("timeupdate", onTime)
+        deck.removeEventListener("loadedmetadata", onMeta)
+        deck.removeEventListener("ended", onEnded)
+      }
+      if (fadeTimerRef.current !== null) {
+        clearInterval(fadeTimerRef.current)
+        fadeTimerRef.current = null
+      }
     }
-  }, [goToOrderPos, next, prev, saveSnapshot])
+  }, [active, goToOrderPos, next, nextOrderPos, prev, saveSnapshot, startCrossfade])
 
   const value = useMemo(() => {
     const current = index >= 0 ? (queue[index] ?? null) : null
