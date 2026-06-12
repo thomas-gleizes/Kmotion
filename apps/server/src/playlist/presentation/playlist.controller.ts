@@ -157,6 +157,7 @@ export class PlaylistController {
     const playlists: ManyPlaylistRead[] = await this.queryBus.execute(
       new FindManyPlaylistsQuery({
         pagination: { page: pagination.page, size: pagination.size },
+        currentUserId: user.sub,
       }),
     );
 
@@ -171,7 +172,7 @@ export class PlaylistController {
   @ApiOkResponse({ type: PlaylistResponseDto })
   async show(@Param('id') id: string, @CurrentUser() user: AuthPayload) {
     const playlist: PlaylistRead = await this.queryBus.execute(
-      new FindPlaylistByIdQuery({ id }),
+      new FindPlaylistByIdQuery({ id, currentUserId: user.sub }),
     );
 
     return PlaylistResponseDto.fromModel(playlist);
@@ -189,7 +190,7 @@ export class PlaylistController {
     @CurrentUser() user: AuthPayload,
   ) {
     const playlists: ManyPlaylistRead[] = await this.queryBus.execute(
-      new FindUserPlaylistsQuery({ userId }),
+      new FindUserPlaylistsQuery({ userId, currentUserId: user.sub }),
     );
 
     return playlists.map((playlist) =>

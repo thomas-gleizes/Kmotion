@@ -8,7 +8,7 @@ import { Inject } from '@nestjs/common';
 import { DRIZZLE } from 'src/core/database/drizzle.provider';
 import type { DrizzleDB } from 'src/core/database/database';
 import { playlistTable } from 'src/playlist/infrastructure/persistance/schemas/playlist.schema';
-import { and, asc, count, eq } from 'drizzle-orm';
+import { and, asc, count, eq, or } from 'drizzle-orm';
 import { userTable } from 'src/user/infrastructure/persistance/schemas/user.schema';
 import { playlistEntryTable } from 'src/playlist/infrastructure/persistance/schemas/playlist-entry.schema';
 import { musicTable } from 'src/music/infrastructure/persistance/schemas/music.schema';
@@ -69,7 +69,15 @@ export class PlaylistReadRepository implements PlaylistQueryRepositoryPort {
     };
   }
 
-  async findByUserId(userId: string): Promise<ManyPlaylistRead[]> {
+  async findByUserId(userId: string, currentUserId: string): Promise<ManyPlaylistRead[]> {
+    const visibilityFilter =
+      userId === currentUserId
+        ? eq(playlistTable.userId, userId)
+        : and(
+            eq(playlistTable.userId, userId),
+            eq(playlistTable.visibility, Visibility.public),
+          );
+
     const records = await this.database
       .select({
         id: playlistTable.id,
@@ -90,7 +98,7 @@ export class PlaylistReadRepository implements PlaylistQueryRepositoryPort {
         eq(playlistEntryTable.playlistId, playlistTable.id),
       )
       .groupBy(playlistTable.id, userTable.id, userTable.name, userTable.slug)
-      .where(eq(playlistTable.userId, userId));
+      .where(visibilityFilter);
 
     const results: ManyPlaylistRead[] = [];
     for (const record of records) {
@@ -106,6 +114,7 @@ export class PlaylistReadRepository implements PlaylistQueryRepositoryPort {
 
   async findMany(
     parameter: PaginateParameter<{}, {}>,
+    currentUserId: string,
   ): Promise<ManyPlaylistRead[]> {
     const page = parameter.pagination?.page ?? 0;
     const size = parameter.pagination?.size ?? 20;
@@ -130,6 +139,12 @@ export class PlaylistReadRepository implements PlaylistQueryRepositoryPort {
         eq(playlistEntryTable.playlistId, playlistTable.id),
       )
       .groupBy(playlistTable.id, userTable.id, userTable.name, userTable.slug)
+      .where(
+        or(
+          eq(playlistTable.visibility, Visibility.public),
+          eq(playlistTable.userId, currentUserId),
+        ),
+      )
       .limit(size)
       .offset(page * size);
 

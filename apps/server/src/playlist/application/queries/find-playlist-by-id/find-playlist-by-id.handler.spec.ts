@@ -31,7 +31,7 @@ describe('FindPlaylistByIdHandler', () => {
     };
     repository.findById.mockResolvedValue(playlistRead);
 
-    const query = new FindPlaylistByIdQuery({ id: 'playlist-1' });
+    const query = new FindPlaylistByIdQuery({ id: 'playlist-1', currentUserId: 'user-2' });
     const result = await handler.execute(query);
 
     expect(result).toEqual(playlistRead);
@@ -41,10 +41,45 @@ describe('FindPlaylistByIdHandler', () => {
   it('should throw RessourceNotFoundException if playlist not found', async () => {
     repository.findById.mockResolvedValue(null);
 
-    const query = new FindPlaylistByIdQuery({ id: 'unknown' });
+    const query = new FindPlaylistByIdQuery({ id: 'unknown', currentUserId: 'user-1' });
 
     await expect(handler.execute(query)).rejects.toThrow(
       RessourceNotFoundException,
     );
+  });
+
+  it('should throw RessourceNotFoundException if playlist is private and not owned by the current user', async () => {
+    const playlistRead: PlaylistRead = {
+      id: 'playlist-1',
+      title: 'Title',
+      description: 'Desc',
+      visibility: Visibility.private,
+      user: { id: 'user-1', name: 'User', slug: 'user' },
+      entries: [],
+    };
+    repository.findById.mockResolvedValue(playlistRead);
+
+    const query = new FindPlaylistByIdQuery({ id: 'playlist-1', currentUserId: 'user-2' });
+
+    await expect(handler.execute(query)).rejects.toThrow(
+      RessourceNotFoundException,
+    );
+  });
+
+  it('should return a private playlist owned by the current user', async () => {
+    const playlistRead: PlaylistRead = {
+      id: 'playlist-1',
+      title: 'Title',
+      description: 'Desc',
+      visibility: Visibility.private,
+      user: { id: 'user-1', name: 'User', slug: 'user' },
+      entries: [],
+    };
+    repository.findById.mockResolvedValue(playlistRead);
+
+    const query = new FindPlaylistByIdQuery({ id: 'playlist-1', currentUserId: 'user-1' });
+    const result = await handler.execute(query);
+
+    expect(result).toEqual(playlistRead);
   });
 });

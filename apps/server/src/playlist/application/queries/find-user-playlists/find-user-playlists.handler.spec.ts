@@ -32,10 +32,10 @@ describe('FindUserPlaylistsHandler', () => {
     ];
     repository.findByUserId.mockResolvedValue(playlistsRead);
 
-    const query = new FindUserPlaylistsQuery({ userId: 'user-1' });
+    const query = new FindUserPlaylistsQuery({ userId: 'user-1', currentUserId: 'user-1' });
     const result = await handler.execute(query);
 
     expect(result).toEqual(playlistsRead);
-    expect(repository.findByUserId).toHaveBeenCalledWith('user-1');
+    expect(repository.findByUserId).toHaveBeenCalledWith('user-1', 'user-1');
   });
 });
