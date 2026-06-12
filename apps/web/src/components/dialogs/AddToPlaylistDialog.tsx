@@ -1,9 +1,42 @@
+import { useState } from "react"
 import { type DialogComponent } from "react-dialog-promise"
 import { useQuery } from "@tanstack/react-query"
-import { css } from "styled-system/css"
-import { playlistsQuery, useAddMusicToPlaylist, type Music } from "../../api/queries"
+import { css, cx } from "styled-system/css"
+import {
+  playlistQuery,
+  playlistsQuery,
+  useAddMusicToPlaylist,
+  type Music,
+  type PlaylistSummary,
+} from "../../api/queries"
 import { Modal } from "../Modal"
 import { PlaylistMosaic } from "../PlaylistCard"
+import { CheckIcon, PlusIcon, SearchIcon } from "../icons"
+
+const searchBox = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  padding: "10px 14px",
+  borderRadius: "m",
+  backgroundColor: "surfaceRaised",
+  border: "1px solid token(colors.border)",
+  marginBottom: "12px",
+  color: "textSecondary",
+  transition: "all token(durations.fast) token(easings.apple)",
+  _focusWithin: { borderColor: "accent", boxShadow: "0 0 0 3px rgba(250, 45, 72, 0.2)" },
+})
+
+const searchInput = css({
+  flex: 1,
+  background: "none",
+  border: "none",
+  outline: "none",
+  color: "text",
+  fontSize: "15px",
+  fontFamily: "sans",
+  _placeholder: { color: "textTertiary" },
+})
 
 const list = css({ display: "flex", flexDirection: "column", gap: "4px" })
 
@@ -27,7 +60,61 @@ const item = css({
 
 const mosaicSize = css({ width: "44px", flexShrink: 0 })
 const emptyStyle = css({ color: "textSecondary", fontSize: "14px", padding: "8px 0" })
+const textCol = css({ flex: 1, minWidth: 0 })
 const subText = css({ color: "textSecondary", fontSize: "12px", display: "block" })
+
+const statusCircle = css({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "28px",
+  height: "28px",
+  borderRadius: "full",
+  flexShrink: 0,
+  backgroundColor: "rgba(255, 255, 255, 0.08)",
+  color: "textSecondary",
+})
+
+const statusInPlaylist = css({ color: "#30d158" })
+
+type PlaylistItemProps = {
+  playlist: PlaylistSummary
+  music: Music
+  onAdded: () => void
+}
+
+function PlaylistItem({ playlist, music, onAdded }: PlaylistItemProps) {
+  const { data: detail } = useQuery(playlistQuery(playlist.id))
+  const addMusic = useAddMusicToPlaylist()
+  const isInPlaylist = detail?.entries.some((entry) => entry.id === music.id) ?? false
+
+  return (
+    <button
+      type="button"
+      className={item}
+      disabled={isInPlaylist || addMusic.isPending}
+      onClick={() =>
+        addMusic.mutate(
+          { playlistId: playlist.id, musicId: music.id, position: playlist.entriesTotal + 1 },
+          { onSuccess: onAdded },
+        )
+      }
+    >
+      <span className={mosaicSize}>
+        <PlaylistMosaic thumbnails={playlist.thumbnails} />
+      </span>
+      <span className={textCol}>
+        {playlist.title}
+        <span className={subText}>
+          {playlist.entriesTotal} titre{playlist.entriesTotal > 1 ? "s" : ""}
+        </span>
+      </span>
+      <span className={cx(statusCircle, isInPlaylist && statusInPlaylist)}>
+        {isInPlaylist ? <CheckIcon size={16} /> : <PlusIcon size={16} />}
+      </span>
+    </button>
+  )
+}
 
 export const AddToPlaylistDialog: DialogComponent<{ music: Music }, void> = ({
   isOpen,
@@ -35,41 +122,35 @@ export const AddToPlaylistDialog: DialogComponent<{ music: Music }, void> = ({
   music,
 }) => {
   const { data: playlists } = useQuery(playlistsQuery)
-  const addMusic = useAddMusicToPlaylist()
+  const [filter, setFilter] = useState("")
+
+  const filtered = playlists?.filter((playlist) =>
+    playlist.title.toLowerCase().includes(filter.trim().toLowerCase()),
+  )
 
   return (
     <Modal title={`Ajouter « ${music.title} »`} open={isOpen} onClose={() => close()}>
       {playlists?.length === 0 && (
         <p className={emptyStyle}>Aucune playlist. Créez-en une depuis l’onglet Playlists.</p>
       )}
+      {playlists != null && playlists.length > 0 && (
+        <div className={searchBox}>
+          <SearchIcon size={16} />
+          <input
+            className={searchInput}
+            placeholder="Filtrer les playlists…"
+            autoFocus
+            value={filter}
+            onChange={(event) => setFilter(event.target.value)}
+          />
+        </div>
+      )}
+      {filtered?.length === 0 && playlists != null && playlists.length > 0 && (
+        <p className={emptyStyle}>Aucune playlist ne correspond à « {filter} ».</p>
+      )}
       <div className={list}>
-        {playlists?.map((playlist) => (
-          <button
-            key={playlist.id}
-            type="button"
-            className={item}
-            disabled={addMusic.isPending}
-            onClick={() =>
-              addMusic.mutate(
-                {
-                  playlistId: playlist.id,
-                  musicId: music.id,
-                  position: playlist.entriesTotal + 1,
-                },
-                { onSuccess: () => close() },
-              )
-            }
-          >
-            <span className={mosaicSize}>
-              <PlaylistMosaic thumbnails={playlist.thumbnails} />
-            </span>
-            <span>
-              {playlist.title}
-              <span className={subText}>
-                {playlist.entriesTotal} titre{playlist.entriesTotal > 1 ? "s" : ""}
-              </span>
-            </span>
-          </button>
+        {filtered?.map((playlist) => (
+          <PlaylistItem key={playlist.id} playlist={playlist} music={music} onAdded={() => close()} />
         ))}
       </div>
     </Modal>
