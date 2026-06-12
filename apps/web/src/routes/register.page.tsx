@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from "react"
-import { createRoute, Link, redirect, useNavigate } from "@tanstack/react-router"
+import { createRoute, Link, redirect } from "@tanstack/react-router"
 import { useMutation } from "@tanstack/react-query"
+import { css } from "styled-system/css"
 import { rootRoute } from "../router"
 import { api } from "../api/client"
-import { isAuthenticated, setToken } from "../auth/auth"
+import { isAuthenticated } from "../auth/auth"
 import { Button } from "../components/Button"
 import { TextField } from "../components/TextField"
 import { MusicNoteIcon } from "../components/icons"
@@ -15,30 +16,54 @@ import {
   authPageStyle,
 } from "./login.page"
 
+const successTitle = css({ fontSize: "20px", fontWeight: "700", textAlign: "center" })
+
+const successText = css({
+  color: "textSecondary",
+  fontSize: "14px",
+  lineHeight: "1.5",
+  textAlign: "center",
+})
+
 export const RegisterPage = () => {
-  const navigate = useNavigate()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
   const register = useMutation({
     mutationFn: async () => {
-      const { data, error, response } = await api.POST("/api/3.1/auth/register", {
+      const { error, response } = await api.POST("/api/3.1/auth/register", {
         body: { name, email, password },
         parseAs: "text",
       })
       if (error !== undefined || !response.ok) throw new Error("Inscription impossible")
-      return data as string
-    },
-    onSuccess: (token) => {
-      setToken(token)
-      void navigate({ to: "/" })
     },
   })
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault()
     register.mutate()
+  }
+
+  if (register.isSuccess) {
+    return (
+      <div className={authPageStyle}>
+        <div className={authCardStyle}>
+          <div className={authBrandStyle}>
+            <MusicNoteIcon size={28} />
+            Kmotion
+          </div>
+          <div className={successTitle}>Compte créé !</div>
+          <p className={successText}>
+            Un administrateur doit activer votre compte avant que vous puissiez vous connecter.
+            Vous pourrez vous connecter dès que ce sera fait.
+          </p>
+          <div className={authAltStyle}>
+            <Link to="/login">Aller à la page de connexion</Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

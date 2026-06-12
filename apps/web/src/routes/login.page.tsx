@@ -68,7 +68,12 @@ export const LoginPage = () => {
         body: { email, password },
         parseAs: "text",
       })
-      if (error !== undefined || !response.ok) throw new Error("Identifiants invalides")
+      if (error !== undefined || !response.ok) {
+        if (String(error).includes("Account not activated")) {
+          throw new Error("Votre compte n'a pas encore été activé par un administrateur.")
+        }
+        throw new Error("Identifiants invalides")
+      }
       return data as string
     },
     onSuccess: (token) => {

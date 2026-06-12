@@ -268,7 +268,7 @@ function UsersSection() {
   return (
     <div>
       <div className={sectionHeader}>
-        <span className={sectionTitle}>Bannir, réactiver ou supprimer des utilisateurs.</span>
+        <span className={sectionTitle}>Activer, désactiver ou supprimer des utilisateurs.</span>
       </div>
 
       {isPending && <div className={emptyState}>Chargement…</div>}
@@ -282,7 +282,7 @@ function UsersSection() {
               <div className={rowTitle}>
                 {user.name}
                 {user.isAdmin && <span className={adminBadge}>Admin</span>}
-                {!user.isActive && <span className={bannedBadge}>Banni</span>}
+                {!user.isActive && <span className={bannedBadge}>Inactif</span>}
               </div>
               <div className={rowSub}>{user.email}</div>
             </div>
@@ -291,14 +291,14 @@ function UsersSection() {
                 <Button
                   variant="ghost"
                   disabled={busy || isSelf}
-                  title={isSelf ? "Vous ne pouvez pas vous bannir" : undefined}
+                  title={isSelf ? "Vous ne pouvez pas vous désactiver" : undefined}
                   onClick={() => banUser.mutate(user.id)}
                 >
-                  Bannir
+                  Désactiver
                 </Button>
               ) : (
                 <Button variant="ghost" disabled={busy} onClick={() => unbanUser.mutate(user.id)}>
-                  Réactiver
+                  Activer
                 </Button>
               )}
               <Button
