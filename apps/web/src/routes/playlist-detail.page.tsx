@@ -17,11 +17,13 @@ import { MusicRow } from "../components/MusicRow"
 import { Button } from "../components/Button"
 import { PlaylistFormDialog } from "../components/dialogs/PlaylistFormDialog"
 import { ConfirmDialog } from "../components/dialogs/ConfirmDialog"
+import { AddMusicsToPlaylistDialog } from "../components/dialogs/AddMusicsToPlaylistDialog"
 import { emptyState } from "../lib/styles"
 import {
   ChevronDownIcon,
   ChevronUpIcon,
   PlayIcon,
+  PlusIcon,
   TrashIcon,
 } from "../components/icons"
 
@@ -103,6 +105,7 @@ const PlaylistDetailPage = () => {
   const removeMusic = useRemoveMusicFromPlaylist()
   const editDialog = useDialog(PlaylistFormDialog)
   const confirmDialog = useDialog(ConfirmDialog)
+  const addMusicsDialog = useDialog(AddMusicsToPlaylistDialog)
 
   if (isPending) return <div className={emptyState}>Chargement…</div>
   if (!playlist) return <div className={emptyState}>Playlist introuvable.</div>
@@ -134,6 +137,9 @@ const PlaylistDetailPage = () => {
   const entries = [...playlist.entries].sort((a, b) => a.position - b.position)
   const totalDuration = entries.reduce((sum, entry) => sum + entry.duration, 0)
 
+  const openAddMusics = () =>
+    addMusicsDialog.open({ playlistId, existingIds: entries.map((entry) => entry.id) })
+
   const moveEntry = (index: number, direction: -1 | 1) => {
     const target = index + direction
     if (target < 0 || target >= entries.length) return
@@ -163,6 +169,9 @@ const PlaylistDetailPage = () => {
           <div className={actionsRow}>
             <Button onClick={() => player.playQueue(entries)} disabled={entries.length === 0}>
               <PlayIcon size={16} /> Tout lire
+            </Button>
+            <Button variant="ghost" onClick={openAddMusics}>
+              <PlusIcon size={16} /> Ajouter des titres
             </Button>
             <Button variant="ghost" onClick={openEdit}>
               Modifier
