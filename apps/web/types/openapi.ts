@@ -444,6 +444,16 @@ export interface components {
             isActive: boolean;
             /** @example false */
             isAdmin: boolean;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            lastActivityAt: string | null;
         };
         PaginatedUsersDto: {
             /** @description Users */

@@ -16,7 +16,7 @@ import {
   type Music,
   type User,
 } from "../api/queries"
-import { formatDuration } from "../lib/format"
+import { formatDuration, formatDate, formatRelativeTime } from "../lib/format"
 import { truncate, emptyState, pageHeading } from "../lib/styles"
 import { Button } from "../components/Button"
 import { MusicEditDialog } from "../components/dialogs/MusicEditDialog"
@@ -74,6 +74,7 @@ const row = css({
 const cellMain = css({ flex: 1, minWidth: 0 })
 const rowTitle = cx(truncate, css({ fontSize: "15px", fontWeight: "600" }))
 const rowSub = cx(truncate, css({ fontSize: "13px", color: "textSecondary" }))
+const rowMeta = cx(truncate, css({ fontSize: "12px", color: "textTertiary" }))
 const rowDuration = css({
   display: "none",
   fontSize: "13px",
@@ -285,6 +286,10 @@ function UsersSection() {
                 {!user.isActive && <span className={bannedBadge}>Inactif</span>}
               </div>
               <div className={rowSub}>{user.email}</div>
+              <div className={rowMeta}>
+                Inscrit le {formatDate(user.createdAt)} · Dernière activité{" "}
+                {formatRelativeTime(user.lastActivityAt).toLowerCase()}
+              </div>
             </div>
             <div className={actions}>
               {user.isActive ? (

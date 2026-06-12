@@ -23,6 +23,8 @@ export class UserQueryRepository implements UserQueryRepositoryPort {
       slug: record.slug,
       isActive: record.isActive,
       isAdmin: record.isAdmin,
+      createdAt: record.createdAt,
+      lastActivityAt: record.lastActivityAt,
     };
   }
 

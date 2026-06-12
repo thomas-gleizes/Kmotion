@@ -37,6 +37,8 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       throw new DomainException('Account not activated');
     }
 
+    await this.authRepository.updateLastActivity(user.id);
+
     return this.authService.sign(user);
   }
 }

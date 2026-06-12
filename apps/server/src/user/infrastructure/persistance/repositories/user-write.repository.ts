@@ -20,6 +20,8 @@ export class UserWriteRepository implements UserWriteRepositoryPort {
       record.slug,
       record.isActive,
       record.isAdmin,
+      record.createdAt,
+      record.lastActivityAt,
     );
   }
 
