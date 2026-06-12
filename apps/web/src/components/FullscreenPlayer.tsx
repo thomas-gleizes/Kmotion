@@ -26,6 +26,9 @@ const overlay = css({
   flexDirection: "column",
   overflow: "hidden",
   background: "linear-gradient(160deg, #0f0a0b 0%, #0a0a0c 55%, #080810 100%)",
+  _light: {
+    background: "linear-gradient(160deg, #fafafc 0%, #f5f5f7 55%, #efeff2 100%)",
+  },
 })
 
 const overlayEntering = css({ animation: "slideUp 0.35s token(easings.apple)" })
@@ -61,6 +64,14 @@ const scrim = css({
     background:
       "radial-gradient(120% 90% at 30% 0%, rgba(10,10,12,0.35) 0%, rgba(10,10,12,0.72) 60%, rgba(8,8,16,0.9) 100%)",
   },
+  _light: {
+    background:
+      "radial-gradient(140% 60% at 50% 0%, rgba(245,245,247,0.4) 0%, rgba(245,245,247,0.82) 55%, rgba(239,239,242,0.95) 100%)",
+    md: {
+      background:
+        "radial-gradient(120% 90% at 30% 0%, rgba(245,245,247,0.45) 0%, rgba(245,245,247,0.8) 60%, rgba(239,239,242,0.94) 100%)",
+    },
+  },
 })
 
 const header = css({
@@ -82,7 +93,7 @@ const closeBtn = css({
   padding: "8px",
   borderRadius: "full",
   transition: "all token(durations.fast) token(easings.apple)",
-  _hover: { color: "text", backgroundColor: "rgba(255,255,255,0.08)" },
+  _hover: { color: "text", backgroundColor: "overlayStrong" },
 })
 
 const nowPlayingLabel = css({
@@ -154,6 +165,7 @@ const trackTitle = cx(
     fontWeight: "800",
     letterSpacing: "-0.5px",
     lineHeight: "1.2",
+    color: "text",
     md: { fontSize: "28px" },
   }),
 )
@@ -310,7 +322,7 @@ const queueItem = css({
   width: "100%",
   transition:
     "background token(durations.fast) token(easings.apple), color token(durations.fast) token(easings.apple)",
-  _hover: { backgroundColor: "rgba(255,255,255,0.06)", color: "text" },
+  _hover: { backgroundColor: "overlay", color: "text" },
 })
 
 const queueItemActive = css({ color: "accent !important" })
