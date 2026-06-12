@@ -55,7 +55,11 @@ class MusicController {
   @ApiOkResponse({ type: MusicsResponseDto, description: 'Music paginated' })
   async index(@Query() pagination: MusicsPaginationDto) {
     const result = await this.queryBus.execute(
-      new FindMusicsQuery({ pagination: pagination, filters: {}, orderBy: {} }),
+      new FindMusicsQuery({
+        pagination: { page: pagination.page, size: pagination.size },
+        filters: { search: pagination.search },
+        orderBy: {},
+      }),
     );
 
     return MusicsResponseDto.fromResult(result);

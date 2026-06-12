@@ -842,6 +842,8 @@ export interface operations {
                 page?: number;
                 /** @description Size */
                 size?: number;
+                /** @description Search by title or artist */
+                search?: string;
             };
             header?: never;
             path?: never;

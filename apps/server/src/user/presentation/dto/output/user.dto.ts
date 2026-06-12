@@ -58,7 +58,9 @@ export class UserDto {
     dto.isActive = user.isActive;
     dto.isAdmin = user.isAdmin;
     dto.createdAt = user.createdAt.toISOString();
-    dto.lastActivityAt = user.lastActivityAt ? user.lastActivityAt.toISOString() : null;
+    dto.lastActivityAt = user.lastActivityAt
+      ? user.lastActivityAt.toISOString()
+      : null;
 
     return dto;
   }

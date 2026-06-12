@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, Max, Min } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class MusicsPaginationDto {
@@ -27,4 +27,13 @@ export class MusicsPaginationDto {
   @Min(5)
   @Max(200)
   size: number = 20;
+
+  @ApiProperty({
+    type: 'string',
+    description: 'Search by title or artist',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  search?: string;
 }

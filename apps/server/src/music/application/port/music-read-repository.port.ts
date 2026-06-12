@@ -17,7 +17,7 @@ export type MusicRead = {
   converted: boolean;
 };
 
-export type MusicFilters = {};
+export type MusicFilters = { search?: string };
 
 export type MusicOrderBy = {};
 

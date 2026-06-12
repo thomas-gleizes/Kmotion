@@ -13,7 +13,8 @@ export type UpdateMusicInput = components["schemas"]["UpdateMusicDto"]
 
 export const keys = {
   me: ["me"] as const,
-  musics: (page: number, size: number) => ["musics", { page, size }] as const,
+  musics: (page: number, size: number, search?: string) =>
+    ["musics", { page, size, search }] as const,
   musicSearch: (query: string) => ["musics", "search", query] as const,
   playlists: ["playlists"] as const,
   playlist: (id: string) => ["playlists", "detail", id] as const,
@@ -30,11 +31,11 @@ export const meQuery = queryOptions({
   queryFn: async () => unwrap(await api.GET("/api/3.1/users/me")),
 })
 
-export const musicsQuery = (page: number, size: number) =>
+export const musicsQuery = (page: number, size: number, search?: string) =>
   queryOptions({
-    queryKey: keys.musics(page, size),
+    queryKey: keys.musics(page, size, search),
     queryFn: async () =>
-      unwrap(await api.GET("/api/3.1/musics", { params: { query: { page, size } } })),
+      unwrap(await api.GET("/api/3.1/musics", { params: { query: { page, size, search } } })),
   })
 
 export const musicsInfiniteQuery = (size: number) =>
