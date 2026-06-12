@@ -133,7 +133,7 @@ const slider = css({
   appearance: "none",
   height: "4px",
   borderRadius: "full",
-  backgroundColor: "rgba(255,255,255,0.18)",
+  backgroundColor: "overlayIntense",
   cursor: "pointer",
   "&::-webkit-slider-thumb": {
     appearance: "none",
@@ -174,7 +174,7 @@ const miniProgressTrack = css({
   left: 0,
   right: 0,
   height: "2px",
-  backgroundColor: "rgba(255,255,255,0.12)",
+  backgroundColor: "overlayStrong",
 })
 
 const miniProgressFill = css({

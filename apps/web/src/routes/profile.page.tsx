@@ -1,12 +1,14 @@
 import { createRoute, Link } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
-import { css } from "styled-system/css"
+import { css, cx } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
 import { meQuery } from "../api/queries"
 import { logout } from "../auth/auth"
 import { Button } from "../components/Button"
-import { PersonIcon, PlusIcon, ShieldIcon } from "../components/icons"
+import { CheckIcon, PersonIcon, PlusIcon, ShieldIcon } from "../components/icons"
 import { pageHeading } from "../lib/styles"
+import { useTheme } from "../theme/ThemeContext"
+import { themes } from "../theme/themes"
 
 const card = css({
   maxWidth: "480px",
@@ -37,11 +39,61 @@ const emailStyle = css({ fontSize: "14px", color: "textSecondary" })
 const badge = css({
   fontSize: "12px",
   color: "accent",
-  backgroundColor: "rgba(250, 45, 72, 0.12)",
+  backgroundColor: "accentSoft",
   padding: "3px 10px",
   borderRadius: "full",
   fontWeight: "600",
 })
+
+const sectionTitle = css({ fontSize: "16px", fontWeight: "700", margin: "28px 0 12px" })
+
+const themeGrid = css({
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+  gap: "12px",
+  maxWidth: "480px",
+})
+
+const themeCard = css({
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px",
+  padding: "12px",
+  borderRadius: "m",
+  border: "1px solid token(colors.border)",
+  backgroundColor: "surface",
+  cursor: "pointer",
+  textAlign: "left",
+  fontFamily: "sans",
+  color: "text",
+  transition: "all token(durations.fast) token(easings.apple)",
+  _hover: { borderColor: "accent" },
+})
+
+const themeCardActive = css({
+  borderColor: "accent",
+  boxShadow: "0 0 0 2px token(colors.accentGlow)",
+})
+
+const themePreview = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "6px",
+  borderRadius: "s",
+  padding: "10px",
+})
+
+const themeSwatch = css({ width: "14px", height: "14px", borderRadius: "full", flexShrink: 0 })
+
+const themeLabelRow = css({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  fontSize: "14px",
+  fontWeight: "600",
+})
+
+const themeDescription = css({ fontSize: "12px", color: "textSecondary" })
 
 // Liens absents de la tab bar mobile (présents dans la sidebar desktop).
 const mobileLinks = css({
@@ -69,6 +121,7 @@ const mobileLink = css({
 
 const ProfilePage = () => {
   const { data: user, isPending } = useQuery(meQuery)
+  const { theme, setTheme } = useTheme()
 
   return (
     <div>
@@ -90,6 +143,29 @@ const ProfilePage = () => {
             Se déconnecter
           </Button>
         </div>
+      </div>
+
+      <h2 className={sectionTitle}>Thème</h2>
+      <div className={themeGrid}>
+        {themes.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            className={cx(themeCard, theme === t.id && themeCardActive)}
+            onClick={() => setTheme(t.id)}
+            aria-pressed={theme === t.id}
+          >
+            <div className={themePreview} style={{ backgroundColor: t.preview.bg }}>
+              <span className={themeSwatch} style={{ backgroundColor: t.preview.surface }} />
+              <span className={themeSwatch} style={{ backgroundColor: t.preview.accent }} />
+            </div>
+            <div className={themeLabelRow}>
+              {t.label}
+              {theme === t.id && <CheckIcon size={16} />}
+            </div>
+            <div className={themeDescription}>{t.description}</div>
+          </button>
+        ))}
       </div>
 
       <nav className={mobileLinks}>

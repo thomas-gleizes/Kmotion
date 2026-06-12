@@ -88,7 +88,7 @@ const iconButton = css({
   color: "textSecondary",
   cursor: "pointer",
   transition: "all token(durations.fast) token(easings.apple)",
-  _hover: { color: "text", backgroundColor: "rgba(255, 255, 255, 0.08)" },
+  _hover: { color: "text", backgroundColor: "overlayStrong" },
   _disabled: { opacity: 0.3, cursor: "default" },
 })
 

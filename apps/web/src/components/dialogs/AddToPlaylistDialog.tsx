@@ -24,7 +24,7 @@ const searchBox = css({
   marginBottom: "12px",
   color: "textSecondary",
   transition: "all token(durations.fast) token(easings.apple)",
-  _focusWithin: { borderColor: "accent", boxShadow: "0 0 0 3px rgba(250, 45, 72, 0.2)" },
+  _focusWithin: { borderColor: "accent", boxShadow: "0 0 0 3px token(colors.accentGlow)" },
 })
 
 const searchInput = css({
@@ -54,7 +54,7 @@ const item = css({
   textAlign: "left",
   width: "100%",
   transition: "background token(durations.fast) token(easings.apple)",
-  _hover: { backgroundColor: "rgba(255, 255, 255, 0.07)" },
+  _hover: { backgroundColor: "overlayStrong" },
   _disabled: { opacity: 0.5, cursor: "default" },
 })
 
@@ -71,11 +71,11 @@ const statusCircle = css({
   height: "28px",
   borderRadius: "full",
   flexShrink: 0,
-  backgroundColor: "rgba(255, 255, 255, 0.08)",
+  backgroundColor: "overlayStrong",
   color: "textSecondary",
 })
 
-const statusInPlaylist = css({ color: "#30d158" })
+const statusInPlaylist = css({ color: "success" })
 
 type PlaylistItemProps = {
   playlist: PlaylistSummary

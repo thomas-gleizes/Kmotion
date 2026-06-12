@@ -5,7 +5,7 @@ import { ListIcon, MusicNoteIcon, PersonIcon, SearchIcon } from "./icons"
 const bar = css({
   gridArea: "tabbar",
   display: "flex",
-  backgroundColor: "rgba(18, 18, 20, 0.85)",
+  backgroundColor: "chromeTranslucent",
   backdropFilter: "blur(20px) saturate(180%)",
   borderTop: "1px solid token(colors.border)",
   paddingBottom: "env(safe-area-inset-bottom)",

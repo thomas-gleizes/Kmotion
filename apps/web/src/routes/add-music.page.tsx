@@ -23,7 +23,7 @@ const helpStyle = css({ fontSize: "13px", color: "textSecondary", lineHeight: "1
 const errorStyle = css({ fontSize: "13px", color: "danger" })
 const successStyle = css({
   fontSize: "14px",
-  color: "#30d158",
+  color: "success",
   display: "flex",
   flexDirection: "column",
   gap: "8px",

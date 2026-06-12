@@ -16,7 +16,7 @@ const row = css({
   cursor: "pointer",
   transition: "background token(durations.fast) token(easings.apple)",
   _hover: {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    backgroundColor: "overlay",
     "& .row-play": { opacity: 1 },
   },
 })

@@ -32,13 +32,13 @@ const variants: Record<Variant, string> = {
   ghost: css({
     backgroundColor: "surfaceRaised",
     color: "text",
-    _hover: { backgroundColor: "rgba(255, 255, 255, 0.14)" },
+    _hover: { backgroundColor: "overlayIntense" },
     _active: { transform: "scale(0.97)" },
   }),
   danger: css({
     backgroundColor: "transparent",
     color: "danger",
-    _hover: { backgroundColor: "rgba(255, 69, 58, 0.12)" },
+    _hover: { backgroundColor: "dangerSoft" },
   }),
 }
 

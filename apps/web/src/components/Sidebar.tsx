@@ -9,7 +9,7 @@ const sidebar = css({
   display: "flex",
   flexDirection: "column",
   padding: "20px 12px",
-  backgroundColor: "rgba(18, 18, 20, 0.85)",
+  backgroundColor: "chromeTranslucent",
   backdropFilter: "blur(20px) saturate(180%)",
   borderRight: "1px solid token(colors.border)",
 })
@@ -35,7 +35,7 @@ const navLink = css({
   fontWeight: "500",
   color: "textSecondary",
   transition: "all token(durations.fast) token(easings.apple)",
-  _hover: { backgroundColor: "rgba(255, 255, 255, 0.06)", color: "text" },
+  _hover: { backgroundColor: "overlay", color: "text" },
   '&[data-status="active"]': {
     backgroundColor: "surfaceRaised",
     color: "accent",
@@ -63,7 +63,7 @@ const logoutButton = css({
   border: "none",
   borderRadius: "s",
   fontFamily: "sans",
-  _hover: { color: "danger", backgroundColor: "rgba(255, 69, 58, 0.1)" },
+  _hover: { color: "danger", backgroundColor: "dangerSoft" },
 })
 
 export function Sidebar() {
