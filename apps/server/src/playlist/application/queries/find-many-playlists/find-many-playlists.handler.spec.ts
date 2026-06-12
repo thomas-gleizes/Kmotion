@@ -34,12 +34,14 @@ describe('FindManyPlaylistsHandler', () => {
 
     const query = new FindManyPlaylistsQuery({
       pagination: { page: 0, size: 20 },
+      currentUserId: 'user-1',
     });
     const result = await handler.execute(query);
 
     expect(result).toEqual(playlistsRead);
-    expect(repository.findMany).toHaveBeenCalledWith({
-      pagination: { page: 0, size: 20 },
-    });
+    expect(repository.findMany).toHaveBeenCalledWith(
+      { pagination: { page: 0, size: 20 } },
+      'user-1',
+    );
   });
 });

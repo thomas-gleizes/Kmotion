@@ -15,6 +15,9 @@ export class FindUserPlaylistsHandler implements IQueryHandler<FindUserPlaylists
   ) {}
 
   async execute(query: FindUserPlaylistsQuery): Promise<ManyPlaylistRead[]> {
-    return this.playlistRepository.findByUserId(query.payload.userId);
+    return this.playlistRepository.findByUserId(
+      query.payload.userId,
+      query.payload.currentUserId,
+    );
   }
 }

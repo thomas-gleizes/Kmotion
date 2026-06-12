@@ -44,7 +44,10 @@ export type ManyPlaylistRead = {
 };
 
 export interface PlaylistQueryRepositoryPort {
-  findByUserId(userId: string): Promise<ManyPlaylistRead[]>;
+  findByUserId(userId: string, currentUserId: string): Promise<ManyPlaylistRead[]>;
   findById(id: string): Promise<PlaylistRead | null>;
-  findMany(parameter: PaginateParameter<{}, {}>): Promise<ManyPlaylistRead[]>;
+  findMany(
+    parameter: PaginateParameter<{}, {}>,
+    currentUserId: string,
+  ): Promise<ManyPlaylistRead[]>;
 }
