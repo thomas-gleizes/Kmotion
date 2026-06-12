@@ -4,3 +4,4 @@ List des choses a faire
 2. ✅ [FAIT] Améliore l'ajout, si la music est déja sur la playlist, il faut pouvoir le voir avec un check vert, sinon rajoute un icon plus dans un petit cercle, rajoute une petite bar de recherche en haut pour filtré les playlist
 3. ✅ [FAIT] Gestion d'un theme, rajoute dans le profil la possiblé de changé de theme sombre et claire mais pas que, rajoute d'autre theme inspiré des standard du web
 4. ✅ [FAIT] Dans le panel admin, pour les users, rajoute des infos, date d'inscription, dernier activité (example: il y a 12Heurs/jours, ans)
+5. ✅ [FAIT] Dans le panel admin, sur la partie musics, rajoute un search input qui permet de filtré les musics, garde la pagination telquel

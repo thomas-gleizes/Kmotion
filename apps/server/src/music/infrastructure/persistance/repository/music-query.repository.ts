@@ -70,10 +70,20 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
     return records.map(this.mapToRead);
   }
 
+  private buildWhere(filters: MusicFilters = {}) {
+    if (!filters.search) return undefined;
+
+    return or(
+      ilike(musicTable.title, `%${filters.search}%`),
+      ilike(musicTable.artist, `%${filters.search}%`),
+    );
+  }
+
   async total(filters: MusicFilters = {}): Promise<number> {
     const [result] = await this.database
       .select({ total: count(musicTable.id) })
-      .from(musicTable);
+      .from(musicTable)
+      .where(this.buildWhere(filters));
 
     return result.total ?? 0;
   }
@@ -90,6 +100,7 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
     const records = await this.database
       .select()
       .from(musicTable)
+      .where(this.buildWhere(filters))
       .offset(offset)
       .limit(limit);
 

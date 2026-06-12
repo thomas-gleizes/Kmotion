@@ -21,7 +21,8 @@ import { truncate, emptyState, pageHeading } from "../lib/styles"
 import { Button } from "../components/Button"
 import { MusicEditDialog } from "../components/dialogs/MusicEditDialog"
 import { ConfirmDialog } from "../components/dialogs/ConfirmDialog"
-import { EditIcon, SpinnerIcon, SyncIcon, TrashIcon } from "../components/icons"
+import { useDebounce } from "../hooks/useDebounce"
+import { EditIcon, SearchIcon, SpinnerIcon, SyncIcon, TrashIcon } from "../components/icons"
 
 const PAGE_SIZE = 30
 
@@ -132,6 +133,31 @@ const pager = css({
   fontSize: "14px",
 })
 
+const searchBox = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  padding: "12px 18px",
+  borderRadius: "m",
+  backgroundColor: "surfaceRaised",
+  border: "1px solid token(colors.border)",
+  marginBottom: "16px",
+  color: "textSecondary",
+  transition: "all token(durations.fast) token(easings.apple)",
+  _focusWithin: { borderColor: "accent", boxShadow: "0 0 0 3px token(colors.accentGlow)" },
+})
+
+const searchInput = css({
+  flex: 1,
+  background: "none",
+  border: "none",
+  outline: "none",
+  color: "text",
+  fontSize: "16px",
+  fontFamily: "sans",
+  _placeholder: { color: "textTertiary" },
+})
+
 const syncFeedback = css({ fontSize: "13px", marginTop: "10px" })
 const syncOk = css({ color: "accent" })
 const syncError = css({ color: "danger" })
@@ -162,8 +188,10 @@ function Pager({
 
 function MusicsSection() {
   const [page, setPage] = useState(0)
+  const [search, setSearch] = useState("")
+  const debouncedSearch = useDebounce(search.trim())
   const { data, isPending } = useQuery({
-    ...musicsQuery(page, PAGE_SIZE),
+    ...musicsQuery(page, PAGE_SIZE, debouncedSearch || undefined),
     placeholderData: keepPreviousData,
   })
   const syncMusics = useSyncMusics()
@@ -199,9 +227,26 @@ function MusicsSection() {
         <div className={cx(syncFeedback, syncError)}>La synchronisation a échoué. Réessayez.</div>
       )}
 
+      <div className={searchBox}>
+        <SearchIcon size={18} />
+        <input
+          className={searchInput}
+          placeholder="Rechercher un titre ou un artiste…"
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value)
+            setPage(0)
+          }}
+        />
+      </div>
+
       {isPending && <div className={emptyState}>Chargement…</div>}
       {data && data.records.length === 0 && (
-        <div className={emptyState}>Aucun titre dans la bibliothèque.</div>
+        <div className={emptyState}>
+          {debouncedSearch
+            ? `Aucun résultat pour « ${debouncedSearch} ».`
+            : "Aucun titre dans la bibliothèque."}
+        </div>
       )}
 
       {data?.records.map((music) => (
