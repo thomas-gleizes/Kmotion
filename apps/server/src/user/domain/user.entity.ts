@@ -8,6 +8,8 @@ export class User {
     public readonly slug: string,
     public isActive: boolean,
     public isAdmin: boolean,
+    public readonly createdAt: Date = new Date(),
+    public lastActivityAt: Date | null = null,
   ) {}
 
   static create(email: string, name: string) {

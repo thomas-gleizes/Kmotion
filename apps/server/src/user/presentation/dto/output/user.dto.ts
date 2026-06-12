@@ -29,6 +29,21 @@ export class UserDto {
   @ApiProperty({ type: 'boolean', example: false })
   isAdmin: boolean;
 
+  @ApiProperty({
+    type: 'string',
+    format: 'date-time',
+    example: '2024-01-01T00:00:00.000Z',
+  })
+  createdAt: string;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'date-time',
+    example: '2024-01-01T00:00:00.000Z',
+    nullable: true,
+  })
+  lastActivityAt: string | null;
+
   static fromDomain(user: User) {
     return UserDto.fromRead(user);
   }
@@ -42,6 +57,8 @@ export class UserDto {
     dto.slug = user.slug;
     dto.isActive = user.isActive;
     dto.isAdmin = user.isAdmin;
+    dto.createdAt = user.createdAt.toISOString();
+    dto.lastActivityAt = user.lastActivityAt ? user.lastActivityAt.toISOString() : null;
 
     return dto;
   }

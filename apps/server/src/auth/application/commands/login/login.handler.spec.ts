@@ -17,6 +17,7 @@ describe('LoginHandler', () => {
     repository = {
       findByEmail: jest.fn(),
       save: jest.fn(),
+      updateLastActivity: jest.fn(),
     } as any;
     authService = {
       hash: jest.fn(),

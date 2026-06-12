@@ -19,6 +19,8 @@ export class AuthRepository implements AuthRepositoryPort {
       record.slug,
       record.isActive,
       record.isAdmin,
+      record.createdAt,
+      record.lastActivityAt,
     );
   }
 
@@ -43,5 +45,12 @@ export class AuthRepository implements AuthRepositoryPort {
       isAdmin: user.isAdmin,
       isActive: user.isActive,
     });
+  }
+
+  async updateLastActivity(id: string): Promise<void> {
+    await this.database
+      .update(userTable)
+      .set({ lastActivityAt: new Date() })
+      .where(eq(userTable.id, id));
   }
 }

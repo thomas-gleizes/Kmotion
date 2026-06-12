@@ -5,6 +5,8 @@ export type UserRead = {
   slug: string;
   isActive: boolean;
   isAdmin: boolean;
+  createdAt: Date;
+  lastActivityAt: Date | null;
 };
 
 export const USER_QUERY_REPOSITORY_PORT = Symbol('USER_QUERY_REPOSITORY_PORT');

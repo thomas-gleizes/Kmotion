@@ -1,3 +1,35 @@
+export function formatRelativeTime(date: string | null): string {
+  if (!date) return "Jamais"
+
+  const diffSeconds = Math.round((Date.now() - new Date(date).getTime()) / 1000)
+
+  if (diffSeconds < 60) return "à l'instant"
+
+  const units: [Intl.RelativeTimeFormatUnit, number][] = [
+    ["year", 60 * 60 * 24 * 365],
+    ["month", 60 * 60 * 24 * 30],
+    ["day", 60 * 60 * 24],
+    ["hour", 60 * 60],
+    ["minute", 60],
+  ]
+
+  const formatter = new Intl.RelativeTimeFormat("fr", { numeric: "auto" })
+  for (const [unit, secondsInUnit] of units) {
+    const value = Math.floor(diffSeconds / secondsInUnit)
+    if (value >= 1) return formatter.format(-value, unit)
+  }
+
+  return "à l'instant"
+}
+
+export function formatDate(date: string): string {
+  return new Date(date).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })
+}
+
 export function formatDuration(totalSeconds: number): string {
   const seconds = Math.max(0, Math.round(totalSeconds))
   const minutes = Math.floor(seconds / 60)
