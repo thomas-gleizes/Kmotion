@@ -9,6 +9,8 @@ import {
   type ReactNode,
 } from "react"
 import { audioPath, getBlobUrl, thumbnailPath } from "./audioCache"
+import { applyEqualizerSettings, ensureEqualizerGraph, resumeEqualizerContext } from "./equalizer"
+import { useEqualizerStore } from "./equalizerStore"
 import { usePlayerStore } from "./playerStore"
 
 export type Track = {
@@ -58,6 +60,18 @@ const ProgressContext = createContext<ProgressState>({ currentTime: 0, duration:
 
 // Élément audio unique, hors du cycle de rendu React.
 const audio = new Audio()
+
+// Branche le graphe Web Audio (égaliseur) sur le premier geste de lecture :
+// AudioContext démarre "suspended" tant qu'aucune interaction utilisateur n'a
+// eu lieu, et createMediaElementSource ne peut être appelé qu'une seule fois.
+function initEqualizer() {
+  ensureEqualizerGraph(audio)
+  applyEqualizerSettings(useEqualizerStore.getState().settings)
+  resumeEqualizerContext()
+}
+
+// Réapplique les réglages dès qu'ils changent (page profil), même en cours de lecture.
+useEqualizerStore.subscribe((state) => applyEqualizerSettings(state.settings))
 
 // Sauvegarde l'instantané au plus toutes les 5 s pendant la lecture.
 const SAVE_THROTTLE_MS = 5000
@@ -141,7 +155,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       const url = await getBlobUrl(audioPath(track.id))
       if (loadId !== loadIdRef.current) return
       audio.src = url
-      if (autoplay) await audio.play()
+      if (autoplay) {
+        initEqualizer()
+        await audio.play()
+      }
     } catch {
       if (loadId === loadIdRef.current) setIsPlaying(false)
     } finally {
@@ -226,8 +243,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const toggle = useCallback(() => {
     if (!audio.src) return
-    if (audio.paused) void audio.play()
-    else audio.pause()
+    if (audio.paused) {
+      initEqualizer()
+      void audio.play()
+    } else audio.pause()
   }, [])
 
   const seek = useCallback((seconds: number) => {

@@ -16,7 +16,7 @@ services:
     networks:
       kmotion-net:
     ports:
-      - "5432:5432"
+      - "3032:5432"
     volumes:
       - database:/var/lib/postgresql/data
       - ./.docker/database:/docker-entrypoint-initdb.d

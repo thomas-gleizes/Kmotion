@@ -7,6 +7,12 @@ import { logout } from "../auth/auth"
 import { Button } from "../components/Button"
 import { CheckIcon, DownloadIcon, PersonIcon, PlusIcon, ShieldIcon } from "../components/icons"
 import { pageHeading } from "../lib/styles"
+import {
+  EQ_MAX_DB,
+  EQ_MIN_DB,
+  useEqualizerStore,
+  type EqualizerBand,
+} from "../player/equalizerStore"
 import { useTheme } from "../theme/ThemeContext"
 import { themes } from "../theme/themes"
 
@@ -127,6 +133,57 @@ const themeLabelRow = css({
 
 const themeDescription = css({ fontSize: "12px", color: "textSecondary" })
 
+const equalizerCard = css({
+  maxWidth: "480px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "18px",
+  padding: "20px 24px",
+  borderRadius: "l",
+  backgroundColor: "surface",
+  border: "1px solid token(colors.border)",
+})
+
+const eqRow = css({ display: "flex", flexDirection: "column", gap: "8px" })
+
+const eqLabelRow = css({
+  display: "flex",
+  justifyContent: "space-between",
+  fontSize: "14px",
+  fontWeight: "600",
+})
+
+const eqValue = css({ color: "textSecondary", fontVariantNumeric: "tabular-nums" })
+
+const eqSlider = css({
+  width: "100%",
+  appearance: "none",
+  height: "4px",
+  borderRadius: "full",
+  backgroundColor: "surfaceRaised",
+  cursor: "pointer",
+  "&::-webkit-slider-thumb": {
+    appearance: "none",
+    width: "16px",
+    height: "16px",
+    borderRadius: "full",
+    backgroundColor: "accent",
+    cursor: "pointer",
+    transition: "transform token(durations.fast) token(easings.apple)",
+  },
+  "&:hover::-webkit-slider-thumb": { transform: "scale(1.2)" },
+  "&::-moz-range-thumb": {
+    width: "16px",
+    height: "16px",
+    border: "none",
+    borderRadius: "full",
+    backgroundColor: "accent",
+    cursor: "pointer",
+  },
+})
+
+const eqReset = css({ alignSelf: "flex-start" })
+
 // Liens absents de la tab bar mobile (présents dans la sidebar desktop).
 const mobileLinks = css({
   display: "flex",
@@ -151,9 +208,18 @@ const mobileLink = css({
   '&[data-status="active"]': { color: "accent" },
 })
 
+const eqBands: { id: EqualizerBand; label: string }[] = [
+  { id: "bass", label: "Basses" },
+  { id: "mid", label: "Médiums" },
+  { id: "treble", label: "Aigus" },
+]
+
 const ProfilePage = () => {
   const { data: user, isPending } = useQuery(meQuery)
   const { theme, setTheme } = useTheme()
+  const eqSettings = useEqualizerStore((s) => s.settings)
+  const setEqBand = useEqualizerStore((s) => s.setBand)
+  const resetEq = useEqualizerStore((s) => s.reset)
 
   return (
     <div>
@@ -187,6 +253,33 @@ const ProfilePage = () => {
         <a className={downloadButton} href="/downloads/kmotion-extension.zip" download>
           <DownloadIcon size={18} /> Télécharger l’extension
         </a>
+      </div>
+
+      <h2 className={sectionTitle}>Égaliseur</h2>
+      <div className={equalizerCard}>
+        {eqBands.map((band) => (
+          <div key={band.id} className={eqRow}>
+            <div className={eqLabelRow}>
+              <span>{band.label}</span>
+              <span className={eqValue}>
+                {eqSettings[band.id] > 0 ? "+" : ""}
+                {eqSettings[band.id]} dB
+              </span>
+            </div>
+            <input
+              type="range"
+              className={eqSlider}
+              min={EQ_MIN_DB}
+              max={EQ_MAX_DB}
+              step={1}
+              value={eqSettings[band.id]}
+              onChange={(e) => setEqBand(band.id, Number(e.target.value))}
+            />
+          </div>
+        ))}
+        <Button variant="ghost" className={eqReset} onClick={resetEq}>
+          Réinitialiser
+        </Button>
       </div>
 
       <h2 className={sectionTitle}>Thème</h2>
