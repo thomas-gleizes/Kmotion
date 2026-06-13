@@ -844,6 +844,10 @@ export interface operations {
                 size?: number;
                 /** @description Search by title or artist */
                 search?: string;
+                /** @description Field to order by */
+                sort?: "title" | "artist" | "duration" | "createdAt";
+                /** @description Order direction */
+                order?: "asc" | "desc";
             };
             header?: never;
             path?: never;

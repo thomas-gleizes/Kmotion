@@ -1,17 +1,24 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { createRoute } from "@tanstack/react-router"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useDialog } from "react-dialog-promise"
 import { css } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
-import { musicsInfiniteQuery } from "../api/queries"
-import { emptyState, pageHeading } from "../lib/styles"
+import { musicsInfiniteQuery, type MusicSort, type SortOrder } from "../api/queries"
+import { emptyState } from "../lib/styles"
 import { usePlayer } from "../player/PlayerContext"
 import { MusicCard } from "../components/MusicCard"
 import { AddToPlaylistDialog } from "../components/dialogs/AddToPlaylistDialog"
-import { SpinnerIcon } from "../components/icons"
+import { ChevronDownIcon, ChevronUpIcon, SpinnerIcon } from "../components/icons"
 
 const PAGE_SIZE = 30
+
+const SORT_OPTIONS: { value: MusicSort; label: string }[] = [
+  { value: "createdAt", label: "Date d’ajout" },
+  { value: "title", label: "Titre" },
+  { value: "artist", label: "Artiste" },
+  { value: "duration", label: "Durée" },
+]
 
 const grid = css({
   display: "grid",
@@ -22,6 +29,58 @@ const grid = css({
 
 const sentinel = css({ height: "1px" })
 
+const toolbar = css({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "12px",
+  marginBottom: "20px",
+  md: { marginBottom: "24px" },
+})
+
+const heading = css({
+  fontSize: "26px",
+  fontWeight: "800",
+  letterSpacing: "-0.8px",
+  md: { fontSize: "32px" },
+})
+
+const controls = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+})
+
+const select = css({
+  appearance: "none",
+  padding: "8px 14px",
+  borderRadius: "m",
+  backgroundColor: "surfaceRaised",
+  border: "1px solid token(colors.border)",
+  color: "text",
+  fontSize: "14px",
+  fontFamily: "sans",
+  cursor: "pointer",
+  outline: "none",
+  transition: "all token(durations.fast) token(easings.apple)",
+  _focusVisible: { borderColor: "accent", boxShadow: "0 0 0 3px token(colors.accentGlow)" },
+})
+
+const directionButton = css({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "36px",
+  height: "36px",
+  borderRadius: "m",
+  backgroundColor: "surfaceRaised",
+  border: "1px solid token(colors.border)",
+  color: "textSecondary",
+  cursor: "pointer",
+  transition: "all token(durations.fast) token(easings.apple)",
+  _hover: { color: "accent", borderColor: "accent" },
+})
+
 const loadingMore = css({
   display: "flex",
   justifyContent: "center",
@@ -30,8 +89,10 @@ const loadingMore = css({
 })
 
 export const HomePage = () => {
+  const [sort, setSort] = useState<MusicSort>("createdAt")
+  const [order, setOrder] = useState<SortOrder>("desc")
   const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
-    musicsInfiniteQuery(PAGE_SIZE),
+    musicsInfiniteQuery(PAGE_SIZE, sort, order),
   )
   const player = usePlayer()
   const addToPlaylist = useDialog(AddToPlaylistDialog)
@@ -54,7 +115,32 @@ export const HomePage = () => {
 
   return (
     <div>
-      <h1 className={pageHeading}>Écouter</h1>
+      <div className={toolbar}>
+        <h1 className={heading}>Écouter</h1>
+        <div className={controls}>
+          <select
+            className={select}
+            value={sort}
+            onChange={(e) => setSort(e.target.value as MusicSort)}
+            aria-label="Trier par"
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            className={directionButton}
+            onClick={() => setOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
+            aria-label={order === "asc" ? "Ordre croissant" : "Ordre décroissant"}
+            title={order === "asc" ? "Ordre croissant" : "Ordre décroissant"}
+          >
+            {order === "asc" ? <ChevronUpIcon size={18} /> : <ChevronDownIcon size={18} />}
+          </button>
+        </div>
+      </div>
       {isPending && <div className={emptyState}>Chargement de la bibliothèque…</div>}
       {data && records.length === 0 && (
         <div className={emptyState}>

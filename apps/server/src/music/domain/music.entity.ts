@@ -13,6 +13,7 @@ export class Music {
     public duration: number,
     public thumbnail: string,
     public audio: string,
+    public readonly createdAt: Date = new Date(),
   ) {}
 
   static create(
@@ -25,6 +26,7 @@ export class Music {
     duration: number,
     thumbnail: string,
     audio: string,
+    createdAt: Date = new Date(),
   ) {
     return new Music(
       randomUUID(),
@@ -37,6 +39,7 @@ export class Music {
       duration,
       thumbnail,
       audio,
+      createdAt,
     );
   }
 }
