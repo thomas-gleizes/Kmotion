@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState, type CSSProperties, type TouchEvent as ReactTouchEvent } from "react"
 import { css, cx } from "styled-system/css"
 import { usePlayer, usePlayerProgress } from "../player/PlayerContext"
 import { thumbnailPath } from "../player/audioCache"
@@ -74,6 +74,29 @@ const scrim = css({
   },
 })
 
+// Poignée de glissement (mobile) : zone tactile en haut pour fermer le lecteur
+// d'un swipe vers le bas. Masquée sur desktop (souris/clavier).
+const grabberZone = css({
+  position: "relative",
+  zIndex: 2,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  paddingTop: "calc(8px + env(safe-area-inset-top))",
+  paddingBottom: "4px",
+  flexShrink: 0,
+  touchAction: "none",
+  md: { display: "none" },
+})
+
+const grabber = css({
+  width: "38px",
+  height: "5px",
+  borderRadius: "full",
+  backgroundColor: "rgba(255,255,255,0.35)",
+  _light: { backgroundColor: "rgba(0,0,0,0.25)" },
+})
+
 const header = css({
   position: "relative",
   zIndex: 1,
@@ -82,6 +105,7 @@ const header = css({
   justifyContent: "space-between",
   padding: "14px 24px",
   flexShrink: 0,
+  touchAction: "none",
 })
 
 const closeBtn = css({
@@ -356,20 +380,87 @@ export function FullscreenPlayer({ open, onClose }: { open: boolean; onClose: ()
     render && player.current ? thumbnailPath(player.current.id) : null,
   )
 
-  // Remonte dès l'ouverture (ajustement d'état pendant le render, pattern React).
+  // Swipe vers le bas (mobile) pour fermer le lecteur plein écran.
+  const drag = useRef({ startX: 0, startY: 0, active: false })
+  const [dragY, setDragY] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const [closing, setClosing] = useState(false)
+  // Au-delà de ce déplacement vers le bas, le geste ferme le lecteur.
+  const CLOSE_THRESHOLD = 110
+
+  const onDragStart = (event: ReactTouchEvent) => {
+    if (closing) return
+    const touch = event.touches[0]
+    drag.current = { startX: touch.clientX, startY: touch.clientY, active: true }
+    setDragging(true)
+  }
+
+  const onDragMove = (event: ReactTouchEvent) => {
+    if (!drag.current.active) return
+    const touch = event.touches[0]
+    const dy = touch.clientY - drag.current.startY
+    const dx = touch.clientX - drag.current.startX
+    // Ignorer les gestes plutôt horizontaux.
+    if (Math.abs(dx) > Math.abs(dy)) return
+    setDragY(dy > 0 ? dy : 0)
+  }
+
+  const onDragEnd = () => {
+    if (!drag.current.active) return
+    drag.current.active = false
+    setDragging(false)
+    if (dragY > CLOSE_THRESHOLD) {
+      // On garde `open` tel quel et on anime soi-même la sortie vers le bas,
+      // puis on démonte directement pour éviter de cumuler avec slideDown.
+      setClosing(true)
+    } else {
+      setDragY(0)
+    }
+  }
+
+  const dragHandlers = {
+    onTouchStart: onDragStart,
+    onTouchMove: onDragMove,
+    onTouchEnd: onDragEnd,
+    onTouchCancel: onDragEnd,
+  }
+
   if (open && !render) setRender(true)
 
   if (!render || !player.current) return null
   const { current } = player
 
+  const overlayStyle: CSSProperties = closing
+    ? { transform: "translateY(100%)", opacity: 0, transition: "transform 0.3s, opacity 0.3s" }
+    : dragY > 0
+      ? {
+          transform: `translateY(${dragY}px)`,
+          opacity: Math.max(1 - dragY / 700, 0.4),
+          transition: dragging ? "none" : "transform 0.3s, opacity 0.3s",
+        }
+      : {}
+
   return (
     <div
-      className={cx(overlay, open ? overlayEntering : overlayExiting)}
+      className={cx(overlay, !closing && (open ? overlayEntering : overlayExiting))}
+      style={overlayStyle}
       onAnimationEnd={(event) => {
         // Ignorer les animations des enfants (elles remontent) ; démonter à la fin de la sortie.
         if (event.target === event.currentTarget && !open) setRender(false)
       }}
+      onTransitionEnd={(event) => {
+        // Fin de l'animation de fermeture par swipe : on démonte et on notifie le parent.
+        if (closing && event.target === event.currentTarget && event.propertyName === "transform") {
+          setRender(false)
+          setClosing(false)
+          setDragY(0)
+          onClose()
+        }
+      }}
     >
+      <div className={grabberZone} {...dragHandlers}>
+        <span className={grabber} aria-hidden />
+      </div>
       {artUrl && (
         <div
           key={current.id}
@@ -379,7 +470,7 @@ export function FullscreenPlayer({ open, onClose }: { open: boolean; onClose: ()
         />
       )}
       <div className={scrim} aria-hidden />
-      <div className={header}>
+      <div className={header} {...dragHandlers}>
         <button
           type="button"
           className={closeBtn}
