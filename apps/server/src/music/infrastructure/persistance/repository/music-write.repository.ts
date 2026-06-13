@@ -24,6 +24,7 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
       record.duration,
       record.thumbnail,
       record.audio,
+      record.createdAt,
     );
   }
 
@@ -56,6 +57,7 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
         duration: music.duration,
         thumbnail: music.thumbnail,
         audio: music.audio,
+        createdAt: music.createdAt,
       })
       .onConflictDoUpdate({
         target: musicTable.id,

@@ -1,6 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
+import type {
+  MusicSortField,
+  SortDirection,
+} from 'src/music/application/port/music-read-repository.port';
 
 export class MusicsPaginationDto {
   @ApiProperty({
@@ -36,4 +40,25 @@ export class MusicsPaginationDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiProperty({
+    type: 'string',
+    enum: ['title', 'artist', 'duration', 'createdAt'],
+    description: 'Field to order by',
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(['title', 'artist', 'duration', 'createdAt'])
+  sort?: MusicSortField;
+
+  @ApiProperty({
+    type: 'string',
+    enum: ['asc', 'desc'],
+    default: 'asc',
+    description: 'Order direction',
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  order?: SortDirection;
 }

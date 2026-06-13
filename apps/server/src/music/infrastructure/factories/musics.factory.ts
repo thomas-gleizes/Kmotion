@@ -18,6 +18,7 @@ export class MusicsFactory {
       track.duration,
       track.thumbnail,
       track.audio,
+      track.createdAt ? new Date(track.createdAt) : new Date(),
     );
   }
 }

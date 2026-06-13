@@ -38,11 +38,18 @@ export const musicsQuery = (page: number, size: number, search?: string) =>
       unwrap(await api.GET("/api/3.1/musics", { params: { query: { page, size, search } } })),
   })
 
-export const musicsInfiniteQuery = (size: number) =>
+export type MusicSort = "title" | "artist" | "duration" | "createdAt"
+export type SortOrder = "asc" | "desc"
+
+export const musicsInfiniteQuery = (size: number, sort?: MusicSort, order?: SortOrder) =>
   infiniteQueryOptions({
-    queryKey: ["musics", "infinite", { size }] as const,
+    queryKey: ["musics", "infinite", { size, sort, order }] as const,
     queryFn: async ({ pageParam }) =>
-      unwrap(await api.GET("/api/3.1/musics", { params: { query: { page: pageParam, size } } })),
+      unwrap(
+        await api.GET("/api/3.1/musics", {
+          params: { query: { page: pageParam, size, sort, order } },
+        }),
+      ),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) =>
       allPages.length * size < lastPage.total ? allPages.length : undefined,

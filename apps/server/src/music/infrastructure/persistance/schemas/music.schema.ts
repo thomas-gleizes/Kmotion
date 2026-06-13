@@ -1,4 +1,4 @@
-import { pgTable, varchar, integer } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, integer, timestamp } from 'drizzle-orm/pg-core';
 import { userTable } from 'src/user/infrastructure/persistance/schemas/user.schema';
 
 export const musicTable = pgTable('musics', {
@@ -18,4 +18,7 @@ export const musicTable = pgTable('musics', {
   duration: integer().notNull(),
   thumbnail: varchar({ length: 255 }).notNull(),
   audio: varchar({ length: 255 }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });

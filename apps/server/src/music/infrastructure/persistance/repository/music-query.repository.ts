@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { and, count, eq, ilike, InferSelectModel, like, or } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, InferSelectModel, or } from 'drizzle-orm';
 import { DRIZZLE } from 'src/core/database/drizzle.provider';
 import type { DrizzleDB } from 'src/core/database/database';
 import { musicTable } from 'src/music/infrastructure/persistance/schemas/music.schema';
@@ -33,6 +33,7 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
       channel: record.artist,
       duration: record.duration ?? 0,
       converted: record.audio !== '',
+      createdAt: record.createdAt,
     };
   }
 
@@ -88,9 +89,22 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
     return result.total ?? 0;
   }
 
+  private buildOrderBy(orderBy: MusicOrderBy = {}) {
+    const columns = {
+      title: musicTable.title,
+      artist: musicTable.artist,
+      duration: musicTable.duration,
+      createdAt: musicTable.createdAt,
+    };
+    const column = columns[orderBy.field ?? 'title'];
+
+    return orderBy.direction === 'desc' ? desc(column) : asc(column);
+  }
+
   async findAll({
     pagination,
     filters,
+    orderBy,
   }: PaginateParameter<MusicFilters, MusicOrderBy>): Promise<
     PaginateResult<MusicRead>
   > {
@@ -101,6 +115,7 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
       .select()
       .from(musicTable)
       .where(this.buildWhere(filters))
+      .orderBy(this.buildOrderBy(orderBy))
       .offset(offset)
       .limit(limit);
 

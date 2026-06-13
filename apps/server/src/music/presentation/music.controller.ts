@@ -58,7 +58,7 @@ class MusicController {
       new FindMusicsQuery({
         pagination: { page: pagination.page, size: pagination.size },
         filters: { search: pagination.search },
-        orderBy: {},
+        orderBy: { field: pagination.sort, direction: pagination.order },
       }),
     );
 

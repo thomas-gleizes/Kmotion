@@ -15,11 +15,18 @@ export type MusicRead = {
   audio: string;
   thumbnail: string;
   converted: boolean;
+  createdAt: Date;
 };
 
 export type MusicFilters = { search?: string };
 
-export type MusicOrderBy = {};
+export type MusicSortField = 'title' | 'artist' | 'duration' | 'createdAt';
+export type SortDirection = 'asc' | 'desc';
+
+export type MusicOrderBy = {
+  field?: MusicSortField;
+  direction?: SortDirection;
+};
 
 export const MUSIC_READ_REPOSITORY_PORT = Symbol('MUSIC_READ_REPOSITORY_PORT');
 

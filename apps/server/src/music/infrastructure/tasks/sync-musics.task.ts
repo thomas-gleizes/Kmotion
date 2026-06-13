@@ -2,7 +2,6 @@ import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Cron } from '@nestjs/schedule';
 import { SyncMusicCommand } from 'src/music/application/commands/sync-music/sync-music.command';
-import { ca } from 'zod/locales';
 
 @Injectable()
 export class SyncMusicsTask implements OnApplicationBootstrap {
