@@ -97,6 +97,12 @@ export const TrashIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const DownloadIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3a1.1 1.1 0 0 1 1.1 1.1v8.28l2.84-2.84a1.1 1.1 0 1 1 1.56 1.56l-4.72 4.72a1.1 1.1 0 0 1-1.56 0L6.5 11.1a1.1 1.1 0 1 1 1.56-1.56l2.84 2.84V4.1A1.1 1.1 0 0 1 12 3ZM5 17a1.1 1.1 0 0 1 1.1 1.1v1.3h11.8v-1.3a1.1 1.1 0 1 1 2.2 0v1.8A1.7 1.7 0 0 1 18.4 21.6H5.6A1.7 1.7 0 0 1 3.9 19.9v-1.8A1.1 1.1 0 0 1 5 17Z" />
+  </Icon>
+)
+
 export const ChevronUpIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M12 8.3 5.7 14.6a1.1 1.1 0 0 0 1.56 1.55L12 11.4l4.74 4.74a1.1 1.1 0 0 0 1.56-1.55L12 8.3Z" />

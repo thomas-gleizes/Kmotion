@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "npm run build && npm run package",
-    "package": "web-ext build -s dist -a build --overwrite-dest",
+    "package": "web-ext build -s dist -a build --overwrite-dest --filename kmotion-extension.zip",
+    "publish:web": "npm run build && npm run package && mkdir -p ../web/public/downloads && cp build/kmotion-extension.zip ../web/public/downloads/kmotion-extension.zip",
     "generate:types": "openapi-typescript http://localhost:3000/api/3.1/openapi.json -o src/types/schema.d.ts"
   },
   "keywords": [],

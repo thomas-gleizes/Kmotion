@@ -57,9 +57,13 @@ jobs:
           - name: server
             image: ${{ github.repository }}
             context: ./apps/server
+            dockerfile: ./apps/server/Dockerfile
+          # Web image is built from the repo root so its Dockerfile can also
+          # build the browser extension and bundle it as a static download.
           - name: web
             image: ${{ github.repository }}-web
-            context: ./apps/web
+            context: .
+            dockerfile: ./apps/web/Dockerfile
 
     steps:
       - name: Checkout repository
@@ -95,7 +99,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
-          file: ${{ matrix.context }}/Dockerfile
+          file: ${{ matrix.dockerfile }}
           push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
