@@ -5,7 +5,7 @@ import { appLayoutRoute } from "./app.layout"
 import { meQuery } from "../api/queries"
 import { logout } from "../auth/auth"
 import { Button } from "../components/Button"
-import { CheckIcon, PersonIcon, PlusIcon, ShieldIcon } from "../components/icons"
+import { CheckIcon, DownloadIcon, PersonIcon, PlusIcon, ShieldIcon } from "../components/icons"
 import { pageHeading } from "../lib/styles"
 import { useTheme } from "../theme/ThemeContext"
 import { themes } from "../theme/themes"
@@ -46,6 +46,38 @@ const badge = css({
 })
 
 const sectionTitle = css({ fontSize: "16px", fontWeight: "700", margin: "28px 0 12px" })
+
+const extensionCard = css({
+  maxWidth: "480px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px",
+  padding: "20px 24px",
+  borderRadius: "l",
+  backgroundColor: "surface",
+  border: "1px solid token(colors.border)",
+})
+
+const extensionText = css({ fontSize: "14px", color: "textSecondary", lineHeight: "1.5" })
+
+const downloadButton = css({
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "8px",
+  alignSelf: "flex-start",
+  padding: "10px 20px",
+  borderRadius: "full",
+  fontSize: "15px",
+  fontWeight: "600",
+  backgroundColor: "accent",
+  color: "white",
+  cursor: "pointer",
+  transition: "all token(durations.fast) token(easings.apple)",
+  _hover: { backgroundColor: "accentHover" },
+  _active: { transform: "scale(0.97)" },
+  _touch: { minHeight: "44px" },
+})
 
 const themeGrid = css({
   display: "grid",
@@ -143,6 +175,18 @@ const ProfilePage = () => {
             Se déconnecter
           </Button>
         </div>
+      </div>
+
+      <h2 className={sectionTitle}>Extension navigateur</h2>
+      <div className={extensionCard}>
+        <p className={extensionText}>
+          Installez l’extension kMotion pour convertir et enregistrer des vidéos YouTube en MP3
+          directement depuis votre navigateur. Téléchargez l’archive puis chargez-la dans la page
+          des extensions de votre navigateur.
+        </p>
+        <a className={downloadButton} href="/downloads/kmotion-extension.zip" download>
+          <DownloadIcon size={18} /> Télécharger l’extension
+        </a>
       </div>
 
       <h2 className={sectionTitle}>Thème</h2>

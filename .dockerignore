@@ -1,3 +1,9 @@
-node_modules
-dist
+**/node_modules
+**/dist
+**/build
+**/styled-system
+.git
+.idea
+.DS_Store
+*.log
 .env**

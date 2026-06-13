@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Locally generated browser-extension download (built into the Docker image in CI)
+public/downloads
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
