@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web
+  namespace: kmotion
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: web

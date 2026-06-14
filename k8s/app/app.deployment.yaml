@@ -9,6 +9,11 @@ metadata:
   namespace: kmotion
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: app
@@ -18,6 +23,7 @@ spec:
         app: app
       name: app
     spec:
+      terminationGracePeriodSeconds: 30
       initContainers:
         - name: migration
           image: ghcr.io/thomas-gleizes/kmotion:latest
@@ -48,4 +54,32 @@ spec:
         ports:
         - containerPort: 80
           protocol: TCP
+        startupProbe:
+          httpGet:
+            path: /api/3.1/health
+            port: 80
+          periodSeconds: 3
+          failureThreshold: 20
+        readinessProbe:
+          httpGet:
+            path: /api/3.1/health
+            port: 80
+          periodSeconds: 5
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /api/3.1/health
+            port: 80
+          periodSeconds: 10
+          failureThreshold: 3
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 5"]
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            memory: "512Mi"
       restartPolicy: Always
