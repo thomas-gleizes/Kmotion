@@ -16,11 +16,21 @@ export type MusicRead = {
   thumbnail: string;
   converted: boolean;
   createdAt: Date;
+  isFavorite: boolean;
 };
 
-export type MusicFilters = { search?: string };
+export type MusicFilters = {
+  search?: string;
+  userId?: string;
+  onlyFavorite?: boolean;
+};
 
-export type MusicSortField = 'title' | 'artist' | 'duration' | 'createdAt';
+export type MusicSortField =
+  | 'title'
+  | 'artist'
+  | 'duration'
+  | 'createdAt'
+  | 'favorite';
 export type SortDirection = 'asc' | 'desc';
 
 export type MusicOrderBy = {

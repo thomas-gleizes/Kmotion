@@ -173,3 +173,26 @@ export const CheckIcon = (p: IconProps) => (
     <polyline points="20 6 9 17 4 12" />
   </StrokeIcon>
 )
+
+export const HeartIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 20.3 4.6 13a5.1 5.1 0 0 1 0-7.2 5.06 5.06 0 0 1 7.16 0L12 6l.24-.2a5.06 5.06 0 0 1 7.16 0 5.1 5.1 0 0 1 0 7.2L12 20.3Z" />
+  </Icon>
+)
+
+export const HeartOutlineIcon = (p: IconProps) => (
+  <StrokeIcon {...p}>
+    <path d="M12 20.3 4.6 13a5.1 5.1 0 0 1 0-7.2 5.06 5.06 0 0 1 7.16 0L12 6l.24-.2a5.06 5.06 0 0 1 7.16 0 5.1 5.1 0 0 1 0 7.2L12 20.3Z" strokeWidth={1.8} />
+  </StrokeIcon>
+)
+
+export const DragHandleIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="9" cy="6" r="1.5" />
+    <circle cx="15" cy="6" r="1.5" />
+    <circle cx="9" cy="12" r="1.5" />
+    <circle cx="15" cy="12" r="1.5" />
+    <circle cx="9" cy="18" r="1.5" />
+    <circle cx="15" cy="18" r="1.5" />
+  </Icon>
+)

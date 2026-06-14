@@ -9,6 +9,8 @@ import { MusicReadRepository } from 'src/music/infrastructure/persistance/reposi
 import { CONVERTER_SERVICE_PORT } from 'src/music/domain/port/converter-service.port';
 import { MUSIC_WRITE_REPOSITORY_PORT } from 'src/music/domain/port/music-write-repository.port';
 import { MusicWriteRepository } from 'src/music/infrastructure/persistance/repository/music-write.repository';
+import { FAVORITE_REPOSITORY_PORT } from 'src/music/domain/port/favorite-repository.port';
+import { FavoriteRepository } from 'src/music/infrastructure/persistance/repository/favorite.repository';
 import { MusicsFactory } from 'src/music/infrastructure/factories/musics.factory';
 import { AuthModule } from 'src/auth/auth.module';
 import { musicsQueryHandlers } from 'src/music/application/queries';
@@ -19,6 +21,7 @@ import { musicsQueryHandlers } from 'src/music/application/queries';
   providers: [
     { provide: MUSIC_READ_REPOSITORY_PORT, useClass: MusicReadRepository },
     { provide: MUSIC_WRITE_REPOSITORY_PORT, useClass: MusicWriteRepository },
+    { provide: FAVORITE_REPOSITORY_PORT, useClass: FavoriteRepository },
     { provide: CONVERTER_SERVICE_PORT, useClass: ConverterServiceAdapter },
     ...musicsCommandHandlers,
     ...musicsQueryHandlers,

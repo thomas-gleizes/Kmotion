@@ -1,8 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { and, asc, count, desc, eq, ilike, InferSelectModel, or } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  ilike,
+  InferSelectModel,
+  isNotNull,
+  or,
+  type SQL,
+  sql,
+} from 'drizzle-orm';
 import { DRIZZLE } from 'src/core/database/drizzle.provider';
 import type { DrizzleDB } from 'src/core/database/database';
 import { musicTable } from 'src/music/infrastructure/persistance/schemas/music.schema';
+import { favoriteTable } from 'src/music/infrastructure/persistance/schemas/favorite.schema';
 import {
   MusicFilters,
   MusicOrderBy,
@@ -21,7 +34,7 @@ type MusicRecord = InferSelectModel<typeof musicTable>;
 export class MusicReadRepository implements MusicReadRepositoryPort {
   constructor(@Inject(DRIZZLE) private readonly database: DrizzleDB) {}
 
-  private mapToRead(record: MusicRecord): MusicRead {
+  private mapToRead(record: MusicRecord, isFavorite = false): MusicRead {
     return {
       id: record.id,
       mediaId: record.mediaId,
@@ -34,7 +47,18 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
       duration: record.duration ?? 0,
       converted: record.audio !== '',
       createdAt: record.createdAt,
+      isFavorite,
     };
+  }
+
+  // Toujours présente, même sans utilisateur courant : la condition ne
+  // correspond alors jamais (aucun userId n'est une chaîne vide), ce qui
+  // évite de devoir construire la requête différemment selon le contexte.
+  private favoriteJoinCondition(userId?: string) {
+    return and(
+      eq(favoriteTable.musicId, musicTable.id),
+      eq(favoriteTable.userId, userId ?? ''),
+    );
   }
 
   async exist(converterId: number): Promise<boolean> {
@@ -68,28 +92,49 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
         ),
       );
 
-    return records.map(this.mapToRead);
+    return records.map((record) => this.mapToRead(record));
   }
 
   private buildWhere(filters: MusicFilters = {}) {
-    if (!filters.search) return undefined;
+    const conditions: SQL[] = [];
 
-    return or(
-      ilike(musicTable.title, `%${filters.search}%`),
-      ilike(musicTable.artist, `%${filters.search}%`),
-    );
+    if (filters.search) {
+      conditions.push(
+        or(
+          ilike(musicTable.title, `%${filters.search}%`),
+          ilike(musicTable.artist, `%${filters.search}%`),
+        )!,
+      );
+    }
+
+    if (filters.onlyFavorite) {
+      conditions.push(isNotNull(favoriteTable.musicId));
+    }
+
+    if (conditions.length === 0) return undefined;
+
+    return and(...conditions);
   }
 
   async total(filters: MusicFilters = {}): Promise<number> {
     const [result] = await this.database
       .select({ total: count(musicTable.id) })
       .from(musicTable)
+      .leftJoin(favoriteTable, this.favoriteJoinCondition(filters.userId))
       .where(this.buildWhere(filters));
 
     return result.total ?? 0;
   }
 
   private buildOrderBy(orderBy: MusicOrderBy = {}) {
+    const direction = orderBy.direction === 'desc' ? desc : asc;
+
+    if (orderBy.field === 'favorite') {
+      const favoriteRank = sql`case when ${favoriteTable.musicId} is null then 0 else 1 end`;
+
+      return [direction(favoriteRank), asc(musicTable.title)];
+    }
+
     const columns = {
       title: musicTable.title,
       artist: musicTable.artist,
@@ -98,7 +143,7 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
     };
     const column = columns[orderBy.field ?? 'title'];
 
-    return orderBy.direction === 'desc' ? desc(column) : asc(column);
+    return [direction(column)];
   }
 
   async findAll({
@@ -112,17 +157,23 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
     const offset = (pagination?.page ?? 0) * limit;
 
     const records = await this.database
-      .select()
+      .select({
+        music: musicTable,
+        isFavorite: sql<boolean>`${favoriteTable.musicId} is not null`,
+      })
       .from(musicTable)
+      .leftJoin(favoriteTable, this.favoriteJoinCondition(filters?.userId))
       .where(this.buildWhere(filters))
-      .orderBy(this.buildOrderBy(orderBy))
+      .orderBy(...this.buildOrderBy(orderBy))
       .offset(offset)
       .limit(limit);
 
     const total = await this.total(filters);
 
     return {
-      records: records.map((record) => this.mapToRead(record)),
+      records: records.map((record) =>
+        this.mapToRead(record.music, record.isFavorite),
+      ),
       total: total,
     };
   }

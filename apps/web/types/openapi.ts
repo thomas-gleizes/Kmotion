@@ -295,6 +295,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/3.1/musics/{id}/favorite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Toggle favorite status of a music for the current user */
+        put: operations["toggleFavorite"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/3.1/musics/media/{id}": {
         parameters: {
             query?: never;
@@ -496,6 +513,11 @@ export interface components {
             mediaSource: "youtube";
             /** @description Id of source media */
             mediaId: string;
+            /**
+             * @description Whether the music is in the current user's favorites
+             * @example true
+             */
+            isFavorite: boolean;
         };
         MusicsResponseDto: {
             records: components["schemas"]["MusicResponseDto"][];
@@ -845,9 +867,11 @@ export interface operations {
                 /** @description Search by title or artist */
                 search?: string;
                 /** @description Field to order by */
-                sort?: "title" | "artist" | "duration" | "createdAt";
+                sort?: "title" | "artist" | "duration" | "createdAt" | "favorite";
                 /** @description Order direction */
                 order?: "asc" | "desc";
+                /** @description Only return favorited musics */
+                favorite?: boolean;
             };
             header?: never;
             path?: never;
@@ -1041,6 +1065,30 @@ export interface operations {
                 content: {
                     "image/jpeg": string;
                     "image/png": string;
+                };
+            };
+        };
+    };
+    toggleFavorite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description New favorite status */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        isFavorite: boolean;
+                    };
                 };
             };
         };

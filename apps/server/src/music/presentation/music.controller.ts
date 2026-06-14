@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   Response,
   StreamableFile,
@@ -28,6 +29,7 @@ import { AdminGuard } from 'src/shared/presentation/guards/admin.guard';
 import { UpdateMusicDto } from 'src/music/presentation/dto/input/update-music.dto';
 import { UpdateMusicCommand } from 'src/music/application/commands/update-music/update-music.command';
 import { DeleteMusicCommand } from 'src/music/application/commands/delete-music/delete-music.command';
+import { ToggleFavoriteCommand } from 'src/music/application/commands/toggle-favorite/toggle-favorite.command';
 import { SearchMusicsQuery } from 'src/music/application/queries/search-musics/search-musics.query';
 import { MusicRead } from 'src/music/application/port/music-read-repository.port';
 import { MusicResponseDto } from 'src/music/presentation/dto/output/music-response.dto';
@@ -53,16 +55,39 @@ class MusicController {
   @UseGuards(AuthGuard)
   @ApiOperation({ operationId: 'musics_index', summary: 'Get all music' })
   @ApiOkResponse({ type: MusicsResponseDto, description: 'Music paginated' })
-  async index(@Query() pagination: MusicsPaginationDto) {
+  async index(
+    @Query() pagination: MusicsPaginationDto,
+    @CurrentUser() auth: AuthPayload,
+  ) {
     const result = await this.queryBus.execute(
       new FindMusicsQuery({
         pagination: { page: pagination.page, size: pagination.size },
-        filters: { search: pagination.search },
+        filters: {
+          search: pagination.search,
+          userId: auth.sub,
+          onlyFavorite: pagination.favorite,
+        },
         orderBy: { field: pagination.sort, direction: pagination.order },
       }),
     );
 
     return MusicsResponseDto.fromResult(result);
+  }
+
+  @Put(':id/favorite')
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    operationId: 'toggleFavorite',
+    summary: 'Toggle favorite status of a music for the current user',
+  })
+  @ApiOkResponse({ type: Boolean, description: 'New favorite status' })
+  async toggleFavorite(
+    @Param('id') id: string,
+    @CurrentUser() auth: AuthPayload,
+  ) {
+    return this.commandBus.execute(
+      new ToggleFavoriteCommand({ userId: auth.sub, musicId: id }),
+    );
   }
 
   @Post('/sync')

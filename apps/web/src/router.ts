@@ -7,6 +7,7 @@ import { loginRoute } from "./routes/login.page.tsx"
 import { registerRoute } from "./routes/register.page.tsx"
 import { appLayoutRoute } from "./routes/app.layout.tsx"
 import { homeRoute } from "./routes/home.page.tsx"
+import { likedRoute } from "./routes/liked.page.tsx"
 import { searchRoute } from "./routes/search.page.tsx"
 import { playlistsRoute } from "./routes/playlists.page.tsx"
 import { playlistDetailRoute } from "./routes/playlist-detail.page.tsx"
@@ -28,6 +29,7 @@ const routeTree = rootRoute.addChildren([
   registerRoute,
   appLayoutRoute.addChildren([
     homeRoute,
+    likedRoute,
     searchRoute,
     playlistsRoute,
     playlistDetailRoute,

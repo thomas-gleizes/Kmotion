@@ -38,16 +38,21 @@ export const musicsQuery = (page: number, size: number, search?: string) =>
       unwrap(await api.GET("/api/3.1/musics", { params: { query: { page, size, search } } })),
   })
 
-export type MusicSort = "title" | "artist" | "duration" | "createdAt"
+export type MusicSort = "title" | "artist" | "duration" | "createdAt" | "favorite"
 export type SortOrder = "asc" | "desc"
 
-export const musicsInfiniteQuery = (size: number, sort?: MusicSort, order?: SortOrder) =>
+export const musicsInfiniteQuery = (
+  size: number,
+  sort?: MusicSort,
+  order?: SortOrder,
+  favorite?: boolean,
+) =>
   infiniteQueryOptions({
-    queryKey: ["musics", "infinite", { size, sort, order }] as const,
+    queryKey: ["musics", "infinite", { size, sort, order, favorite }] as const,
     queryFn: async ({ pageParam }) =>
       unwrap(
         await api.GET("/api/3.1/musics", {
-          params: { query: { page: pageParam, size, sort, order } },
+          params: { query: { page: pageParam, size, sort, order, favorite } },
         }),
       ),
     initialPageParam: 0,
@@ -146,6 +151,19 @@ export function useDeleteMusic() {
         await api.DELETE("/api/3.1/musics/{id}", {
           params: { path: { id } },
           parseAs: "text",
+        }),
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["musics"] }),
+  })
+}
+
+export function useToggleFavorite() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) =>
+      unwrap(
+        await api.PUT("/api/3.1/musics/{id}/favorite", {
+          params: { path: { id } },
         }),
       ),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["musics"] }),

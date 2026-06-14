@@ -36,6 +36,13 @@
       "when": 1781343640708,
       "tag": "0004_magenta_nebula",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1781451873333,
+      "tag": "0005_tired_madripoor",
+      "breakpoints": true
     }
   ]
 }

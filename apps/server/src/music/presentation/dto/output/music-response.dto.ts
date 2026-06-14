@@ -53,6 +53,13 @@ export class MusicResponseDto {
   })
   converted: boolean;
 
+  @ApiProperty({
+    type: Boolean,
+    description: 'Whether the current user has favorited this track',
+    example: false,
+  })
+  isFavorite: boolean;
+
   static fromReadModel(model: MusicRead) {
     const dto = new MusicResponseDto();
 
@@ -64,6 +71,7 @@ export class MusicResponseDto {
     dto.mediaSource = model.mediaSource;
     dto.mediaId = model.mediaId;
     dto.converted = model.converted;
+    dto.isFavorite = model.isFavorite;
 
     return dto;
   }

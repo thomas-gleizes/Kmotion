@@ -2,6 +2,7 @@ import { SyncMusicHandler } from 'src/music/application/commands/sync-music/sync
 import { AddMusicHandler } from 'src/music/application/commands/add-music/add-music.handler';
 import { UpdateMusicHandler } from 'src/music/application/commands/update-music/update-music.handler';
 import { DeleteMusicHandler } from 'src/music/application/commands/delete-music/delete-music.handler';
+import { ToggleFavoriteHandler } from 'src/music/application/commands/toggle-favorite/toggle-favorite.handler';
 import { Type } from '@nestjs/common';
 import { ICommandHandler } from 'src/core/cqrs';
 
@@ -10,4 +11,5 @@ export const musicsCommandHandlers: Type<ICommandHandler<any>>[] = [
   AddMusicHandler,
   UpdateMusicHandler,
   DeleteMusicHandler,
+  ToggleFavoriteHandler,
 ];

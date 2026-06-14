@@ -18,7 +18,6 @@ const SORT_OPTIONS: { value: MusicSort; label: string }[] = [
   { value: "title", label: "Titre" },
   { value: "artist", label: "Artiste" },
   { value: "duration", label: "Durée" },
-  { value: "favorite", label: "Favoris" },
 ]
 
 const grid = css({
@@ -89,11 +88,11 @@ const loadingMore = css({
   color: "textSecondary",
 })
 
-export const HomePage = () => {
+export const LikedPage = () => {
   const [sort, setSort] = useState<MusicSort>("createdAt")
   const [order, setOrder] = useState<SortOrder>("desc")
   const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
-    musicsInfiniteQuery(PAGE_SIZE, sort, order),
+    musicsInfiniteQuery(PAGE_SIZE, sort, order, true),
   )
   const player = usePlayer()
   const addToPlaylist = useDialog(AddToPlaylistDialog)
@@ -117,7 +116,7 @@ export const HomePage = () => {
   return (
     <div>
       <div className={toolbar}>
-        <h1 className={heading}>Écouter</h1>
+        <h1 className={heading}>Titres likés</h1>
         <div className={controls}>
           <select
             className={select}
@@ -142,10 +141,10 @@ export const HomePage = () => {
           </button>
         </div>
       </div>
-      {isPending && <div className={emptyState}>Chargement de la bibliothèque…</div>}
+      {isPending && <div className={emptyState}>Chargement…</div>}
       {data && records.length === 0 && (
         <div className={emptyState}>
-          Votre bibliothèque est vide. Ajoutez un titre depuis l’onglet « Ajouter ».
+          Vous n’avez encore aucun titre liké. Cliquez sur le cœur d’un titre pour l’ajouter ici.
         </div>
       )}
       <div className={grid}>
@@ -168,8 +167,8 @@ export const HomePage = () => {
   )
 }
 
-export const homeRoute = createRoute({
-  path: "/",
-  component: HomePage,
+export const likedRoute = createRoute({
+  path: "/liked",
+  component: LikedPage,
   getParentRoute: () => appLayoutRoute,
 })

@@ -2,7 +2,15 @@ import { Link } from "@tanstack/react-router"
 import { css, cx } from "styled-system/css"
 import { getCurrentUser, logout } from "../auth/auth"
 import { truncate } from "../lib/styles"
-import { ListIcon, MusicNoteIcon, PersonIcon, PlusIcon, SearchIcon, ShieldIcon } from "./icons"
+import {
+  HeartIcon,
+  ListIcon,
+  MusicNoteIcon,
+  PersonIcon,
+  PlusIcon,
+  SearchIcon,
+  ShieldIcon,
+} from "./icons"
 
 const sidebar = css({
   gridArea: "sidebar",
@@ -78,6 +86,9 @@ export function Sidebar() {
       <nav className={css({ display: "flex", flexDirection: "column", gap: "2px" })}>
         <Link to="/" className={navLink}>
           <MusicNoteIcon size={18} /> Écouter
+        </Link>
+        <Link to="/liked" className={navLink}>
+          <HeartIcon size={18} /> Titres likés
         </Link>
         <Link to="/search" className={navLink}>
           <SearchIcon size={18} /> Rechercher

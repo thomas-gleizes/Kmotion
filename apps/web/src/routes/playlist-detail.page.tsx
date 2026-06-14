@@ -1,7 +1,8 @@
 import { createRoute, useNavigate } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
+import { useState, type DragEvent } from "react"
 import { useDialog } from "react-dialog-promise"
-import { css } from "styled-system/css"
+import { css, cx } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
 import {
   playlistQuery,
@@ -22,6 +23,7 @@ import { emptyState } from "../lib/styles"
 import {
   ChevronDownIcon,
   ChevronUpIcon,
+  DragHandleIcon,
   PlayIcon,
   PlusIcon,
   TrashIcon,
@@ -94,6 +96,36 @@ const iconButton = css({
 
 const dangerHover = css({ _hover: { color: "danger !important" } })
 
+const entryRow = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "4px",
+  borderRadius: "s",
+  borderTop: "2px solid transparent",
+  transition: "opacity token(durations.fast) token(easings.apple)",
+})
+
+const entryRowDragging = css({ opacity: 0.4 })
+
+const entryRowDragOver = css({ borderTopColor: "accent" })
+
+const entryContent = css({ flex: 1, minWidth: 0 })
+
+const dragHandle = css({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "24px",
+  height: "44px",
+  flexShrink: 0,
+  color: "textTertiary",
+  cursor: "grab",
+  _hover: { color: "textSecondary" },
+  // Le drag & drop natif HTML5 ne fonctionne pas au toucher : masqué sur
+  // mobile, les flèches haut/bas restent le moyen de réordonner.
+  _touch: { display: "none" },
+})
+
 const PlaylistDetailPage = () => {
   const { playlistId } = playlistDetailRoute.useParams()
   const navigate = useNavigate()
@@ -106,6 +138,8 @@ const PlaylistDetailPage = () => {
   const editDialog = useDialog(PlaylistFormDialog)
   const confirmDialog = useDialog(ConfirmDialog)
   const addMusicsDialog = useDialog(AddMusicsToPlaylistDialog)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
   if (isPending) return <div className={emptyState}>Chargement…</div>
   if (!playlist) return <div className={emptyState}>Playlist introuvable.</div>
@@ -140,14 +174,43 @@ const PlaylistDetailPage = () => {
   const openAddMusics = () =>
     addMusicsDialog.open({ playlistId, existingIds: entries.map((entry) => entry.id) })
 
-  const moveEntry = (index: number, direction: -1 | 1) => {
-    const target = index + direction
-    if (target < 0 || target >= entries.length) return
+  const reorder = (from: number, to: number) => {
+    if (from === to) return
     const reordered = [...entries]
-    ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
+    const [moved] = reordered.splice(from, 1)
+    reordered.splice(to, 0, moved)
     updatePlaylist.mutate({
       entries: reordered.map((entry: PlaylistEntry, i) => ({ musicId: entry.id, position: i + 1 })),
     })
+  }
+
+  const moveEntry = (index: number, direction: -1 | 1) => {
+    const target = index + direction
+    if (target < 0 || target >= entries.length) return
+    reorder(index, target)
+  }
+
+  const handleDragStart = (e: DragEvent, index: number) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = "move"
+  }
+
+  const handleDragOver = (e: DragEvent, index: number) => {
+    if (draggedIndex === null) return
+    e.preventDefault()
+    if (index !== dragOverIndex) setDragOverIndex(index)
+  }
+
+  const handleDrop = (e: DragEvent, index: number) => {
+    e.preventDefault()
+    if (draggedIndex !== null) reorder(draggedIndex, index)
+    setDraggedIndex(null)
+    setDragOverIndex(null)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null)
+    setDragOverIndex(null)
   }
 
   return (
@@ -189,45 +252,67 @@ const PlaylistDetailPage = () => {
         </div>
       )}
       {entries.map((entry, i) => (
-        <MusicRow
+        <div
           key={entry.id}
-          id={entry.id}
-          title={entry.title}
-          artist={entry.artist}
-          duration={entry.duration}
-          onPlay={() => player.playQueue(entries, i)}
-          actions={
-            <div className={entryActions}>
-              <button
-                type="button"
-                className={iconButton}
-                disabled={i === 0 || updatePlaylist.isPending}
-                onClick={() => moveEntry(i, -1)}
-                aria-label="Monter"
-              >
-                <ChevronUpIcon size={16} />
-              </button>
-              <button
-                type="button"
-                className={iconButton}
-                disabled={i === entries.length - 1 || updatePlaylist.isPending}
-                onClick={() => moveEntry(i, 1)}
-                aria-label="Descendre"
-              >
-                <ChevronDownIcon size={16} />
-              </button>
-              <button
-                type="button"
-                className={`${iconButton} ${dangerHover}`}
-                disabled={removeMusic.isPending}
-                onClick={() => removeMusic.mutate({ playlistId, musicId: entry.id })}
-                aria-label="Retirer de la playlist"
-              >
-                <TrashIcon size={16} />
-              </button>
-            </div>
-          }
-        />
+          className={cx(
+            entryRow,
+            draggedIndex === i && entryRowDragging,
+            dragOverIndex === i && entryRowDragOver,
+          )}
+          onDragOver={(e) => handleDragOver(e, i)}
+          onDragLeave={() => setDragOverIndex((cur) => (cur === i ? null : cur))}
+          onDrop={(e) => handleDrop(e, i)}
+        >
+          <span
+            className={dragHandle}
+            draggable
+            onDragStart={(e) => handleDragStart(e, i)}
+            onDragEnd={handleDragEnd}
+            aria-label="Réordonner le titre"
+          >
+            <DragHandleIcon size={16} />
+          </span>
+          <div className={entryContent}>
+            <MusicRow
+              id={entry.id}
+              title={entry.title}
+              artist={entry.artist}
+              duration={entry.duration}
+              onPlay={() => player.playQueue(entries, i)}
+              actions={
+                <div className={entryActions}>
+                  <button
+                    type="button"
+                    className={iconButton}
+                    disabled={i === 0 || updatePlaylist.isPending}
+                    onClick={() => moveEntry(i, -1)}
+                    aria-label="Monter"
+                  >
+                    <ChevronUpIcon size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    className={iconButton}
+                    disabled={i === entries.length - 1 || updatePlaylist.isPending}
+                    onClick={() => moveEntry(i, 1)}
+                    aria-label="Descendre"
+                  >
+                    <ChevronDownIcon size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    className={`${iconButton} ${dangerHover}`}
+                    disabled={removeMusic.isPending}
+                    onClick={() => removeMusic.mutate({ playlistId, musicId: entry.id })}
+                    aria-label="Retirer de la playlist"
+                  >
+                    <TrashIcon size={16} />
+                  </button>
+                </div>
+              }
+            />
+          </div>
+        </div>
       ))}
     </div>
   )

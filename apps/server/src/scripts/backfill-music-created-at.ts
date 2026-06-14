@@ -71,7 +71,10 @@ async function bootstrap() {
 
     logger.log(`Done. Updated ${updated} musics, skipped ${skipped} tracks.`);
   } catch (error) {
-    logger.error('Backfill failed', error instanceof Error ? error.stack : error);
+    logger.error(
+      'Backfill failed',
+      error instanceof Error ? error.stack : error,
+    );
     process.exitCode = 1;
   } finally {
     await pool.end();

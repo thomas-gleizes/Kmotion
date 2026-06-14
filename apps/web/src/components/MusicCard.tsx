@@ -1,9 +1,9 @@
 import { css, cx } from "styled-system/css"
-import type { Music } from "../api/queries"
+import { useToggleFavorite, type Music } from "../api/queries"
 import { truncate } from "../lib/styles"
 import { thumbnailPath } from "../player/audioCache"
 import { AuthImage } from "./AuthImage"
-import { PlayIcon, PlusIcon } from "./icons"
+import { HeartIcon, HeartOutlineIcon, PlayIcon, PlusIcon } from "./icons"
 
 const card = css({
   display: "flex",
@@ -17,6 +17,7 @@ const card = css({
     backgroundColor: "overlay",
     "& .play-overlay": { opacity: 1 },
     "& .add-corner": { opacity: 1 },
+    "& .favorite-corner": { opacity: 1 },
   },
 })
 
@@ -72,6 +73,28 @@ const addCorner = css({
   _touch: { opacity: 1, width: "36px", height: "36px" },
 })
 
+const favoriteCorner = css({
+  position: "absolute",
+  top: "8px",
+  left: "8px",
+  width: "30px",
+  height: "30px",
+  borderRadius: "full",
+  border: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "rgba(0, 0, 0, 0.55)",
+  color: "white",
+  cursor: "pointer",
+  opacity: 0,
+  transition: "all token(durations.fast) token(easings.apple)",
+  _hover: { transform: "scale(1.1)" },
+  _touch: { opacity: 1, width: "36px", height: "36px" },
+})
+
+const favoriteCornerActive = css({ opacity: 1, color: "accent" })
+
 const titleStyle = cx(truncate, css({ fontSize: "14px", fontWeight: "600" }))
 
 const artistStyle = cx(truncate, css({ fontSize: "12px", color: "textSecondary" }))
@@ -83,6 +106,8 @@ type Props = {
 }
 
 export function MusicCard({ music, onPlay, onAddToPlaylist }: Props) {
+  const toggleFavorite = useToggleFavorite()
+
   return (
     <div className={card} onClick={onPlay}>
       <div className={coverWrapper}>
@@ -92,6 +117,17 @@ export function MusicCard({ music, onPlay, onAddToPlaylist }: Props) {
             <PlayIcon size={22} />
           </div>
         </div>
+        <button
+          type="button"
+          className={cx(favoriteCorner, "favorite-corner", music.isFavorite && favoriteCornerActive)}
+          aria-label={music.isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+          onClick={(event) => {
+            event.stopPropagation()
+            toggleFavorite.mutate(music.id)
+          }}
+        >
+          {music.isFavorite ? <HeartIcon size={16} /> : <HeartOutlineIcon size={16} />}
+        </button>
         {onAddToPlaylist && (
           <button
             type="button"

@@ -69,7 +69,10 @@ export class PlaylistReadRepository implements PlaylistQueryRepositoryPort {
     };
   }
 
-  async findByUserId(userId: string, currentUserId: string): Promise<ManyPlaylistRead[]> {
+  async findByUserId(
+    userId: string,
+    currentUserId: string,
+  ): Promise<ManyPlaylistRead[]> {
     const visibilityFilter =
       userId === currentUserId
         ? eq(playlistTable.userId, userId)

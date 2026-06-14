@@ -5,7 +5,14 @@ import { appLayoutRoute } from "./app.layout"
 import { meQuery } from "../api/queries"
 import { logout } from "../auth/auth"
 import { Button } from "../components/Button"
-import { CheckIcon, DownloadIcon, PersonIcon, PlusIcon, ShieldIcon } from "../components/icons"
+import {
+  CheckIcon,
+  DownloadIcon,
+  HeartIcon,
+  PersonIcon,
+  PlusIcon,
+  ShieldIcon,
+} from "../components/icons"
 import { pageHeading } from "../lib/styles"
 import {
   EQ_MAX_DB,
@@ -306,6 +313,9 @@ const ProfilePage = () => {
       </div>
 
       <nav className={mobileLinks}>
+        <Link to="/liked" className={mobileLink}>
+          <HeartIcon size={18} /> Titres likés
+        </Link>
         <Link to="/add" className={mobileLink}>
           <PlusIcon size={18} /> Ajouter un titre
         </Link>

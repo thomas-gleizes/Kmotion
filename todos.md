@@ -8,17 +8,14 @@ List des choses a faire
 
 Idées / améliorations futures :
 
-6. Favoris / likes : bouton cœur sur chaque musique, page "Titres likés", tri par favoris
+6. ✅ [FAIT] Favoris / likes : bouton cœur sur chaque musique, page "Titres likés", tri par favoris
 7. Gestion de la file de lecture : retirer un titre de la queue, glisser-déposer pour réordonner
 8. Historique d'écoute : liste des derniers titres joués, reprise de lecture à la position où on s'est arrêté
 9. Toasts/notifications : feedback visuel sur "ajouté à la playlist", "titre supprimé", "sync terminée", etc.
 10. Raccourcis clavier : petite modale d'aide (?) listant les raccourcis déjà gérés (Espace, S, R, N, P...)
-11. Glisser-déposer dans les playlists : réordonner les morceaux d'une playlist par drag & drop
-12. Filtres de recherche : filtrer par durée, par artiste, par playlist
+11. ✅ [FAIT] Glisser-déposer dans les playlists : réordonner les morceaux d'une playlist par drag & drop
 13. Sélection multiple dans l'admin : supprimer/bannir plusieurs éléments d'un coup
-14. Indicateur de progression de conversion : afficher un état "en cours de conversion" sur la carte du titre tant que converted: false
-15. Égaliseur audio simple (bass/mid/treble via Web Audio API)
-16. Mode hors-ligne réel (PWA) : service worker + cache des fichiers audio téléchargés pour l'écoute hors connexion
+15. ✅ [FAIT] Égaliseur audio simple (bass/mid/treble via Web Audio API)
 17. Statistiques d'écoute : page "Wrapped" perso (top artistes, temps total d'écoute, titres les plus joués par période)
 18. Playlists intelligentes : playlists auto-générées par règles ("ajoutés récemment", "les plus écoutés", "jamais écoutés")
 19. Playlists collaboratives / partagées : partager une playlist avec d'autres utilisateurs (lecture ou édition)

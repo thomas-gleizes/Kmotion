@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 import type {
   MusicSortField,
   SortDirection,
@@ -43,12 +51,12 @@ export class MusicsPaginationDto {
 
   @ApiProperty({
     type: 'string',
-    enum: ['title', 'artist', 'duration', 'createdAt'],
+    enum: ['title', 'artist', 'duration', 'createdAt', 'favorite'],
     description: 'Field to order by',
     required: false,
   })
   @IsOptional()
-  @IsEnum(['title', 'artist', 'duration', 'createdAt'])
+  @IsEnum(['title', 'artist', 'duration', 'createdAt', 'favorite'])
   sort?: MusicSortField;
 
   @ApiProperty({
@@ -61,4 +69,14 @@ export class MusicsPaginationDto {
   @IsOptional()
   @IsEnum(['asc', 'desc'])
   order?: SortDirection;
+
+  @ApiProperty({
+    type: 'boolean',
+    description: 'Only return favorited musics',
+    required: false,
+  })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  favorite?: boolean;
 }
