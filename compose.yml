@@ -20,3 +20,36 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
       - ./.docker/database:/docker-entrypoint-initdb.d
+
+  server:
+    build: .docker/app
+    working_dir: /app
+    command: sh -c "pnpm run start:dev"
+    env_file:
+      - path: ./apps/server/.env
+        required: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      kmotion-net:
+    ports:
+      - "8000:${PORT:-8000}"
+    volumes:
+      - ./apps/server:/app
+    depends_on:
+      - database
+
+  web:
+    build: .docker/app
+    working_dir: /app
+    command: sh -c "pnpm dev"
+    environment:
+      VITE_PROXY_TARGET: http://server:8000
+    networks:
+      kmotion-net:
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/web:/app
+    depends_on:
+      - server
