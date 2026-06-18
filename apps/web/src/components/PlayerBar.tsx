@@ -5,6 +5,7 @@ import { usePlayer, usePlayerProgress } from "../player/PlayerContext"
 import { thumbnailPath } from "../player/audioCache"
 import { formatDuration } from "../lib/format"
 import { AuthImage } from "./AuthImage"
+import { MarqueeText } from "./MarqueeText"
 import {
   NextIcon,
   PauseIcon,
@@ -242,8 +243,8 @@ function MiniPlayer({ onExpand }: { onExpand?: () => void }) {
           <AuthImage path={thumbnailPath(current.id)} alt={current.title} />
         </div>
         <div className={css({ minWidth: 0 })}>
-          <div className={titleStyle}>{current.title}</div>
-          <div className={artistStyle}>{current.artist}</div>
+          <MarqueeText text={current.title} className={titleStyle} />
+          <MarqueeText text={current.artist} className={artistStyle} />
         </div>
       </button>
       <button
@@ -287,8 +288,8 @@ export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
           <AuthImage path={thumbnailPath(current.id)} alt={current.title} />
         </div>
         <div className={css({ minWidth: 0 })}>
-          <div className={titleStyle}>{current.title}</div>
-          <div className={artistStyle}>{current.artist}</div>
+          <MarqueeText text={current.title} className={titleStyle} />
+          <MarqueeText text={current.artist} className={artistStyle} />
         </div>
       </button>
 

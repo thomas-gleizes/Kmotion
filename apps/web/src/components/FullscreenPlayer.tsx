@@ -5,6 +5,7 @@ import { thumbnailPath } from "../player/audioCache"
 import { useAuthedBlobUrl } from "../hooks/useAuthedBlobUrl"
 import { formatDuration } from "../lib/format"
 import { AuthImage } from "./AuthImage"
+import { MarqueeText } from "./MarqueeText"
 import {
   ChevronDownIcon,
   NextIcon,
@@ -493,8 +494,8 @@ export function FullscreenPlayer({ open, onClose }: { open: boolean; onClose: ()
 
         <div className={infoSection}>
           <div>
-            <div className={trackTitle}>{current.title}</div>
-            <div className={trackArtist}>{current.artist}</div>
+            <MarqueeText text={current.title} className={trackTitle} />
+            <MarqueeText text={current.artist} className={trackArtist} />
           </div>
 
           <div className={progressBlock}>
