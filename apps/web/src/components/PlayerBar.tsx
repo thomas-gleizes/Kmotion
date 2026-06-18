@@ -141,7 +141,7 @@ const slider = css({
     width: "12px",
     height: "12px",
     borderRadius: "full",
-    backgroundColor: "white",
+    backgroundColor: "text",
     transition: "transform token(durations.fast) token(easings.apple)",
   },
   "&:hover::-webkit-slider-thumb": { transform: "scale(1.25)" },

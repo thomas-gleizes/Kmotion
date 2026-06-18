@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { createRoute } from "@tanstack/react-router"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useDialog } from "react-dialog-promise"
 import { css } from "styled-system/css"
 import { appLayoutRoute } from "./app.layout"
-import { musicsInfiniteQuery, type MusicSort, type SortOrder } from "../api/queries"
+import { musicsInfiniteQuery, type MusicSort } from "../api/queries"
 import { emptyState } from "../lib/styles"
+import { useSortPreference } from "../lib/useSortPreference"
 import { usePlayer } from "../player/PlayerContext"
 import { MusicCard } from "../components/MusicCard"
 import { AddToPlaylistDialog } from "../components/dialogs/AddToPlaylistDialog"
@@ -89,8 +90,10 @@ const loadingMore = css({
 })
 
 export const LikedPage = () => {
-  const [sort, setSort] = useState<MusicSort>("createdAt")
-  const [order, setOrder] = useState<SortOrder>("desc")
+  const [{ sort, order }, setSort, toggleOrder] = useSortPreference("liked:sort", {
+    sort: "createdAt",
+    order: "desc",
+  })
   const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
     musicsInfiniteQuery(PAGE_SIZE, sort, order, true),
   )
@@ -133,7 +136,7 @@ export const LikedPage = () => {
           <button
             type="button"
             className={directionButton}
-            onClick={() => setOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
+            onClick={toggleOrder}
             aria-label={order === "asc" ? "Ordre croissant" : "Ordre décroissant"}
             title={order === "asc" ? "Ordre croissant" : "Ordre décroissant"}
           >
