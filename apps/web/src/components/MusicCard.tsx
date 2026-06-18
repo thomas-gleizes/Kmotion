@@ -4,6 +4,7 @@ import { truncate } from "../lib/styles"
 import { thumbnailPath } from "../player/audioCache"
 import { AuthImage } from "./AuthImage"
 import { HeartIcon, HeartOutlineIcon, PlayIcon, PlusIcon } from "./icons"
+import { MusicContextMenu } from "./MusicContextMenu"
 
 const card = css({
   display: "flex",
@@ -142,9 +143,14 @@ export function MusicCard({ music, onPlay, onAddToPlaylist }: Props) {
           </button>
         )}
       </div>
-      <div>
-        <div className={titleStyle}>{music.title}</div>
-        <div className={artistStyle}>{music.artist}</div>
+      <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div className={titleStyle}>{music.title}</div>
+          <div className={artistStyle}>{music.artist}</div>
+        </div>
+        <div onClick={(e) => e.stopPropagation()}>
+          <MusicContextMenu track={music} />
+        </div>
       </div>
     </div>
   )

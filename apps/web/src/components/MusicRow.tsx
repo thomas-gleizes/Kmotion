@@ -6,6 +6,7 @@ import { formatDuration } from "../lib/format"
 import { usePlayer } from "../player/PlayerContext"
 import { AuthImage } from "./AuthImage"
 import { PauseIcon, PlayIcon } from "./icons"
+import { MusicContextMenu } from "./MusicContextMenu"
 
 const row = css({
   display: "flex",
@@ -89,6 +90,9 @@ export function MusicRow({ id, title, artist, duration, onPlay, actions }: Props
         <div className={artistStyle}>{artist}</div>
       </div>
       <span className={durationStyle}>{formatDuration(duration)}</span>
+      <div onClick={(event) => event.stopPropagation()}>
+        <MusicContextMenu track={{ id, title, artist, duration }} />
+      </div>
       {actions && <div onClick={(event) => event.stopPropagation()}>{actions}</div>}
     </div>
   )

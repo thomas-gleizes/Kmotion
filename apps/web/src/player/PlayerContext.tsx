@@ -43,6 +43,7 @@ type ProgressState = {
 
 type PlayerActions = {
   playQueue: (tracks: Track[], startIndex?: number) => void
+  playNext: (track: Track) => void
   toggle: () => void
   next: () => void
   prev: () => void
@@ -213,6 +214,28 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       goToOrderPos(shuffleRef.current ? 0 : startIndex)
     },
     [goToOrderPos],
+  )
+
+  const playNext = useCallback(
+    (track: Track) => {
+      const tracks = queueRef.current
+      if (tracks.length === 0) {
+        queueRef.current = [track]
+        setQueue([track])
+        orderRef.current = [0]
+        goToOrderPos(0)
+        return
+      }
+      const newTracks = [...tracks, track]
+      const newIndex = newTracks.length - 1
+      const newOrder = [...orderRef.current]
+      newOrder.splice(orderPosRef.current + 1, 0, newIndex)
+      queueRef.current = newTracks
+      orderRef.current = newOrder
+      setQueue(newTracks)
+      saveSnapshot()
+    },
+    [goToOrderPos, saveSnapshot],
   )
 
   const next = useCallback(() => {
@@ -416,6 +439,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       shuffle,
       hasNext,
       playQueue,
+      playNext,
       toggle,
       next,
       prev,
@@ -437,6 +461,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     repeat,
     shuffle,
     playQueue,
+    playNext,
     toggle,
     next,
     prev,
