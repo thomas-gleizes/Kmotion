@@ -27,7 +27,7 @@ export function useSortPreference(
 
   const toggleOrder = () => {
     setPrefs((prev) => {
-      const next = { ...prev, order: prev.order === "asc" ? "desc" : "asc" }
+      const next: SortPreference = { ...prev, order: prev.order === "asc" ? "desc" : "asc" }
       localStorage.setItem(storageKey, JSON.stringify(next))
       return next
     })
