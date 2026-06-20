@@ -155,7 +155,7 @@ const artBase = css({
   width: "100%",
   aspectRatio: "16/9",
   maxHeight: "38dvh",
-  md: { maxHeight: "60vh" },
+  md: { width: "auto", height: "60vh", maxWidth: "100%", maxHeight: "none" },
   borderRadius: "m",
   overflow: "hidden",
   transformOrigin: "center",
