@@ -398,6 +398,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
     const onHidden = () => {
       if (document.visibilityState === "hidden") saveSnapshot()
+      else resumeEqualizerContext()
     }
     audio.addEventListener("play", onPlay)
     audio.addEventListener("pause", onPause)

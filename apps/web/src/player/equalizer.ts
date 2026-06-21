@@ -12,6 +12,12 @@ export function ensureEqualizerGraph(audio: HTMLAudioElement) {
   if (context) return
 
   context = new AudioContext()
+  // iOS suspend l'AudioContext quand Safari passe en arrière-plan, ce qui
+  // coupe le son même si l'élément <audio> continue de "jouer" : on le
+  // relance dès que l'OS le suspend pour permettre la lecture en fond.
+  context.onstatechange = () => {
+    if (context?.state === "suspended") void context.resume()
+  }
   const source = context.createMediaElementSource(audio)
 
   bassFilter = context.createBiquadFilter()
