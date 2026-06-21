@@ -1,5 +1,4 @@
 import { css, cx } from "styled-system/css"
-import { truncate } from "@/shared/lib/styles"
 import { useIsMobile } from "@/shared/hooks/useMediaQuery"
 import { usePlayer, usePlayerProgress } from "@/features/player/state/PlayerContext"
 import { thumbnailPath } from "@/shared/lib/audioCache"
@@ -16,254 +15,24 @@ import {
   SpinnerIcon,
   VolumeIcon,
 } from "@/shared/ui/icons"
-
-const bar = css({
-  gridArea: "player",
-  display: "grid",
-  gridTemplateColumns: "minmax(200px, 1fr) auto minmax(200px, 1fr)",
-  alignItems: "center",
-  gap: "16px",
-  padding: "10px 20px",
-  backgroundColor: "surfaceTranslucent",
-  backdropFilter: "blur(20px) saturate(180%)",
-  borderTop: "1px solid token(colors.border)",
-  boxShadow: "bar",
-  animation: "fadeIn token(durations.normal) token(easings.apple)",
-})
-
-const cover = css({
-  width: "48px",
-  height: "48px",
-  borderRadius: "s",
-  overflow: "hidden",
-  flexShrink: 0,
-  boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
-})
-
-const expandTrigger = css({
-  display: "flex",
-  alignItems: "center",
-  gap: "12px",
-  minWidth: 0,
-  background: "none",
-  border: "none",
-  color: "text",
-  cursor: "pointer",
-  padding: "4px 8px 4px 0",
-  borderRadius: "s",
-  textAlign: "left",
-  transition: "opacity token(durations.fast) token(easings.apple)",
-  _hover: { opacity: 0.8 },
-})
-
-const titleStyle = cx(truncate, css({ fontSize: "14px", fontWeight: "600" }))
-
-const artistStyle = cx(truncate, css({ fontSize: "12px", color: "textSecondary" }))
-
-const controls = css({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: "4px",
-})
-
-const buttons = css({
-  display: "flex",
-  alignItems: "center",
-  gap: "18px",
-})
-
-const controlButton = css({
-  background: "none",
-  border: "none",
-  color: "text",
-  cursor: "pointer",
-  display: "flex",
-  padding: "4px",
-  borderRadius: "full",
-  transition: "all token(durations.fast) token(easings.apple)",
-  _hover: { color: "accent", transform: "scale(1.08)" },
-  _disabled: { color: "textTertiary", transform: "none", cursor: "default" },
-})
-
-const playButton = css({
-  background: "white",
-  color: "black !important",
-  width: "38px",
-  height: "38px",
-  alignItems: "center",
-  justifyContent: "center",
-  _hover: { transform: "scale(1.06)", color: "black" },
-})
-
-const toggleActive = css({
-  color: "accent !important",
-  _hover: { color: "accentHover !important" },
-})
-
-const repeatWrap = css({ position: "relative" })
-
-const repeatBadge = css({
-  position: "absolute",
-  top: "0",
-  right: "0",
-  minWidth: "12px",
-  height: "12px",
-  padding: "0 2px",
-  borderRadius: "full",
-  backgroundColor: "accent",
-  color: "white",
-  fontSize: "8px",
-  fontWeight: "700",
-  lineHeight: "12px",
-  textAlign: "center",
-})
-
-const progressRow = css({
-  display: "flex",
-  alignItems: "center",
-  gap: "10px",
-  width: "min(440px, 40vw)",
-  fontSize: "11px",
-  color: "textSecondary",
-  fontVariantNumeric: "tabular-nums",
-})
-
-const slider = css({
-  flex: 1,
-  appearance: "none",
-  height: "4px",
-  borderRadius: "full",
-  backgroundColor: "overlayIntense",
-  cursor: "pointer",
-  "&::-webkit-slider-thumb": {
-    appearance: "none",
-    width: "12px",
-    height: "12px",
-    borderRadius: "full",
-    backgroundColor: "text",
-    transition: "transform token(durations.fast) token(easings.apple)",
-  },
-  "&:hover::-webkit-slider-thumb": { transform: "scale(1.25)" },
-})
-
-const volumeArea = css({
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  justifySelf: "end",
-  color: "textSecondary",
-})
-
-const miniBar = css({
-  gridArea: "player",
-  position: "relative",
-  display: "flex",
-  alignItems: "center",
-  gap: "12px",
-  padding: "8px 12px",
-  backgroundColor: "surfaceTranslucent",
-  backdropFilter: "blur(20px) saturate(180%)",
-  borderTop: "1px solid token(colors.border)",
-  boxShadow: "bar",
-  animation: "fadeIn token(durations.normal) token(easings.apple)",
-})
-
-const miniProgressTrack = css({
-  position: "absolute",
-  top: "-1px",
-  left: 0,
-  right: 0,
-  height: "2px",
-  backgroundColor: "overlayStrong",
-})
-
-const miniProgressFill = css({
-  height: "100%",
-  backgroundColor: "accent",
-})
-
-const miniExpand = css({
-  flex: 1,
-  display: "flex",
-  alignItems: "center",
-  gap: "12px",
-  minWidth: 0,
-  background: "none",
-  border: "none",
-  color: "text",
-  cursor: "pointer",
-  padding: 0,
-  textAlign: "left",
-})
-
-const miniCover = css({
-  width: "40px",
-  height: "40px",
-  borderRadius: "s",
-  overflow: "hidden",
-  flexShrink: 0,
-})
-
-const miniPlayButton = css({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: "44px",
-  height: "44px",
-  borderRadius: "full",
-  border: "none",
-  background: "none",
-  color: "text",
-  cursor: "pointer",
-  flexShrink: 0,
-})
-
-function MiniPlayer({ onExpand }: { onExpand?: () => void }) {
-  const player = usePlayer()
-  const { currentTime, duration } = usePlayerProgress()
-
-  if (!player.current) return null
-  const { current } = player
-  const total = duration || current.duration || 0
-  const progress = total > 0 ? Math.min(100, (currentTime / total) * 100) : 0
-
-  return (
-    <div className={miniBar}>
-      <div className={miniProgressTrack}>
-        <div className={miniProgressFill} style={{ width: `${progress}%` }} />
-      </div>
-      <button
-        type="button"
-        className={miniExpand}
-        onClick={onExpand}
-        aria-label="Agrandir le lecteur"
-      >
-        <div className={miniCover}>
-          <AuthImage path={thumbnailPath(current.id)} alt={current.title} />
-        </div>
-        <div className={css({ minWidth: 0 })}>
-          <MarqueeText text={current.title} className={titleStyle} />
-          <MarqueeText text={current.artist} className={artistStyle} />
-        </div>
-      </button>
-      <button
-        type="button"
-        className={miniPlayButton}
-        onClick={player.toggle}
-        aria-label={player.isPlaying ? "Pause" : "Lecture"}
-      >
-        {player.isLoading ? (
-          <SpinnerIcon size={22} />
-        ) : player.isPlaying ? (
-          <PauseIcon size={22} />
-        ) : (
-          <PlayIcon size={22} />
-        )}
-      </button>
-    </div>
-  )
-}
+import { MiniPlayer } from "./MiniPlayer"
+import {
+  artistStyle,
+  bar,
+  buttons,
+  controlButton,
+  controls,
+  cover,
+  expandTrigger,
+  playButton,
+  progressRow,
+  repeatBadge,
+  repeatWrap,
+  slider,
+  titleStyle,
+  toggleActive,
+  volumeArea,
+} from "./PlayerBar.styles"
 
 export function PlayerBar({ onExpand }: { onExpand?: () => void }) {
   const player = usePlayer()
