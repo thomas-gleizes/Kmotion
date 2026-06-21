@@ -8,6 +8,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "styled-system": fileURLToPath(new URL("./styled-system", import.meta.url)),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   server: {
