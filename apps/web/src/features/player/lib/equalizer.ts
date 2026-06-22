@@ -39,6 +39,10 @@ export function ensureEqualizerGraph(audio: HTMLAudioElement) {
   trebleFilter.connect(context.destination)
 }
 
+export function isEqualizerActive(settings: EqualizerSettings): boolean {
+  return settings.bass !== 0 || settings.mid !== 0 || settings.treble !== 0
+}
+
 export function applyEqualizerSettings(settings: EqualizerSettings) {
   if (!bassFilter || !midFilter || !trebleFilter) return
   bassFilter.gain.value = settings.bass

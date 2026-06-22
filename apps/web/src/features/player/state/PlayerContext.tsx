@@ -9,7 +9,12 @@ import {
   type ReactNode,
 } from "react"
 import { audioPath, getBlobUrl, thumbnailPath } from "@/shared/lib/audioCache"
-import { applyEqualizerSettings, ensureEqualizerGraph, resumeEqualizerContext } from "@/features/player/lib/equalizer"
+import {
+  applyEqualizerSettings,
+  ensureEqualizerGraph,
+  isEqualizerActive,
+  resumeEqualizerContext,
+} from "@/features/player/lib/equalizer"
 import { useEqualizerStore } from "@/features/player/state/equalizerStore"
 import { usePlayerStore } from "@/features/player/state/playerStore"
 
@@ -62,17 +67,30 @@ const ProgressContext = createContext<ProgressState>({ currentTime: 0, duration:
 // Élément audio unique, hors du cycle de rendu React.
 const audio = new Audio()
 
-// Branche le graphe Web Audio (égaliseur) sur le premier geste de lecture :
-// AudioContext démarre "suspended" tant qu'aucune interaction utilisateur n'a
-// eu lieu, et createMediaElementSource ne peut être appelé qu'une seule fois.
+// Branche le graphe Web Audio (égaliseur) sur le premier geste de lecture, et
+// seulement si l'égaliseur est réellement utilisé : router l'audio à travers
+// un AudioContext le coupe en arrière-plan sur iOS Safari (WebKit suspend tout
+// AudioContext quand l'onglet passe en arrière-plan), alors qu'un <audio>
+// natif continue de jouer sans problème. On évite donc cette régression pour
+// les utilisateurs qui n'ont jamais touché l'égaliseur (réglages à 0/0/0).
 function initEqualizer() {
-  ensureEqualizerGraph(audio)
-  applyEqualizerSettings(useEqualizerStore.getState().settings)
+  if (isEqualizerActive(useEqualizerStore.getState().settings)) {
+    ensureEqualizerGraph(audio)
+    applyEqualizerSettings(useEqualizerStore.getState().settings)
+  }
   resumeEqualizerContext()
 }
 
-// Réapplique les réglages dès qu'ils changent (page profil), même en cours de lecture.
-useEqualizerStore.subscribe((state) => applyEqualizerSettings(state.settings))
+// Réapplique les réglages dès qu'ils changent (page profil), même en cours de
+// lecture, en branchant le graphe à la volée si besoin (geste utilisateur sur
+// le slider : on peut débloquer l'AudioContext immédiatement).
+useEqualizerStore.subscribe((state) => {
+  if (isEqualizerActive(state.settings)) {
+    ensureEqualizerGraph(audio)
+    resumeEqualizerContext()
+  }
+  applyEqualizerSettings(state.settings)
+})
 
 // Sauvegarde l'instantané au plus toutes les 5 s pendant la lecture.
 const SAVE_THROTTLE_MS = 5000
