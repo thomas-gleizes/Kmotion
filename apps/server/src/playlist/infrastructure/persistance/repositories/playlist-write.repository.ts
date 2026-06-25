@@ -32,20 +32,22 @@ export class PlaylistWriteRepository implements PlaylistWriteRepositoryPort {
           },
         });
 
-      for (const entry of playlist.getPlaylistEntries().getEntries()) {
-        await transaction
-          .insert(playlistEntryTable)
-          .values({
+      // On remplace l'intégralité des entrées pour que la base reflète
+      // exactement l'état de l'agrégat (gère ajouts, retraits et réordonnancement).
+      await transaction
+        .delete(playlistEntryTable)
+        .where(eq(playlistEntryTable.playlistId, playlist.getId()));
+
+      const entries = playlist.getPlaylistEntries().getEntries();
+
+      if (entries.length > 0) {
+        await transaction.insert(playlistEntryTable).values(
+          entries.map((entry) => ({
             playlistId: playlist.getId(),
             musicId: entry.musicId,
             position: entry.position,
-          })
-          .onConflictDoUpdate({
-            target: [playlistEntryTable.playlistId, playlistEntryTable.musicId],
-            set: {
-              position: entry.position,
-            },
-          });
+          })),
+        );
       }
     });
   }
