@@ -30,12 +30,16 @@ export type MusicSortField =
   | 'artist'
   | 'duration'
   | 'createdAt'
-  | 'favorite';
+  | 'favorite'
+  | 'random';
 export type SortDirection = 'asc' | 'desc';
 
 export type MusicOrderBy = {
   field?: MusicSortField;
   direction?: SortDirection;
+  // Graine utilisée pour le tri aléatoire afin que l'ordre reste stable
+  // entre les pages d'une même session (sinon doublons/trous en pagination).
+  seed?: string;
 };
 
 export const MUSIC_READ_REPOSITORY_PORT = Symbol('MUSIC_READ_REPOSITORY_PORT');

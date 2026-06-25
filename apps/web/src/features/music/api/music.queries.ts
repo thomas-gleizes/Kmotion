@@ -3,7 +3,7 @@ import { api } from "@/shared/api/client"
 import { keys, unwrap } from "@/shared/api/query-keys"
 import type { UpdateMusicInput } from "@/shared/api/types"
 
-export type MusicSort = "title" | "artist" | "duration" | "createdAt" | "favorite"
+export type MusicSort = "title" | "artist" | "duration" | "createdAt" | "favorite" | "random"
 export type SortOrder = "asc" | "desc"
 
 export const musicsQuery = (page: number, size: number, search?: string) =>
@@ -18,13 +18,14 @@ export const musicsInfiniteQuery = (
   sort?: MusicSort,
   order?: SortOrder,
   favorite?: boolean,
+  seed?: string,
 ) =>
   infiniteQueryOptions({
-    queryKey: ["musics", "infinite", { size, sort, order, favorite }] as const,
+    queryKey: ["musics", "infinite", { size, sort, order, favorite, seed }] as const,
     queryFn: async ({ pageParam }) =>
       unwrap(
         await api.GET("/api/3.1/musics", {
-          params: { query: { page: pageParam, size, sort, order, favorite } },
+          params: { query: { page: pageParam, size, sort, order, favorite, seed } },
         }),
       ),
     initialPageParam: 0,

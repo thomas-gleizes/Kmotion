@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { createRoute } from "@tanstack/react-router"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useDialog } from "react-dialog-promise"
@@ -10,7 +10,7 @@ import { useSortPreference } from "@/features/music/hooks/useSortPreference"
 import { usePlayer } from "@/features/player/state/PlayerContext"
 import { MusicCard } from "@/features/music/components/MusicCard"
 import { AddToPlaylistDialog } from "@/features/playlist/components/dialogs/AddToPlaylistDialog"
-import { ChevronDownIcon, ChevronUpIcon, SpinnerIcon } from "@/shared/ui/icons"
+import { ChevronDownIcon, ChevronUpIcon, ShuffleIcon, SpinnerIcon } from "@/shared/ui/icons"
 
 const PAGE_SIZE = 30
 
@@ -20,7 +20,10 @@ const SORT_OPTIONS: { value: MusicSort; label: string }[] = [
   { value: "artist", label: "Artiste" },
   { value: "duration", label: "Durée" },
   { value: "favorite", label: "Favoris" },
+  { value: "random", label: "Aléatoire" },
 ]
+
+const newSeed = () => Math.random().toString(36).slice(2)
 
 const grid = css({
   display: "grid",
@@ -95,8 +98,16 @@ export const HomePage = () => {
     sort: "createdAt",
     order: "desc",
   })
+  const [seed, setSeed] = useState(newSeed)
+  const isRandom = sort === "random"
+
+  const handleSortChange = (value: MusicSort) => {
+    if (value === "random") setSeed(newSeed())
+    setSort(value)
+  }
+
   const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
-    musicsInfiniteQuery(PAGE_SIZE, sort, order),
+    musicsInfiniteQuery(PAGE_SIZE, sort, order, undefined, isRandom ? seed : undefined),
   )
   const player = usePlayer()
   const addToPlaylist = useDialog(AddToPlaylistDialog)
@@ -125,7 +136,7 @@ export const HomePage = () => {
           <select
             className={select}
             value={sort}
-            onChange={(e) => setSort(e.target.value as MusicSort)}
+            onChange={(e) => handleSortChange(e.target.value as MusicSort)}
             aria-label="Trier par"
           >
             {SORT_OPTIONS.map((option) => (
@@ -134,15 +145,27 @@ export const HomePage = () => {
               </option>
             ))}
           </select>
-          <button
-            type="button"
-            className={directionButton}
-            onClick={toggleOrder}
-            aria-label={order === "asc" ? "Ordre croissant" : "Ordre décroissant"}
-            title={order === "asc" ? "Ordre croissant" : "Ordre décroissant"}
-          >
-            {order === "asc" ? <ChevronUpIcon size={18} /> : <ChevronDownIcon size={18} />}
-          </button>
+          {isRandom ? (
+            <button
+              type="button"
+              className={directionButton}
+              onClick={() => setSeed(newSeed())}
+              aria-label="Mélanger à nouveau"
+              title="Mélanger à nouveau"
+            >
+              <ShuffleIcon size={18} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className={directionButton}
+              onClick={toggleOrder}
+              aria-label={order === "asc" ? "Ordre croissant" : "Ordre décroissant"}
+              title={order === "asc" ? "Ordre croissant" : "Ordre décroissant"}
+            >
+              {order === "asc" ? <ChevronUpIcon size={18} /> : <ChevronDownIcon size={18} />}
+            </button>
+          )}
         </div>
       </div>
       {isPending && <div className={emptyState}>Chargement de la bibliothèque…</div>}

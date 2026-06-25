@@ -129,6 +129,11 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
   private buildOrderBy(orderBy: MusicOrderBy = {}) {
     const direction = orderBy.direction === 'desc' ? desc : asc;
 
+    if (orderBy.field === 'random') {
+      const seed = orderBy.seed ?? '';
+      return [sql`md5(${musicTable.id} || ${seed})`];
+    }
+
     if (orderBy.field === 'favorite') {
       const favoriteRank = sql`case when ${favoriteTable.musicId} is null then 0 else 1 end`;
 

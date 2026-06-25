@@ -67,7 +67,11 @@ class MusicController {
           userId: auth.sub,
           onlyFavorite: pagination.favorite,
         },
-        orderBy: { field: pagination.sort, direction: pagination.order },
+        orderBy: {
+          field: pagination.sort,
+          direction: pagination.order,
+          seed: pagination.seed,
+        },
       }),
     );
 

@@ -867,11 +867,13 @@ export interface operations {
                 /** @description Search by title or artist */
                 search?: string;
                 /** @description Field to order by */
-                sort?: "title" | "artist" | "duration" | "createdAt" | "favorite";
+                sort?: "title" | "artist" | "duration" | "createdAt" | "favorite" | "random";
                 /** @description Order direction */
                 order?: "asc" | "desc";
                 /** @description Only return favorited musics */
                 favorite?: boolean;
+                /** @description Seed for stable random ordering (used when sort=random) */
+                seed?: string;
             };
             header?: never;
             path?: never;

@@ -51,12 +51,12 @@ export class MusicsPaginationDto {
 
   @ApiProperty({
     type: 'string',
-    enum: ['title', 'artist', 'duration', 'createdAt', 'favorite'],
+    enum: ['title', 'artist', 'duration', 'createdAt', 'favorite', 'random'],
     description: 'Field to order by',
     required: false,
   })
   @IsOptional()
-  @IsEnum(['title', 'artist', 'duration', 'createdAt', 'favorite'])
+  @IsEnum(['title', 'artist', 'duration', 'createdAt', 'favorite', 'random'])
   sort?: MusicSortField;
 
   @ApiProperty({
@@ -79,4 +79,13 @@ export class MusicsPaginationDto {
   @Transform(({ value }) => value === 'true' || value === true)
   @IsBoolean()
   favorite?: boolean;
+
+  @ApiProperty({
+    type: 'string',
+    description: 'Seed for stable random ordering (used when sort=random)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  seed?: string;
 }
