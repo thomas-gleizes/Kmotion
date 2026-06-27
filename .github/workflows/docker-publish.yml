@@ -114,10 +114,12 @@ jobs:
     if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
 
     steps:
+      # Kubeconfig à droits réduits (rollout de Deployments uniquement),
+      # généré par cluster-config/rollout-access. base64 stocké dans le secret.
       - name: Set up kubeconfig
         run: |
           mkdir -p "$HOME/.kube"
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > "$HOME/.kube/config"
+          echo "${{ secrets.ROLLOUT_KUBECONFIG }}" | base64 -d > "$HOME/.kube/config"
 
       - name: Restart deployments
         run: |
