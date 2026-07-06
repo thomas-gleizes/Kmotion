@@ -212,6 +212,9 @@ class MusicController {
     res.set({
       'Content-Type': response.headers['content-type'],
       'Content-Length': response.headers['content-length'],
+      // Contenu immuable pour un id donné : cache navigateur agressif pour
+      // éviter les re-téléchargements (survit aux rechargements et sessions).
+      'Cache-Control': 'private, max-age=31536000, immutable',
     });
 
     return new StreamableFile(response.data);
@@ -244,6 +247,9 @@ class MusicController {
     res.set({
       'Content-Type': response.headers['content-type'],
       'Content-Length': response.headers['content-length'],
+      // Contenu immuable pour un id donné : cache navigateur agressif pour
+      // éviter les re-téléchargements (survit aux rechargements et sessions).
+      'Cache-Control': 'private, max-age=31536000, immutable',
     });
 
     return new StreamableFile(response.data);

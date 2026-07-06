@@ -2,20 +2,32 @@ import { authedFetch } from "@/shared/api/client"
 
 type CacheEntry = { url: string | null; promise: Promise<string> }
 
-// Cache partagé audio + thumbnails : les endpoints exigent le header Authorization,
+// Caches audio + thumbnails : les endpoints exigent le header Authorization,
 // donc on télécharge en fetch authentifié et on expose des blob URLs.
-const cache = new Map<string, CacheEntry>()
-const MAX_ENTRIES = 40
+// Deux caches distincts car les profils diffèrent : peu de gros fichiers audio
+// vs. beaucoup de petites vignettes (grilles). Un LRU commun évincerait les
+// vignettes trop vite en scroll.
+const audioCache = new Map<string, CacheEntry>()
+const thumbnailCache = new Map<string, CacheEntry>()
+const AUDIO_MAX_ENTRIES = 15
+const THUMBNAIL_MAX_ENTRIES = 150
 
-function evictOldest() {
+function cacheFor(path: string) {
+  return path.endsWith("/thumbnail")
+    ? { cache: thumbnailCache, max: THUMBNAIL_MAX_ENTRIES }
+    : { cache: audioCache, max: AUDIO_MAX_ENTRIES }
+}
+
+function evictOldest(cache: Map<string, CacheEntry>, max: number) {
   for (const [path, entry] of cache) {
-    if (cache.size <= MAX_ENTRIES) break
+    if (cache.size <= max) break
     cache.delete(path)
     if (entry.url) URL.revokeObjectURL(entry.url)
   }
 }
 
 export function getBlobUrl(path: string): Promise<string> {
+  const { cache, max } = cacheFor(path)
   const existing = cache.get(path)
   if (existing) {
     // Rafraîchit la position LRU
@@ -33,7 +45,7 @@ export function getBlobUrl(path: string): Promise<string> {
   }
   entry.promise.catch(() => cache.delete(path))
   cache.set(path, entry)
-  evictOldest()
+  evictOldest(cache, max)
   return entry.promise
 }
 
