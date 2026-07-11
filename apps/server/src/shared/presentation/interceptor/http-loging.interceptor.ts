@@ -18,6 +18,10 @@ class HttpLoggingInterceptor implements NestInterceptor {
     const url = req.originalUrl;
     const now = Date.now();
 
+    if (url.includes('/health')) {
+      return next.handle();
+    }
+
     const id = randomUUID();
 
     this.logger.log(`${id} -> ${method} ${url}`);
