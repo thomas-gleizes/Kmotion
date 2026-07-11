@@ -18,7 +18,7 @@ export const validationSchema = z.object({
   DB_PASSWORD: z.string().default(''),
 
   JWT_SECRET: z.string().default('secret'),
-  JWT_EXPIRATION_TIME: z.number().default(500000),
+  JWT_EXPIRATION_TIME: z.coerce.number().nonnegative().int().default(500000),
 
   PASSWORD_PAPER: z.string().default('PAPER'),
 
