@@ -8,7 +8,6 @@ import {
   MusicNoteIcon,
   PersonIcon,
   PlusIcon,
-  SearchIcon,
   ShieldIcon,
 } from "@/shared/ui/icons"
 
@@ -89,9 +88,6 @@ export function Sidebar() {
         </Link>
         <Link to="/liked" className={navLink}>
           <HeartIcon size={18} /> Titres likés
-        </Link>
-        <Link to="/search" className={navLink}>
-          <SearchIcon size={18} /> Rechercher
         </Link>
         <Link to="/playlists" className={navLink}>
           <ListIcon size={18} /> Playlists

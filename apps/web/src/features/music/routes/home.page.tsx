@@ -1,16 +1,29 @@
 import { useEffect, useRef, useState } from "react"
 import { createRoute } from "@tanstack/react-router"
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useDialog } from "react-dialog-promise"
 import { css } from "styled-system/css"
 import { appLayoutRoute } from "@/app/routes/app.layout"
-import { musicsInfiniteQuery, type MusicSort } from "@/features/music/api/music.queries"
+import {
+  musicsInfiniteQuery,
+  musicSearchQuery,
+  type MusicSort,
+} from "@/features/music/api/music.queries"
 import { emptyState } from "@/shared/lib/styles"
+import { useDebounce } from "@/shared/hooks/useDebounce"
 import { useSortPreference } from "@/features/music/hooks/useSortPreference"
 import { usePlayer } from "@/features/player/state/PlayerContext"
 import { MusicCard } from "@/features/music/components/MusicCard"
+import { MusicRow } from "@/features/music/components/MusicRow"
 import { AddToPlaylistDialog } from "@/features/playlist/components/dialogs/AddToPlaylistDialog"
-import { ChevronDownIcon, ChevronUpIcon, ShuffleIcon, SpinnerIcon } from "@/shared/ui/icons"
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  PlusIcon,
+  SearchIcon,
+  ShuffleIcon,
+  SpinnerIcon,
+} from "@/shared/ui/icons"
 
 const PAGE_SIZE = 30
 
@@ -93,6 +106,46 @@ const loadingMore = css({
   color: "textSecondary",
 })
 
+const searchBox = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  padding: "12px 18px",
+  borderRadius: "m",
+  backgroundColor: "surfaceRaised",
+  border: "1px solid token(colors.border)",
+  marginBottom: "20px",
+  color: "textSecondary",
+  transition: "all token(durations.fast) token(easings.apple)",
+  _focusWithin: { borderColor: "accent", boxShadow: "0 0 0 3px token(colors.accentGlow)" },
+})
+
+const searchInput = css({
+  flex: 1,
+  background: "none",
+  border: "none",
+  outline: "none",
+  color: "text",
+  fontSize: "16px",
+  fontFamily: "sans",
+  _placeholder: { color: "textTertiary" },
+})
+
+const addButton = css({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "32px",
+  height: "32px",
+  borderRadius: "full",
+  border: "none",
+  background: "none",
+  color: "textSecondary",
+  cursor: "pointer",
+  transition: "all token(durations.fast) token(easings.apple)",
+  _hover: { color: "accent", backgroundColor: "accentSoft" },
+})
+
 export const HomePage = () => {
   const [{ sort, order }, setSort, toggleOrder] = useSortPreference("music:sort", {
     sort: "createdAt",
@@ -112,6 +165,16 @@ export const HomePage = () => {
   const player = usePlayer()
   const addToPlaylist = useDialog(AddToPlaylistDialog)
   const sentinelRef = useRef<HTMLDivElement>(null)
+
+  const [input, setInput] = useState("")
+  const query = useDebounce(input.trim())
+  const isSearching = query.length > 1
+
+  const { data: searchResults, isFetching: isSearchFetching } = useQuery({
+    ...musicSearchQuery(query),
+    enabled: isSearching,
+    placeholderData: keepPreviousData,
+  })
 
   const records = data?.pages.flatMap((page) => page.records) ?? []
 
@@ -168,27 +231,66 @@ export const HomePage = () => {
           )}
         </div>
       </div>
-      {isPending && <div className={emptyState}>Chargement de la bibliothèque…</div>}
-      {data && records.length === 0 && (
-        <div className={emptyState}>
-          Votre bibliothèque est vide. Ajoutez un titre depuis l’onglet « Ajouter ».
-        </div>
-      )}
-      <div className={grid}>
-        {records.map((music, i) => (
-          <MusicCard
-            key={music.id}
-            music={music}
-            onPlay={() => player.playQueue(records, i)}
-            onAddToPlaylist={() => addToPlaylist.open({ music })}
-          />
-        ))}
+      <div className={searchBox}>
+        <SearchIcon size={18} />
+        <input
+          className={searchInput}
+          placeholder="Titres, artistes…"
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+        />
       </div>
-      <div ref={sentinelRef} className={sentinel} />
-      {isFetchingNextPage && (
-        <div className={loadingMore}>
-          <SpinnerIcon size={20} />
-        </div>
+      {isSearching ? (
+        <>
+          {searchResults?.length === 0 && !isSearchFetching && (
+            <div className={emptyState}>Aucun résultat pour « {query} ».</div>
+          )}
+          {searchResults?.map((music, i) => (
+            <MusicRow
+              key={music.id}
+              id={music.id}
+              title={music.title}
+              artist={music.artist}
+              duration={music.duration}
+              onPlay={() => player.playQueue(searchResults, i)}
+              actions={
+                <button
+                  type="button"
+                  className={addButton}
+                  onClick={() => addToPlaylist.open({ music })}
+                  aria-label="Ajouter à une playlist"
+                >
+                  <PlusIcon size={18} />
+                </button>
+              }
+            />
+          ))}
+        </>
+      ) : (
+        <>
+          {isPending && <div className={emptyState}>Chargement de la bibliothèque…</div>}
+          {data && records.length === 0 && (
+            <div className={emptyState}>
+              Votre bibliothèque est vide. Ajoutez un titre depuis l’onglet « Ajouter ».
+            </div>
+          )}
+          <div className={grid}>
+            {records.map((music, i) => (
+              <MusicCard
+                key={music.id}
+                music={music}
+                onPlay={() => player.playQueue(records, i)}
+                onAddToPlaylist={() => addToPlaylist.open({ music })}
+              />
+            ))}
+          </div>
+          <div ref={sentinelRef} className={sentinel} />
+          {isFetchingNextPage && (
+            <div className={loadingMore}>
+              <SpinnerIcon size={20} />
+            </div>
+          )}
+        </>
       )}
     </div>
   )

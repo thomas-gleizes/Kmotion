@@ -8,7 +8,6 @@ import { registerRoute } from "@/features/auth/routes/register.page"
 import { appLayoutRoute } from "@/app/routes/app.layout"
 import { homeRoute } from "@/features/music/routes/home.page"
 import { likedRoute } from "@/features/music/routes/liked.page"
-import { searchRoute } from "@/features/music/routes/search.page"
 import { playlistsRoute } from "@/features/playlist/routes/playlists.page"
 import { playlistDetailRoute } from "@/features/playlist/routes/playlist-detail.page"
 import { addMusicRoute } from "@/features/music/routes/add-music.page"
@@ -30,7 +29,6 @@ const routeTree = rootRoute.addChildren([
   appLayoutRoute.addChildren([
     homeRoute,
     likedRoute,
-    searchRoute,
     playlistsRoute,
     playlistDetailRoute,
     addMusicRoute,

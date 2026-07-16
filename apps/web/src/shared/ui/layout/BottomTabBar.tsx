@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router"
 import { css } from "styled-system/css"
-import { ListIcon, MusicNoteIcon, PersonIcon, SearchIcon } from "@/shared/ui/icons"
+import { ListIcon, MusicNoteIcon, PersonIcon } from "@/shared/ui/icons"
 
 const bar = css({
   gridArea: "tabbar",
@@ -31,9 +31,6 @@ export function BottomTabBar() {
     <nav className={bar}>
       <Link to="/" className={tabLink}>
         <MusicNoteIcon size={22} /> Écouter
-      </Link>
-      <Link to="/search" className={tabLink}>
-        <SearchIcon size={22} /> Rechercher
       </Link>
       <Link to="/playlists" className={tabLink}>
         <ListIcon size={22} /> Playlists
