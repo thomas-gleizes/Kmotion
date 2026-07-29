@@ -93,6 +93,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix=sha-,format=short
+            type=raw,value=${{ github.sha }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
 
       - name: Build and push Docker image
@@ -108,22 +109,29 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    name: Restart deployments on cluster
+    name: Pin image tag in cluster-config
     runs-on: ubuntu-latest
     needs: build-and-push
     if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
 
     steps:
-      # Kubeconfig à droits réduits (rollout de Deployments uniquement),
-      # généré par cluster-config/rollout-access. base64 stocké dans le secret.
-      - name: Set up kubeconfig
+      - name: pin the new tag in cluster-config
+        if: github.ref == 'refs/heads/master'
+        env:
+          GH_TOKEN: ${{ secrets.CLUSTER_CONFIG_TOKEN }}
         run: |
-          mkdir -p "$HOME/.kube"
-          echo "${{ secrets.ROLLOUT_KUBECONFIG }}" | base64 -d > "$HOME/.kube/config"
-
-      - name: Restart deployments
-        run: |
-          kubectl rollout restart deployment/app -n kmotion
-          kubectl rollout restart deployment/web -n kmotion
-          kubectl rollout status deployment/app -n kmotion --timeout=120s
-          kubectl rollout status deployment/web -n kmotion --timeout=120s
+          git clone --depth=1 \
+            https://x-access-token:$GH_TOKEN@github.com/thomas-gleizes/cluster-config.git cc
+          cd cc/apps/kmotion
+          curl -sSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.7.1/kustomize_v5.7.1_linux_amd64.tar.gz | tar xz -C /usr/local/bin
+          kustomize edit set image ghcr.io/thomas-gleizes/kmotion=ghcr.io/thomas-gleizes/kmotion:${{ github.sha }}
+          kustomize edit set image ghcr.io/thomas-gleizes/kmotion-web=ghcr.io/thomas-gleizes/kmotion-web:${{ github.sha }}
+          git config user.name  "ci-kmotion"
+          git config user.email "ci@thomasgleizes.fr"
+          git commit -am "chore(kmotion): pin image to ${{ github.sha }}" || exit 0
+          # 3 dépôts peuvent pousser en même temps : réessayer sur rebase
+          for i in 1 2 3 4 5; do
+            git pull --rebase && git push && exit 0
+            sleep $((RANDOM % 10 + 5))
+          done
+          exit 1

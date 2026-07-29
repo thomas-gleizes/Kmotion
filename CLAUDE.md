@@ -12,7 +12,7 @@ This is a multi-app repository — each app under `apps/` is managed independent
 
 Each app has its own Dockerfile (`apps/server/Dockerfile`, `apps/web/Dockerfile`); there is no root Dockerfile. `apps/server/Dockerfile` is multi-stage: pnpm install → drizzle generate → nest build → slim alpine runner. `apps/web/Dockerfile` is built from the **repo root** as context (so it can also build `apps/extension` and ship the packaged `.zip` as a static download at `/downloads/kmotion-extension.zip`), then serves the Vite build via nginx.
 
-`compose.yml` runs a local Postgres 17 instance for development. `k8s/` contains Kubernetes manifests for deployment: `app/` (server), `web/`, `database/`, `cert-manager/`, plus PodDisruptionBudgets for zero-downtime rollouts. CI (`.github/workflows/docker-publish.yml`) runs server unit tests, builds/pushes both `app`/`web` images to GHCR, and on `master` restarts the `app`/`web` deployments via `kubectl rollout restart`.
+`compose.yml` runs a local Postgres 17 instance for development. `k8s/` contains Kubernetes manifests for deployment: `app/` (server), `web/`, `database/`, `cert-manager/`, plus PodDisruptionBudgets for zero-downtime rollouts. CI (`.github/workflows/docker-publish.yml`) runs server unit tests, builds/pushes both `app`/`web` images to GHCR (tagged `latest` + the full commit SHA), and on `master` commits the new SHA tag into the `cluster-config` repo (`apps/kmotion`) via `kustomize edit set image`, which Flux then reconciles.
 
 ## Commands (apps/server)
 
