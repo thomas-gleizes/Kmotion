@@ -31,6 +31,15 @@ import {
 
 type MusicRecord = InferSelectModel<typeof musicTable>;
 
+/**
+ * Library listings and search only show playable musics. Lookups by id or
+ * media id still return pending ones (the extension polls them).
+ */
+export const isListable = eq(
+  musicTable.conversionStatus,
+  ConversionStatus.ready,
+);
+
 @Injectable()
 export class MusicReadRepository implements MusicReadRepositoryPort {
   constructor(@Inject(DRIZZLE) private readonly database: DrizzleDB) {}
@@ -91,9 +100,12 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
       .select()
       .from(musicTable)
       .where(
-        or(
-          ilike(musicTable.title, `%${query}%`),
-          ilike(musicTable.artist, `%${query}%`),
+        and(
+          isListable,
+          or(
+            ilike(musicTable.title, `%${query}%`),
+            ilike(musicTable.artist, `%${query}%`),
+          ),
         ),
       );
 
@@ -101,7 +113,7 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
   }
 
   private buildWhere(filters: MusicFilters = {}) {
-    const conditions: SQL[] = [];
+    const conditions: SQL[] = [isListable];
 
     if (filters.search) {
       conditions.push(
@@ -115,8 +127,6 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
     if (filters.onlyFavorite) {
       conditions.push(isNotNull(favoriteTable.musicId));
     }
-
-    if (conditions.length === 0) return undefined;
 
     return and(...conditions);
   }

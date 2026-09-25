@@ -59,8 +59,8 @@ export const AddMusicPage = () => {
         />
         <p className={helpStyle}>
           Collez un lien YouTube (watch, youtu.be, shorts) ou directement l’identifiant de la
-          vidéo. Le titre est converti en MP3 puis ajouté à votre bibliothèque — la conversion
-          peut prendre un moment.
+          vidéo. Le titre est converti en MP3 en arrière-plan, puis apparaît dans votre
+          bibliothèque — la conversion peut prendre quelques minutes.
         </p>
         {formatError && <div className={errorStyle}>Lien YouTube non reconnu.</div>}
         {addMusic.isError && (
@@ -68,14 +68,14 @@ export const AddMusicPage = () => {
         )}
         {addMusic.isSuccess && (
           <div className={successStyle}>
-            Titre ajouté à la bibliothèque !
+            Conversion lancée : le titre apparaîtra dans la bibliothèque dès qu’il sera prêt.
             <Link to="/">
               Voir la bibliothèque
             </Link>
           </div>
         )}
         <Button type="submit" disabled={addMusic.isPending}>
-          {addMusic.isPending ? "Conversion en cours…" : "Ajouter"}
+          {addMusic.isPending ? "Envoi…" : "Ajouter"}
         </Button>
       </form>
     </div>
