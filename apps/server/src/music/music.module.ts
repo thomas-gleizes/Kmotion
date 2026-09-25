@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import MusicController from './presentation/music.controller';
 import { SyncMusicsTask } from 'src/music/infrastructure/tasks/sync-musics.task';
+import { RefreshConversionsTask } from 'src/music/infrastructure/tasks/refresh-conversions.task';
 import { musicsCommandHandlers } from 'src/music/application/commands';
 import { ConverterServiceAdapter } from 'src/music/infrastructure/adapters/converter-service.adapter';
 import { ConverterModule } from 'src/core/converter/converter.module';
@@ -28,6 +29,7 @@ import { musicsQueryHandlers } from 'src/music/application/queries';
     ConverterServiceAdapter,
     MusicsFactory,
     SyncMusicsTask,
+    RefreshConversionsTask,
   ],
 })
 export class MusicModule {}

@@ -5,10 +5,17 @@ import {
   type MusicReadRepositoryPort,
 } from 'src/music/application/port/music-read-repository.port';
 import { MediaSource } from 'src/music/domain/values-object/media-source.value-object';
-import { ConverterServicePort } from 'src/music/domain/port/converter-service.port';
+import {
+  type Conversion,
+  ConverterServicePort,
+} from 'src/music/domain/port/converter-service.port';
 import { DomainException } from 'src/shared/domain/exceptions/domain.exception';
 import { MusicsFactory } from 'src/music/infrastructure/factories/musics.factory';
 import { Music } from 'src/music/domain/music.entity';
+import { toConversion } from 'src/music/infrastructure/adapters/converter-mapping';
+
+const isSupportedSource = (provider: string) =>
+  (Object.values(MediaSource) as string[]).includes(provider);
 
 @Injectable()
 export class ConverterServiceAdapter implements ConverterServicePort {
@@ -28,6 +35,8 @@ export class ConverterServiceAdapter implements ConverterServicePort {
       const musics: Music[] = [];
 
       for (const track of tracks) {
+        if (!isSupportedSource(track.provider)) continue;
+
         const isExist = await this.musicReadRepository.exist(track.id);
 
         if (isExist) continue;
@@ -37,41 +46,30 @@ export class ConverterServiceAdapter implements ConverterServicePort {
 
       return musics;
     } catch (error) {
-      this.logger.error('Failed to fetch tracks', error.message);
+      this.logger.error('Failed to fetch tracks', (error as Error).message);
       throw new DomainException('Error while fetching tracks');
     }
   }
 
-  async downloadMusic(
+  async requestConversion(
     mediaId: string,
     mediaSource: MediaSource,
-    downloaderId: string,
-  ): Promise<Music> {
-    this.logger.debug(`Downloading music ${mediaId} from ${mediaSource}`);
-    const track = await this.converterHttpService.fetchInfo(
-      mediaId,
-      mediaSource,
+  ): Promise<Conversion> {
+    this.logger.debug(
+      `Requesting conversion of ${mediaId} from ${mediaSource}`,
     );
 
-    if (track) {
-      if (track.isReady) {
-        throw new DomainException('Media is already downloaded');
-      }
-
-      throw new DomainException('Track is downloading');
-    }
-
     try {
-      const downloadedTrack = await this.converterHttpService.download(
-        mediaId,
-        mediaSource,
-      );
-
-      this.logger.debug(`Downloaded track: ${JSON.stringify(downloadedTrack)}`);
-      return this.musicFactory.fromTrack(downloadedTrack, downloaderId);
+      const { track } = await this.converterHttpService.requestTrack(mediaId);
+      return toConversion(track);
     } catch (error) {
-      this.logger.error('Failed to download media', error);
+      this.logger.error('Failed to request conversion', error);
       throw new DomainException('Error while downloading track');
     }
+  }
+
+  async getConversion(converterId: number): Promise<Conversion | null> {
+    const track = await this.converterHttpService.fetchTrack(converterId);
+    return track ? toConversion(track) : null;
   }
 }

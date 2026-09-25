@@ -37,7 +37,12 @@ import { FindMusicsQuery } from 'src/music/application/queries/find-musics/find-
 import { FindMusicByIdQuery } from 'src/music/application/queries/find-music-by-id/find-music-by-id.query';
 import { FindMusicByMediaIdQuery } from 'src/music/application/queries/find-music-by-media-id/find-music-by-media-id.query';
 import { MusicsPaginationDto } from 'src/music/presentation/dto/input/musics-pagination.dto';
-import { YtConverterHttpService } from 'src/core/converter/yt-converter-http.service';
+import {
+  ConverterMediaUnavailableError,
+  type MediaKind,
+  YtConverterHttpService,
+} from 'src/core/converter/yt-converter-http.service';
+import { RessourceNotFoundException } from 'src/shared/domain/exceptions/ressource-not-found.exception';
 import { MediaSource } from 'src/music/domain/values-object/media-source.value-object';
 import { MusicsResponseDto } from 'src/music/presentation/dto/output/musics-response.dto';
 import type { Response as ExpressResponse } from 'express';
@@ -50,6 +55,22 @@ class MusicController {
     private readonly queryBus: QueryBus,
     private readonly converterService: YtConverterHttpService,
   ) {}
+
+  /** Streams a converted file; 404 while the conversion is not finished. */
+  private async fetchMedia(music: MusicRead | null, kind: MediaKind) {
+    if (!music) throw new RessourceNotFoundException('Music');
+
+    try {
+      return await this.converterService.fetchMedia(music.converterId, kind);
+    } catch (error) {
+      if (error instanceof ConverterMediaUnavailableError) {
+        throw new RessourceNotFoundException(
+          kind === 'audio' ? 'Audio' : 'Thumbnail',
+        );
+      }
+      throw error;
+    }
+  }
 
   @Get()
   @UseGuards(AuthGuard)
@@ -207,7 +228,7 @@ class MusicController {
       new FindMusicByIdQuery({ musicId }),
     );
 
-    const response = await this.converterService.fetchMedia(music.audio);
+    const response = await this.fetchMedia(music, 'audio');
 
     res.set({
       'Content-Type': response.headers['content-type'],
@@ -242,7 +263,7 @@ class MusicController {
       new FindMusicByIdQuery({ musicId }),
     );
 
-    const response = await this.converterService.fetchMedia(music.thumbnail);
+    const response = await this.fetchMedia(music, 'thumbnail');
 
     res.set({
       'Content-Type': response.headers['content-type'],

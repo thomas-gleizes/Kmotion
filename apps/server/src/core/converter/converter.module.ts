@@ -9,7 +9,7 @@ import { environment } from 'src/core/config/environment';
       baseURL: environment.CONVERTER_URL,
       headers: {
         'Content-Type': 'application/json',
-        API_KEY: environment.CONVERTER_KEY,
+        'x-api-key': environment.CONVERTER_KEY,
       },
     }),
   ],
