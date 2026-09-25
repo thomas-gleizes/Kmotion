@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MusicRead } from 'src/music/application/port/music-read-repository.port';
 import { MediaSource } from 'src/music/domain/values-object/media-source.value-object';
+import { ConversionStatus } from 'src/music/domain/values-object/conversion-status.value-object';
 
 export class MusicResponseDto {
   @ApiProperty({
@@ -54,6 +55,13 @@ export class MusicResponseDto {
   converted: boolean;
 
   @ApiProperty({
+    enum: ConversionStatus,
+    description: 'Conversion state of the audio (`converted` is `ready`)',
+    example: ConversionStatus.ready,
+  })
+  conversionStatus: ConversionStatus;
+
+  @ApiProperty({
     type: Boolean,
     description: 'Whether the current user has favorited this track',
     example: false,
@@ -71,6 +79,7 @@ export class MusicResponseDto {
     dto.mediaSource = model.mediaSource;
     dto.mediaId = model.mediaId;
     dto.converted = model.converted;
+    dto.conversionStatus = model.conversionStatus;
     dto.isFavorite = model.isFavorite;
 
     return dto;

@@ -6,6 +6,7 @@ import type { DrizzleDB } from 'src/core/database/database';
 import { musicTable } from 'src/music/infrastructure/persistance/schemas/music.schema';
 import { eq, InferSelectModel } from 'drizzle-orm';
 import { Music } from 'src/music/domain/music.entity';
+import { ConversionStatus } from 'src/music/domain/values-object/conversion-status.value-object';
 
 type MusicRecord = InferSelectModel<typeof musicTable>;
 
@@ -25,6 +26,7 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
       record.thumbnail,
       record.audio,
       record.createdAt,
+      record.conversionStatus as ConversionStatus,
     );
   }
 
@@ -37,6 +39,15 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
     if (!record) return null;
 
     return this.mapToDomain(record);
+  }
+
+  async findByConversionStatus(status: ConversionStatus) {
+    const records = await this.database
+      .select()
+      .from(musicTable)
+      .where(eq(musicTable.conversionStatus, status));
+
+    return records.map((record) => this.mapToDomain(record));
   }
 
   async delete(id: string) {
@@ -58,6 +69,7 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
         thumbnail: music.thumbnail,
         audio: music.audio,
         createdAt: music.createdAt,
+        conversionStatus: music.conversionStatus,
       })
       .onConflictDoUpdate({
         target: musicTable.id,
@@ -71,6 +83,7 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
           duration: music.duration,
           thumbnail: music.thumbnail,
           audio: music.audio,
+          conversionStatus: music.conversionStatus,
         },
       });
   }

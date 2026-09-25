@@ -1,4 +1,5 @@
 import { MediaSource } from 'src/music/domain/values-object/media-source.value-object';
+import { ConversionStatus } from 'src/music/domain/values-object/conversion-status.value-object';
 import {
   PaginateParameter,
   PaginateResult,
@@ -14,6 +15,8 @@ export type MusicRead = {
   duration: number;
   audio: string;
   thumbnail: string;
+  converterId: number;
+  conversionStatus: ConversionStatus;
   converted: boolean;
   createdAt: Date;
   isFavorite: boolean;

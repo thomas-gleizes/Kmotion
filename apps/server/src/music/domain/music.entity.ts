@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { MediaSource } from 'src/music/domain/values-object/media-source.value-object';
+import { ConversionStatus } from 'src/music/domain/values-object/conversion-status.value-object';
 
 export class Music {
   constructor(
@@ -14,7 +15,12 @@ export class Music {
     public thumbnail: string,
     public audio: string,
     public readonly createdAt: Date = new Date(),
+    public conversionStatus: ConversionStatus = ConversionStatus.ready,
   ) {}
+
+  get isConverted(): boolean {
+    return this.conversionStatus === ConversionStatus.ready;
+  }
 
   static create(
     title: string,
@@ -27,6 +33,7 @@ export class Music {
     thumbnail: string,
     audio: string,
     createdAt: Date = new Date(),
+    conversionStatus: ConversionStatus = ConversionStatus.pending,
   ) {
     return new Music(
       randomUUID(),
@@ -40,6 +47,7 @@ export class Music {
       thumbnail,
       audio,
       createdAt,
+      conversionStatus,
     );
   }
 }

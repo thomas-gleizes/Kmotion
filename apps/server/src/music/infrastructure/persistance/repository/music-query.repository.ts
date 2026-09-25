@@ -23,6 +23,7 @@ import {
   MusicReadRepositoryPort,
 } from 'src/music/application/port/music-read-repository.port';
 import { MediaSource } from 'src/music/domain/values-object/media-source.value-object';
+import { ConversionStatus } from 'src/music/domain/values-object/conversion-status.value-object';
 import {
   PaginateParameter,
   PaginateResult,
@@ -35,6 +36,8 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
   constructor(@Inject(DRIZZLE) private readonly database: DrizzleDB) {}
 
   private mapToRead(record: MusicRecord, isFavorite = false): MusicRead {
+    const conversionStatus = record.conversionStatus as ConversionStatus;
+
     return {
       id: record.id,
       mediaId: record.mediaId,
@@ -45,7 +48,9 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
       thumbnail: record.thumbnail,
       channel: record.artist,
       duration: record.duration ?? 0,
-      converted: record.audio !== '',
+      converterId: record.converterId,
+      conversionStatus,
+      converted: conversionStatus === ConversionStatus.ready,
       createdAt: record.createdAt,
       isFavorite,
     };

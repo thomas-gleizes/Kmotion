@@ -16,8 +16,14 @@ export const musicTable = pgTable('musics', {
     },
   ),
   duration: integer().notNull(),
+  // Legacy converter paths (`/static/...`). Media is now fetched from the
+  // converter by `converterId`; new rows store an empty string.
   thumbnail: varchar({ length: 255 }).notNull(),
   audio: varchar({ length: 255 }).notNull(),
+  // pending | ready | failed — see ConversionStatus.
+  conversionStatus: varchar('conversion_status', { length: 16 })
+    .notNull()
+    .default('pending'),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),
