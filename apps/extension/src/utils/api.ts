@@ -5,6 +5,8 @@ import { API_URL, STORAGE_KEYS } from "./constants"
 export type Music = components["schemas"]["MusicResponseDto"]
 export type MusicsPage = components["schemas"]["MusicsResponseDto"]
 export type User = components["schemas"]["UserDto"]
+export type MediaPreview = components["schemas"]["MediaPreviewResponseDto"]
+export type Clip = components["schemas"]["ClipDto"]
 
 export type MusicLookup = { status: "found"; music: Music } | { status: "not-found" }
 
@@ -86,10 +88,28 @@ class ExtensionAPI {
     return { status: "found", music: data }
   }
 
-  /** Adds the media to the library AND triggers its conversion (async). */
-  async createMusicFromYoutube(youtubeId: string): Promise<void> {
+  /** Details of a video from the converter, before converting it. */
+  async previewYoutube(youtubeId: string): Promise<MediaPreview> {
+    const { data, error } = await this.client.GET("/musics/media/{id}/preview", {
+      params: {
+        path: { id: youtubeId },
+        query: { mediaSource: "youtube" },
+      },
+    })
+
+    if (error || !data) {
+      throw new Error(extractErrorMessage(error) ?? "Impossible de récupérer la vidéo")
+    }
+    return data
+  }
+
+  /**
+   * Adds the media to the library AND triggers its conversion (async). With a
+   * `clip`, only that portion of the video is kept.
+   */
+  async createMusicFromYoutube(youtubeId: string, clip?: Clip): Promise<void> {
     const { error, response } = await this.client.POST("/musics", {
-      body: { mediaId: youtubeId, mediaSource: "youtube" },
+      body: { mediaId: youtubeId, mediaSource: "youtube", clip },
     })
 
     if (error || !response.ok) {

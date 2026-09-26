@@ -73,6 +73,16 @@ API GET /music/youtube/{id}
 Affiche "Already converted"
 ```
 
+### 4. **Aperçu + découpage (vidéo pas encore en bibliothèque)**
+```
+API GET /musics/media/{id}/preview?mediaSource=youtube
+    ↓ (titre, chaîne, durée, miniature, durée max — via yt-converter)
+ClipEditor : Début / Fin (m:ss), ⏱ = position de lecture YouTube
+    ↓ (popup → content script : message GET_CURRENT_TIME → video.currentTime)
+API POST /musics { mediaId, mediaSource, clip?: { start?, end? } }
+```
+`clip` n'est envoyé que si la coupe retire réellement quelque chose (`utils/clip.ts`).
+
 ## 📱 Composants
 
 ### LoginForm.tsx

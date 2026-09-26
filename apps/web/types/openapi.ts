@@ -55,7 +55,7 @@ export interface paths {
         put?: never;
         /**
          * Register new user
-         * @description Return access token
+         * @description Create an inactive account, awaiting admin activation
          */
         post: operations["AuthController_register"];
         delete?: never;
@@ -91,7 +91,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all users */
+        /** Get all users (admin only) */
         get: operations["users_index"];
         put?: never;
         post?: never;
@@ -136,6 +136,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/3.1/users/slug/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find user by slug */
+        get: operations["showBySlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/3.1/users/{id}/ban": {
         parameters: {
             query?: never;
@@ -170,23 +187,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/3.1/users/slug/{slug}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Find user by slug */
-        get: operations["showBySlug"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/3.1/musics": {
         parameters: {
             query?: never;
@@ -208,6 +208,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/3.1/musics/{id}/favorite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Toggle favorite status of a music for the current user */
+        put: operations["toggleFavorite"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/3.1/musics/sync": {
         parameters: {
             query?: never;
@@ -217,7 +234,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Sync music with converter service */
+        /** Sync music with converter service (admin only) */
         post: operations["sync"];
         delete?: never;
         options?: never;
@@ -295,23 +312,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/3.1/musics/{id}/favorite": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Toggle favorite status of a music for the current user */
-        put: operations["toggleFavorite"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/3.1/musics/media/{id}": {
         parameters: {
             query?: never;
@@ -321,6 +321,26 @@ export interface paths {
         };
         /** Find music by media id */
         get: operations["showByMediaId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/musics/media/{id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Preview a media before adding it
+         * @description Details of the media from the converter, and the given clip resolved against it
+         */
+        get: operations["previewMedia"];
         put?: never;
         post?: never;
         delete?: never;
@@ -434,14 +454,6 @@ export interface components {
             /** Format: password */
             password: string;
         };
-        UserFiltersDto: {
-            email: string;
-            name: string;
-        };
-        UserOrderByDto: {
-            field: string;
-            order: string;
-        };
         UserDto: {
             /**
              * Format: uuid
@@ -514,14 +526,37 @@ export interface components {
             /** @description Id of source media */
             mediaId: string;
             /**
-             * @description Whether the music is in the current user's favorites
+             * @description Whether the audio has been converted and is available
              * @example true
+             */
+            converted: boolean;
+            /**
+             * @description Conversion state of the audio (`converted` is `ready`)
+             * @example ready
+             * @enum {string}
+             */
+            conversionStatus: "pending" | "ready" | "failed";
+            /**
+             * @description Whether the current user has favorited this track
+             * @example false
              */
             isFavorite: boolean;
         };
         MusicsResponseDto: {
             records: components["schemas"]["MusicResponseDto"][];
             total: number;
+        };
+        ClipDto: {
+            /**
+             * @description Start of the kept portion in seconds (defaults to 0)
+             * @example 12
+             */
+            start?: number;
+            /**
+             * @description End of the kept portion in seconds (defaults to the end of the media)
+             * @example 225
+             */
+            end?: number;
         };
         AddMediaBodyDto: {
             /**
@@ -535,6 +570,59 @@ export interface components {
              * @example dQw4w9WgXcQ
              */
             mediaId: string;
+            /** @description Only convert this portion of the media */
+            clip?: components["schemas"]["ClipDto"];
+        };
+        UpdateMusicDto: {
+            /** @description Track title */
+            title?: string;
+            /** @description Name of the artist or band */
+            artist?: string;
+        };
+        ResolvedClipDto: {
+            /**
+             * @description Start in seconds
+             * @example 12
+             */
+            start: number;
+            /**
+             * @description End in seconds
+             * @example 225
+             */
+            end: number;
+            /**
+             * @description Length of the kept portion in seconds
+             * @example 213
+             */
+            duration: number;
+        };
+        MediaPreviewResponseDto: {
+            /**
+             * @description Media title
+             * @example Queen - Bohemian Rhapsody
+             */
+            title: string;
+            /**
+             * @description Channel that published the media
+             * @example Queen Official
+             */
+            channel: string;
+            /**
+             * @description Duration of the whole media in seconds, null for live streams
+             * @example 354
+             */
+            duration: number | null;
+            /** @description Public URL of the media thumbnail */
+            thumbnailUrl: string | null;
+            /**
+             * @description Longest audio the converter accepts, in seconds
+             * @example 1800
+             */
+            maxDuration: number;
+            /** @description The requested clip resolved to absolute bounds, null when invalid */
+            clip: components["schemas"]["ResolvedClipDto"] | null;
+            /** @description Whether the (clipped) media is too long to be converted */
+            exceedsLimit: boolean;
         };
         PlaylistEntryDto: {
             /** @description Playlist music id */
@@ -573,12 +661,6 @@ export interface components {
             musicId: string;
             /** @description Position in the playlist */
             position: number;
-        };
-        UpdateMusicDto: {
-            /** @description Track title */
-            title?: string;
-            /** @description Name of the artist or band */
-            artist?: string;
         };
         UserPlaylistResponseDto: {
             id: string;
@@ -733,66 +815,6 @@ export interface operations {
             };
         };
     };
-    banUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User banned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    unbanUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User unbanned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    deleteUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User deleted */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     profile: {
         parameters: {
             query?: never;
@@ -835,6 +857,26 @@ export interface operations {
             };
         };
     };
+    deleteUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     showBySlug: {
         parameters: {
             query?: never;
@@ -854,6 +896,46 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UserDto"];
                 };
+            };
+        };
+    };
+    banUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User banned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    unbanUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User unbanned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -912,6 +994,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": string;
+                };
+            };
+        };
+    };
+    toggleFavorite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description New favorite status */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": boolean;
                 };
             };
         };
@@ -980,6 +1084,26 @@ export interface operations {
             };
         };
     };
+    deleteMusic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     updateMusic: {
         parameters: {
             query?: never;
@@ -1003,26 +1127,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MusicResponseDto"];
                 };
-            };
-        };
-    };
-    deleteMusic: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Music deleted */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -1071,30 +1175,6 @@ export interface operations {
             };
         };
     };
-    toggleFavorite: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description New favorite status */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        isFavorite: boolean;
-                    };
-                };
-            };
-        };
-    };
     showByMediaId: {
         parameters: {
             query: {
@@ -1115,6 +1195,35 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MusicResponseDto"];
+                };
+            };
+        };
+    };
+    previewMedia: {
+        parameters: {
+            query: {
+                /** @description Start of the kept portion in seconds (defaults to 0) */
+                start?: number;
+                /** @description End of the kept portion in seconds (defaults to the end of the media) */
+                end?: number;
+                /** @description Media source of track */
+                mediaSource: "youtube";
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Media preview */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaPreviewResponseDto"];
                 };
             };
         };

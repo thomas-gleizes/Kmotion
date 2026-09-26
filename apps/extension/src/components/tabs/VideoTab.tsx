@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { FiCheck, FiDownload, FiLoader, FiAlertCircle, FiYoutube } from "react-icons/fi"
-import { api, type Music } from "../../utils/api"
+import { api, type MediaPreview, type Music } from "../../utils/api"
 import { useVideoStore } from "../../stores"
 import { POLL_INTERVAL_MS } from "../../utils/constants"
 import { formatDuration } from "../../utils/format"
@@ -9,6 +9,8 @@ import { EmptyState } from "../EmptyState"
 import { Loader } from "../Loader"
 import { Button } from "../Button"
 import { Banner } from "../Banner"
+import { ClipEditor } from "../ClipEditor"
+import { fullClipInput, resolveClipInput, type ClipInput } from "../../utils/clip"
 
 type Status = "checking" | "not-found" | "in-progress" | "converted" | "error"
 
@@ -25,6 +27,10 @@ export const VideoTab: React.FC = () => {
   const [status, setStatus] = useState<Status>("checking")
   const [music, setMusic] = useState<Music | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  // Converter's view of a video not in the library yet (title, duration, limit).
+  const [preview, setPreview] = useState<MediaPreview | null>(null)
+  const [previewError, setPreviewError] = useState<string | null>(null)
+  const [clipInput, setClipInput] = useState<ClipInput>({ start: "", end: "" })
 
   const lookup = useCallback(async (id: string): Promise<Status> => {
     const result = await api.getMusicByYoutubeId(id)
@@ -45,8 +51,25 @@ export const VideoTab: React.FC = () => {
     let active = true
     setStatus("checking")
     setErrorMsg(null)
+    setPreview(null)
+    setPreviewError(null)
     lookup(videoId)
-      .then((next) => active && setStatus(next))
+      .then((next) => {
+        if (!active) return
+        setStatus(next)
+        // Only unknown videos need the (slower, converter-side) preview.
+        if (next !== "not-found") return
+        api
+          .previewYoutube(videoId)
+          .then((data) => {
+            if (!active) return
+            setPreview(data)
+            if (data.duration !== null) setClipInput(fullClipInput(data.duration))
+          })
+          .catch((err) => {
+            if (active) setPreviewError(err instanceof Error ? err.message : null)
+          })
+      })
       .catch(() => {
         if (active) {
           setErrorMsg("Impossible de récupérer la vidéo")
@@ -71,12 +94,21 @@ export const VideoTab: React.FC = () => {
     return () => clearInterval(id)
   }, [status, videoId, lookup])
 
+  const total = preview?.duration ?? null
+  const resolvedClip = useMemo(
+    () => (total === null ? null : resolveClipInput(clipInput, total)),
+    [clipInput, total],
+  )
+  const tooLong = !!preview && !!resolvedClip?.ok && resolvedClip.duration > preview.maxDuration
+  // Without a preview the server still validates: let the user try anyway.
+  const canConvert = !preview || (total !== null && !!resolvedClip?.ok && !tooLong)
+
   const handleConvert = async () => {
-    if (!videoId) return
+    if (!videoId || !canConvert) return
     setErrorMsg(null)
     setStatus("in-progress")
     try {
-      await api.createMusicFromYoutube(videoId)
+      await api.createMusicFromYoutube(videoId, resolvedClip?.ok ? resolvedClip.clip : undefined)
     } catch (err) {
       const message = err instanceof Error ? err.message : ""
       if (!isInProgressError(message)) {
@@ -118,14 +150,14 @@ export const VideoTab: React.FC = () => {
           <Thumbnail musicId={music.id} className="w-full h-[150px]" />
         ) : (
           <img
-            src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
+            src={preview?.thumbnailUrl ?? `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
             alt=""
             className="w-full h-[150px] object-cover"
           />
         )}
       </div>
 
-      {music && (
+      {music ? (
         <div>
           <h2 className="font-semibold text-sm text-ink line-clamp-2 leading-snug">
             {music.title}
@@ -135,6 +167,52 @@ export const VideoTab: React.FC = () => {
             {music.duration ? ` · ${formatDuration(music.duration)}` : ""}
           </p>
         </div>
+      ) : (
+        preview && (
+          <div>
+            <h2 className="font-semibold text-sm text-ink line-clamp-2 leading-snug">
+              {preview.title}
+            </h2>
+            <p className="text-xs text-ink-secondary mt-1">
+              {preview.channel}
+              {preview.duration !== null ? ` · ${formatDuration(preview.duration)}` : ""}
+            </p>
+          </div>
+        )
+      )}
+
+      {(status === "not-found" || status === "error") && (
+        <>
+          {!preview && !previewError && <Loader text="Chargement des informations…" />}
+
+          {previewError && (
+            <p className="text-xs text-ink-tertiary">
+              Détails indisponibles ({previewError}) : la vidéo sera convertie en entier.
+            </p>
+          )}
+
+          {preview && total === null && (
+            <Banner variant="warning" icon={<FiAlertCircle />}>
+              Durée inconnue (direct ?) : cette vidéo ne peut pas être convertie.
+            </Banner>
+          )}
+
+          {total !== null && resolvedClip && (
+            <ClipEditor
+              total={total}
+              value={clipInput}
+              resolved={resolvedClip}
+              onChange={setClipInput}
+            />
+          )}
+
+          {tooLong && preview && (
+            <Banner variant="warning" icon={<FiAlertCircle />}>
+              Trop long : {formatDuration(preview.maxDuration)} maximum. Coupez la vidéo pour la
+              convertir.
+            </Banner>
+          )}
+        </>
       )}
 
       {status === "converted" && (
@@ -150,9 +228,9 @@ export const VideoTab: React.FC = () => {
       )}
 
       {status === "not-found" && (
-        <Button onClick={handleConvert} className="w-full py-2.5">
+        <Button onClick={handleConvert} disabled={!canConvert} className="w-full py-2.5">
           <FiDownload size={16} />
-          Convertir
+          {resolvedClip?.ok && resolvedClip.clip ? "Convertir l'extrait" : "Convertir"}
         </Button>
       )}
 
@@ -161,7 +239,7 @@ export const VideoTab: React.FC = () => {
           <Banner variant="error" icon={<FiAlertCircle />}>
             {errorMsg ?? "Une erreur est survenue."}
           </Banner>
-          <Button onClick={handleConvert} className="w-full py-2.5">
+          <Button onClick={handleConvert} disabled={!canConvert} className="w-full py-2.5">
             Réessayer
           </Button>
         </div>

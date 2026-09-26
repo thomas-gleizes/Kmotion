@@ -36,3 +36,10 @@ new MutationObserver(() => {
     notify()
   }
 }).observe(document.documentElement, { subtree: true, childList: true })
+
+// The popup asks for the playback position to fill the clip bounds.
+chrome.runtime.onMessage.addListener((request: { type?: string }, _sender, sendResponse) => {
+  if (request?.type !== "GET_CURRENT_TIME") return
+  const video = document.querySelector<HTMLVideoElement>("video.html5-main-video, video")
+  sendResponse({ time: video ? video.currentTime : null })
+})
