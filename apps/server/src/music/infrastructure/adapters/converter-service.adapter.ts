@@ -8,11 +8,17 @@ import { MediaSource } from 'src/music/domain/values-object/media-source.value-o
 import {
   type Conversion,
   ConverterServicePort,
+  type MediaPreview,
 } from 'src/music/domain/port/converter-service.port';
+import type { Clip } from 'src/music/domain/values-object/clip.value-object';
 import { DomainException } from 'src/shared/domain/exceptions/domain.exception';
 import { MusicsFactory } from 'src/music/infrastructure/factories/musics.factory';
 import { Music } from 'src/music/domain/music.entity';
-import { toConversion } from 'src/music/infrastructure/adapters/converter-mapping';
+import {
+  describeConverterError,
+  toConversion,
+  toMediaPreview,
+} from 'src/music/infrastructure/adapters/converter-mapping';
 
 const isSupportedSource = (provider: string) =>
   (Object.values(MediaSource) as string[]).includes(provider);
@@ -54,17 +60,45 @@ export class ConverterServiceAdapter implements ConverterServicePort {
   async requestConversion(
     mediaId: string,
     mediaSource: MediaSource,
+    clip?: Clip,
   ): Promise<Conversion> {
     this.logger.debug(
       `Requesting conversion of ${mediaId} from ${mediaSource}`,
     );
 
     try {
-      const { track } = await this.converterHttpService.requestTrack(mediaId);
+      const { track } = await this.converterHttpService.requestTrack(
+        mediaId,
+        clip,
+      );
       return toConversion(track);
     } catch (error) {
       this.logger.error('Failed to request conversion', error);
-      throw new DomainException('Error while downloading track');
+      throw new DomainException(
+        describeConverterError(error) ?? 'Error while downloading track',
+      );
+    }
+  }
+
+  async previewMedia(
+    mediaId: string,
+    mediaSource: MediaSource,
+    clip?: Clip,
+  ): Promise<MediaPreview> {
+    try {
+      const preview = await this.converterHttpService.previewSource(
+        mediaId,
+        clip,
+      );
+      return toMediaPreview(preview);
+    } catch (error) {
+      this.logger.error(
+        `Failed to preview ${mediaId} from ${mediaSource}`,
+        error,
+      );
+      throw new DomainException(
+        describeConverterError(error) ?? 'Error while fetching media details',
+      );
     }
   }
 

@@ -1,5 +1,7 @@
+import { AxiosError, AxiosHeaders } from 'axios';
 import type {
   YtConverterHttpService,
+  YtErrorBody,
   YtTrack,
 } from 'src/core/converter/yt-converter-http.service';
 import type { MusicReadRepositoryPort } from 'src/music/application/port/music-read-repository.port';
@@ -26,9 +28,21 @@ const track = (overrides: Partial<YtTrack> = {}): YtTrack => ({
   ...overrides,
 });
 
+const converterError = (status: number, data: YtErrorBody) =>
+  new AxiosError('Request failed', String(status), undefined, undefined, {
+    status,
+    data,
+    statusText: '',
+    headers: {},
+    config: { headers: new AxiosHeaders() },
+  });
+
 describe('ConverterServiceAdapter', () => {
   let http: jest.Mocked<
-    Pick<YtConverterHttpService, 'fetchTracks' | 'fetchTrack' | 'requestTrack'>
+    Pick<
+      YtConverterHttpService,
+      'fetchTracks' | 'fetchTrack' | 'requestTrack' | 'previewSource'
+    >
   >;
   let readRepository: jest.Mocked<Pick<MusicReadRepositoryPort, 'exist'>>;
   let adapter: ConverterServiceAdapter;
@@ -38,6 +52,7 @@ describe('ConverterServiceAdapter', () => {
       fetchTracks: jest.fn(),
       fetchTrack: jest.fn(),
       requestTrack: jest.fn(),
+      previewSource: jest.fn(),
     };
     readRepository = { exist: jest.fn() };
     adapter = new ConverterServiceAdapter(
@@ -75,6 +90,73 @@ describe('ConverterServiceAdapter', () => {
     await expect(
       adapter.requestConversion('x', MediaSource.youtube),
     ).rejects.toBeInstanceOf(DomainException);
+  });
+
+  it('forwards the clip to the converter', async () => {
+    http.requestTrack.mockResolvedValue({ track: track(), created: true });
+
+    await adapter.requestConversion('x', MediaSource.youtube, { end: 120 });
+
+    expect(http.requestTrack).toHaveBeenCalledWith('x', { end: 120 });
+  });
+
+  it.each([
+    [
+      converterError(400, { _tag: 'InvalidClip', reason: 'end is too far' }),
+      'Invalid clip: end is too far',
+    ],
+    [
+      converterError(422, { _tag: 'DurationLimitExceeded', limit: 1800 }),
+      'Media is longer than the allowed 30 minutes',
+    ],
+    [converterError(500, {}), 'Error while downloading track'],
+  ])('explains rejected conversions (%#)', async (error, message) => {
+    http.requestTrack.mockRejectedValue(error);
+
+    await expect(
+      adapter.requestConversion('x', MediaSource.youtube),
+    ).rejects.toThrow(message);
+  });
+
+  it('maps a media preview', async () => {
+    http.previewSource.mockResolvedValue({
+      info: {
+        ref: { provider: 'youtube', externalId: 'dQw4w9WgXcQ' },
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        title: 'Song',
+        channel: 'Channel',
+        duration: 212,
+        thumbnailUrl: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hq.jpg',
+      },
+      maxDuration: 1800,
+      clip: { start: 0, end: 200, duration: 200, isFull: false },
+      exceedsLimit: false,
+    });
+
+    await expect(
+      adapter.previewMedia('dQw4w9WgXcQ', MediaSource.youtube, { end: 200 }),
+    ).resolves.toEqual({
+      title: 'Song',
+      channel: 'Channel',
+      duration: 212,
+      thumbnailUrl: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hq.jpg',
+      maxDuration: 1800,
+      clip: { start: 0, end: 200, duration: 200 },
+      exceedsLimit: false,
+    });
+    expect(http.previewSource).toHaveBeenCalledWith('dQw4w9WgXcQ', {
+      end: 200,
+    });
+  });
+
+  it('wraps preview failures in a DomainException', async () => {
+    http.previewSource.mockRejectedValue(
+      converterError(502, { _tag: 'SourceUnavailable', reason: 'private' }),
+    );
+
+    await expect(
+      adapter.previewMedia('x', MediaSource.youtube),
+    ).rejects.toThrow(new DomainException('Media is unavailable'));
   });
 
   it('returns null for a conversion the converter no longer has', async () => {

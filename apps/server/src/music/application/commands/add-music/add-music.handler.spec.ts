@@ -28,13 +28,18 @@ const command = () =>
 
 describe('AddMusicHandler', () => {
   let writeRepository: jest.Mocked<Pick<MusicWriteRepositoryPort, 'save'>>;
-  let readRepository: jest.Mocked<Pick<MusicReadRepositoryPort, 'exist'>>;
+  let readRepository: jest.Mocked<
+    Pick<MusicReadRepositoryPort, 'exist' | 'findByMediaId'>
+  >;
   let converter: jest.Mocked<Pick<ConverterServicePort, 'requestConversion'>>;
   let handler: AddMusicHandler;
 
   beforeEach(() => {
     writeRepository = { save: jest.fn() };
-    readRepository = { exist: jest.fn().mockResolvedValue(false) };
+    readRepository = {
+      exist: jest.fn().mockResolvedValue(false),
+      findByMediaId: jest.fn().mockResolvedValue(null),
+    };
     converter = { requestConversion: jest.fn() };
     handler = new AddMusicHandler(
       writeRepository as unknown as MusicWriteRepositoryPort,
@@ -60,7 +65,38 @@ describe('AddMusicHandler', () => {
     expect(converter.requestConversion).toHaveBeenCalledWith(
       'dQw4w9WgXcQ',
       MediaSource.youtube,
+      undefined,
     );
+  });
+
+  it('requests only the clipped portion of the media', async () => {
+    converter.requestConversion.mockResolvedValue(conversion());
+
+    await handler.execute(
+      new AddMusicCommand({
+        mediaId: 'dQw4w9WgXcQ',
+        mediaSource: MediaSource.youtube,
+        userId: 'user-1',
+        clip: { start: 5, end: 180 },
+      }),
+    );
+
+    expect(converter.requestConversion).toHaveBeenCalledWith(
+      'dQw4w9WgXcQ',
+      MediaSource.youtube,
+      { start: 5, end: 180 },
+    );
+  });
+
+  it('refuses a media already in the library before asking the converter', async () => {
+    readRepository.findByMediaId.mockResolvedValue({
+      conversionStatus: ConversionStatus.ready,
+    } as Awaited<ReturnType<MusicReadRepositoryPort['findByMediaId']>>);
+
+    await expect(handler.execute(command())).rejects.toThrow(
+      'Media is already downloaded',
+    );
+    expect(converter.requestConversion).not.toHaveBeenCalled();
   });
 
   it('registers an already converted media as ready', async () => {

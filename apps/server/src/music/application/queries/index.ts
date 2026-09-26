@@ -4,10 +4,12 @@ import { FindMusicsHandler } from 'src/music/application/queries/find-musics/fin
 import { FindMusicByIdHandler } from 'src/music/application/queries/find-music-by-id/find-music-by-id.handler';
 import { SearchMusicsHandler } from 'src/music/application/queries/search-musics/search-musics.handler';
 import { FindMusicByMediaIdHandler } from 'src/music/application/queries/find-music-by-media-id/find-music-by-media-id.handler';
+import { PreviewMediaHandler } from 'src/music/application/queries/preview-media/preview-media.handler';
 
 export const musicsQueryHandlers: Type<IQueryHandler<any>>[] = [
   FindMusicsHandler,
   FindMusicByIdHandler,
   SearchMusicsHandler,
   FindMusicByMediaIdHandler,
+  PreviewMediaHandler,
 ];

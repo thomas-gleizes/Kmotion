@@ -33,19 +33,23 @@ export class AddMusicHandler implements ICommandHandler<AddMusicCommand> {
   ) {}
 
   async execute({ payload }: AddMusicCommand): Promise<string> {
-    const conversion = await this.converterService.requestConversion(
+    // One music per media: the converter keys tracks on the clip too, so a
+    // different clip of a known media would otherwise become a second music.
+    const existing = await this.musicReadRepository.findByMediaId(
       payload.mediaId,
       payload.mediaSource,
     );
+    if (existing) throw this.alreadyInLibrary(existing.conversionStatus);
+
+    const conversion = await this.converterService.requestConversion(
+      payload.mediaId,
+      payload.mediaSource,
+      payload.clip,
+    );
 
     // The converter deduplicates: an equivalent request returns its track.
-    // Messages are matched by the browser extension, keep them stable.
     if (await this.musicReadRepository.exist(conversion.converterId)) {
-      throw new DomainException(
-        conversion.status === ConversionStatus.ready
-          ? 'Media is already downloaded'
-          : 'Track is downloading',
-      );
+      throw this.alreadyInLibrary(conversion.status);
     }
 
     const music = Music.create(
@@ -65,5 +69,14 @@ export class AddMusicHandler implements ICommandHandler<AddMusicCommand> {
     await this.musicRepository.save(music);
 
     return music.id;
+  }
+
+  // Messages are matched by the browser extension, keep them stable.
+  private alreadyInLibrary(status: ConversionStatus) {
+    return new DomainException(
+      status === ConversionStatus.ready
+        ? 'Media is already downloaded'
+        : 'Track is downloading',
+    );
   }
 }

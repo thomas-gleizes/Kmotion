@@ -45,6 +45,9 @@ import {
 import { RessourceNotFoundException } from 'src/shared/domain/exceptions/ressource-not-found.exception';
 import { MediaSource } from 'src/music/domain/values-object/media-source.value-object';
 import { MusicsResponseDto } from 'src/music/presentation/dto/output/musics-response.dto';
+import { PreviewMediaQuery } from 'src/music/application/queries/preview-media/preview-media.query';
+import { PreviewMediaQueryDto } from 'src/music/presentation/dto/input/preview-media-query.dto';
+import { MediaPreviewResponseDto } from 'src/music/presentation/dto/output/media-preview-response.dto';
 import type { Response as ExpressResponse } from 'express';
 
 @Controller('musics')
@@ -143,6 +146,7 @@ class MusicController {
         mediaId: body.mediaId,
         mediaSource: body.mediaSource,
         userId: auth.sub,
+        clip: body.clip,
       }),
     );
   }
@@ -295,6 +299,37 @@ class MusicController {
     );
 
     return MusicResponseDto.fromReadModel(record);
+  }
+
+  @Get('/media/:id/preview')
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    operationId: 'previewMedia',
+    summary: 'Preview a media before adding it',
+    description:
+      'Details of the media from the converter, and the given clip resolved against it',
+  })
+  @ApiOkResponse({
+    type: MediaPreviewResponseDto,
+    description: 'Media preview',
+  })
+  async previewMedia(
+    @Param('id') mediaId: string,
+    @Query() query: PreviewMediaQueryDto,
+  ) {
+    // Query strings are validated but not transformed: parse the bounds here.
+    const toSeconds = (value?: number) =>
+      value === undefined ? undefined : Number(value);
+
+    const preview = await this.queryBus.execute(
+      new PreviewMediaQuery({
+        mediaId,
+        mediaSource: query.mediaSource,
+        clip: { start: toSeconds(query.start), end: toSeconds(query.end) },
+      }),
+    );
+
+    return MediaPreviewResponseDto.fromPreview(preview);
   }
 }
 

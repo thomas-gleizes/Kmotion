@@ -26,6 +26,42 @@ export type YtTrack = {
 
 export type MediaKind = 'audio' | 'thumbnail';
 
+/**
+ * Portion of the source to keep, in seconds. `end` defaults to the end of the
+ * source; a negative value is relative to it.
+ */
+export type YtClip = { start?: number; end?: number };
+
+/** What yt-converter knows about a media before converting it. */
+export type YtSourcePreview = {
+  info: {
+    ref: { provider: string; externalId: string };
+    url: string;
+    title: string;
+    channel: string;
+    /** `null` for live streams. */
+    duration: number | null;
+    thumbnailUrl: string | null;
+  };
+  /** Longest audio the converter accepts, in seconds. */
+  maxDuration: number;
+  /** The clip resolved against the source, `null` when it is invalid. */
+  clip: {
+    start: number;
+    end: number;
+    duration: number;
+    isFull: boolean;
+  } | null;
+  exceedsLimit: boolean;
+};
+
+/** Error body of yt-converter (a tagged domain error). */
+export type YtErrorBody = {
+  _tag?: string;
+  reason?: string;
+  limit?: number;
+};
+
 /** The requested media is not (yet) available on the converter. */
 export class ConverterMediaUnavailableError extends Error {
   constructor(converterId: number, kind: MediaKind) {
@@ -69,10 +105,22 @@ export class YtConverterHttpService {
    */
   async requestTrack(
     url: string,
+    clip?: YtClip,
   ): Promise<{ track: YtTrack; created: boolean }> {
     const { data } = await firstValueFrom(
       this.httpService.post<{ track: YtTrack; created: boolean }>('/tracks', {
         url,
+        ...(clip && { clip }),
+      }),
+    );
+    return data;
+  }
+
+  /** Inspects a media (metadata, duration limit, clip) without converting it. */
+  async previewSource(url: string, clip?: YtClip): Promise<YtSourcePreview> {
+    const { data } = await firstValueFrom(
+      this.httpService.get<YtSourcePreview>('/sources/preview', {
+        params: { url, start: clip?.start, end: clip?.end },
       }),
     );
     return data;

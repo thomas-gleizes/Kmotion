@@ -57,6 +57,31 @@ describe('YtConverterHttpService', () => {
     expect(result).toMatchObject({ created: true, track: { id: 7 } });
   });
 
+  it('sends the clip along with the conversion request', async () => {
+    http.post.mockReturnValue(
+      response({ track: track({ status: 'pending' }), created: true }),
+    );
+
+    await service.requestTrack('dQw4w9WgXcQ', { start: 12, end: 200 });
+
+    expect(http.post).toHaveBeenCalledWith('/tracks', {
+      url: 'dQw4w9WgXcQ',
+      clip: { start: 12, end: 200 },
+    });
+  });
+
+  it('previews a source with the clip bounds as query parameters', async () => {
+    const preview = { maxDuration: 1800 };
+    http.get.mockReturnValue(response(preview));
+
+    await expect(
+      service.previewSource('dQw4w9WgXcQ', { end: 200 }),
+    ).resolves.toBe(preview);
+    expect(http.get).toHaveBeenCalledWith('/sources/preview', {
+      params: { url: 'dQw4w9WgXcQ', start: undefined, end: 200 },
+    });
+  });
+
   it('returns null for an unknown track and rethrows other errors', async () => {
     http.get.mockReturnValueOnce(notFound());
     await expect(service.fetchTrack(7)).resolves.toBeNull();
