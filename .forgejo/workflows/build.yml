@@ -1,0 +1,88 @@
+name: Test, Build & Push
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+env:
+  REGISTRY: forgejo.vpn.internal
+  OWNER: kalat
+
+jobs:
+  test:
+    name: Test server
+    runs-on: docker
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+
+      - name: Run unit tests
+        working-directory: ./apps/server
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.13.1 --activate
+          pnpm install --frozen-lockfile
+          pnpm test
+
+  build:
+    name: Build ${{ matrix.image }}
+    runs-on: docker
+    needs: test
+
+    strategy:
+      matrix:
+        include:
+          - image: kmotion
+            context: ./apps/server
+            file: ./apps/server/Dockerfile
+          # Web image is built from the repo root so its Dockerfile can also
+          # build the browser extension and bundle it as a static download.
+          - image: kmotion-web
+            context: .
+            file: ./apps/web/Dockerfile
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Tag triable ET lisible : <date du commit UTC>-<sha court>.
+      # Flux (image-reflector) élit le plus récent en triant ces tags dans
+      # l'ordre alphabétique, ce qui n'équivaut à l'ordre chronologique que si
+      # l'horodatage est en largeur fixe et zéro-padé — d'où l'ISO compact.
+      # Il vient de la DATE DU COMMIT, pas de l'heure du build : les deux legs
+      # de la matrice produisent le même tag, et il est reproductible.
+      # Format partagé avec cluster-config (clusters/core/images.yaml) : ne pas
+      # le modifier d'un seul côté.
+      - name: Compute the deploy tag
+        run: |
+          ts=$(date -u -d "@$(git show -s --format=%ct HEAD)" +%Y%m%dT%H%M%SZ)
+          echo "TAG=${ts}-$(git rev-parse --short=7 HEAD)" >> "$GITHUB_ENV"
+
+      # `docker build` passe par le démon du runner, qui connaît
+      # `insecure-registries` et /etc/hosts — pas de buildx/setup-buildx-action,
+      # dont le builder BuildKit ignorerait les deux. Les deux nœuds sont amd64.
+      - name: Build image
+        run: |
+          docker build -f "${{ matrix.file }}" \
+            -t "$REGISTRY/$OWNER/${{ matrix.image }}:$TAG" "${{ matrix.context }}"
+
+      # Garde-fou : on construit sur toutes les branches pour valider les
+      # Dockerfiles, mais seul master pousse. Sans lui, n'importe quelle
+      # branche produirait un tag correspondant à la policy Flux et partirait
+      # en production.
+      - name: Push image
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        env:
+          REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+        run: |
+          echo "$REGISTRY_TOKEN" | docker login "$REGISTRY" -u "$OWNER" --password-stdin
+          docker push "$REGISTRY/$OWNER/${{ matrix.image }}:$TAG"
+
+# Rien après le push : Flux surveille le registry Forgejo, élit le tag le plus
+# récent et écrit lui-même le manifest dans cluster-config. Ce dépôt n'a aucun
+# accès à cluster-config.

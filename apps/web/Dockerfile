@@ -1,4 +1,4 @@
-# Build context is the repository root (see .github workflow / `docker build .`)
+# Build context is the repository root (see .forgejo/workflows/build.yml / `docker build .`)
 # so we can build the browser extension and ship it as a static download
 # alongside the web app.
 FROM node:24.16.0-alpine3.23 AS base
