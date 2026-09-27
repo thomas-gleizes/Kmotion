@@ -10,11 +10,11 @@ This is a multi-app repository — each app under `apps/` is managed independent
 - `apps/web` — React 19 + Vite frontend: TanStack Router/Query, Zustand stores, Panda CSS. The main player/playlist/admin UI.
 - `apps/extension` — Browser extension (React + Vite + Tailwind) for converting/saving YouTube videos as MP3s. Has its own README/ARCHITECTURE.md docs in that directory.
 
-Each app has its own Dockerfile (`apps/server/Dockerfile`, `apps/web/Dockerfile`); there is no root Dockerfile. `apps/server/Dockerfile` is multi-stage: pnpm install → drizzle generate → nest build → slim alpine runner. `apps/web/Dockerfile` is built from the **repo root** as context (so it can also build `apps/extension` and ship the packaged `.zip` as a static download at `/downloads/kmotion-extension.zip`), then serves the Vite build via nginx.
+Each app has its own Dockerfile (`apps/server/Dockerfile`, `apps/web/Dockerfile`); there is no root Dockerfile. `apps/server/Dockerfile` is multi-stage: pnpm install → drizzle generate → nest build → slim alpine runner. `apps/web/Dockerfile` (context `apps/web`) serves the Vite build via nginx. The browser extension is not in any image: CI packages it and uploads the `.zip` to the infra's MinIO (bucket `kmotion-extension`, key `kmotion-extension.zip`, plus `archive/<tag>.zip`), and the backend relays it at `GET /api/3.1/extension/download` (authenticated).
 
 `compose.yml` runs a local Postgres 17 instance for development. The Kubernetes manifests live in the separate `cluster-config` repo (`apps/kmotion`), not here.
 
-The canonical repo is on Forgejo (`git@forgejo.vpn.internal:kalat/kmotion.git`, remote `local`); GitHub (`origin`) is a mirror pushed by hand. CI is Forgejo Actions (`.forgejo/workflows/build.yml`, runner label `docker`): it runs the server unit tests, then builds both images and — on `master` only — pushes them to the Forgejo registry as `forgejo.vpn.internal/kalat/kmotion[-web]:<YYYYMMDD>T<HHMMSS>Z-<sha7>` (commit date, UTC). That tag format is load-bearing: Flux image automation in `cluster-config` sorts it to elect the newest tag and commits it there itself — this repo has no access to `cluster-config`. `.github/workflows/docker-publish.yml` (GHCR) is the pre-migration pipeline, kept until the switch-over is complete.
+The canonical repo is on Forgejo (`git@forgejo.vpn.internal:kalat/kmotion.git`, remote `local`); GitHub (`origin`) is a mirror pushed by hand. CI is Forgejo Actions (`.forgejo/workflows/build.yml`, runner label `docker`): an `extension` job builds/packages the extension and, on `master` only, uploads it to MinIO's S3 API at `http://s3.vpn.internal` with `curl --aws-sigv4` (the `mc` client is no longer distributed; repo secrets `S3_ACCESS_KEY`/`S3_SECRET_KEY` belong to a MinIO user limited to `s3:PutObject` on the bucket). In parallel it runs the server unit tests, then builds both images and — on `master` only — pushes them to the Forgejo registry as `forgejo.vpn.internal/kalat/kmotion[-web]:<YYYYMMDD>T<HHMMSS>Z-<sha7>` (commit date, UTC). That tag format is load-bearing: Flux image automation in `cluster-config` sorts it to elect the newest tag and commits it there itself — this repo has no access to `cluster-config`. `.github/workflows/docker-publish.yml` (GHCR) is the pre-migration pipeline, kept until the switch-over is complete.
 
 ## Commands (apps/server)
 
@@ -56,7 +56,7 @@ Code style: Prettier with `semi: false`, `printWidth: 100`, `endOfLine: lf`. ESL
 
 ## Server architecture
 
-`apps/server` follows a hexagonal/CQRS architecture using `@nestjs/cqrs`. Each bounded-context module (`auth`, `user`, `music`, `playlist`, `health`) is structured the same way under `src/<module>/`:
+`apps/server` follows a hexagonal/CQRS architecture using `@nestjs/cqrs`. Each bounded-context module (`auth`, `user`, `music`, `playlist`, `extension`, `health`) is structured the same way under `src/<module>/`:
 
 - `domain/` — entities (e.g. `playlist.entity.ts`), value objects, domain exceptions, and **ports** (interfaces) that the domain depends on (e.g. `domain/port/playlist-write-repository.port.ts`).
 - `application/` — use cases, split into `commands/` and `queries/`, each as `<name>.command.ts`/`<name>.query.ts` + `<name>.handler.ts` (and often `<name>.handler.spec.ts`). Application-level ports also live here (e.g. `application/port/playlist-query-repository.port.ts`). `index.ts` files in `commands/`/`queries/` export arrays of handler providers (e.g. `playlistCommandHandlers`, `playlistQueryHandlers`) for module registration.
@@ -67,6 +67,7 @@ Code style: Prettier with `semi: false`, `printWidth: 100`, `endOfLine: lf`. ESL
 Cross-cutting code lives in `src/shared/` (domain exceptions like `DomainException`/`RessourceNotFoundException`, presentation guards/decorators/interceptors/exception filters) and `src/core/` (config/environment validation via Zod in `core/config/environment.ts`, Drizzle DB setup in `core/database/`, the converter HTTP client module, and CQRS type augmentations in `core/cqrs/`).
 
 Key points:
+- `extension` module: `GET /extension/download` streams the packaged browser extension from S3/MinIO (`S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `EXTENSION_BUCKET`, `EXTENSION_OBJECT_KEY`) through the `EXTENSION_ARCHIVE_STORAGE_PORT` adapter; a missing object is a 404.
 - All environment variables are validated and typed through the Zod schema in `src/core/config/environment.ts` (`environment` export) — add new env vars there rather than reading `process.env` directly.
 - `src/core/database/schemas.ts` re-exports all Drizzle table schemas from each module's `infrastructure/persistance/schemas/`; this combined `schema` object is passed to `drizzle()` in `core/database/database.ts`.
 - Auth: `AuthGuard` (in `src/shared/presentation/guards/auth.guard.ts`) verifies JWTs via the `AUTH_SERVICE_PORT` and attaches the decoded payload to `request.user`; use the `@CurrentUser()` decorator (`src/shared/presentation/decorators/current-user.decorator.ts`) to access it in controllers.

@@ -7,6 +7,7 @@ import { CoreModule } from 'src/core/core.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PlaylistModule } from 'src/playlist/playlist.module';
+import { ExtensionModule } from 'src/extension/extension.module';
 
 @Module({
   controllers: [HealthController],
@@ -18,6 +19,7 @@ import { PlaylistModule } from 'src/playlist/playlist.module';
     UserModule,
     MusicModule,
     PlaylistModule,
+    ExtensionModule,
   ],
 })
 export class AppModule {}

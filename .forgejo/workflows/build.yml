@@ -30,6 +30,62 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm test
 
+  # L'extension navigateur n'est plus embarquée dans l'image web : le zip est
+  # déposé dans le MinIO de l'infra (bucket `kmotion-extension`) et le backend
+  # le relaie (GET /api/3.1/extension/download). Toutes les branches le
+  # construisent, seul master le publie — même garde que le push des images.
+  extension:
+    name: Build & publish extension
+    runs-on: docker
+
+    env:
+      # API de production, injectée par Vite dans le build.
+      VITE_API_URL: https://kmotion.thomasgleizes.fr/api/3.1
+      # API S3 de MinIO, servie sur le tailnet par traefik-internal ; le
+      # runner la résout via --add-host (cluster-config, tools/forgejo-runner).
+      S3_URL: http://s3.vpn.internal
+      S3_BUCKET: kmotion-extension
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+
+      - name: Build and package
+        working-directory: ./apps/extension
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.13.1 --activate
+          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm build
+          pnpm package
+
+      # Même tag que les images : sert de clé à l'archive historisée.
+      - name: Compute the deploy tag
+        run: |
+          ts=$(date -u -d "@$(git show -s --format=%ct HEAD)" +%Y%m%dT%H%M%SZ)
+          echo "TAG=${ts}-$(git rev-parse --short=7 HEAD)" >> "$GITHUB_ENV"
+
+      # curl signe lui-même en SigV4 : le client `mc` n'est plus distribué
+      # (dl.min.io répond 410), et l'utilisateur MinIO de la CI n'a que
+      # s3:PutObject sur ce bucket. `kmotion-extension.zip` est la clé lue par
+      # le backend ; `archive/<tag>.zip` garde l'historique pour un rollback.
+      - name: Upload to MinIO
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        working-directory: ./apps/extension
+        env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+        run: |
+          for key in "archive/$TAG.zip" kmotion-extension.zip; do
+            curl -fsS --aws-sigv4 "aws:amz:us-east-1:s3" \
+              --user "$S3_ACCESS_KEY:$S3_SECRET_KEY" \
+              -H "Content-Type: application/zip" \
+              -T build/kmotion-extension.zip "$S3_URL/$S3_BUCKET/$key"
+          done
+
   build:
     name: Build ${{ matrix.image }}
     runs-on: docker
@@ -41,10 +97,8 @@ jobs:
           - image: kmotion
             context: ./apps/server
             file: ./apps/server/Dockerfile
-          # Web image is built from the repo root so its Dockerfile can also
-          # build the browser extension and bundle it as a static download.
           - image: kmotion-web
-            context: .
+            context: ./apps/web
             file: ./apps/web/Dockerfile
 
     steps:

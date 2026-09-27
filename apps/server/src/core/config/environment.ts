@@ -24,6 +24,14 @@ export const validationSchema = z.object({
 
   CONVERTER_URL: z.url().default('http://localhost:3000'),
   CONVERTER_KEY: z.string().default(''),
+
+  // S3 (MinIO) holding the packaged browser extension, uploaded by the CI.
+  S3_ENDPOINT: z.url().default('http://localhost:9000'),
+  S3_REGION: z.string().default('us-east-1'),
+  S3_ACCESS_KEY: z.string().default(''),
+  S3_SECRET_KEY: z.string().default(''),
+  EXTENSION_BUCKET: z.string().default('kmotion-extension'),
+  EXTENSION_OBJECT_KEY: z.string().default('kmotion-extension.zip'),
 });
 
 export type Environment = z.infer<typeof validationSchema>;

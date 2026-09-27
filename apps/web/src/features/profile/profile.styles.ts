@@ -66,8 +66,11 @@ export const downloadButton = css({
   transition: "all token(durations.fast) token(easings.apple)",
   _hover: { backgroundColor: "accentHover" },
   _active: { transform: "scale(0.97)" },
+  _disabled: { opacity: 0.6, cursor: "default", transform: "none" },
   _touch: { minHeight: "44px" },
 })
+
+export const downloadError = css({ fontSize: "13px", color: "danger" })
 
 export const themeGrid = css({
   display: "grid",
