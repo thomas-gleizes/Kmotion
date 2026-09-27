@@ -12,7 +12,9 @@ This is a multi-app repository — each app under `apps/` is managed independent
 
 Each app has its own Dockerfile (`apps/server/Dockerfile`, `apps/web/Dockerfile`); there is no root Dockerfile. `apps/server/Dockerfile` is multi-stage: pnpm install → drizzle generate → nest build → slim alpine runner. `apps/web/Dockerfile` is built from the **repo root** as context (so it can also build `apps/extension` and ship the packaged `.zip` as a static download at `/downloads/kmotion-extension.zip`), then serves the Vite build via nginx.
 
-`compose.yml` runs a local Postgres 17 instance for development. `k8s/` contains Kubernetes manifests for deployment: `app/` (server), `web/`, `database/`, `cert-manager/`, plus PodDisruptionBudgets for zero-downtime rollouts. CI (`.github/workflows/docker-publish.yml`) runs server unit tests, builds/pushes both `app`/`web` images to GHCR (tagged `latest` + the full commit SHA), and on `master` commits the new SHA tag into the `cluster-config` repo (`apps/kmotion`) via `kustomize edit set image`, which Flux then reconciles.
+`compose.yml` runs a local Postgres 17 instance for development. The Kubernetes manifests live in the separate `cluster-config` repo (`apps/kmotion`), not here.
+
+The canonical repo is on Forgejo (`git@forgejo.vpn.internal:kalat/kmotion.git`, remote `local`); GitHub (`origin`) is a mirror pushed by hand. CI is Forgejo Actions (`.forgejo/workflows/build.yml`, runner label `docker`): it runs the server unit tests, then builds both images and — on `master` only — pushes them to the Forgejo registry as `forgejo.vpn.internal/kalat/kmotion[-web]:<YYYYMMDD>T<HHMMSS>Z-<sha7>` (commit date, UTC). That tag format is load-bearing: Flux image automation in `cluster-config` sorts it to elect the newest tag and commits it there itself — this repo has no access to `cluster-config`. `.github/workflows/docker-publish.yml` (GHCR) is the pre-migration pipeline, kept until the switch-over is complete.
 
 ## Commands (apps/server)
 
