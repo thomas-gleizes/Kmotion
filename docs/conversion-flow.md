@@ -67,7 +67,7 @@ sequenceDiagram
     par yt-converter convertit
         YT->>YT: téléchargement + extraction audio<br/>pending → processing → ready / failed
     and RefreshConversionsTask (toutes les 15 s)
-        loop pour chaque musique pending
+        loop pour chaque musique pending / processing
             API->>YT: GET /tracks/{converterId}
             YT-->>API: track.status (404 → failed)
             API->>DB: UPDATE conversion_status, duration
@@ -116,26 +116,36 @@ flowchart TD
 
 ## Cycle de vie d'une conversion
 
-yt-converter a quatre états, repliés en trois par `toConversionStatus` (`converter-mapping.ts`).
+Les quatre états de yt-converter sont conservés tels quels par `toConversionStatus`
+(`converter-mapping.ts`) : `pending` = en file d'attente, `processing` = conversion en cours.
 
 ```mermaid
 stateDiagram-v2
     direction LR
     [*] --> pending: POST /musics<br/>(AddMusicHandler)
 
-    state "pending" as pending
     note right of pending
-        yt-converter : pending | processing
-        Absente des listes / recherche
-        (isListable = ready uniquement),
-        mais visible par mediaId / id
+        Tant que non ready : absente des listes / recherche
+        (isListable = ready uniquement), visible par mediaId / id
+        et dans l'onglet admin Conversions
     end note
 
+    pending --> processing: RefreshConversions<br/>track.status = processing
     pending --> ready: RefreshConversions<br/>track.status = ready
-    pending --> failed: RefreshConversions<br/>track.status = failed<br/>ou track supprimé (404)
+    processing --> ready: RefreshConversions<br/>track.status = ready
+    pending --> failed: track.status = failed<br/>ou track supprimé (404)
+    processing --> failed: track.status = failed<br/>ou track supprimé (404)
     ready --> [*]: audio et vignette<br/>servis en streaming
-    failed --> [*]
+    failed --> [*]: supprimable depuis l'admin
 ```
+
+## Suivi admin des conversions
+
+L'onglet **Administration → Conversions** (`apps/web/src/features/admin/components/ConversionsSection.tsx`)
+appelle `GET /musics/conversions` (admin, `FindConversionsQuery` → `findUnfinished`) toutes les 5 s :
+toutes les musiques non `ready`, de la plus ancienne à la plus récente, avec un badge
+« En file d'attente » / « Conversion en cours » / « Échouée ». Une conversion échouée peut être
+supprimée pour libérer la vidéo et la relancer.
 
 ## Synchronisation manuelle (admin)
 

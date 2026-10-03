@@ -40,6 +40,14 @@ export const musicSearchQuery = (query: string) =>
       unwrap(await api.GET("/api/3.1/musics/search", { params: { query: { query } } })),
   })
 
+// Conversions non terminées (admin), suivies en continu pendant qu'elles avancent.
+export const conversionsQuery = () =>
+  queryOptions({
+    queryKey: keys.conversions,
+    queryFn: async () => unwrap(await api.GET("/api/3.1/musics/conversions")),
+    refetchInterval: 5000,
+  })
+
 export function useAddMusic() {
   const queryClient = useQueryClient()
   return useMutation({

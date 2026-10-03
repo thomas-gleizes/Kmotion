@@ -62,6 +62,13 @@ export class MusicResponseDto {
   conversionStatus: ConversionStatus;
 
   @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'When the track was added to the library',
+  })
+  createdAt: Date;
+
+  @ApiProperty({
     type: Boolean,
     description: 'Whether the current user has favorited this track',
     example: false,
@@ -80,6 +87,7 @@ export class MusicResponseDto {
     dto.mediaId = model.mediaId;
     dto.converted = model.converted;
     dto.conversionStatus = model.conversionStatus;
+    dto.createdAt = model.createdAt;
     dto.isFavorite = model.isFavorite;
 
     return dto;

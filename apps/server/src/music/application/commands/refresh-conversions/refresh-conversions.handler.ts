@@ -23,9 +23,10 @@ export class RefreshConversionsHandler implements ICommandHandler<RefreshConvers
   ) {}
 
   async execute(): Promise<number> {
-    const pending = await this.musicWriteRepository.findByConversionStatus(
+    const pending = await this.musicWriteRepository.findByConversionStatuses([
       ConversionStatus.pending,
-    );
+      ConversionStatus.processing,
+    ]);
     let changed = 0;
 
     for (const music of pending) {

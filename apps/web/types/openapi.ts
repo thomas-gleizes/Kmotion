@@ -259,6 +259,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/3.1/musics/conversions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Conversions not ready yet: queued, running or failed (admin only) */
+        get: operations["musics_conversions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/3.1/musics/{id}": {
         parameters: {
             query?: never;
@@ -552,7 +569,12 @@ export interface components {
              * @example ready
              * @enum {string}
              */
-            conversionStatus: "pending" | "ready" | "failed";
+            conversionStatus: "pending" | "processing" | "ready" | "failed";
+            /**
+             * Format: date-time
+             * @description When the track was added to the library
+             */
+            createdAt: string;
             /**
              * @description Whether the current user has favorited this track
              * @example false
@@ -1069,6 +1091,26 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Music */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MusicResponseDto"][];
+                };
+            };
+        };
+    };
+    musics_conversions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Unfinished conversions, oldest first */
             200: {
                 headers: {
                     [name: string]: unknown;

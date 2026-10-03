@@ -6,6 +6,8 @@ export const keys = {
   musics: (page: number, size: number, search?: string) =>
     ["musics", { page, size, search }] as const,
   musicSearch: (query: string) => ["musics", "search", query] as const,
+  // Sous "musics" : les mutations de titres rafraîchissent aussi la liste.
+  conversions: ["musics", "conversions"] as const,
   playlists: ["playlists"] as const,
   playlist: (id: string) => ["playlists", "detail", id] as const,
   users: (page: number, size: number) => ["users", { page, size }] as const,

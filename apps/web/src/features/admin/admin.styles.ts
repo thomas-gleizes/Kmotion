@@ -77,6 +77,27 @@ export const adminBadge = cx(
 )
 export const bannedBadge = cx(badge, css({ backgroundColor: "dangerSoft", color: "danger" }))
 
+const statusBadge = css({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "6px",
+  padding: "3px 10px",
+  borderRadius: "full",
+  fontSize: "12px",
+  fontWeight: "600",
+  whiteSpace: "nowrap",
+  flexShrink: 0,
+})
+export const queuedBadge = cx(
+  statusBadge,
+  css({ backgroundColor: "overlay", color: "textSecondary" }),
+)
+export const processingBadge = cx(
+  statusBadge,
+  css({ backgroundColor: "accentSoft", color: "accent" }),
+)
+export const failedBadge = cx(statusBadge, css({ backgroundColor: "dangerSoft", color: "danger" }))
+
 export const actions = css({ display: "flex", gap: "8px", flexShrink: 0 })
 
 const iconButton = css({

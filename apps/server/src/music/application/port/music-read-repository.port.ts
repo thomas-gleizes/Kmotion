@@ -58,6 +58,9 @@ export interface MusicReadRepositoryPort {
 
   findById(id: string): Promise<MusicRead | null>;
 
+  /** Musics whose conversion is not ready (queued, running or failed), oldest first. */
+  findUnfinished(): Promise<MusicRead[]>;
+
   findByMediaId(
     mediaId: string,
     mediaSource: MediaSource,

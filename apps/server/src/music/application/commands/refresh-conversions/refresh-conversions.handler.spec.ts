@@ -35,13 +35,13 @@ const conversion = (status: ConversionStatus): Conversion => ({
 
 describe('RefreshConversionsHandler', () => {
   let writeRepository: jest.Mocked<
-    Pick<MusicWriteRepositoryPort, 'save' | 'findByConversionStatus'>
+    Pick<MusicWriteRepositoryPort, 'save' | 'findByConversionStatuses'>
   >;
   let converter: jest.Mocked<Pick<ConverterServicePort, 'getConversion'>>;
   let handler: RefreshConversionsHandler;
 
   beforeEach(() => {
-    writeRepository = { save: jest.fn(), findByConversionStatus: jest.fn() };
+    writeRepository = { save: jest.fn(), findByConversionStatuses: jest.fn() };
     converter = { getConversion: jest.fn() };
     handler = new RefreshConversionsHandler(
       writeRepository as unknown as MusicWriteRepositoryPort,
@@ -53,7 +53,7 @@ describe('RefreshConversionsHandler', () => {
     const ready = pendingMusic('ready', 1);
     const running = pendingMusic('running', 2);
     const failed = pendingMusic('failed', 3);
-    writeRepository.findByConversionStatus.mockResolvedValue([
+    writeRepository.findByConversionStatuses.mockResolvedValue([
       ready,
       running,
       failed,
@@ -72,18 +72,33 @@ describe('RefreshConversionsHandler', () => {
 
     await expect(handler.execute()).resolves.toBe(2);
 
-    expect(writeRepository.findByConversionStatus).toHaveBeenCalledWith(
+    expect(writeRepository.findByConversionStatuses).toHaveBeenCalledWith([
       ConversionStatus.pending,
-    );
+      ConversionStatus.processing,
+    ]);
     expect(ready).toMatchObject({ conversionStatus: 'ready', duration: 182 });
     expect(failed.conversionStatus).toBe(ConversionStatus.failed);
     expect(writeRepository.save).toHaveBeenCalledTimes(2);
     expect(writeRepository.save).not.toHaveBeenCalledWith(running);
   });
 
+  it('records a conversion leaving the queue, then finishing', async () => {
+    const music = pendingMusic('queued', 1);
+    writeRepository.findByConversionStatuses.mockResolvedValue([music]);
+    converter.getConversion
+      .mockResolvedValueOnce(conversion(ConversionStatus.processing))
+      .mockResolvedValueOnce(conversion(ConversionStatus.ready));
+
+    await expect(handler.execute()).resolves.toBe(1);
+    expect(music.conversionStatus).toBe(ConversionStatus.processing);
+
+    await expect(handler.execute()).resolves.toBe(1);
+    expect(music.conversionStatus).toBe(ConversionStatus.ready);
+  });
+
   it('marks conversions the converter no longer knows as failed', async () => {
     const music = pendingMusic('gone', 1);
-    writeRepository.findByConversionStatus.mockResolvedValue([music]);
+    writeRepository.findByConversionStatuses.mockResolvedValue([music]);
     converter.getConversion.mockResolvedValue(null);
 
     await handler.execute();
@@ -94,7 +109,7 @@ describe('RefreshConversionsHandler', () => {
   it('keeps going when one conversion cannot be checked', async () => {
     const broken = pendingMusic('broken', 1);
     const ready = pendingMusic('ready', 2);
-    writeRepository.findByConversionStatus.mockResolvedValue([broken, ready]);
+    writeRepository.findByConversionStatuses.mockResolvedValue([broken, ready]);
     converter.getConversion
       .mockRejectedValueOnce(new Error('timeout'))
       .mockResolvedValueOnce(conversion(ConversionStatus.ready));

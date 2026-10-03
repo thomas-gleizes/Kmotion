@@ -5,11 +5,12 @@ import { appLayoutRoute } from "@/app/routes/app.layout"
 import { isAuthenticated, getCurrentUser } from "@/features/auth/auth"
 import { pageHeading } from "@/shared/lib/styles"
 import { tab, tabActive, tabs } from "@/features/admin/admin.styles"
+import { ConversionsSection } from "@/features/admin/components/ConversionsSection"
 import { MusicsSection } from "@/features/admin/components/MusicsSection"
 import { UsersSection } from "@/features/admin/components/UsersSection"
 
 const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState<"musics" | "users">("musics")
+  const [activeTab, setActiveTab] = useState<"musics" | "conversions" | "users">("musics")
 
   return (
     <div>
@@ -24,6 +25,13 @@ const AdminPage = () => {
         </button>
         <button
           type="button"
+          className={cx(tab, activeTab === "conversions" && tabActive)}
+          onClick={() => setActiveTab("conversions")}
+        >
+          Conversions
+        </button>
+        <button
+          type="button"
           className={cx(tab, activeTab === "users" && tabActive)}
           onClick={() => setActiveTab("users")}
         >
@@ -31,7 +39,9 @@ const AdminPage = () => {
         </button>
       </div>
 
-      {activeTab === "musics" ? <MusicsSection /> : <UsersSection />}
+      {activeTab === "musics" && <MusicsSection />}
+      {activeTab === "conversions" && <ConversionsSection />}
+      {activeTab === "users" && <UsersSection />}
     </div>
   )
 }

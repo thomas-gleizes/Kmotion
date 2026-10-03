@@ -20,7 +20,7 @@ export const musicTable = pgTable('musics', {
   // converter by `converterId`; new rows store an empty string.
   thumbnail: varchar({ length: 255 }).notNull(),
   audio: varchar({ length: 255 }).notNull(),
-  // pending | ready | failed — see ConversionStatus.
+  // pending | processing | ready | failed — see ConversionStatus.
   conversionStatus: varchar('conversion_status', { length: 16 })
     .notNull()
     .default('pending'),

@@ -11,9 +11,11 @@ import type {
 } from 'src/music/domain/port/converter-service.port';
 import { ConversionStatus } from 'src/music/domain/values-object/conversion-status.value-object';
 
-/** yt-converter statuses, folded into kmotion's three states. */
+/** yt-converter statuses, mapped onto kmotion's. */
 export const toConversionStatus = (status: YtTrackStatus): ConversionStatus => {
   switch (status) {
+    case 'processing':
+      return ConversionStatus.processing;
     case 'ready':
       return ConversionStatus.ready;
     case 'failed':

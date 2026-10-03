@@ -8,6 +8,7 @@ import {
   ilike,
   InferSelectModel,
   isNotNull,
+  ne,
   or,
   type SQL,
   sql,
@@ -93,6 +94,16 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
     if (!record) return null;
 
     return this.mapToRead(record);
+  }
+
+  async findUnfinished(): Promise<MusicRead[]> {
+    const records = await this.database
+      .select()
+      .from(musicTable)
+      .where(ne(musicTable.conversionStatus, ConversionStatus.ready))
+      .orderBy(asc(musicTable.createdAt));
+
+    return records.map((record) => this.mapToRead(record));
   }
 
   async search(query: string): Promise<MusicRead[]> {

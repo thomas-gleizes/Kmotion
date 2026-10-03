@@ -45,6 +45,7 @@ import {
 import { RessourceNotFoundException } from 'src/shared/domain/exceptions/ressource-not-found.exception';
 import { MediaSource } from 'src/music/domain/values-object/media-source.value-object';
 import { MusicsResponseDto } from 'src/music/presentation/dto/output/musics-response.dto';
+import { FindConversionsQuery } from 'src/music/application/queries/find-conversions/find-conversions.query';
 import { PreviewMediaQuery } from 'src/music/application/queries/preview-media/preview-media.query';
 import { PreviewMediaQueryDto } from 'src/music/presentation/dto/input/preview-media-query.dto';
 import { MediaPreviewResponseDto } from 'src/music/presentation/dto/output/media-preview-response.dto';
@@ -162,6 +163,27 @@ class MusicController {
   async search(@Query('query') query: string) {
     const musics = await this.queryBus.execute(
       new SearchMusicsQuery({ query }),
+    );
+
+    return musics.map((music) => MusicResponseDto.fromReadModel(music));
+  }
+
+  // Before `:id`, which would otherwise capture it.
+  @Get('/conversions')
+  @UseGuards(AuthGuard, AdminGuard)
+  @ApiOperation({
+    operationId: 'musics_conversions',
+    summary:
+      'Conversions not ready yet: queued, running or failed (admin only)',
+  })
+  @ApiOkResponse({
+    type: MusicResponseDto,
+    isArray: true,
+    description: 'Unfinished conversions, oldest first',
+  })
+  async conversions() {
+    const musics = await this.queryBus.execute(
+      new FindConversionsQuery(undefined),
     );
 
     return musics.map((music) => MusicResponseDto.fromReadModel(music));

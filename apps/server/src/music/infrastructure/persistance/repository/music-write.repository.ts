@@ -4,7 +4,7 @@ import { Inject } from '@nestjs/common';
 import { DRIZZLE } from 'src/core/database/drizzle.provider';
 import type { DrizzleDB } from 'src/core/database/database';
 import { musicTable } from 'src/music/infrastructure/persistance/schemas/music.schema';
-import { eq, InferSelectModel } from 'drizzle-orm';
+import { eq, inArray, InferSelectModel } from 'drizzle-orm';
 import { Music } from 'src/music/domain/music.entity';
 import { ConversionStatus } from 'src/music/domain/values-object/conversion-status.value-object';
 
@@ -41,11 +41,11 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
     return this.mapToDomain(record);
   }
 
-  async findByConversionStatus(status: ConversionStatus) {
+  async findByConversionStatuses(statuses: ConversionStatus[]) {
     const records = await this.database
       .select()
       .from(musicTable)
-      .where(eq(musicTable.conversionStatus, status));
+      .where(inArray(musicTable.conversionStatus, statuses));
 
     return records.map((record) => this.mapToDomain(record));
   }

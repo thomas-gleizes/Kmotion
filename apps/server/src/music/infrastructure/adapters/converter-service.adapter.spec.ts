@@ -62,9 +62,9 @@ describe('ConverterServiceAdapter', () => {
     );
   });
 
-  it('folds converter statuses into three states', () => {
+  it('maps converter statuses', () => {
     expect(toConversionStatus('pending')).toBe(ConversionStatus.pending);
-    expect(toConversionStatus('processing')).toBe(ConversionStatus.pending);
+    expect(toConversionStatus('processing')).toBe(ConversionStatus.processing);
     expect(toConversionStatus('ready')).toBe(ConversionStatus.ready);
     expect(toConversionStatus('failed')).toBe(ConversionStatus.failed);
   });

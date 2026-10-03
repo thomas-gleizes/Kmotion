@@ -7,5 +7,5 @@ export interface MusicWriteRepositoryPort {
   save(music: Music): Promise<void>;
   delete(id: string): Promise<void>;
   findById(id: string): Promise<Music | null>;
-  findByConversionStatus(status: ConversionStatus): Promise<Music[]>;
+  findByConversionStatuses(statuses: ConversionStatus[]): Promise<Music[]>;
 }
