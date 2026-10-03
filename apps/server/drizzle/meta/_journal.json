@@ -50,6 +50,13 @@
       "when": 1790370966093,
       "tag": "0006_conversion_status",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791018610419,
+      "tag": "0007_conversion_error",
+      "breakpoints": true
     }
   ]
 }

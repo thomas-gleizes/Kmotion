@@ -32,6 +32,7 @@ export const toConversion = (track: YtTrack): Conversion => ({
   artist: track.artist,
   duration: Math.round(track.duration),
   status: toConversionStatus(track.status),
+  error: track.error,
 });
 
 export const toMediaPreview = ({

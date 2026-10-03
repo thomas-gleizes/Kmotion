@@ -295,6 +295,23 @@ export interface paths {
         patch: operations["updateMusic"];
         trace?: never;
     };
+    "/api/3.1/musics/{id}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retry a failed conversion (admin only) */
+        post: operations["retryConversion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/3.1/musics/{id}/audio": {
         parameters: {
             query?: never;
@@ -570,6 +587,11 @@ export interface components {
              * @enum {string}
              */
             conversionStatus: "pending" | "processing" | "ready" | "failed";
+            /**
+             * @description Why the conversion failed, `null` unless it did
+             * @example null
+             */
+            conversionError: string | null;
             /**
              * Format: date-time
              * @description When the track was added to the library
@@ -1179,6 +1201,28 @@ export interface operations {
         };
         responses: {
             /** @description Music updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MusicResponseDto"];
+                };
+            };
+        };
+    };
+    retryConversion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music queued again */
             200: {
                 headers: {
                     [name: string]: unknown;

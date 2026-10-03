@@ -40,7 +40,15 @@ export class RefreshConversionsHandler implements ICommandHandler<RefreshConvers
         if (status === music.conversionStatus) continue;
 
         music.conversionStatus = status;
+        music.conversionError = conversion
+          ? conversion.error
+          : 'Conversion deleted on the converter';
         if (conversion) music.duration = conversion.duration;
+        if (status === ConversionStatus.failed) {
+          this.logger.warn(
+            `Conversion of music ${music.id} failed: ${music.conversionError ?? 'unknown reason'}`,
+          );
+        }
         await this.musicWriteRepository.save(music);
         changed++;
       } catch (error) {

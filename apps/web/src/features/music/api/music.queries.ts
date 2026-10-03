@@ -76,6 +76,15 @@ export function useDeleteMusic() {
   })
 }
 
+export function useRetryConversion() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) =>
+      unwrap(await api.POST("/api/3.1/musics/{id}/retry", { params: { path: { id } } })),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["musics"] }),
+  })
+}
+
 export function useToggleFavorite() {
   const queryClient = useQueryClient()
   return useMutation({

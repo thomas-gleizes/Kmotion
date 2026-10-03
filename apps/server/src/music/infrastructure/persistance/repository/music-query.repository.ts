@@ -60,6 +60,7 @@ export class MusicReadRepository implements MusicReadRepositoryPort {
       duration: record.duration ?? 0,
       converterId: record.converterId,
       conversionStatus,
+      conversionError: record.conversionError,
       converted: conversionStatus === ConversionStatus.ready,
       createdAt: record.createdAt,
       isFavorite,

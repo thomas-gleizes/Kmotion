@@ -126,6 +126,14 @@ export class YtConverterHttpService {
     return data;
   }
 
+  /** Queues a failed track again (same source, clip and format). */
+  async retryTrack(converterId: number): Promise<YtTrack> {
+    const { data } = await firstValueFrom(
+      this.httpService.post<YtTrack>(`/tracks/${converterId}/retry`),
+    );
+    return data;
+  }
+
   async deleteTrack(converterId: number): Promise<void> {
     await firstValueFrom(this.httpService.delete(`/tracks/${converterId}`));
   }

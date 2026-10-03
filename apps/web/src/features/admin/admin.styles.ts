@@ -96,6 +96,7 @@ export const processingBadge = cx(
   statusBadge,
   css({ backgroundColor: "accentSoft", color: "accent" }),
 )
+export const errorReason = cx(rowMeta, css({ color: "danger" }))
 export const failedBadge = cx(statusBadge, css({ backgroundColor: "dangerSoft", color: "danger" }))
 
 export const actions = css({ display: "flex", gap: "8px", flexShrink: 0 })

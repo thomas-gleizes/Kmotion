@@ -63,6 +63,14 @@ export class MusicResponseDto {
 
   @ApiProperty({
     type: String,
+    nullable: true,
+    description: 'Why the conversion failed, `null` unless it did',
+    example: null,
+  })
+  conversionError: string | null;
+
+  @ApiProperty({
+    type: String,
     format: 'date-time',
     description: 'When the track was added to the library',
   })
@@ -87,6 +95,7 @@ export class MusicResponseDto {
     dto.mediaId = model.mediaId;
     dto.converted = model.converted;
     dto.conversionStatus = model.conversionStatus;
+    dto.conversionError = model.conversionError;
     dto.createdAt = model.createdAt;
     dto.isFavorite = model.isFavorite;
 

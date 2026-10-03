@@ -22,6 +22,7 @@ export class MusicsFactory {
       '',
       track.createdAt ? new Date(track.createdAt) : new Date(),
       toConversionStatus(track.status),
+      track.error,
     );
   }
 }

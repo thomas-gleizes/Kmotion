@@ -135,6 +135,7 @@ stateDiagram-v2
     processing --> ready: RefreshConversions<br/>track.status = ready
     pending --> failed: track.status = failed<br/>ou track supprimé (404)
     processing --> failed: track.status = failed<br/>ou track supprimé (404)
+    failed --> pending: Relance admin<br/>POST /musics/:id/retry<br/>→ POST /tracks/:id/retry
     ready --> [*]: audio et vignette<br/>servis en streaming
     failed --> [*]: supprimable depuis l'admin
 ```
@@ -144,8 +145,17 @@ stateDiagram-v2
 L'onglet **Administration → Conversions** (`apps/web/src/features/admin/components/ConversionsSection.tsx`)
 appelle `GET /musics/conversions` (admin, `FindConversionsQuery` → `findUnfinished`) toutes les 5 s :
 toutes les musiques non `ready`, de la plus ancienne à la plus récente, avec un badge
-« En file d'attente » / « Conversion en cours » / « Échouée ». Une conversion échouée peut être
-supprimée pour libérer la vidéo et la relancer.
+« En file d'attente » / « Conversion en cours » / « Échouée ».
+
+Pour une conversion échouée :
+- **la raison** est affichée : `RefreshConversions` recopie `track.error` de yt-converter (la fin de la
+  sortie d'erreur de yt-dlp / ffmpeg) dans la colonne `conversion_error`, et la journalise
+  (`Conversion of music … failed: …`) ;
+- **Relancer** (`POST /musics/:id/retry`, `RetryConversionHandler`) appelle `POST /tracks/:id/retry`
+  sur yt-converter, qui remet le même track en file en gardant son extrait et son format ; la musique
+  repasse `pending` et la raison est effacée. Si yt-converter n'a plus le track (404), il faut la
+  supprimer et reconvertir la vidéo ;
+- **Supprimer** retire la musique de kmotion (le track reste chez yt-converter).
 
 ## Synchronisation manuelle (admin)
 

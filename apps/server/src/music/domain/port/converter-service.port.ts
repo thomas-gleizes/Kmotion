@@ -13,6 +13,8 @@ export type Conversion = {
   artist: string;
   duration: number;
   status: ConversionStatus;
+  /** Why the conversion failed, `null` unless it did. */
+  error: string | null;
 };
 
 /** What the converter knows about a media before converting it. */
@@ -43,6 +45,8 @@ export interface ConverterServicePort {
     mediaSource: MediaSource,
     clip?: Clip,
   ): Promise<MediaPreview>;
+  /** Queues a failed conversion again, keeping its clip and format. */
+  retryConversion(converterId: number): Promise<Conversion>;
   /** Current state of a conversion, `null` if the converter no longer has it. */
   getConversion(converterId: number): Promise<Conversion | null>;
 }

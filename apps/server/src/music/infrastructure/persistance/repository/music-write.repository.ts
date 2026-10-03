@@ -27,6 +27,7 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
       record.audio,
       record.createdAt,
       record.conversionStatus as ConversionStatus,
+      record.conversionError,
     );
   }
 
@@ -70,6 +71,7 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
         audio: music.audio,
         createdAt: music.createdAt,
         conversionStatus: music.conversionStatus,
+        conversionError: music.conversionError,
       })
       .onConflictDoUpdate({
         target: musicTable.id,
@@ -84,6 +86,7 @@ export class MusicWriteRepository implements MusicWriteRepositoryPort {
           thumbnail: music.thumbnail,
           audio: music.audio,
           conversionStatus: music.conversionStatus,
+          conversionError: music.conversionError,
         },
       });
   }

@@ -28,6 +28,7 @@ import { AuthGuard } from 'src/shared/presentation/guards/auth.guard';
 import { AdminGuard } from 'src/shared/presentation/guards/admin.guard';
 import { UpdateMusicDto } from 'src/music/presentation/dto/input/update-music.dto';
 import { UpdateMusicCommand } from 'src/music/application/commands/update-music/update-music.command';
+import { RetryConversionCommand } from 'src/music/application/commands/retry-conversion/retry-conversion.command';
 import { DeleteMusicCommand } from 'src/music/application/commands/delete-music/delete-music.command';
 import { ToggleFavoriteCommand } from 'src/music/application/commands/toggle-favorite/toggle-favorite.command';
 import { SearchMusicsQuery } from 'src/music/application/queries/search-musics/search-musics.query';
@@ -233,6 +234,23 @@ class MusicController {
   @ApiOkResponse({ description: 'Music deleted' })
   async delete(@Param('id') id: string) {
     await this.commandBus.execute(new DeleteMusicCommand({ musicId: id }));
+  }
+
+  @Post(':id/retry')
+  @UseGuards(AuthGuard, AdminGuard)
+  @ApiOperation({
+    operationId: 'retryConversion',
+    summary: 'Retry a failed conversion (admin only)',
+  })
+  @ApiOkResponse({ type: MusicResponseDto, description: 'Music queued again' })
+  async retry(@Param('id') id: string) {
+    await this.commandBus.execute(new RetryConversionCommand({ musicId: id }));
+
+    const record = await this.queryBus.execute(
+      new FindMusicByIdQuery({ musicId: id }),
+    );
+
+    return MusicResponseDto.fromReadModel(record);
   }
 
   @Get(':id/audio')

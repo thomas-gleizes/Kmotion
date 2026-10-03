@@ -24,13 +24,17 @@ const pendingMusic = (id: string, converterId: number) =>
     ConversionStatus.pending,
   );
 
-const conversion = (status: ConversionStatus): Conversion => ({
+const conversion = (
+  status: ConversionStatus,
+  error: string | null = null,
+): Conversion => ({
   converterId: 1,
   mediaId: 'media',
   title: 'Song',
   artist: 'Artist',
   duration: 182,
   status,
+  error,
 });
 
 describe('RefreshConversionsHandler', () => {
@@ -96,6 +100,21 @@ describe('RefreshConversionsHandler', () => {
     expect(music.conversionStatus).toBe(ConversionStatus.ready);
   });
 
+  it('stores why a conversion failed', async () => {
+    const music = pendingMusic('broken', 1);
+    writeRepository.findByConversionStatuses.mockResolvedValue([music]);
+    converter.getConversion.mockResolvedValue(
+      conversion(ConversionStatus.failed, 'ERROR: Video unavailable'),
+    );
+
+    await handler.execute();
+
+    expect(music).toMatchObject({
+      conversionStatus: ConversionStatus.failed,
+      conversionError: 'ERROR: Video unavailable',
+    });
+  });
+
   it('marks conversions the converter no longer knows as failed', async () => {
     const music = pendingMusic('gone', 1);
     writeRepository.findByConversionStatuses.mockResolvedValue([music]);
@@ -103,7 +122,10 @@ describe('RefreshConversionsHandler', () => {
 
     await handler.execute();
 
-    expect(music.conversionStatus).toBe(ConversionStatus.failed);
+    expect(music).toMatchObject({
+      conversionStatus: ConversionStatus.failed,
+      conversionError: 'Conversion deleted on the converter',
+    });
   });
 
   it('keeps going when one conversion cannot be checked', async () => {

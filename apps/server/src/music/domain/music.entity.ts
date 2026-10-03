@@ -16,6 +16,8 @@ export class Music {
     public audio: string,
     public readonly createdAt: Date = new Date(),
     public conversionStatus: ConversionStatus = ConversionStatus.ready,
+    /** Why the conversion failed, `null` unless it did. */
+    public conversionError: string | null = null,
   ) {}
 
   get isConverted(): boolean {

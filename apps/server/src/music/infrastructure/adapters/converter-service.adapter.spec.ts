@@ -41,7 +41,11 @@ describe('ConverterServiceAdapter', () => {
   let http: jest.Mocked<
     Pick<
       YtConverterHttpService,
-      'fetchTracks' | 'fetchTrack' | 'requestTrack' | 'previewSource'
+      | 'fetchTracks'
+      | 'fetchTrack'
+      | 'requestTrack'
+      | 'previewSource'
+      | 'retryTrack'
     >
   >;
   let readRepository: jest.Mocked<Pick<MusicReadRepositoryPort, 'exist'>>;
@@ -53,6 +57,7 @@ describe('ConverterServiceAdapter', () => {
       fetchTrack: jest.fn(),
       requestTrack: jest.fn(),
       previewSource: jest.fn(),
+      retryTrack: jest.fn(),
     };
     readRepository = { exist: jest.fn() };
     adapter = new ConverterServiceAdapter(
@@ -81,6 +86,7 @@ describe('ConverterServiceAdapter', () => {
       artist: 'Artist',
       duration: 182,
       status: ConversionStatus.pending,
+      error: null,
     });
   });
 
@@ -157,6 +163,27 @@ describe('ConverterServiceAdapter', () => {
     await expect(
       adapter.previewMedia('x', MediaSource.youtube),
     ).rejects.toThrow(new DomainException('Media is unavailable'));
+  });
+
+  it('retries a failed conversion', async () => {
+    http.retryTrack.mockResolvedValue(track());
+
+    await expect(adapter.retryConversion(7)).resolves.toMatchObject({
+      converterId: 7,
+      status: ConversionStatus.pending,
+      error: null,
+    });
+    expect(http.retryTrack).toHaveBeenCalledWith(7);
+  });
+
+  it('explains a retry of a conversion the converter no longer has', async () => {
+    http.retryTrack.mockRejectedValue(converterError(404, {}));
+
+    await expect(adapter.retryConversion(7)).rejects.toThrow(
+      new DomainException(
+        'Conversion no longer exists on the converter, delete it and convert again',
+      ),
+    );
   });
 
   it('returns null for a conversion the converter no longer has', async () => {

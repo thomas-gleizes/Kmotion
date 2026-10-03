@@ -11,6 +11,7 @@ import {
   type MediaPreview,
 } from 'src/music/domain/port/converter-service.port';
 import type { Clip } from 'src/music/domain/values-object/clip.value-object';
+import { isAxiosError } from 'axios';
 import { DomainException } from 'src/shared/domain/exceptions/domain.exception';
 import { MusicsFactory } from 'src/music/infrastructure/factories/musics.factory';
 import { Music } from 'src/music/domain/music.entity';
@@ -98,6 +99,24 @@ export class ConverterServiceAdapter implements ConverterServicePort {
       );
       throw new DomainException(
         describeConverterError(error) ?? 'Error while fetching media details',
+      );
+    }
+  }
+
+  async retryConversion(converterId: number): Promise<Conversion> {
+    try {
+      return toConversion(
+        await this.converterHttpService.retryTrack(converterId),
+      );
+    } catch (error) {
+      this.logger.error(`Failed to retry conversion ${converterId}`, error);
+      if (isAxiosError(error) && error.response?.status === 404) {
+        throw new DomainException(
+          'Conversion no longer exists on the converter, delete it and convert again',
+        );
+      }
+      throw new DomainException(
+        describeConverterError(error) ?? 'Error while retrying conversion',
       );
     }
   }

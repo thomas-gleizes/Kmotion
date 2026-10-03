@@ -1,4 +1,10 @@
-import { pgTable, varchar, integer, timestamp } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  varchar,
+  integer,
+  timestamp,
+  text,
+} from 'drizzle-orm/pg-core';
 import { userTable } from 'src/user/infrastructure/persistance/schemas/user.schema';
 
 export const musicTable = pgTable('musics', {
@@ -24,6 +30,8 @@ export const musicTable = pgTable('musics', {
   conversionStatus: varchar('conversion_status', { length: 16 })
     .notNull()
     .default('pending'),
+  // Why the last conversion failed, as reported by the converter.
+  conversionError: text('conversion_error'),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),

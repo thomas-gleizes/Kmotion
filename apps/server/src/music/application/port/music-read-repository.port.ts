@@ -17,6 +17,7 @@ export type MusicRead = {
   thumbnail: string;
   converterId: number;
   conversionStatus: ConversionStatus;
+  conversionError: string | null;
   converted: boolean;
   createdAt: Date;
   isFavorite: boolean;

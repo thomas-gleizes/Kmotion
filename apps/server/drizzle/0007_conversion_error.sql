@@ -1,0 +1,1 @@
+ALTER TABLE "musics" ADD COLUMN "conversion_error" text;
