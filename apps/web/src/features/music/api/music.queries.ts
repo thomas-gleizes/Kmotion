@@ -1,4 +1,9 @@
-import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  infiniteQueryOptions,
+  queryOptions,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query"
 import { api } from "@/shared/api/client"
 import { keys, unwrap } from "@/shared/api/query-keys"
 import type { UpdateMusicInput } from "@/shared/api/types"
@@ -6,11 +11,21 @@ import type { UpdateMusicInput } from "@/shared/api/types"
 export type MusicSort = "title" | "artist" | "duration" | "createdAt" | "favorite" | "random"
 export type SortOrder = "asc" | "desc"
 
-export const musicsQuery = (page: number, size: number, search?: string) =>
+export const musicsQuery = (
+  page: number,
+  size: number,
+  search?: string,
+  sort?: MusicSort,
+  order?: SortOrder,
+) =>
   queryOptions({
-    queryKey: keys.musics(page, size, search),
+    queryKey: keys.musics(page, size, search, sort, order),
     queryFn: async () =>
-      unwrap(await api.GET("/api/3.1/musics", { params: { query: { page, size, search } } })),
+      unwrap(
+        await api.GET("/api/3.1/musics", {
+          params: { query: { page, size, search, sort, order } },
+        }),
+      ),
   })
 
 export const musicsInfiniteQuery = (

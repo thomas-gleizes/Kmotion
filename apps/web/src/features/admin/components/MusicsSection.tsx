@@ -7,6 +7,9 @@ import type { Music } from "@/shared/api/types"
 import { formatDuration } from "@/shared/lib/format"
 import { emptyState } from "@/shared/lib/styles"
 import { Button } from "@/shared/ui/Button"
+import { SortControls } from "@/features/music/components/SortControls"
+import { useSortPreference } from "@/features/music/hooks/useSortPreference"
+import type { MusicSort } from "@/features/music/api/music.queries"
 import { MusicEditDialog } from "@/features/music/components/dialogs/MusicEditDialog"
 import { ConfirmDialog } from "@/shared/ui/dialogs/ConfirmDialog"
 import { useDebounce } from "@/shared/hooks/useDebounce"
@@ -21,6 +24,7 @@ import {
   rowSub,
   rowTitle,
   searchBox,
+  searchRow,
   searchInput,
   sectionHeader,
   sectionTitle,
@@ -32,18 +36,34 @@ import { Pager } from "./Pager"
 
 const PAGE_SIZE = 30
 
+const SORT_OPTIONS: MusicSort[] = ["createdAt", "title", "artist", "duration"]
+
 export function MusicsSection() {
   const [page, setPage] = useState(0)
   const [search, setSearch] = useState("")
   const debouncedSearch = useDebounce(search.trim())
+  const [{ sort, order }, setSort, toggleOrder] = useSortPreference("admin:musics:sort", {
+    sort: "createdAt",
+    order: "desc",
+  })
   const { data, isPending } = useQuery({
-    ...musicsQuery(page, PAGE_SIZE, debouncedSearch || undefined),
+    ...musicsQuery(page, PAGE_SIZE, debouncedSearch || undefined, sort, order),
     placeholderData: keepPreviousData,
   })
   const syncMusics = useSyncMusics()
   const deleteMusic = useDeleteMusic()
   const editDialog = useDialog(MusicEditDialog)
   const confirmDialog = useDialog(ConfirmDialog)
+
+  // Un nouveau tri repart de la première page.
+  const changeSort = (value: MusicSort) => {
+    setSort(value)
+    setPage(0)
+  }
+  const changeOrder = () => {
+    toggleOrder()
+    setPage(0)
+  }
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1
 
@@ -73,16 +93,25 @@ export function MusicsSection() {
         <div className={cx(syncFeedback, syncError)}>La synchronisation a échoué. Réessayez.</div>
       )}
 
-      <div className={searchBox}>
-        <SearchIcon size={18} />
-        <input
-          className={searchInput}
-          placeholder="Rechercher un titre ou un artiste…"
-          value={search}
-          onChange={(event) => {
-            setSearch(event.target.value)
-            setPage(0)
-          }}
+      <div className={searchRow}>
+        <div className={searchBox}>
+          <SearchIcon size={18} />
+          <input
+            className={searchInput}
+            placeholder="Rechercher un titre ou un artiste…"
+            value={search}
+            onChange={(event) => {
+              setSearch(event.target.value)
+              setPage(0)
+            }}
+          />
+        </div>
+        <SortControls
+          options={SORT_OPTIONS}
+          sort={sort}
+          order={order}
+          onSortChange={changeSort}
+          onToggleOrder={changeOrder}
         />
       </div>
 

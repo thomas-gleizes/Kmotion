@@ -15,26 +15,13 @@ import { useSortPreference } from "@/features/music/hooks/useSortPreference"
 import { usePlayer } from "@/features/player/state/PlayerContext"
 import { MusicCard } from "@/features/music/components/MusicCard"
 import { MusicRow } from "@/features/music/components/MusicRow"
+import { SortControls } from "@/features/music/components/SortControls"
 import { AddToPlaylistDialog } from "@/features/playlist/components/dialogs/AddToPlaylistDialog"
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  PlusIcon,
-  SearchIcon,
-  ShuffleIcon,
-  SpinnerIcon,
-} from "@/shared/ui/icons"
+import { PlusIcon, SearchIcon, SpinnerIcon } from "@/shared/ui/icons"
 
 const PAGE_SIZE = 30
 
-const SORT_OPTIONS: { value: MusicSort; label: string }[] = [
-  { value: "createdAt", label: "Date d’ajout" },
-  { value: "title", label: "Titre" },
-  { value: "artist", label: "Artiste" },
-  { value: "duration", label: "Durée" },
-  { value: "favorite", label: "Favoris" },
-  { value: "random", label: "Aléatoire" },
-]
+const SORT_OPTIONS: MusicSort[] = ["createdAt", "title", "artist", "duration", "favorite", "random"]
 
 const newSeed = () => Math.random().toString(36).slice(2)
 
@@ -61,42 +48,6 @@ const heading = css({
   fontWeight: "800",
   letterSpacing: "-0.8px",
   md: { fontSize: "32px" },
-})
-
-const controls = css({
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-})
-
-const select = css({
-  appearance: "none",
-  padding: "8px 14px",
-  borderRadius: "m",
-  backgroundColor: "surfaceRaised",
-  border: "1px solid token(colors.border)",
-  color: "text",
-  fontSize: "14px",
-  fontFamily: "sans",
-  cursor: "pointer",
-  outline: "none",
-  transition: "all token(durations.fast) token(easings.apple)",
-  _focusVisible: { borderColor: "accent", boxShadow: "0 0 0 3px token(colors.accentGlow)" },
-})
-
-const directionButton = css({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: "36px",
-  height: "36px",
-  borderRadius: "m",
-  backgroundColor: "surfaceRaised",
-  border: "1px solid token(colors.border)",
-  color: "textSecondary",
-  cursor: "pointer",
-  transition: "all token(durations.fast) token(easings.apple)",
-  _hover: { color: "accent", borderColor: "accent" },
 })
 
 const loadingMore = css({
@@ -195,41 +146,14 @@ export const HomePage = () => {
     <div>
       <div className={toolbar}>
         <h1 className={heading}>Écouter</h1>
-        <div className={controls}>
-          <select
-            className={select}
-            value={sort}
-            onChange={(e) => handleSortChange(e.target.value as MusicSort)}
-            aria-label="Trier par"
-          >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          {isRandom ? (
-            <button
-              type="button"
-              className={directionButton}
-              onClick={() => setSeed(newSeed())}
-              aria-label="Mélanger à nouveau"
-              title="Mélanger à nouveau"
-            >
-              <ShuffleIcon size={18} />
-            </button>
-          ) : (
-            <button
-              type="button"
-              className={directionButton}
-              onClick={toggleOrder}
-              aria-label={order === "asc" ? "Ordre croissant" : "Ordre décroissant"}
-              title={order === "asc" ? "Ordre croissant" : "Ordre décroissant"}
-            >
-              {order === "asc" ? <ChevronUpIcon size={18} /> : <ChevronDownIcon size={18} />}
-            </button>
-          )}
-        </div>
+        <SortControls
+          options={SORT_OPTIONS}
+          sort={sort}
+          order={order}
+          onSortChange={handleSortChange}
+          onToggleOrder={toggleOrder}
+          onShuffle={() => setSeed(newSeed())}
+        />
       </div>
       <div className={searchBox}>
         <SearchIcon size={18} />

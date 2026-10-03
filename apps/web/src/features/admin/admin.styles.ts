@@ -134,6 +134,16 @@ export const pager = css({
   fontSize: "14px",
 })
 
+// Recherche + tri sur une ligne (le tri passe dessous sur mobile).
+export const searchRow = css({
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "center",
+  gap: "12px",
+  marginBottom: "16px",
+  "& > :first-child": { flex: "1 1 260px", marginBottom: 0 },
+})
+
 export const searchBox = css({
   display: "flex",
   alignItems: "center",

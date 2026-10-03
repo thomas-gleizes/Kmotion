@@ -3,8 +3,8 @@
 // d'un autre domaine.
 export const keys = {
   me: ["me"] as const,
-  musics: (page: number, size: number, search?: string) =>
-    ["musics", { page, size, search }] as const,
+  musics: (page: number, size: number, search?: string, sort?: string, order?: string) =>
+    ["musics", { page, size, search, sort, order }] as const,
   musicSearch: (query: string) => ["musics", "search", query] as const,
   // Sous "musics" : les mutations de titres rafraîchissent aussi la liste.
   conversions: ["musics", "conversions"] as const,
