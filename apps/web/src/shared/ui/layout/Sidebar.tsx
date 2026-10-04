@@ -4,11 +4,13 @@ import { getCurrentUser, logout } from "@/features/auth/auth"
 import { truncate } from "@/shared/lib/styles"
 import {
   HeartIcon,
+  LibraryIcon,
   ListIcon,
   MusicNoteIcon,
+  PeopleIcon,
   PersonIcon,
   PlusIcon,
-  ShieldIcon,
+  SyncIcon,
 } from "@/shared/ui/icons"
 
 const sidebar = css({
@@ -49,6 +51,19 @@ const navLink = css({
   },
 })
 
+const nav = css({ display: "flex", flexDirection: "column", gap: "2px" })
+
+const navSection = cx(nav, css({ marginTop: "20px" }))
+
+const navSectionTitle = css({
+  padding: "0 12px 6px",
+  fontSize: "11px",
+  fontWeight: "700",
+  textTransform: "uppercase",
+  letterSpacing: "0.8px",
+  color: "textTertiary",
+})
+
 const footer = css({
   marginTop: "auto",
   borderTop: "1px solid token(colors.border)",
@@ -82,7 +97,7 @@ export function Sidebar() {
         <MusicNoteIcon size={26} />
         Kmotion
       </div>
-      <nav className={css({ display: "flex", flexDirection: "column", gap: "2px" })}>
+      <nav className={nav}>
         <Link to="/" className={navLink}>
           <MusicNoteIcon size={18} /> Écouter
         </Link>
@@ -98,12 +113,23 @@ export function Sidebar() {
         <Link to="/profile" className={navLink}>
           <PersonIcon size={18} /> Profil
         </Link>
-        {user?.isAdmin && (
-          <Link to="/admin" className={navLink}>
-            <ShieldIcon size={18} /> Admin
-          </Link>
-        )}
       </nav>
+      {user?.isAdmin && (
+        <nav className={navSection} aria-labelledby="sidebar-admin">
+          <div id="sidebar-admin" className={navSectionTitle}>
+            Administration
+          </div>
+          <Link to="/admin/library" className={navLink}>
+            <LibraryIcon size={18} /> Bibliothèque
+          </Link>
+          <Link to="/admin/conversions" className={navLink}>
+            <SyncIcon size={18} /> Conversions
+          </Link>
+          <Link to="/admin/users" className={navLink}>
+            <PeopleIcon size={18} /> Utilisateurs
+          </Link>
+        </nav>
+      )}
       <div className={footer}>
         <div className={userName}>{user?.name}</div>
         <button type="button" className={logoutButton} onClick={logout}>

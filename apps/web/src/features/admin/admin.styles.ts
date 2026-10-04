@@ -1,30 +1,6 @@
 import { css, cx } from "styled-system/css"
 import { truncate } from "@/shared/lib/styles"
 
-export const tabs = css({
-  display: "flex",
-  gap: "8px",
-  marginBottom: "24px",
-  borderBottom: "1px solid token(colors.border)",
-})
-
-export const tab = css({
-  padding: "10px 4px",
-  marginBottom: "-1px",
-  background: "none",
-  border: "none",
-  borderBottom: "2px solid transparent",
-  color: "textSecondary",
-  fontSize: "15px",
-  fontWeight: "600",
-  fontFamily: "sans",
-  cursor: "pointer",
-  transition: "all token(durations.fast) token(easings.apple)",
-  _hover: { color: "text" },
-})
-
-export const tabActive = css({ color: "text", borderBottomColor: "accent" })
-
 export const sectionHeader = css({
   display: "flex",
   alignItems: "center",

@@ -1,54 +1,16 @@
-import { useState } from "react"
-import { createRoute, redirect } from "@tanstack/react-router"
-import { cx } from "styled-system/css"
+import { createRoute, Outlet, redirect } from "@tanstack/react-router"
 import { appLayoutRoute } from "@/app/routes/app.layout"
 import { isAuthenticated, getCurrentUser } from "@/features/auth/auth"
 import { pageHeading } from "@/shared/lib/styles"
-import { tab, tabActive, tabs } from "@/features/admin/admin.styles"
 import { ConversionsSection } from "@/features/admin/components/ConversionsSection"
 import { MusicsSection } from "@/features/admin/components/MusicsSection"
 import { UsersSection } from "@/features/admin/components/UsersSection"
 
-const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState<"musics" | "conversions" | "users">("musics")
-
-  return (
-    <div>
-      <h1 className={pageHeading}>Administration</h1>
-      <div className={tabs}>
-        <button
-          type="button"
-          className={cx(tab, activeTab === "musics" && tabActive)}
-          onClick={() => setActiveTab("musics")}
-        >
-          Bibliothèque
-        </button>
-        <button
-          type="button"
-          className={cx(tab, activeTab === "conversions" && tabActive)}
-          onClick={() => setActiveTab("conversions")}
-        >
-          Conversions
-        </button>
-        <button
-          type="button"
-          className={cx(tab, activeTab === "users" && tabActive)}
-          onClick={() => setActiveTab("users")}
-        >
-          Utilisateurs
-        </button>
-      </div>
-
-      {activeTab === "musics" && <MusicsSection />}
-      {activeTab === "conversions" && <ConversionsSection />}
-      {activeTab === "users" && <UsersSection />}
-    </div>
-  )
-}
-
+// Chaque ancien onglet de l'admin est une route à part, accessible depuis la
+// section « Administration » du menu.
 export const adminRoute = createRoute({
   path: "/admin",
-  component: AdminPage,
+  component: Outlet,
   getParentRoute: () => appLayoutRoute,
   beforeLoad: () => {
     if (!isAuthenticated() || !getCurrentUser()?.isAdmin) {
@@ -56,3 +18,51 @@ export const adminRoute = createRoute({
     }
   },
 })
+
+const adminIndexRoute = createRoute({
+  path: "/",
+  getParentRoute: () => adminRoute,
+  beforeLoad: () => {
+    throw redirect({ to: "/admin/library" })
+  },
+})
+
+const adminLibraryRoute = createRoute({
+  path: "library",
+  getParentRoute: () => adminRoute,
+  component: () => (
+    <div>
+      <h1 className={pageHeading}>Bibliothèque</h1>
+      <MusicsSection />
+    </div>
+  ),
+})
+
+const adminConversionsRoute = createRoute({
+  path: "conversions",
+  getParentRoute: () => adminRoute,
+  component: () => (
+    <div>
+      <h1 className={pageHeading}>Conversions</h1>
+      <ConversionsSection />
+    </div>
+  ),
+})
+
+const adminUsersRoute = createRoute({
+  path: "users",
+  getParentRoute: () => adminRoute,
+  component: () => (
+    <div>
+      <h1 className={pageHeading}>Utilisateurs</h1>
+      <UsersSection />
+    </div>
+  ),
+})
+
+export const adminRouteTree = adminRoute.addChildren([
+  adminIndexRoute,
+  adminLibraryRoute,
+  adminConversionsRoute,
+  adminUsersRoute,
+])

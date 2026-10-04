@@ -5,7 +5,14 @@ import { appLayoutRoute } from "@/app/routes/app.layout"
 import { meQuery } from "@/features/auth/api/auth.queries"
 import { logout } from "@/features/auth/auth"
 import { Button } from "@/shared/ui/Button"
-import { HeartIcon, PersonIcon, PlusIcon, ShieldIcon } from "@/shared/ui/icons"
+import {
+  HeartIcon,
+  LibraryIcon,
+  PeopleIcon,
+  PersonIcon,
+  PlusIcon,
+  SyncIcon,
+} from "@/shared/ui/icons"
 import { pageHeading } from "@/shared/lib/styles"
 import { ExtensionCard } from "@/features/profile/components/ExtensionCard"
 import { EqualizerSettings } from "@/features/profile/components/EqualizerSettings"
@@ -62,12 +69,24 @@ const ProfilePage = () => {
         <Link to="/add" className={mobileLink}>
           <PlusIcon size={18} /> Ajouter un titre
         </Link>
-        {user?.isAdmin && (
-          <Link to="/admin" className={mobileLink}>
-            <ShieldIcon size={18} /> Administration
-          </Link>
-        )}
       </nav>
+
+      {user?.isAdmin && (
+        <nav className={mobileLinks} aria-labelledby="profile-admin">
+          <h2 id="profile-admin" className={sectionTitle}>
+            Administration
+          </h2>
+          <Link to="/admin/library" className={mobileLink}>
+            <LibraryIcon size={18} /> Bibliothèque
+          </Link>
+          <Link to="/admin/conversions" className={mobileLink}>
+            <SyncIcon size={18} /> Conversions
+          </Link>
+          <Link to="/admin/users" className={mobileLink}>
+            <PeopleIcon size={18} /> Utilisateurs
+          </Link>
+        </nav>
+      )}
     </div>
   )
 }
