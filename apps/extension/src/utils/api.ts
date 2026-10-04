@@ -110,6 +110,8 @@ class ExtensionAPI {
   async createMusicFromYoutube(youtubeId: string, clip?: Clip): Promise<void> {
     const { error, response } = await this.client.POST("/musics", {
       body: { mediaId: youtubeId, mediaSource: "youtube", clip },
+      // The server answers with the new music id as a raw (non-JSON) string body.
+      parseAs: "text",
     })
 
     if (error || !response.ok) {
