@@ -23,6 +23,16 @@ export const row = css({
   _hover: { backgroundColor: "overlay" },
 })
 
+// Miniature au format d'origine : largeur fixe pour aligner les titres, hauteur libre.
+export const thumbnail = css({
+  width: "80px",
+  flexShrink: 0,
+  borderRadius: "6px",
+  overflow: "hidden",
+  "& img": { display: "block", width: "100%", height: "auto" },
+  "& > div": { aspectRatio: "16 / 9", fontSize: "18px" },
+})
+
 export const cellMain = css({ flex: 1, minWidth: 0 })
 export const rowTitle = cx(truncate, css({ fontSize: "15px", fontWeight: "600" }))
 export const rowSub = cx(truncate, css({ fontSize: "13px", color: "textSecondary" }))

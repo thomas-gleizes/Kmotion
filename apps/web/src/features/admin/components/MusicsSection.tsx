@@ -6,6 +6,8 @@ import { musicsQuery, useSyncMusics, useDeleteMusic } from "@/features/music/api
 import type { Music } from "@/shared/api/types"
 import { formatDuration } from "@/shared/lib/format"
 import { emptyState } from "@/shared/lib/styles"
+import { thumbnailPath } from "@/shared/lib/audioCache"
+import { AuthImage } from "@/shared/ui/AuthImage"
 import { Button } from "@/shared/ui/Button"
 import { SortControls } from "@/features/music/components/SortControls"
 import { useSortPreference } from "@/features/music/hooks/useSortPreference"
@@ -31,6 +33,7 @@ import {
   syncError,
   syncFeedback,
   syncOk,
+  thumbnail,
 } from "@/features/admin/admin.styles"
 import { Pager } from "./Pager"
 
@@ -126,6 +129,9 @@ export function MusicsSection() {
 
       {data?.records.map((music) => (
         <div key={music.id} className={row}>
+          <div className={thumbnail}>
+            <AuthImage path={thumbnailPath(music.id)} alt={music.title} />
+          </div>
           <div className={cellMain}>
             <div className={rowTitle}>{music.title}</div>
             <div className={rowSub}>{music.artist}</div>
