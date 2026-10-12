@@ -16,8 +16,8 @@ export const bar = css({
 })
 
 export const cover = css({
-  width: "48px",
-  height: "48px",
+  width: "85px",
+  aspectRatio: "16 / 9",
   borderRadius: "s",
   overflow: "hidden",
   flexShrink: 0,
@@ -182,8 +182,8 @@ export const miniExpand = css({
 })
 
 export const miniCover = css({
-  width: "40px",
-  height: "40px",
+  width: "71px",
+  aspectRatio: "16 / 9",
   borderRadius: "s",
   overflow: "hidden",
   flexShrink: 0,
