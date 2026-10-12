@@ -7,9 +7,12 @@ import { appLayoutRoute } from "@/app/routes/app.layout"
 import { musicsInfiniteQuery, type MusicSort } from "@/features/music/api/music.queries"
 import { emptyState } from "@/shared/lib/styles"
 import { useSortPreference } from "@/features/music/hooks/useSortPreference"
+import { useGridLayout } from "@/features/music/hooks/useGridLayout"
 import { usePlayer } from "@/features/player/state/PlayerContext"
 import { MusicCard } from "@/features/music/components/MusicCard"
 import { SortControls } from "@/features/music/components/SortControls"
+import { GridLayoutToggle } from "@/features/music/components/GridLayoutToggle"
+import { musicGrid } from "@/features/music/components/musicGrid.styles"
 import { AddToPlaylistDialog } from "@/features/playlist/components/dialogs/AddToPlaylistDialog"
 import { SpinnerIcon } from "@/shared/ui/icons"
 
@@ -17,12 +20,7 @@ const PAGE_SIZE = 30
 
 const SORT_OPTIONS: MusicSort[] = ["createdAt", "title", "artist", "duration"]
 
-const grid = css({
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-  gap: "10px",
-  md: { gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "12px" },
-})
+const toolbarActions = css({ display: "flex", alignItems: "center", gap: "8px" })
 
 const sentinel = css({ height: "1px" })
 
@@ -54,6 +52,7 @@ export const LikedPage = () => {
     sort: "createdAt",
     order: "desc",
   })
+  const [layout, toggleLayout] = useGridLayout("liked:layout")
   const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
     musicsInfiniteQuery(PAGE_SIZE, sort, order, true),
   )
@@ -80,13 +79,16 @@ export const LikedPage = () => {
     <div>
       <div className={toolbar}>
         <h1 className={heading}>Titres likés</h1>
-        <SortControls
-          options={SORT_OPTIONS}
-          sort={sort}
-          order={order}
-          onSortChange={setSort}
-          onToggleOrder={toggleOrder}
-        />
+        <div className={toolbarActions}>
+          <SortControls
+            options={SORT_OPTIONS}
+            sort={sort}
+            order={order}
+            onSortChange={setSort}
+            onToggleOrder={toggleOrder}
+          />
+          <GridLayoutToggle layout={layout} onToggle={toggleLayout} />
+        </div>
       </div>
       {isPending && <div className={emptyState}>Chargement…</div>}
       {data && records.length === 0 && (
@@ -94,7 +96,7 @@ export const LikedPage = () => {
           Vous n’avez encore aucun titre liké. Cliquez sur le cœur d’un titre pour l’ajouter ici.
         </div>
       )}
-      <div className={grid}>
+      <div className={musicGrid(layout)}>
         {records.map((music, i) => (
           <MusicCard
             key={music.id}

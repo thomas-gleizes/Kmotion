@@ -216,3 +216,26 @@ export const DotsIcon = (p: IconProps) => (
     <circle cx="19" cy="12" r="2" />
   </Icon>
 )
+
+export const GridSmallIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="3" width="5" height="5" rx="1.2" />
+    <rect x="9.5" y="3" width="5" height="5" rx="1.2" />
+    <rect x="16" y="3" width="5" height="5" rx="1.2" />
+    <rect x="3" y="9.5" width="5" height="5" rx="1.2" />
+    <rect x="9.5" y="9.5" width="5" height="5" rx="1.2" />
+    <rect x="16" y="9.5" width="5" height="5" rx="1.2" />
+    <rect x="3" y="16" width="5" height="5" rx="1.2" />
+    <rect x="9.5" y="16" width="5" height="5" rx="1.2" />
+    <rect x="16" y="16" width="5" height="5" rx="1.2" />
+  </Icon>
+)
+
+export const GridLargeIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="3" width="8" height="8" rx="1.8" />
+    <rect x="13" y="3" width="8" height="8" rx="1.8" />
+    <rect x="3" y="13" width="8" height="8" rx="1.8" />
+    <rect x="13" y="13" width="8" height="8" rx="1.8" />
+  </Icon>
+)

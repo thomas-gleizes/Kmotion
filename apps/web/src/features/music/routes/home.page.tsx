@@ -12,10 +12,13 @@ import {
 import { emptyState } from "@/shared/lib/styles"
 import { useDebounce } from "@/shared/hooks/useDebounce"
 import { useSortPreference } from "@/features/music/hooks/useSortPreference"
+import { useGridLayout } from "@/features/music/hooks/useGridLayout"
 import { usePlayer } from "@/features/player/state/PlayerContext"
 import { MusicCard } from "@/features/music/components/MusicCard"
 import { MusicRow } from "@/features/music/components/MusicRow"
 import { SortControls } from "@/features/music/components/SortControls"
+import { GridLayoutToggle } from "@/features/music/components/GridLayoutToggle"
+import { musicGrid } from "@/features/music/components/musicGrid.styles"
 import { AddToPlaylistDialog } from "@/features/playlist/components/dialogs/AddToPlaylistDialog"
 import { PlusIcon, SearchIcon, SpinnerIcon } from "@/shared/ui/icons"
 
@@ -25,12 +28,7 @@ const SORT_OPTIONS: MusicSort[] = ["createdAt", "title", "artist", "duration", "
 
 const newSeed = () => Math.random().toString(36).slice(2)
 
-const grid = css({
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-  gap: "10px",
-  md: { gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "12px" },
-})
+const toolbarActions = css({ display: "flex", alignItems: "center", gap: "8px" })
 
 const sentinel = css({ height: "1px" })
 
@@ -102,6 +100,7 @@ export const HomePage = () => {
     sort: "createdAt",
     order: "desc",
   })
+  const [layout, toggleLayout] = useGridLayout("music:layout")
   const [seed, setSeed] = useState(newSeed)
   const isRandom = sort === "random"
 
@@ -146,14 +145,17 @@ export const HomePage = () => {
     <div>
       <div className={toolbar}>
         <h1 className={heading}>Écouter</h1>
-        <SortControls
-          options={SORT_OPTIONS}
-          sort={sort}
-          order={order}
-          onSortChange={handleSortChange}
-          onToggleOrder={toggleOrder}
-          onShuffle={() => setSeed(newSeed())}
-        />
+        <div className={toolbarActions}>
+          <SortControls
+            options={SORT_OPTIONS}
+            sort={sort}
+            order={order}
+            onSortChange={handleSortChange}
+            onToggleOrder={toggleOrder}
+            onShuffle={() => setSeed(newSeed())}
+          />
+          <GridLayoutToggle layout={layout} onToggle={toggleLayout} />
+        </div>
       </div>
       <div className={searchBox}>
         <SearchIcon size={18} />
@@ -198,7 +200,7 @@ export const HomePage = () => {
               Votre bibliothèque est vide. Ajoutez un titre depuis l’onglet « Ajouter ».
             </div>
           )}
-          <div className={grid}>
+          <div className={musicGrid(layout)}>
             {records.map((music, i) => (
               <MusicCard
                 key={music.id}
