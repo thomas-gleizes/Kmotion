@@ -34,8 +34,8 @@ export const ambientBg = css({
 })
 
 // Voile dégradé pour garder titres, contrôles et file de lecture lisibles.
-// Sur mobile (layout vertical), le dégradé part du haut pour laisser la
-// couleur ambiante apparaître derrière la pochette, comme sur desktop.
+// En layout vertical, le dégradé part du haut pour laisser la couleur
+// ambiante apparaître derrière la pochette, comme en layout horizontal.
 export const scrim = css({
   position: "absolute",
   inset: 0,
@@ -43,14 +43,14 @@ export const scrim = css({
   background:
     "radial-gradient(140% 60% at 50% 0%, rgba(10,10,12,0.3) 0%, rgba(10,10,12,0.75) 55%, rgba(8,8,16,0.92) 100%)",
   pointerEvents: "none",
-  md: {
+  lg: {
     background:
       "radial-gradient(120% 90% at 30% 0%, rgba(10,10,12,0.35) 0%, rgba(10,10,12,0.72) 60%, rgba(8,8,16,0.9) 100%)",
   },
   _light: {
     background:
       "radial-gradient(140% 60% at 50% 0%, rgba(245,245,247,0.4) 0%, rgba(245,245,247,0.82) 55%, rgba(239,239,242,0.95) 100%)",
-    md: {
+    lg: {
       background:
         "radial-gradient(120% 90% at 30% 0%, rgba(245,245,247,0.45) 0%, rgba(245,245,247,0.8) 60%, rgba(239,239,242,0.94) 100%)",
     },
@@ -111,6 +111,8 @@ export const nowPlayingLabel = css({
   color: "textTertiary",
 })
 
+// Layout horizontal (pochette | infos) à partir de `lg` : en dessous, la colonne
+// de la pochette serait trop étroite, on empile verticalement.
 export const body = css({
   position: "relative",
   zIndex: 1,
@@ -120,7 +122,7 @@ export const body = css({
   gap: "20px",
   padding: "8px 20px calc(24px + env(safe-area-inset-bottom))",
   minHeight: 0,
-  md: { flexDirection: "row", gap: "40px", padding: "8px 48px 40px" },
+  lg: { flexDirection: "row", gap: "40px", padding: "8px 48px 40px" },
 })
 
 export const artSection = css({
@@ -130,14 +132,15 @@ export const artSection = css({
   justifyContent: "center",
   minHeight: 0,
   minWidth: 0,
-  md: { flex: 1 },
+  lg: { flex: 1 },
 })
 
+// La pochette prend toute la largeur de sa colonne ; elle ne se réduit que si
+// l'écran n'est pas assez haut pour l'afficher en entier.
 export const artBase = css({
-  width: "100%",
-  aspectRatio: "16/9",
-  maxHeight: "38dvh",
-  md: { width: "auto", height: "60vh", maxWidth: "100%", maxHeight: "none" },
+  width: "min(100%, calc(38dvh * 16 / 9))",
+  aspectRatio: "16 / 9",
+  lg: { width: "min(100%, calc((100dvh - 140px) * 16 / 9))" },
   borderRadius: "m",
   overflow: "hidden",
   transformOrigin: "center",
@@ -162,7 +165,7 @@ export const infoSection = css({
   overflowY: "auto",
   minWidth: 0,
   paddingRight: "4px",
-  md: { flex: "0 0 30%", maxWidth: "30%", width: "auto" },
+  lg: { flex: "0 0 30%", maxWidth: "30%", width: "auto" },
 })
 
 export const trackTitle = cx(
