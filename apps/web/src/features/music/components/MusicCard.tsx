@@ -25,7 +25,7 @@ const card = css({
 
 const coverWrapper = css({
   position: "relative",
-  aspectRatio: "1",
+  aspectRatio: "16 / 9",
   borderRadius: "s",
   overflow: "hidden",
   boxShadow: "card",

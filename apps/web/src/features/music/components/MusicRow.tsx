@@ -24,8 +24,8 @@ const row = css({
 
 const coverWrapper = css({
   position: "relative",
-  width: "44px",
-  height: "44px",
+  width: "78px",
+  aspectRatio: "16 / 9",
   borderRadius: "6px",
   overflow: "hidden",
   flexShrink: 0,
