@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useDialog } from "react-dialog-promise"
 import { css } from "styled-system/css"
 import { type Track, usePlayer } from "@/features/player/state/PlayerContext"
-import { DotsIcon, NextIcon } from "@/shared/ui/icons"
+import { useToggleFavorite } from "@/features/music/api/music.queries"
+import { AddToPlaylistDialog } from "@/features/playlist/components/dialogs/AddToPlaylistDialog"
+import { DotsIcon, HeartIcon, HeartOutlineIcon, NextIcon, PlusIcon } from "@/shared/ui/icons"
 
 const trigger = css({
   display: "flex",
@@ -51,12 +54,16 @@ const menuItem = css({
 })
 
 type Props = {
-  track: Track
+  // `isFavorite` absent (ex. entrées de playlist) : l'action « J'aime » est masquée,
+  // faute de connaître l'état courant.
+  track: Track & { isFavorite?: boolean }
 }
 
 export function MusicContextMenu({ track }: Props) {
   const [open, setOpen] = useState(false)
   const player = usePlayer()
+  const toggleFavorite = useToggleFavorite()
+  const addToPlaylist = useDialog(AddToPlaylistDialog)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   const close = useCallback(() => setOpen(false), [])
@@ -105,6 +112,34 @@ export function MusicContextMenu({ track }: Props) {
           >
             <NextIcon size={16} />
             Lire ensuite
+          </button>
+          {track.isFavorite != null && (
+            <button
+              type="button"
+              className={menuItem}
+              role="menuitem"
+              onClick={(e) => {
+                e.stopPropagation()
+                toggleFavorite.mutate(track.id)
+                close()
+              }}
+            >
+              {track.isFavorite ? <HeartIcon size={16} /> : <HeartOutlineIcon size={16} />}
+              {track.isFavorite ? "Retirer des titres likés" : "J’aime"}
+            </button>
+          )}
+          <button
+            type="button"
+            className={menuItem}
+            role="menuitem"
+            onClick={(e) => {
+              e.stopPropagation()
+              close()
+              void addToPlaylist.open({ music: track })
+            }}
+          >
+            <PlusIcon size={16} />
+            Ajouter à une playlist
           </button>
         </div>
       )}

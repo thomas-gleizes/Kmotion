@@ -178,6 +178,7 @@ export const HomePage = () => {
               title={music.title}
               artist={music.artist}
               duration={music.duration}
+              isFavorite={music.isFavorite}
               onPlay={() => player.playQueue(searchResults, i)}
               actions={
                 <button

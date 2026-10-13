@@ -76,9 +76,11 @@ const statusCircle = css({
 
 const statusInPlaylist = css({ color: "success" })
 
+type DialogMusic = Pick<Music, "id" | "title">
+
 type PlaylistItemProps = {
   playlist: PlaylistSummary
-  music: Music
+  music: DialogMusic
   onAdded: () => void
 }
 
@@ -115,7 +117,7 @@ function PlaylistItem({ playlist, music, onAdded }: PlaylistItemProps) {
   )
 }
 
-export const AddToPlaylistDialog: DialogComponent<{ music: Music }, void> = ({
+export const AddToPlaylistDialog: DialogComponent<{ music: DialogMusic }, void> = ({
   isOpen,
   close,
   music,

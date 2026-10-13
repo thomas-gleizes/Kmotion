@@ -67,11 +67,12 @@ type Props = {
   title: string
   artist: string
   duration: number
+  isFavorite?: boolean
   onPlay: () => void
   actions?: ReactNode
 }
 
-export function MusicRow({ id, title, artist, duration, onPlay, actions }: Props) {
+export function MusicRow({ id, title, artist, duration, isFavorite, onPlay, actions }: Props) {
   const player = usePlayer()
   const isCurrent = player.current?.id === id
 
@@ -91,7 +92,7 @@ export function MusicRow({ id, title, artist, duration, onPlay, actions }: Props
       </div>
       <span className={durationStyle}>{formatDuration(duration)}</span>
       <div onClick={(event) => event.stopPropagation()}>
-        <MusicContextMenu track={{ id, title, artist, duration }} />
+        <MusicContextMenu track={{ id, title, artist, duration, isFavorite }} />
       </div>
       {actions && <div onClick={(event) => event.stopPropagation()}>{actions}</div>}
     </div>
