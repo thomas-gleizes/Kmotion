@@ -106,6 +106,24 @@ describe('YtConverterHttpService', () => {
     expect(media.data).toBe('stream');
   });
 
+  it('forwards a byte range and accepts an unsatisfiable range', async () => {
+    http.get
+      .mockReturnValueOnce(response(track()))
+      .mockReturnValueOnce(response('stream'));
+
+    await service.fetchMedia(7, 'audio', 'bytes=100-');
+
+    const [url, config] = http.get.mock.calls[1];
+    expect(url).toBe('/files/1?expires=1&signature=a');
+    expect(config).toMatchObject({
+      responseType: 'stream',
+      headers: { Range: 'bytes=100-' },
+    });
+    expect(config?.validateStatus?.(206)).toBe(true);
+    expect(config?.validateStatus?.(416)).toBe(true);
+    expect(config?.validateStatus?.(404)).toBe(false);
+  });
+
   it('refuses media that is not converted yet', async () => {
     http.get.mockReturnValue(
       response(track({ status: 'processing', audioUrl: null })),

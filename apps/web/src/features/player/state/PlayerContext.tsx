@@ -8,7 +8,13 @@ import {
   useState,
   type ReactNode,
 } from "react"
-import { audioPath, getBlobUrl, thumbnailPath } from "@/shared/lib/audioCache"
+import {
+  getBlobUrl,
+  getStreamUrl,
+  invalidateStreamUrl,
+  preloadAudio,
+  thumbnailPath,
+} from "@/shared/lib/audioCache"
 import {
   applyEqualizerSettings,
   ensureEqualizerGraph,
@@ -66,6 +72,9 @@ const ProgressContext = createContext<ProgressState>({ currentTime: 0, duration:
 
 // Élément audio unique, hors du cycle de rendu React.
 const audio = new Audio()
+// Lu en streaming : on laisse le navigateur bufferiser dès l'affectation de la
+// source, y compris pour le titre restauré sans lecture automatique.
+audio.preload = "auto"
 
 // Branche le graphe Web Audio (égaliseur) sur le premier geste de lecture, et
 // seulement si l'égaliseur est réellement utilisé : router l'audio à travers
@@ -147,6 +156,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const lastSaveRef = useRef(0)
   // Dernier volume non nul, pour restaurer le son après une coupure (mute).
   const lastVolumeRef = useRef(snapshot?.volume || 1)
+  // Titre suivant à précharger, une fois le titre courant suffisamment chargé
+  // pour ne pas lui disputer la bande passante au démarrage.
+  const pendingPreloadRef = useRef<string | null>(null)
+  // Titre dont la source a déjà été rechargée après une erreur (URL signée
+  // expirée…) : une seule tentative, pour ne pas boucler sur un fichier cassé.
+  const retriedTrackRef = useRef<string | null>(null)
 
   // Persiste l'état courant pour reprise ultérieure (lit la position en direct
   // sur l'élément audio plutôt que sur l'état React, désynchronisé).
@@ -171,7 +186,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setCurrentTime(0)
     setDuration(track.duration)
     try {
-      const url = await getBlobUrl(audioPath(track.id))
+      const url = await getStreamUrl(track.id)
       if (loadId !== loadIdRef.current) return
       audio.src = url
       if (autoplay) {
@@ -217,8 +232,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       setIndex(queueIndex)
       void loadTrack(tracks[queueIndex], autoplay)
       // Préchargement du titre suivant dans l'ordre de lecture
-      const upcoming = tracks[order[pos + 1]]
-      if (upcoming) void getBlobUrl(audioPath(upcoming.id)).catch(() => {})
+      pendingPreloadRef.current = tracks[order[pos + 1]]?.id ?? null
     },
     [loadTrack],
   )
@@ -414,6 +428,31 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       }
       goToOrderPos(pos)
     }
+    // Buffering en cours de lecture (réseau lent, saut hors de la zone chargée).
+    const onWaiting = () => setIsLoading(true)
+    const onPlaying = () => setIsLoading(false)
+    const onCanPlayThrough = () => {
+      retriedTrackRef.current = null
+      const upcoming = pendingPreloadRef.current
+      if (upcoming) {
+        pendingPreloadRef.current = null
+        preloadAudio(upcoming)
+      }
+    }
+    // Source refusée ou coupée : on redemande une URL signée et on reprend à
+    // la même position.
+    const onError = () => {
+      const track = queueRef.current[orderRef.current[orderPosRef.current]]
+      if (!track || retriedTrackRef.current === track.id) {
+        setIsLoading(false)
+        setIsPlaying(false)
+        return
+      }
+      retriedTrackRef.current = track.id
+      invalidateStreamUrl(track.id)
+      pendingSeekRef.current = audio.currentTime
+      void loadTrack(track, !audio.paused)
+    }
     const onHidden = () => {
       if (document.visibilityState === "hidden") saveSnapshot()
       else resumeEqualizerContext()
@@ -423,6 +462,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     audio.addEventListener("timeupdate", onTime)
     audio.addEventListener("loadedmetadata", onMeta)
     audio.addEventListener("ended", onEnded)
+    audio.addEventListener("waiting", onWaiting)
+    audio.addEventListener("playing", onPlaying)
+    audio.addEventListener("canplaythrough", onCanPlayThrough)
+    audio.addEventListener("error", onError)
     window.addEventListener("pagehide", saveSnapshot)
     document.addEventListener("visibilitychange", onHidden)
 
@@ -441,11 +484,15 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       audio.removeEventListener("timeupdate", onTime)
       audio.removeEventListener("loadedmetadata", onMeta)
       audio.removeEventListener("ended", onEnded)
+      audio.removeEventListener("waiting", onWaiting)
+      audio.removeEventListener("playing", onPlaying)
+      audio.removeEventListener("canplaythrough", onCanPlayThrough)
+      audio.removeEventListener("error", onError)
     }
-  }, [goToOrderPos, next, prev, saveSnapshot])
+  }, [goToOrderPos, loadTrack, next, prev, saveSnapshot])
 
   const value = useMemo(() => {
-    const current = index >= 0 ? (queue[index] ?? null) : null
+    const current = index >= 0 ? queue[index] ?? null : null
     const hasNext = repeat === "all" || orderPos < queue.length - 1
     return {
       queue,

@@ -8,6 +8,8 @@ import {
   Post,
   Put,
   Query,
+  Req,
+  Res,
   Response,
   StreamableFile,
   UseGuards,
@@ -16,6 +18,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiProduces,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -50,7 +53,15 @@ import { FindConversionsQuery } from 'src/music/application/queries/find-convers
 import { PreviewMediaQuery } from 'src/music/application/queries/preview-media/preview-media.query';
 import { PreviewMediaQueryDto } from 'src/music/presentation/dto/input/preview-media-query.dto';
 import { MediaPreviewResponseDto } from 'src/music/presentation/dto/output/media-preview-response.dto';
-import type { Response as ExpressResponse } from 'express';
+import { AudioStreamUrlResponseDto } from 'src/music/presentation/dto/output/audio-stream-url-response.dto';
+import { AudioStreamSigner } from 'src/music/infrastructure/adapters/audio-stream-signer';
+import { SignedAudioStreamGuard } from 'src/music/presentation/guards/signed-audio-stream.guard';
+import { API_PREFIX } from 'src/core/config/constants';
+import { pipeline } from 'node:stream';
+import type {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from 'express';
 
 @Controller('musics')
 @ApiTags('Music')
@@ -59,14 +70,23 @@ class MusicController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly converterService: YtConverterHttpService,
+    private readonly audioStreamSigner: AudioStreamSigner,
   ) {}
 
   /** Streams a converted file; 404 while the conversion is not finished. */
-  private async fetchMedia(music: MusicRead | null, kind: MediaKind) {
+  private async fetchMedia(
+    music: MusicRead | null,
+    kind: MediaKind,
+    range?: string,
+  ) {
     if (!music) throw new RessourceNotFoundException('Music');
 
     try {
-      return await this.converterService.fetchMedia(music.converterId, kind);
+      return await this.converterService.fetchMedia(
+        music.converterId,
+        kind,
+        range,
+      );
     } catch (error) {
       if (error instanceof ConverterMediaUnavailableError) {
         throw new RessourceNotFoundException(
@@ -253,6 +273,43 @@ class MusicController {
     return MusicResponseDto.fromReadModel(record);
   }
 
+  /**
+   * Relays the audio as it arrives, honouring `Range` so that an `<audio>`
+   * element can start playing before the end of the download and seek freely
+   * (Safari even refuses to play a source that does not answer `206`).
+   *
+   * Nest forces a `200` on returned `StreamableFile`s, hence the manual pipe.
+   */
+  private async relayAudio(
+    musicId: string,
+    req: ExpressRequest,
+    res: ExpressResponse,
+  ) {
+    const music: MusicRead = await this.queryBus.execute(
+      new FindMusicByIdQuery({ musicId }),
+    );
+
+    const response = await this.fetchMedia(music, 'audio', req.headers.range);
+
+    const headers: Record<string, string> = {
+      'Accept-Ranges': 'bytes',
+      // Contenu immuable pour un id donné : cache navigateur agressif pour
+      // éviter les re-téléchargements (survit aux rechargements et sessions).
+      'Cache-Control': 'private, max-age=31536000, immutable',
+    };
+    for (const name of ['content-type', 'content-length', 'content-range']) {
+      const value: unknown = response.headers[name];
+      if (typeof value === 'string' || typeof value === 'number') {
+        headers[name] = String(value);
+      }
+    }
+
+    res.status(response.status).set(headers);
+    // `pipeline` détruit aussi le flux amont quand le client coupe (saut dans
+    // le titre, changement de piste), au lieu de le laisser se vider.
+    pipeline(response.data, res, () => {});
+  }
+
   @Get(':id/audio')
   @UseGuards(AuthGuard)
   @ApiOperation({ operationId: 'getAudio', summary: 'Get music audio' })
@@ -264,25 +321,59 @@ class MusicController {
       format: 'binary',
     },
   })
-  async getAudio(
+  getAudio(
     @Param('id') musicId: string,
-    @Response({ passthrough: true }) res: ExpressResponse,
+    @Req() req: ExpressRequest,
+    @Res() res: ExpressResponse,
   ) {
-    const music: MusicRead = await this.queryBus.execute(
+    return this.relayAudio(musicId, req, res);
+  }
+
+  @Get(':id/stream-url')
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    operationId: 'getAudioStreamUrl',
+    summary: 'Get a signed audio URL playable by an <audio> element',
+  })
+  @ApiOkResponse({ type: AudioStreamUrlResponseDto })
+  async getAudioStreamUrl(
+    @Param('id') musicId: string,
+  ): Promise<AudioStreamUrlResponseDto> {
+    const music: MusicRead | null = await this.queryBus.execute(
       new FindMusicByIdQuery({ musicId }),
     );
+    if (!music) throw new RessourceNotFoundException('Music');
 
-    const response = await this.fetchMedia(music, 'audio');
+    const { expires, signature } = this.audioStreamSigner.sign(music.id);
+    const query = new URLSearchParams({ expires: String(expires), signature });
 
-    res.set({
-      'Content-Type': response.headers['content-type'],
-      'Content-Length': response.headers['content-length'],
-      // Contenu immuable pour un id donné : cache navigateur agressif pour
-      // éviter les re-téléchargements (survit aux rechargements et sessions).
-      'Cache-Control': 'private, max-age=31536000, immutable',
-    });
+    return AudioStreamUrlResponseDto.of(
+      `${API_PREFIX}/musics/${encodeURIComponent(music.id)}/stream?${query}`,
+    );
+  }
 
-    return new StreamableFile(response.data);
+  @Get(':id/stream')
+  @UseGuards(SignedAudioStreamGuard)
+  @ApiQuery({ name: 'expires', type: Number })
+  @ApiQuery({ name: 'signature', type: String })
+  @ApiOperation({
+    operationId: 'streamAudio',
+    summary: 'Stream music audio through a signed URL (see stream-url)',
+  })
+  @ApiProduces('audio/mpeg')
+  @ApiOkResponse({
+    description: 'Music audio (206 for a Range request)',
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  streamAudio(
+    @Param('id') musicId: string,
+    @Req() req: ExpressRequest,
+    @Res() res: ExpressResponse,
+  ) {
+    return this.relayAudio(musicId, req, res);
   }
 
   @Get(':id/thumbnail')

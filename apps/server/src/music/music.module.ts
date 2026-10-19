@@ -15,6 +15,8 @@ import { FavoriteRepository } from 'src/music/infrastructure/persistance/reposit
 import { MusicsFactory } from 'src/music/infrastructure/factories/musics.factory';
 import { AuthModule } from 'src/auth/auth.module';
 import { musicsQueryHandlers } from 'src/music/application/queries';
+import { AudioStreamSigner } from 'src/music/infrastructure/adapters/audio-stream-signer';
+import { SignedAudioStreamGuard } from 'src/music/presentation/guards/signed-audio-stream.guard';
 
 @Module({
   imports: [ConverterModule, AuthModule],
@@ -28,6 +30,8 @@ import { musicsQueryHandlers } from 'src/music/application/queries';
     ...musicsQueryHandlers,
     ConverterServiceAdapter,
     MusicsFactory,
+    AudioStreamSigner,
+    SignedAudioStreamGuard,
     SyncMusicsTask,
     RefreshConversionsTask,
   ],

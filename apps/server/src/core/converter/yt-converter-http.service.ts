@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { isAxiosError } from 'axios';
 import { firstValueFrom } from 'rxjs';
+import type { Readable } from 'node:stream';
 
 /** Lifecycle of a track in yt-converter v4. */
 export type YtTrackStatus = 'pending' | 'processing' | 'ready' | 'failed';
@@ -141,15 +142,28 @@ export class YtConverterHttpService {
   /**
    * Streams a stored file. File URLs are signed and expire, so they are asked
    * for on every call instead of being stored.
+   *
+   * `range` (a `Range` header value) is forwarded as is: the converter answers
+   * `206` for a satisfiable range and `416` past the end, both returned as is so
+   * that the caller can relay them to an `<audio>` element.
    */
-  async fetchMedia(converterId: number, kind: MediaKind) {
+  async fetchMedia(converterId: number, kind: MediaKind, range?: string) {
     const track = await this.fetchTrack(converterId);
     const url = kind === 'audio' ? track?.audioUrl : track?.thumbnailUrl;
 
     if (!url) throw new ConverterMediaUnavailableError(converterId, kind);
 
     return firstValueFrom(
-      this.httpService.get(url, { responseType: 'stream' }),
+      this.httpService.get<Readable>(url, {
+        responseType: 'stream',
+        ...(range
+          ? {
+              headers: { Range: range },
+              validateStatus: (status) =>
+                (status >= 200 && status < 300) || status === 416,
+            }
+          : {}),
+      }),
     );
   }
 }

@@ -329,6 +329,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/3.1/musics/{id}/stream-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a signed audio URL playable by an <audio> element */
+        get: operations["getAudioStreamUrl"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/3.1/musics/{id}/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream music audio through a signed URL (see stream-url) */
+        get: operations["streamAudio"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/3.1/musics/{id}/thumbnail": {
         parameters: {
             query?: never;
@@ -639,6 +673,13 @@ export interface components {
             title?: string;
             /** @description Name of the artist or band */
             artist?: string;
+        };
+        AudioStreamUrlResponseDto: {
+            /**
+             * @description Signed, expiring audio URL, usable directly as an `<audio>` source (supports `Range`)
+             * @example /api/3.1/musics/c8b6f7a2-3e4d-4c9a-9c2e-8c9f1d2a3b4c/stream?expires=1792540800000&signature=…
+             */
+            url: string;
         };
         ResolvedClipDto: {
             /**
@@ -1245,6 +1286,52 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Music audio */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "audio/mpeg": string;
+                };
+            };
+        };
+    };
+    getAudioStreamUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AudioStreamUrlResponseDto"];
+                };
+            };
+        };
+    };
+    streamAudio: {
+        parameters: {
+            query: {
+                signature: string;
+                expires: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Music audio (206 for a Range request) */
             200: {
                 headers: {
                     [name: string]: unknown;
